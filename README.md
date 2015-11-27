@@ -49,6 +49,23 @@ and to run the tests:
 	nosetests -v tests
 
 
+### Ciphers (`cipher.h`)
+
+`cipher.h` is wrapped, which provides:
+
+- Aes encryption/decryption (128, 192, and 256 bits) in ECB, CBC, CFB128,
+  CTR, GCM, or CCM mode;
+- Arc4 encryption/decryption;
+- Blowfish encryption/decryption in ECB, CBC, CFB64, or CTR mode (buggy);
+- Camellia encryption/decryption (128, 192, and 256 bits) in ECB, CBC,
+  CFB128, CTR, GCM, or CCM mode;
+- DES encryption/decryption in ECB, or CBC mode;
+
+### Ciphers (known bugs)
+
+- Encryption/decryption tests fail when varying the key size in `Blowfish`.
+
+
 ## Contribute
 
 `python-mbedtls` is in an early stage of development and contributions in any
