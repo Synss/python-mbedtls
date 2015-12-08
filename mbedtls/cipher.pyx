@@ -143,15 +143,22 @@ cpdef get_supported_ciphers():
 
 cdef class Cipher:
 
-    def __init__(self, cipher_name):
+    cdef ccipher.mbedtls_cipher_context_t _ctx
+
+    def __init__(self, cipher_name, key, iv=None):
         self._setup(cipher_name)
+        self._key = key
+        self._iv = iv if iv is not None else b"\x00" * self.iv_size
+        self._set_iv(self._iv)
 
     def __repr__(self):
         return ("%s(" % self.__class__.__name__ +
-                "%r" % self.name +
+                ", ".join((
+                    "cipher_name=%r" % self.name,
+                    "key=%r" % self._key,
+                    "iv=%r" % self._iv
+                )) +
                 ")")
-
-    cdef ccipher.mbedtls_cipher_context_t _ctx
 
     def __cinit__(self):
         """Initialize a `cipher_context` (as NONE)."""
@@ -179,38 +186,30 @@ cdef class Cipher:
         """Returns the block size for the cipher."""
         return ccipher.mbedtls_cipher_get_block_size(&self._ctx)
 
-    block_size = property(_get_block_size)
-
     cpdef _get_iv_size(self):
         """Returns the size of the cipher's IV/NONCE in bytes."""
         return ccipher.mbedtls_cipher_get_iv_size(&self._ctx)
-
-    iv_size = property(_get_iv_size)
 
     cpdef _get_type(self):
         """Returns the type of the cipher."""
         return ccipher.mbedtls_cipher_get_type(&self._ctx)
 
-    type_ = property(_get_type)
+    _type = property(_get_type)
 
     cpdef _get_name(self):
         """Returns the name of the cipher."""
         ret = ccipher.mbedtls_cipher_get_name(&self._ctx)
         return ret if ret is not NULL else b"NONE"
 
-    name = property(_get_name)
-
     cpdef _get_key_size(self):
         """Returns the size of the ciphers' key."""
         return ccipher.mbedtls_cipher_get_key_bitlen(&self._ctx) // 8
-
-    key_size = property(_get_key_size)
 
     cpdef _get_operation(self):
         """Returns the operation of the given cipher."""
         return ccipher.mbedtls_cipher_get_operation(&self._ctx)
 
-    operation = property(_get_operation)
+    _operation = property(_get_operation)
 
     cdef _c_set_key(self, const unsigned char* key,
                     int key_bitlen,
@@ -220,19 +219,19 @@ cdef class Cipher:
             &self._ctx, key, key_bitlen, operation)
         check_error(err)
 
-    cpdef set_enc_key(self, object key):
+    cpdef _set_enc_key(self, object key):
         """Set the encryption key."""
         # Casting read-only only buffer to typed memoryview fails, so we
         # resort to this less efficient implementation.
         cdef unsigned char[:] c_key = bytearray(key)
         self._c_set_key(&c_key[0], 8 * c_key.shape[0], OP_ENCRYPT)
 
-    cpdef set_dec_key(self, object key):
+    cpdef _set_dec_key(self, object key):
         """Set the decryption key."""
         cdef unsigned char[:] c_key = bytearray(key)
         self._c_set_key(&c_key[0], 8 * c_key.shape[0], OP_DECRYPT)
 
-    cpdef set_iv(self, object iv):
+    cpdef _set_iv(self, object iv):
         """Set the initialization vector (IV)."""
         # Make sure that `c_iv` has at least size 1 before dereferencing.
         cdef unsigned char[:] c_iv = (
@@ -240,11 +239,11 @@ cdef class Cipher:
         check_error(ccipher.mbedtls_cipher_set_iv(
             &self._ctx, &c_iv[0], c_iv.shape[0]))
 
-    cpdef reset(self):
+    cpdef _reset(self):
         """Finish preparation of the context."""
         check_error(ccipher.mbedtls_cipher_reset(&self._ctx))
 
-    cpdef update(self, object input):
+    cpdef _update(self, object input):
         """Encrypt/decrypt using the cipher."""
         cdef unsigned char[:] c_input = bytearray(input)
         cdef size_t olen
@@ -265,7 +264,7 @@ cdef class Cipher:
         finally:
             free(output)
 
-    cpdef finish(self):
+    cpdef _finish(self):
         """Finalization function."""
         cdef size_t olen
         cdef size_t sz = self.block_size
@@ -283,7 +282,7 @@ cdef class Cipher:
         finally:
             free(output)
 
-    cpdef crypt(self, object iv, object input):
+    cpdef _crypt(self, object iv, object input):
         """Generic all-in-one encryption/decryption."""
         # Make sure that `c_iv` has at least size 1 before dereferencing.
         cdef unsigned char[:] c_iv = (
@@ -305,6 +304,39 @@ cdef class Cipher:
             return bytes([output[n] for n in range(olen)])
         finally:
             free(output)
+
+    block_size = property(_get_block_size)
+    iv_size = property(_get_iv_size)
+    name = property(_get_name)
+    key_size = property(_get_key_size)
+
+    def encrypt(self, message):
+        self._set_enc_key(self._key)
+        self._reset()
+        output = b""
+        for n in range(len(message) // self.block_size):
+            start = n * self.block_size
+            end = (n+1) * self.block_size
+            block = message[start:end]
+            # Missing padding.
+            assert len(block) == self.block_size, len(block)
+            output += self._update(block)
+        self._finish()
+        return output
+
+    def decrypt(self, message):
+        self._set_dec_key(self._key)
+        self._reset()
+        output = b""
+        for n in range(len(message) // self.block_size):
+            start = n * self.block_size
+            end = (n+1) * self.block_size
+            block = message[start:end]
+            # Missing padding.
+            assert len(block) == self.block_size
+            output += self._update(block)
+        self._finish()
+        return output
 
 
 @enum.unique
