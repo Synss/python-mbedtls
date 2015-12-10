@@ -11,6 +11,9 @@ cdef:
 
 
 cdef extern from "mbedtls/cipher.h":
+    ctypedef enum mbedtls_operation_t:
+        MBEDTLS_DECRYPT = 0, MBEDTLS_ENCRYPT = 1
+
     ctypedef enum mbedtls_cipher_type_t:
         pass
 

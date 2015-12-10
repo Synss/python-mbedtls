@@ -124,11 +124,11 @@ class _TestCipherBase:
 
     def test_set_enc_key(self):
         self.cipher._set_enc_key(self.key)
-        assert self.cipher._operation == OP_ENCRYPT
+        assert self.cipher._operation == 1
 
     def test_set_dec_key(self):
         self.cipher._set_dec_key(self.key)
-        assert self.cipher._operation == OP_DECRYPT
+        assert self.cipher._operation == 0
 
     @raises(BadInputDataError)
     def test_long_enc_key_raises(self):
