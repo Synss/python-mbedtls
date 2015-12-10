@@ -211,25 +211,22 @@ cdef class Cipher:
 
     _operation = property(_get_operation)
 
-    cdef _c_set_key(self, const unsigned char* key,
-                    int key_bitlen,
+    cdef _c_set_key(self, unsigned char[:] c_key,
                     const ccipher.mbedtls_operation_t operation):
         """Set the key to use with the given context."""
         cdef int err = ccipher.mbedtls_cipher_setkey(
-            &self._ctx, key, key_bitlen, operation)
+            &self._ctx, &c_key[0], 8 * c_key.shape[0], operation)
         check_error(err)
 
     cpdef _set_enc_key(self, object key):
         """Set the encryption key."""
         # Casting read-only only buffer to typed memoryview fails, so we
         # resort to this less efficient implementation.
-        cdef unsigned char[:] c_key = bytearray(key)
-        self._c_set_key(&c_key[0], 8 * c_key.shape[0], OP_ENCRYPT)
+        self._c_set_key(bytearray(key), OP_ENCRYPT)
 
     cpdef _set_dec_key(self, object key):
         """Set the decryption key."""
-        cdef unsigned char[:] c_key = bytearray(key)
-        self._c_set_key(&c_key[0], 8 * c_key.shape[0], OP_DECRYPT)
+        self._c_set_key(bytearray(key), OP_DECRYPT)
 
     cpdef _set_iv(self, object iv):
         """Set the initialization vector (IV)."""
