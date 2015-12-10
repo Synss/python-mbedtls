@@ -216,6 +216,41 @@ class Test_Aes_128_ECB(_Test_Aes):
                      cipher.encrypt(self.block))
 
 
+class _Test_Aes_128_CBC(_Test_Aes):
+
+    def __init__(self):
+        super().__init__(b"AES-128-CBC")
+        self.key_size = 128 // 8
+
+
+class _Test_Aes_128_CFB128(_Test_Aes):
+
+    def __init__(self):
+        super().__init__(b"AES-128-CFB128")
+        self.key_size = 128 // 8
+
+
+class _Test_Aes_128_CTR(_Test_Aes):
+
+    def __init__(self):
+        super().__init__(b"AES-128-CTR")
+        self.key_size = 128 // 8
+
+
+class _Test_Aes_128_GCM(_Test_Aes):
+
+    def __init__(self):
+        super().__init__(b"AES-128-GCM")
+        self.key_size = 128 // 8
+
+
+class _Test_Aes_128_CCM(_Test_Aes):
+
+    def __init__(self):
+        super().__init__(b"AES-128-GCM")
+        self.key_size = 128 // 8
+
+
 class Test_Aes_192_ECB(_Test_Aes):
 
     def __init__(self):
