@@ -225,13 +225,15 @@ cdef class Cipher:
         """Set the decryption key."""
         self._c_set_key(bytearray(key), ccipher.MBEDTLS_DECRYPT)
 
+    cdef _c_set_iv(self, unsigned char[:] c_iv):
+        """Set the iv to use with the given context."""
+        check_error(ccipher.mbedtls_cipher_set_iv(
+            &self._ctx, &c_iv[0], c_iv.shape[0]))
+
     cpdef _set_iv(self, object iv):
         """Set the initialization vector (IV)."""
         # Make sure that `c_iv` has at least size 1 before dereferencing.
-        cdef unsigned char[:] c_iv = (
-            bytearray(iv) if iv else bytearray(b"\x00"))
-        check_error(ccipher.mbedtls_cipher_set_iv(
-            &self._ctx, &c_iv[0], c_iv.shape[0]))
+        self._c_set_iv(bytearray(iv))
 
     cpdef _reset(self):
         """Finish preparation of the context."""
