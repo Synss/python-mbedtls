@@ -118,9 +118,8 @@ class _TestCipherBase:
         assert_equal(self.cipher._operation, self.operation)
 
     def test_encrypt_decrypt(self):
-        message = _rnd(self.block_size * 8)
-        assert_equal(self.cipher.decrypt(self.cipher.encrypt(message)),
-                     message)
+        assert_equal(self.cipher.decrypt(self.cipher.encrypt(self.block)),
+                     self.block)
 
     def test_set_enc_key(self):
         self.cipher._set_enc_key(self.key)
@@ -129,6 +128,9 @@ class _TestCipherBase:
     def test_set_dec_key(self):
         self.cipher._set_dec_key(self.key)
         assert self.cipher._operation == 0
+
+
+class _Test_FixedKeyLength_Mixin:
 
     @raises(BadInputDataError)
     def test_long_enc_key_raises(self):
@@ -146,51 +148,45 @@ class _TestCipherBase:
     def test_short_dec_key_raises(self):
         self.cipher._set_dec_key(self.key[1:])
 
-    def test_set_iv(self):
-        self.cipher._set_iv(self.iv)
+
+class _Test_FixedIvLength_Mixin:
+    # IV is ignored in ECB and CTR modes.
 
     @raises(FeatureUnavailableError)
     def test_long_iv_raises(self):
-        self.cipher._set_iv(self.iv + b"\x00")
+        self.cls(self.name, self.key, self.iv + b"\x00")
 
     @raises(BadInputDataError)
     def test_short_iv_raises(self):
-        self.cipher._set_iv(self.iv[1:])
+        if not self.iv_size <= 1:
+            raise SkipTest("test invalid in this context")
+        self.cls(self.name, self.key, self.iv[1:])
 
-    def test_update(self):
-        self.cipher._set_iv(self.iv)
-        self.cipher._set_enc_key(self.key)
-        enc = self.cipher._update(self.block)
-        self.cipher._set_dec_key(self.key)
-        dec = self.cipher._update(enc)
-        assert dec == self.block
+
+class _Test_FixedBlockLength_Mixin:
 
     @raises(FullBlockExpectedError)
     def test_long_block_raises(self):
-        self.cipher._set_enc_key(self.key)
-        self.cipher._update(self.block + b"\x00")
+        self.cipher.encrypt(self.block + b"\x00")
 
     @raises(FullBlockExpectedError)
     def test_short_block_raises(self):
-        self.cipher._set_enc_key(self.key)
-        self.cipher._update(self.block[1:])
+        self.cipher.encrypt(self.block[1:])
 
-    def test_crypt(self):
-        self.cipher._set_enc_key(self.key)
-        enc = self.cipher._crypt(self.iv, self.block)
-        self.cipher._set_dec_key(self.key)
-        dec = self.cipher._crypt(self.iv, enc)
-        assert dec == self.block
 
-    @raises(FullBlockExpectedError)
-    def test_long_crypt_raises(self):
-        self.cipher._set_enc_key(self.key)
-        self.cipher._crypt(self.iv, self.block + b"\x00")
+class _Test_VariableBlockLength_Mixin:
 
-    @raises(FullBlockExpectedError)
-    def test_short_crypt_raises(self):
-        self.cipher._set_enc_key(self.key)
-        self.cipher._crypt(self.iv, self.block[1:])
+    def test_long_block(self):
+        block = self.block + _rnd(1)
+        enc = self.cipher.encrypt(block)
+        dec = self.cipher.decrypt(enc)
+        assert_equal(dec, block)
+
+    def test_short_block(self):
+        block = self.block[1:]
+        enc = self.cipher.encrypt(block)
+        dec = self.cipher.decrypt(enc)
+        assert_equal(dec, block)
 
 
 class _Test_Aes(_TestCipherBase):
@@ -203,7 +199,10 @@ class _Test_Aes(_TestCipherBase):
         self.cls = Aes
 
 
-class Test_Aes_128_ECB(_Test_Aes):
+class Test_Aes_128_ECB(_Test_Aes,
+                       _Test_FixedKeyLength_Mixin,
+                       _Test_FixedBlockLength_Mixin,
+                       ):
 
     def __init__(self):
         super().__init__(b"AES-128-ECB")
@@ -212,25 +211,49 @@ class Test_Aes_128_ECB(_Test_Aes):
     def test_check_against_pycrypto(self):
         self.cipher._set_enc_key(self.key)
         cipher = pcAES.new(self.key, pcAES.MODE_ECB, self.iv)
-        assert_equal(self.cipher._crypt(self.iv, self.block),
+        assert_equal(self.cipher.encrypt(self.block),
                      cipher.encrypt(self.block))
 
 
-class _Test_Aes_128_CBC(_Test_Aes):
+class Test_Aes_192_ECB(_Test_Aes,
+                       _Test_FixedKeyLength_Mixin,
+                       _Test_FixedBlockLength_Mixin,
+                       ):
+
+    def __init__(self):
+        super().__init__(b"AES-192-ECB")
+        self.key_size = 192 // 8
+
+
+class Test_Aes_256_ECB(_Test_Aes,
+                       _Test_FixedKeyLength_Mixin,
+                       _Test_FixedBlockLength_Mixin,
+                       ):
+
+    def __init__(self):
+        super().__init__(b"AES-256-ECB")
+        self.key_size = 256 // 8
+
+
+class Test_Aes_128_CBC(_Test_Aes,
+                       _Test_FixedKeyLength_Mixin,
+                       _Test_VariableBlockLength_Mixin,
+                       ):
 
     def __init__(self):
         super().__init__(b"AES-128-CBC")
         self.key_size = 128 // 8
 
 
-class _Test_Aes_128_CFB128(_Test_Aes):
+class Test_Aes_128_CFB128(_Test_Aes,
+                          ):
 
     def __init__(self):
         super().__init__(b"AES-128-CFB128")
         self.key_size = 128 // 8
 
 
-class _Test_Aes_128_CTR(_Test_Aes):
+class Test_Aes_128_CTR(_Test_Aes):
 
     def __init__(self):
         super().__init__(b"AES-128-CTR")
@@ -251,50 +274,107 @@ class _Test_Aes_128_CCM(_Test_Aes):
         self.key_size = 128 // 8
 
 
-class Test_Aes_192_ECB(_Test_Aes):
+class _Test_Camellia(_TestCipherBase):
 
-    def __init__(self):
-        super().__init__(b"AES-192-ECB")
-        self.key_size = 192 // 8
-
-
-class Test_Aes_256_ECB(_Test_Aes):
-
-    def __init__(self):
-        super().__init__(b"AES-256-ECB")
-        self.key_size = 256 // 8
-
-
-class Test_Camellia_128_ECB(_TestCipherBase):
-
-    def __init__(self):
-        super().__init__(b"CAMELLIA-128-ECB")
+    def __init__(self, name):
+        super().__init__(name)
         self.operation = 0
         self.block_size = 16
         self.iv_size = 16
-        self.key_size = 128 // 8
         self.cls = Camellia
 
 
-class Test_Des_ECB(_TestCipherBase):
+class Test_Camellia_128_ECB(_Test_Camellia):
 
     def __init__(self):
-        super().__init__(b"DES-ECB")
+        super().__init__(b"CAMELLIA-128-ECB")
+        self.key_size = 128 // 8
+
+
+class Test_Camellia_128_CBC(_Test_Camellia):
+
+    def __init__(self):
+        super().__init__(b"CAMELLIA-128-CBC")
+        self.key_size = 128 // 8
+
+
+class Test_Camellia_128_CFB128(_Test_Camellia):
+
+    def __init__(self):
+        super().__init__(b"CAMELLIA-128-CFB128")
+        self.key_size = 128 // 8
+
+
+class Test_Camellia_128_CTR(_Test_Camellia):
+
+    def __init__(self):
+        super().__init__(b"CAMELLIA-128-CTR")
+        self.key_size = 128 // 8
+
+
+class _Test_Camellia_128_GCM(_Test_Camellia):
+
+    def __init__(self):
+        super().__init__(b"CAMELLIA-128-GCM")
+        self.iv_size = 12
+        self.key_size = 128 // 8
+
+
+class _Test_Des(_TestCipherBase):
+
+    def __init__(self, name):
+        super().__init__(name)
         self.operation = 0
         self.block_size = 8
         self.iv_size = 8
         self.key_size = 64 // 8
         self.cls = Des
 
-    def test_long_iv_raises(self):
-        # IV is ignored for ECB.
-        raise SkipTest("test invalid in this context")
+
+class Test_Des_ECB(_Test_Des):
+
+    def __init__(self):
+        super().__init__(b"DES-ECB")
 
     def test_check_against_pycrypto(self):
         self.cipher._set_enc_key(self.key)
         cipher = pcDES.new(self.key, pcDES.MODE_ECB, self.iv)
-        assert_equal(self.cipher._crypt(self.iv, self.block),
+        assert_equal(self.cipher.encrypt(self.block),
                      cipher.encrypt(self.block))
+
+
+class Test_Des_CBC(_Test_Des):
+
+    def __init__(self):
+        super().__init__(b"DES-CBC")
+
+
+class Test_Des_EDE_ECB(_Test_Des):
+
+    def __init__(self):
+        super().__init__(b"DES-EDE-ECB")
+        self.key_size = 16
+
+
+class Test_Des_EDE_CBC(_Test_Des):
+
+    def __init__(self):
+        super().__init__(b"DES-EDE-CBC")
+        self.key_size = 16
+
+
+class Test_Des_EDE3_ECB(_Test_Des):
+
+    def __init__(self):
+        super().__init__(b"DES-EDE3-ECB")
+        self.key_size = 24
+
+
+class Test_Des_EDE3_CBC(_Test_Des):
+
+    def __init__(self):
+        super().__init__(b"DES-EDE3-CBC")
+        self.key_size = 24
 
 
 class Test_Blowfish_ECB(_TestCipherBase):
@@ -310,41 +390,33 @@ class Test_Blowfish_ECB(_TestCipherBase):
     @raises(InvalidKeyLengthError)
     def test_long_dec_key_raises(self):
         key = _rnd(1024)
-        self.cipher._set_enc_key(key)
+        cipher = self.cls(self.name, key, self.iv)
+        cipher.decrypt(self.block)
 
     @raises(InvalidKeyLengthError)
     def test_long_enc_key_raises(self):
         key = _rnd(1024)
-        self.cipher._set_dec_key(key)
+        cipher = self.cls(self.name, key, self.iv)
+        cipher.encrypt(self.block)
 
-    def test_short_dec_key_raises(self):
-        raise SkipTest("test invalid in this context")
-
-    def test_short_enc_key_raises(self):
-        raise SkipTest("test invalid in this context")
-
-    def test_long_iv_raises(self):
-        # IV is ignored for ECB.
-        raise SkipTest("test invalid in this context")
-
-    def test_crypt_with_short_key(self):
+    def test_short_key(self):
         key = _rnd(32 // 8)  # The shortest possible key.
-        enc = self.cipher._crypt(self.iv, self.block)
-        self.cipher._set_dec_key(key)
-        dec = self.cipher._crypt(self.iv, enc)
+        cipher = self.cls(self.name, key, self.iv)
+        enc = cipher.encrypt(self.block)
+        dec = cipher.decrypt(enc)
         assert dec == self.block
 
-    def test_crypt_with_long_key(self):
+    def test_long_key(self):
         key = _rnd(448 // 8)  # The longest possible key.
-        enc = self.cipher._crypt(self.iv, self.block)
-        self.cipher._set_dec_key(key)
-        dec = self.cipher._crypt(self.iv, enc)
+        cipher = self.cls(self.name, key, self.iv)
+        enc = cipher.encrypt(self.block)
+        dec = cipher.decrypt(enc)
         assert dec == self.block
 
     def test_check_against_pycrypto(self):
         self.cipher._set_enc_key(self.key)
         cipher = pcBlowfish.new(self.key, pcBlowfish.MODE_ECB, self.iv)
-        assert_equal(self.cipher._crypt(self.iv, self.block),
+        assert_equal(self.cipher.encrypt(self.block),
                      cipher.encrypt(self.block))
 
 
@@ -358,43 +430,14 @@ class Test_Arc4_128(_TestCipherBase):
         self.key_size = 128 // 8
         self.cls = Arc4
 
-    def test_long_iv_raises(self):
-        raise SkipTest("test invalid in this context")
-
-    def test_short_iv_raises(self):
-        raise SkipTest("test invalid in this context")
-
-    def test_short_block_raises(self):
-        raise SkipTest("test invalid in this context")
-
-    def test_long_block_raises(self):
-        raise SkipTest("test invalid in this context")
-
-    def test_long_update(self):
+    def test_long_block(self):
         block = _rnd(1024)
-        self.cipher._set_iv(self.iv)
-        self.cipher._set_enc_key(self.key)
-        enc = self.cipher._update(block)
-        self.cipher._set_dec_key(self.key)
-        dec = self.cipher._update(enc)
-        assert dec == block
-
-    def test_short_crypt_raises(self):
-        raise SkipTest("test invalid in this context")
-
-    def test_long_crypt_raises(self):
-        raise SkipTest("test invalid in this context")
-
-    def test_long_crypt(self):
-        block = _rnd(1024)
-        self.cipher._set_enc_key(self.key)
-        enc = self.cipher._crypt(self.iv, block)
-        self.cipher._set_dec_key(self.key)
-        dec = self.cipher._crypt(self.iv, enc)
+        enc = self.cipher.encrypt(block)
+        dec = self.cipher.decrypt(enc)
         assert dec == block
 
     def test_check_against_pycrypto(self):
         self.cipher._set_enc_key(self.key)
         cipher = pcARC4.new(self.key)
-        assert_equal(self.cipher._crypt(self.iv, self.block),
+        assert_equal(self.cipher.encrypt(self.block),
                      cipher.encrypt(self.block))

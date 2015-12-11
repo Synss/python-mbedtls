@@ -56,28 +56,19 @@ cdef extern from "mbedtls/cipher.h":
         const mbedtls_cipher_context_t* ctx)
     int mbedtls_cipher_get_key_bitlen(
         const mbedtls_cipher_context_t* ctx)
-    mbedtls_operation_t mbedtls_cipher_get_operation(
-        const mbedtls_cipher_context_t* ctx)
+    # mbedtls_cipher_get_operation
     int mbedtls_cipher_setkey(
         mbedtls_cipher_context_t* ctx,
         const unsigned char* key,
         int key_bitlen,
         const mbedtls_operation_t operation)
     # mbedtls_cipher_set_padding_mode
-    int mbedtls_cipher_set_iv(
-        mbedtls_cipher_context_t* ctx,
-        const unsigned char *iv, size_t iv_len)
+    # mbedtls_cipher_set_iv
 
-    int mbedtls_cipher_reset(mbedtls_cipher_context_t* ctx)
+    # mbedtls_cipher_reset
     # mbedtls_cipher_update_ad
-
-    int mbedtls_cipher_update(
-        mbedtls_cipher_context_t* ctx,
-        const unsigned char* input, size_t ilen,
-        unsigned char* output, size_t* olen)
-    int mbedtls_cipher_finish(
-        mbedtls_cipher_context_t* ctx,
-        unsigned char* output, size_t *olen)
+    # mbedtls_cipher_update
+    # mbedtls_cipher_finish
 
     # mbedtls_cipher_write_tag
     # mbedtls_cipher_check_tag

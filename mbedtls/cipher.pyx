@@ -145,8 +145,7 @@ cdef class Cipher:
     def __init__(self, cipher_name, key, iv=None):
         self._setup(cipher_name)
         self._key = key
-        self._iv = iv if iv is not None else b"\x00" * self.iv_size
-        self._set_iv(self._iv)
+        self._iv = iv if iv else b"\x00" * self.iv_size
 
     def __repr__(self):
         return ("%s(" % self.__class__.__name__ +
@@ -202,12 +201,6 @@ cdef class Cipher:
         """Returns the size of the ciphers' key."""
         return ccipher.mbedtls_cipher_get_key_bitlen(&self._ctx) // 8
 
-    cpdef _get_operation(self):
-        """Returns the operation of the given cipher."""
-        return ccipher.mbedtls_cipher_get_operation(&self._ctx)
-
-    _operation = property(_get_operation)
-
     cdef _c_set_key(self, unsigned char[:] c_key,
                     ccipher.mbedtls_operation_t operation):
         """Set the key to use with the given context."""
@@ -225,62 +218,11 @@ cdef class Cipher:
         """Set the decryption key."""
         self._c_set_key(bytearray(key), ccipher.MBEDTLS_DECRYPT)
 
-    cdef _c_set_iv(self, unsigned char[:] c_iv):
-        """Set the iv to use with the given context."""
-        check_error(ccipher.mbedtls_cipher_set_iv(
-            &self._ctx, &c_iv[0], c_iv.shape[0]))
-
-    cpdef _set_iv(self, object iv):
-        """Set the initialization vector (IV)."""
-        # Make sure that `c_iv` has at least size 1 before dereferencing.
-        self._c_set_iv(bytearray(iv))
-
-    cpdef _reset(self):
-        """Finish preparation of the context."""
-        check_error(ccipher.mbedtls_cipher_reset(&self._ctx))
-
-    cpdef _update(self, object input):
-        """Encrypt/decrypt using the cipher."""
-        cdef unsigned char[:] c_input = bytearray(input)
-        cdef size_t olen
-        cdef size_t sz = c_input.shape[0] + self.block_size
-        cdef unsigned char* output = <unsigned char*>malloc(
-            sz * sizeof(unsigned char))
-        cdef int err
-        if not output:
-            raise MemoryError()
-        try:
-            err = ccipher.mbedtls_cipher_update(
-                &self._ctx, &c_input[0], c_input.shape[0], output, &olen)
-            check_error(err)
-            # We must use either an explicit loop or a list comprehension on
-            # the array because a generator crashes the compiler with
-            # `closures inside cpdef functions not yet supported`.
-            return bytes([output[n] for n in range(olen)])
-        finally:
-            free(output)
-
-    cpdef _finish(self):
-        """Finalization function."""
-        cdef size_t olen
-        cdef size_t sz = self.block_size
-        cdef unsigned char* output = <unsigned char*>malloc(
-            sz * sizeof(unsigned char))
-        cdef int err
-        if not output:
-            raise MemoryError()
-        try:
-            err = ccipher.mbedtls_cipher_finish(
-                &self._ctx, output, &olen)
-            check_error(err)
-            # The list comprehension is required.
-            return bytes([output[n] for n in range(olen)])
-        finally:
-            free(output)
-
-    cpdef _crypt(self, object iv, object input):
+    cdef _crypt(self, object iv, object input):
         """Generic all-in-one encryption/decryption."""
         # Make sure that `c_iv` has at least size 1 before dereferencing.
+        if not input:
+            raise FullBlockExpectedError()
         cdef unsigned char[:] c_iv = (
             bytearray(iv) if iv else bytearray(b"\x00"))
         cdef unsigned char[:] c_input = bytearray(input)
@@ -308,31 +250,11 @@ cdef class Cipher:
 
     def encrypt(self, message):
         self._set_enc_key(self._key)
-        self._reset()
-        output = b""
-        for n in range(len(message) // self.block_size):
-            start = n * self.block_size
-            end = (n+1) * self.block_size
-            block = message[start:end]
-            # Missing padding.
-            assert len(block) == self.block_size, len(block)
-            output += self._update(block)
-        self._finish()
-        return output
+        return self._crypt(self._iv, message)
 
     def decrypt(self, message):
         self._set_dec_key(self._key)
-        self._reset()
-        output = b""
-        for n in range(len(message) // self.block_size):
-            start = n * self.block_size
-            end = (n+1) * self.block_size
-            block = message[start:end]
-            # Missing padding.
-            assert len(block) == self.block_size
-            output += self._update(block)
-        self._finish()
-        return output
+        return self._crypt(self._iv, message)
 
 
 @enum.unique
