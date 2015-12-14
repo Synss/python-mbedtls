@@ -138,123 +138,153 @@ cpdef get_supported_ciphers():
     return ciphers
 
 
+# Making the following C-level functions staticmethods of Cipher is not
+# supported.  We therefore hold them at module scope.
+
+
+cdef _c_setup(ccipher.mbedtls_cipher_context_t* ctx,
+              char[:] cipher_name):
+    """Initialize and fill the cipher context structure with the
+    appropriate values.
+
+    """
+    check_error(ccipher.mbedtls_cipher_setup(
+        ctx, ccipher.mbedtls_cipher_info_from_string(&cipher_name[0])))
+
+
+cdef _c_set_key(ccipher.mbedtls_cipher_context_t* ctx,
+                unsigned char[:] c_key,
+                ccipher.mbedtls_operation_t operation):
+    """Set the key to use with the given context."""
+    cdef int err = ccipher.mbedtls_cipher_setkey(
+        ctx, &c_key[0], 8 * c_key.shape[0], operation)
+    check_error(err)
+
+
+cdef _c_crypt(ccipher.mbedtls_cipher_context_t* ctx,
+              object iv, object input):
+    """Generic all-in-one encryption/decryption."""
+    # Make sure that `c_iv` has at least size 1 before dereferencing.
+    if not input:
+        raise FullBlockExpectedError()
+    cdef unsigned char[:] c_iv = (
+        bytearray(iv) if iv else bytearray(b"\x00"))
+    cdef unsigned char[:] c_input = bytearray(input)
+    cdef size_t olen
+    cdef size_t sz = c_input.shape[0] + _c_get_block_size(ctx)
+    cdef unsigned char* output = <unsigned char*>malloc(
+        sz * sizeof(unsigned char))
+    cdef int err
+    if not output:
+        raise MemoryError()
+    try:
+        err = ccipher.mbedtls_cipher_crypt(
+            ctx, &c_iv[0], c_iv.shape[0],
+            &c_input[0], c_input.shape[0], output, &olen)
+        check_error(err)
+        # The list comprehension is required.
+        return bytes([output[n] for n in range(olen)])
+    finally:
+        free(output)
+
+
+cdef _c_get_block_size(ccipher.mbedtls_cipher_context_t* ctx):
+    """Returns the block size for the cipher."""
+    return ccipher.mbedtls_cipher_get_block_size(ctx)
+
+
+cdef _c_get_iv_size(ccipher.mbedtls_cipher_context_t* ctx):
+    """Returns the size of the cipher's IV/NONCE in bytes."""
+    return ccipher.mbedtls_cipher_get_iv_size(ctx)
+
+
+cdef _c_get_type(ccipher.mbedtls_cipher_context_t* ctx):
+    """Returns the type of the cipher."""
+    return ccipher.mbedtls_cipher_get_type(ctx)
+
+
+cdef _c_get_name(ccipher.mbedtls_cipher_context_t* ctx):
+    """Returns the name of the cipher."""
+    ret = ccipher.mbedtls_cipher_get_name(ctx)
+    return ret if ret is not NULL else b"NONE"
+
+
+cdef _c_get_key_size(ccipher.mbedtls_cipher_context_t* ctx):
+    """Returns the size of the ciphers' key."""
+    return ccipher.mbedtls_cipher_get_key_bitlen(ctx) // 8
+
+
 cdef class Cipher:
 
-    cdef ccipher.mbedtls_cipher_context_t _ctx
+    # Encapsulate two contexts to push the keys into mbedtls ASAP.
+    cdef ccipher.mbedtls_cipher_context_t _enc_ctx
+    cdef ccipher.mbedtls_cipher_context_t _dec_ctx
 
     def __init__(self, cipher_name, key, iv=None):
+        # Casting read-only only buffer to typed memoryview fails, so we
+        # cast to bytearray.
         self._setup(cipher_name)
-        self._key = key
+        self._setkey(key)
         self._iv = iv if iv else b"\x00" * self.iv_size
-
-    def __repr__(self):
-        return ("%s(" % self.__class__.__name__ +
-                ", ".join((
-                    "cipher_name=%r" % self.name,
-                    "key=%r" % self._key,
-                    "iv=%r" % self._iv
-                )) +
-                ")")
 
     def __cinit__(self):
         """Initialize a `cipher_context` (as NONE)."""
-        ccipher.mbedtls_cipher_init(&self._ctx)
+        ccipher.mbedtls_cipher_init(&self._enc_ctx)
+        ccipher.mbedtls_cipher_init(&self._dec_ctx)
 
     def __dealloc__(self):
         """Free and clear the cipher-specific context of ctx."""
-        ccipher.mbedtls_cipher_free(&self._ctx)
+        ccipher.mbedtls_cipher_free(&self._enc_ctx)
+        ccipher.mbedtls_cipher_free(&self._dec_ctx)
 
-    cdef _c_setup(self, const ccipher.mbedtls_cipher_info_t* info):
-        """Initialize and fill the cipher context structure with the
-        appropriate values.
-
-        """
-        check_error(ccipher.mbedtls_cipher_setup(&self._ctx, info))
-
-    cpdef _setup(self, const char* cipher_name):
+    cpdef _setup(self, cipher_name):
         """Initialize the context with `cipher_info_from_string`."""
         if cipher_name not in get_supported_ciphers():
             raise UnsupportedCipherError("unsupported cipher: %r" % cipher_name)
-        self._c_setup(ccipher.mbedtls_cipher_info_from_string(
-            cipher_name))
+        cdef char[:] c_cipher_name = bytearray(cipher_name)
+        _c_setup(&self._enc_ctx, c_cipher_name)
+        _c_setup(&self._dec_ctx, c_cipher_name)
 
-    cpdef _get_block_size(self):
-        """Returns the block size for the cipher."""
-        return ccipher.mbedtls_cipher_get_block_size(&self._ctx)
-
-    cpdef _get_iv_size(self):
-        """Returns the size of the cipher's IV/NONCE in bytes."""
-        return ccipher.mbedtls_cipher_get_iv_size(&self._ctx)
-
-    cpdef _get_type(self):
-        """Returns the type of the cipher."""
-        return ccipher.mbedtls_cipher_get_type(&self._ctx)
-
-    _type = property(_get_type)
-
-    cpdef _get_name(self):
-        """Returns the name of the cipher."""
-        ret = ccipher.mbedtls_cipher_get_name(&self._ctx)
-        return ret if ret is not NULL else b"NONE"
-
-    cpdef _get_key_size(self):
-        """Returns the size of the ciphers' key."""
-        return ccipher.mbedtls_cipher_get_key_bitlen(&self._ctx) // 8
-
-    cdef _c_set_key(self, unsigned char[:] c_key,
-                    ccipher.mbedtls_operation_t operation):
-        """Set the key to use with the given context."""
-        cdef int err = ccipher.mbedtls_cipher_setkey(
-            &self._ctx, &c_key[0], 8 * c_key.shape[0], operation)
-        check_error(err)
-
-    cpdef _set_enc_key(self, object key):
-        """Set the encryption key."""
+    cpdef _setkey(self, key):
+        """Set the encryption/decryption key."""
+        if not key:
+            return
         # Casting read-only only buffer to typed memoryview fails, so we
-        # resort to this less efficient implementation.
-        self._c_set_key(bytearray(key), ccipher.MBEDTLS_ENCRYPT)
+        # cast to bytearray.
+        c_key = bytearray(key)
+        _c_set_key(&self._enc_ctx, c_key, ccipher.MBEDTLS_ENCRYPT)
+        _c_set_key(&self._dec_ctx, c_key, ccipher.MBEDTLS_DECRYPT)
 
-    cpdef _set_dec_key(self, object key):
-        """Set the decryption key."""
-        self._c_set_key(bytearray(key), ccipher.MBEDTLS_DECRYPT)
+    @property
+    def block_size(self):
+        """Returns the block size for the cipher."""
+        return _c_get_block_size(&self._enc_ctx)
 
-    cdef _crypt(self, object iv, object input):
-        """Generic all-in-one encryption/decryption."""
-        # Make sure that `c_iv` has at least size 1 before dereferencing.
-        if not input:
-            raise FullBlockExpectedError()
-        cdef unsigned char[:] c_iv = (
-            bytearray(iv) if iv else bytearray(b"\x00"))
-        cdef unsigned char[:] c_input = bytearray(input)
-        cdef size_t olen
-        cdef size_t sz = c_input.shape[0] + self.block_size
-        cdef unsigned char* output = <unsigned char*>malloc(
-            sz * sizeof(unsigned char))
-        cdef int err
-        if not output:
-            raise MemoryError()
-        try:
-            err = ccipher.mbedtls_cipher_crypt(
-                &self._ctx, &c_iv[0], c_iv.shape[0],
-                &c_input[0], c_input.shape[0], output, &olen)
-            check_error(err)
-            # The list comprehension is required.
-            return bytes([output[n] for n in range(olen)])
-        finally:
-            free(output)
+    @property
+    def iv_size(self):
+        """Returns the size of the cipher's IV/NONCE in bytes."""
+        return _c_get_iv_size(&self._enc_ctx)
 
-    block_size = property(_get_block_size)
-    iv_size = property(_get_iv_size)
-    name = property(_get_name)
-    key_size = property(_get_key_size)
+    @property
+    def _type(self):
+        """Returns the type of the cipher."""
+        return _c_get_type(&self._enc_ctx)
+
+    @property
+    def name(self):
+        """Returns the name of the cipher."""
+        return _c_get_name(&self._enc_ctx)
+
+    @property
+    def key_size(self):
+        """Returns the size of the ciphers' key."""
+        return _c_get_key_size(&self._enc_ctx)
 
     def encrypt(self, message):
-        self._set_enc_key(self._key)
-        return self._crypt(self._iv, message)
+        return _c_crypt(&self._enc_ctx, self._iv, message)
 
     def decrypt(self, message):
-        self._set_dec_key(self._key)
-        return self._crypt(self._iv, message)
+        return _c_crypt(&self._dec_ctx, self._iv, message)
 
 
 @enum.unique

@@ -85,68 +85,31 @@ class _TestCipherBase:
 
     """Test functions common to all ciphers."""
 
-    def __init__(self, name):
+    def __init__(self, name, cipher):
         self.name = name
-        self.operation = -1
-        self.block_size = 0
-        self.iv_size = 0
-        self.key_size = 0
-        self.cls = Cipher
+        self.cls = cipher
 
     def setup(self):
-        self.block = _rnd(self.block_size)
-        self.iv = _rnd(self.iv_size)
-        self.key = _rnd(self.key_size)
+        _cipher = self.cls(self.name, None, None)
+        self.block = _rnd(_cipher.block_size)
+        self.iv = _rnd(_cipher.iv_size)
+        self.key = _rnd(_cipher.key_size)
         self.cipher = self.cls(self.name, self.key, self.iv)
-
-    def test_repr(self):
-        assert_canonical_repr(self.cipher)
-
-    def test_block_size_accessor(self):
-        assert_equal(self.cipher.block_size, self.block_size)
-
-    def test_iv_size_accessor(self):
-        assert_equal(self.cipher.iv_size, self.iv_size)
-
-    def test_key_size_accessor(self):
-        assert_equal(self.cipher.key_size, self.key_size)
-
-    def test_name_accessor(self):
-        assert_equal(self.cipher.name, self.name)
-
-    def test_operation_accessor(self):
-        assert_equal(self.cipher._operation, self.operation)
 
     def test_encrypt_decrypt(self):
         assert_equal(self.cipher.decrypt(self.cipher.encrypt(self.block)),
                      self.block)
-
-    def test_set_enc_key(self):
-        self.cipher._set_enc_key(self.key)
-        assert self.cipher._operation == 1
-
-    def test_set_dec_key(self):
-        self.cipher._set_dec_key(self.key)
-        assert self.cipher._operation == 0
 
 
 class _Test_FixedKeyLength_Mixin:
 
     @raises(BadInputDataError)
     def test_long_enc_key_raises(self):
-        self.cipher._set_enc_key(self.key + b"\x00")
+        self.cls(self.name, self.key + _rnd(1), self.iv)
 
     @raises(BadInputDataError)
     def test_short_enc_key_raises(self):
-        self.cipher._set_enc_key(self.key[1:])
-
-    @raises(BadInputDataError)
-    def test_long_dec_key_raises(self):
-        self.cipher._set_dec_key(self.key + b"\x00")
-
-    @raises(BadInputDataError)
-    def test_short_dec_key_raises(self):
-        self.cipher._set_dec_key(self.key[1:])
+        self.cls(self.name, self.key[1:], self.iv)
 
 
 class _Test_FixedIvLength_Mixin:
@@ -192,11 +155,7 @@ class _Test_VariableBlockLength_Mixin:
 class _Test_Aes(_TestCipherBase):
 
     def __init__(self, name):
-        super().__init__(name)
-        self.operation = 0
-        self.block_size = 16
-        self.iv_size = 16
-        self.cls = Aes
+        super().__init__(name, cipher=Aes)
 
 
 class Test_Aes_128_ECB(_Test_Aes,
@@ -206,10 +165,8 @@ class Test_Aes_128_ECB(_Test_Aes,
 
     def __init__(self):
         super().__init__(b"AES-128-ECB")
-        self.key_size = 128 // 8
 
     def test_check_against_pycrypto(self):
-        self.cipher._set_enc_key(self.key)
         cipher = pcAES.new(self.key, pcAES.MODE_ECB, self.iv)
         assert_equal(self.cipher.encrypt(self.block),
                      cipher.encrypt(self.block))
@@ -222,7 +179,6 @@ class Test_Aes_192_ECB(_Test_Aes,
 
     def __init__(self):
         super().__init__(b"AES-192-ECB")
-        self.key_size = 192 // 8
 
 
 class Test_Aes_256_ECB(_Test_Aes,
@@ -232,7 +188,6 @@ class Test_Aes_256_ECB(_Test_Aes,
 
     def __init__(self):
         super().__init__(b"AES-256-ECB")
-        self.key_size = 256 // 8
 
 
 class Test_Aes_128_CBC(_Test_Aes,
@@ -242,7 +197,6 @@ class Test_Aes_128_CBC(_Test_Aes,
 
     def __init__(self):
         super().__init__(b"AES-128-CBC")
-        self.key_size = 128 // 8
 
 
 class Test_Aes_128_CFB128(_Test_Aes,
@@ -250,85 +204,81 @@ class Test_Aes_128_CFB128(_Test_Aes,
 
     def __init__(self):
         super().__init__(b"AES-128-CFB128")
-        self.key_size = 128 // 8
 
 
 class Test_Aes_128_CTR(_Test_Aes):
 
     def __init__(self):
         super().__init__(b"AES-128-CTR")
-        self.key_size = 128 // 8
 
 
-class _Test_Aes_128_GCM(_Test_Aes):
-
-    def __init__(self):
-        super().__init__(b"AES-128-GCM")
-        self.key_size = 128 // 8
-
-
-class _Test_Aes_128_CCM(_Test_Aes):
+class Test_Aes_128_GCM(_Test_Aes):
 
     def __init__(self):
         super().__init__(b"AES-128-GCM")
-        self.key_size = 128 // 8
+
+    # We test the accessors here as all three expected values
+    # are different.
+
+    def test_block_size_accessor(self):
+        assert_equal(self.cipher.block_size, 16)
+
+    def test_iv_size_accessor(self):
+        assert_equal(self.cipher.iv_size, 12)
+
+    def test_key_size_accessor(self):
+        assert_equal(self.cipher.key_size, 128 // 8)
+
+    def test_name_accessor(self):
+        assert_equal(self.cipher.name, self.name)
+
+
+class Test_Aes_128_CCM(_Test_Aes):
+
+    def __init__(self):
+        super().__init__(b"AES-128-GCM")
 
 
 class _Test_Camellia(_TestCipherBase):
 
     def __init__(self, name):
-        super().__init__(name)
-        self.operation = 0
-        self.block_size = 16
-        self.iv_size = 16
-        self.cls = Camellia
+        super().__init__(name, cipher=Camellia)
 
 
 class Test_Camellia_128_ECB(_Test_Camellia):
 
     def __init__(self):
         super().__init__(b"CAMELLIA-128-ECB")
-        self.key_size = 128 // 8
 
 
 class Test_Camellia_128_CBC(_Test_Camellia):
 
     def __init__(self):
         super().__init__(b"CAMELLIA-128-CBC")
-        self.key_size = 128 // 8
 
 
 class Test_Camellia_128_CFB128(_Test_Camellia):
 
     def __init__(self):
         super().__init__(b"CAMELLIA-128-CFB128")
-        self.key_size = 128 // 8
 
 
 class Test_Camellia_128_CTR(_Test_Camellia):
 
     def __init__(self):
         super().__init__(b"CAMELLIA-128-CTR")
-        self.key_size = 128 // 8
 
 
 class _Test_Camellia_128_GCM(_Test_Camellia):
 
     def __init__(self):
         super().__init__(b"CAMELLIA-128-GCM")
-        self.iv_size = 12
-        self.key_size = 128 // 8
 
 
 class _Test_Des(_TestCipherBase):
 
     def __init__(self, name):
-        super().__init__(name)
-        self.operation = 0
-        self.block_size = 8
-        self.iv_size = 8
-        self.key_size = 64 // 8
-        self.cls = Des
+        super().__init__(name, Des)
 
 
 class Test_Des_ECB(_Test_Des):
@@ -337,7 +287,6 @@ class Test_Des_ECB(_Test_Des):
         super().__init__(b"DES-ECB")
 
     def test_check_against_pycrypto(self):
-        self.cipher._set_enc_key(self.key)
         cipher = pcDES.new(self.key, pcDES.MODE_ECB, self.iv)
         assert_equal(self.cipher.encrypt(self.block),
                      cipher.encrypt(self.block))
@@ -353,49 +302,40 @@ class Test_Des_EDE_ECB(_Test_Des):
 
     def __init__(self):
         super().__init__(b"DES-EDE-ECB")
-        self.key_size = 16
 
 
 class Test_Des_EDE_CBC(_Test_Des):
 
     def __init__(self):
         super().__init__(b"DES-EDE-CBC")
-        self.key_size = 16
 
 
 class Test_Des_EDE3_ECB(_Test_Des):
 
     def __init__(self):
         super().__init__(b"DES-EDE3-ECB")
-        self.key_size = 24
 
 
 class Test_Des_EDE3_CBC(_Test_Des):
 
     def __init__(self):
         super().__init__(b"DES-EDE3-CBC")
-        self.key_size = 24
 
 
-class Test_Blowfish_ECB(_TestCipherBase):
+class _Test_Blowfish(_TestCipherBase):
 
-    def __init__(self):
-        super().__init__(b"BLOWFISH-ECB")
-        self.operation = 0
-        self.block_size = 8
-        self.iv_size = 8
-        self.key_size = 128 // 8
-        self.cls = Blowfish
+    def __init__(self, name):
+        super().__init__(name, cipher=Blowfish)
 
     @raises(InvalidKeyLengthError)
-    def test_long_dec_key_raises(self):
+    def test_long_key_raises(self):
         key = _rnd(1024)
         cipher = self.cls(self.name, key, self.iv)
         cipher.decrypt(self.block)
 
     @raises(InvalidKeyLengthError)
-    def test_long_enc_key_raises(self):
-        key = _rnd(1024)
+    def test_short_key_raises(self):
+        key = _rnd(32 // 8 - 1)
         cipher = self.cls(self.name, key, self.iv)
         cipher.encrypt(self.block)
 
@@ -413,22 +353,66 @@ class Test_Blowfish_ECB(_TestCipherBase):
         dec = cipher.decrypt(enc)
         assert dec == self.block
 
+
+class Test_Blowfish_ECB(_Test_Blowfish):
+
+    def __init__(self):
+        super().__init__(b"BLOWFISH-ECB")
+
     def test_check_against_pycrypto(self):
-        self.cipher._set_enc_key(self.key)
         cipher = pcBlowfish.new(self.key, pcBlowfish.MODE_ECB, self.iv)
         assert_equal(self.cipher.encrypt(self.block),
                      cipher.encrypt(self.block))
 
 
-class Test_Arc4_128(_TestCipherBase):
+class Test_Blowfish_CBC(_Test_Blowfish):
 
     def __init__(self):
-        super().__init__(b"ARC4-128")
-        self.operation = 0
-        self.block_size = 1
-        self.iv_size = 0
-        self.key_size = 128 // 8
-        self.cls = Arc4
+        super().__init__(b"BLOWFISH-CBC")
+
+
+class Test_Blowfish_CFB64(_Test_Blowfish):
+
+    def __init__(self):
+        super().__init__(b"BLOWFISH-CFB64")
+
+
+class Test_Blowfish_CTR(_Test_Blowfish):
+
+    def __init__(self):
+        super().__init__(b"BLOWFISH-CTR")
+
+
+class _Test_Arc4(_TestCipherBase):
+
+    def __init__(self, name):
+        super().__init__(name, cipher=Arc4)
+
+    @raises(InvalidKeyLengthError)
+    def test_long_key_raises(self):
+        key = _rnd(2048 // 8 + 1)
+        cipher = self.cls(self.name, key, self.iv)
+        cipher.decrypt(self.block)
+
+    @raises(InvalidKeyLengthError)
+    def test_short_key_raises(self):
+        key = _rnd(40 // 8 - 1)
+        cipher = self.cls(self.name, key, self.iv)
+        cipher.encrypt(self.block)
+
+    def test_short_key(self):
+        key = _rnd(40 // 8)  # The shortest possible key.
+        cipher = self.cls(self.name, key, self.iv)
+        enc = cipher.encrypt(self.block)
+        dec = cipher.decrypt(enc)
+        assert dec == self.block
+
+    def test_long_key(self):
+        key = _rnd(2048 // 8)  # The longest possible key.
+        cipher = self.cls(self.name, key, self.iv)
+        enc = cipher.encrypt(self.block)
+        dec = cipher.decrypt(enc)
+        assert dec == self.block
 
     def test_long_block(self):
         block = _rnd(1024)
@@ -436,8 +420,13 @@ class Test_Arc4_128(_TestCipherBase):
         dec = self.cipher.decrypt(enc)
         assert dec == block
 
+
+class Test_Arc4_128(_TestCipherBase):
+
+    def __init__(self):
+        super().__init__(b"ARC4-128", Arc4)
+
     def test_check_against_pycrypto(self):
-        self.cipher._set_enc_key(self.key)
         cipher = pcARC4.new(self.key)
         assert_equal(self.cipher.encrypt(self.block),
                      cipher.encrypt(self.block))
