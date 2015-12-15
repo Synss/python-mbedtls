@@ -9,6 +9,9 @@ debug:
 test:
 	nosetests -v tests
 
+doc:
+	cd docs && make html
+
 clean:
 	$(RM) mbedtls/*.c mbedtls/*.so
 	$(RM) -r build

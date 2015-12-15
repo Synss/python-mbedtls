@@ -10,44 +10,57 @@ cimport ccipher
 from libc.stdlib cimport malloc, free
 import enum
 
+__all__ = ("AllocFailedError",
+           "InvalidKeyLengthError", 
+           "InvalidInputLengthError",
+           "InvalidPaddingError",
+           "FeatureUnavailableError",
+           "BadInputDataError",
+           "FullBlockExpectedError",
+           "AuthFailedError",
+           "UnsupportedCipherError",
+           "Mode",
+           "Aes", "Camellia", "Des", "DesEde", "DesEde3", "Blowfish", "Arc4",
+           )
 
-class ErrorBase(Exception):
+
+class AllocFailedError(MemoryError):
+    """Exception raised when allocation failed."""
+
+
+class _ErrorBase(Exception):
     """Base class for cipher exceptions."""
 
 
-class InvalidKeyLengthError(ErrorBase):
-    pass
+class InvalidKeyLengthError(_ErrorBase):
+    """Raised for invalid key length."""
 
 
-class InvalidInputLengthError(ErrorBase):
-    pass
+class InvalidInputLengthError(_ErrorBase):
+    """Raised for invalid input length."""
 
 
-class FeatureUnavailableError(ErrorBase):
-    pass
+class InvalidPaddingError(_ErrorBase):
+    """Raised for invalid padding."""
 
 
-class BadInputDataError(ErrorBase):
-    pass
+class FeatureUnavailableError(_ErrorBase):
+    """Raised when calling a feature that is not available."""
 
 
-class AllocFailedError(ErrorBase):
-    pass
+class BadInputDataError(_ErrorBase):
+    """Raised for bad input data."""
 
 
-class InvalidPaddingError(ErrorBase):
-    pass
+class FullBlockExpectedError(_ErrorBase):
+    """Raised when encryption expects full blocks."""
 
 
-class FullBlockExpectedError(ErrorBase):
-    pass
+class AuthFailedError(_ErrorBase):
+    """Raised when authentication failed."""
 
 
-class AuthFailedError(ErrorBase):
-    pass
-
-
-class UnsupportedCipherError(ErrorBase):
+class UnsupportedCipherError(_ErrorBase):
     """Raised upon trying to instantiate an unsupported cipher."""
 
 
@@ -120,11 +133,11 @@ cpdef check_error(const int err):
             -0x6200: InvalidPaddingError,
             -0x6280: FullBlockExpectedError,
             -0x6300: AuthFailedError,
-        }.get(err, ErrorBase)()
+        }.get(err, _ErrorBase)()
 
 
 cpdef get_supported_ciphers():
-    """Returns the set of ciphers supported by the generic
+    """Return the set of ciphers supported by the generic
     cipher module.
 
     """
@@ -189,38 +202,55 @@ cdef _c_crypt(ccipher.mbedtls_cipher_context_t* ctx,
 
 
 cdef _c_get_block_size(ccipher.mbedtls_cipher_context_t* ctx):
-    """Returns the block size for the cipher."""
+    """Return the block size for the cipher."""
     return ccipher.mbedtls_cipher_get_block_size(ctx)
 
 
 cdef _c_get_iv_size(ccipher.mbedtls_cipher_context_t* ctx):
-    """Returns the size of the cipher's IV/NONCE in bytes."""
+    """Return the size of the cipher's IV/NONCE in bytes."""
     return ccipher.mbedtls_cipher_get_iv_size(ctx)
 
 
 cdef _c_get_type(ccipher.mbedtls_cipher_context_t* ctx):
-    """Returns the type of the cipher."""
+    """Return the type of the cipher."""
     return ccipher.mbedtls_cipher_get_type(ctx)
 
 
 cdef _c_get_name(ccipher.mbedtls_cipher_context_t* ctx):
-    """Returns the name of the cipher."""
+    """Return the name of the cipher."""
     ret = ccipher.mbedtls_cipher_get_name(ctx)
     return ret if ret is not NULL else b"NONE"
 
 
 cdef _c_get_key_size(ccipher.mbedtls_cipher_context_t* ctx):
-    """Returns the size of the ciphers' key."""
+    """Return the size of the ciphers' key."""
     return ccipher.mbedtls_cipher_get_key_bitlen(ctx) // 8
 
 
 cdef class Cipher:
 
+    """Wrap and encapsulate the cipher library from mbed TLS.
+
+    Parameters:
+        name (bytes): The cipher name known to mbed TLS.
+        key (bytes or None): The key to encrypt decrypt.  If None,
+            encryption and decryption are unavailable.
+        iv (bytes or None): The initialization vector (IV).  The IV is
+            required for every mode but ECB and CTR where it is ignored.
+            If not set, the IV is initialized to all 0, which should not
+            be used for encryption.
+
+        Attributes:
+            block_size (int): The block size for the cipher in bytes.
+            iv_size (int): The size of the cipher's IV/NONCE in bytes.
+            key_size (int): The size of the cipher's key, in bytes.
+
+    """
     # Encapsulate two contexts to push the keys into mbedtls ASAP.
     cdef ccipher.mbedtls_cipher_context_t _enc_ctx
     cdef ccipher.mbedtls_cipher_context_t _dec_ctx
 
-    def __init__(self, cipher_name, key, iv=None):
+    def __init__(self, cipher_name, key, iv):
         # Casting read-only only buffer to typed memoryview fails, so we
         # cast to bytearray.
         self._setup(cipher_name)
@@ -255,29 +285,33 @@ cdef class Cipher:
         _c_set_key(&self._enc_ctx, c_key, ccipher.MBEDTLS_ENCRYPT)
         _c_set_key(&self._dec_ctx, c_key, ccipher.MBEDTLS_DECRYPT)
 
+    def __str__(self):
+        """Return the name of the cipher."""
+        return self._name.decode("ascii")
+
     @property
     def block_size(self):
-        """Returns the block size for the cipher."""
+        """Return the block size for the cipher."""
         return _c_get_block_size(&self._enc_ctx)
 
     @property
     def iv_size(self):
-        """Returns the size of the cipher's IV/NONCE in bytes."""
+        """Return the size of the cipher's IV/NONCE in bytes."""
         return _c_get_iv_size(&self._enc_ctx)
 
     @property
     def _type(self):
-        """Returns the type of the cipher."""
+        """Return the type of the cipher."""
         return _c_get_type(&self._enc_ctx)
 
     @property
-    def name(self):
-        """Returns the name of the cipher."""
+    def _name(self):
+        """Return the name of the cipher."""
         return _c_get_name(&self._enc_ctx)
 
     @property
     def key_size(self):
-        """Returns the size of the ciphers' key."""
+        """Return the size of the ciphers' key."""
         return _c_get_key_size(&self._enc_ctx)
 
     def encrypt(self, message):
@@ -290,28 +324,207 @@ cdef class Cipher:
 @enum.unique
 class Mode(enum.Enum):
 
-    cbc = "CBC"
-    ccm = "CCM"
-    cfb64 = "CFB64"
-    cfb128 = "CFB128"
-    ctr = "CTR"
-    ecb = "ECB"
-    gcm = "GCM"
+    """Enum with supported encryption modes."""
 
-    def __repr__(self):
-        return str(self)
-
-
-class Aes(Cipher): pass
+    CBC = "CBC"
+    CCM = "CCM"
+    CFB64 = "CFB64"
+    CFB128 = "CFB128"
+    CTR = "CTR"
+    ECB = "ECB"
+    GCM = "GCM"
 
 
-class Camellia(Cipher): pass
+class Aes(Cipher):
+
+    """Advanced Encryption Standard (AES) cipher established by the U.S.
+    NIST in 2001.
+
+    Parameters:
+        bitlength (int): The size of the key, in bits.
+        mode (Mode): The mode of operation of the cipher.
+        key (bytes or None): The key to encrypt decrypt.  If None,
+            encryption and decryption are unavailable.
+        iv (bytes or None): The initialization vector (IV).  The IV is
+            required for every mode but ECB and CTR where it is ignored.
+            If not set, the IV is initialized to all 0, which should not
+            be used for encryption.
+
+    Attributes:
+        block_size (int): The block size for the cipher in bytes.
+        iv_size (int): The size of the cipher's IV/NONCE in bytes.
+        key_size (int): The size of the cipher's key, in bytes.
+
+    """
+    def __init__(self, bitlength, mode, key, iv=None):
+        if bitlength not in {128, 192, 256}:
+            raise InvalidKeyLengthError(
+                "bitlength must 128, 192, or 256, got %r" % bitlength)
+        if mode not in {Mode.ECB, Mode.CBC, Mode.CFB128, Mode.CTR,
+                        Mode.GCM, Mode.CCM}:
+            raise FeatureUnavailableError("unsupported mode %r" % mode)
+        name = ("AES-%i-%s" % (bitlength, mode.value)).encode("ascii")
+        super().__init__(name, key, iv)
 
 
-class Des(Cipher): pass
+class Camellia(Cipher):
+
+    """Camellia cipher developed by Japan's Mitsubishi an NTT in 2000.
+
+    Parameters:
+        bitlength (int): The size of the key, in bits.
+        mode (Mode): The mode of operation of the cipher.
+        key (bytes or None): The key to encrypt decrypt.  If None,
+            encryption and decryption are unavailable.
+        iv (bytes or None): The initialization vector (IV).  The IV is
+            required for every mode but ECB and CTR where it is ignored.
+            If not set, the IV is initialized to all 0, which should not
+            be used for encryption.
+
+    Attributes:
+        block_size (int): The block size for the cipher in bytes.
+        iv_size (int): The size of the cipher's IV/NONCE in bytes.
+        key_size (int): The size of the cipher's key, in bytes.
+
+    """
+    def __init__(self, bitlength, mode, key, iv=None):
+        if bitlength not in {128, 192, 256}:
+            raise InvalidKeyLengthError(
+                "bitlength must 128, 192, or 256, got %r" % bitlength)
+        if mode not in {Mode.ECB, Mode.CBC, Mode.CFB128, Mode.CTR,
+                        Mode.GCM, Mode.CCM}:
+            raise FeatureUnavailableError("unsupported mode %r" % mode)
+        name = ("CAMELLIA-%i-%s" % (bitlength, mode.value)).encode("ascii")
+        super().__init__(name, key, iv)
 
 
-class Blowfish(Cipher): pass
+class Des(Cipher):
+
+    """Data Encryption Standard (DES) cipher developed by IBM
+    in the 70's.
+
+    Parameters:
+        mode (Mode): The mode of operation of the cipher.
+        key (bytes or None): The key to encrypt decrypt.  If None,
+            encryption and decryption are unavailable.
+        iv (bytes or None): The initialization vector (IV).  The IV is
+            required for every mode but ECB and CTR where it is ignored.
+            If not set, the IV is initialized to all 0, which should not
+            be used for encryption.
+
+    Attributes:
+        block_size (int): The block size for the cipher in bytes.
+        iv_size (int): The size of the cipher's IV/NONCE in bytes.
+        key_size (int): The size of the cipher's key, in bytes.
+
+    """
+    def __init__(self, mode, key, iv=None):
+        if mode not in {Mode.ECB, Mode.CBC}:
+            raise FeatureUnavailableError("unsupported mode %r" % mode)
+        name = ("DES-%s" % (mode.value,)).encode("ascii")
+        super().__init__(name, key, iv)
 
 
-class Arc4(Cipher): pass
+class DesEde(Cipher):
+
+    """Two-key triple DES cipher (also known as DES3, 3DES, Triple DES,
+    or DES-EDE).
+
+    Parameters:
+        mode (Mode): The mode of operation of the cipher.
+        key (bytes or None): The key to encrypt decrypt.  If None,
+            encryption and decryption are unavailable.
+        iv (bytes or None): The initialization vector (IV).  The IV is
+            required for every mode but ECB and CTR where it is ignored.
+            If not set, the IV is initialized to all 0, which should not
+            be used for encryption.
+
+    Attributes:
+        block_size (int): The block size for the cipher in bytes.
+        iv_size (int): The size of the cipher's IV/NONCE in bytes.
+        key_size (int): The size of the cipher's key, in bytes.
+
+    """
+    def __init__(self, mode, key, iv=None):
+        if mode not in {Mode.ECB, Mode.CBC}:
+            raise FeatureUnavailableError("unsupported mode %r" % mode)
+        name = ("DES-EDE-%s" % (mode.value,)).encode("ascii")
+        super().__init__(name, key, iv)
+
+
+class DesEde3(Cipher):
+
+    """Three-key triple DES cipher (also known as DES3, 3DES,
+    Triple DES, or DES-EDE3).
+
+    Parameters:
+        mode (Mode): The mode of operation of the cipher.
+        key (bytes or None): The key to encrypt decrypt.  If None,
+            encryption and decryption are unavailable.
+        iv (bytes or None): The initialization vector (IV).  The IV is
+            required for every mode but ECB and CTR where it is ignored.
+            If not set, the IV is initialized to all 0, which should not
+            be used for encryption.
+
+    Attributes:
+        block_size (int): The block size for the cipher in bytes.
+        iv_size (int): The size of the cipher's IV/NONCE in bytes.
+        key_size (int): The size of the cipher's key, in bytes.
+
+    """
+    def __init__(self, mode, key, iv=None):
+        if mode not in {Mode.ECB, Mode.CBC}:
+            raise FeatureUnavailableError("unsupported mode %r" % mode)
+        name = ("DES-EDE3-%s" % (mode.value,)).encode("ascii")
+        super().__init__(name, key, iv)
+
+
+class Blowfish(Cipher):
+
+    """Blowfish cipher designed by Bruce Schneier in 1993.
+
+    Parameters:
+        mode (Mode): The mode of operation of the cipher.
+        key (bytes or None): The key to encrypt decrypt.  If None,
+            encryption and decryption are unavailable.
+        iv (bytes or None): The initialization vector (IV).  The IV is
+            required for every mode but ECB and CTR where it is ignored.
+            If not set, the IV is initialized to all 0, which should not
+            be used for encryption.
+
+    Attributes:
+        block_size (int): The block size for the cipher in bytes.
+        iv_size (int): The size of the cipher's IV/NONCE in bytes.
+        key_size (int): The size of the cipher's key, in bytes.
+
+    """
+    def __init__(self, mode, key, iv=None):
+        if mode not in {Mode.ECB, Mode.CBC, Mode.CFB64, Mode.CTR}:
+            raise FeatureUnavailableError("unsupported mode %r" % mode)
+        name = ("BLOWFISH-%s" % (mode.value,)).encode("ascii")
+        super().__init__(name, key, iv)
+
+
+class Arc4(Cipher):
+
+    """Alleged River Cipher 4 cipher (ARC4 or ARCFOUR) designed in 1987
+    at RSA Security.
+
+    Parameters:
+        bitlength (int): The size of the key, in bits.
+        key (bytes or None): The key to encrypt decrypt.  If None,
+            encryption and decryption are unavailable.
+        iv (None): ARC4 does not use IV.
+
+    Attributes:
+        block_size (int): The block size for the cipher in bytes.
+        iv_size (int): The size of the cipher's IV/NONCE in bytes.
+        key_size (int): The size of the cipher's key, in bytes.
+
+    """
+    def __init__(self, bitlength, key, iv=None):
+        if bitlength not in {128}:
+            raise InvalidKeyLengthError(
+                "bitlength must be 128, got %r" % bitlength)
+        name = ("ARC4-%i" % (bitlength,)).encode("ascii")
+        super().__init__(name, key, iv)
