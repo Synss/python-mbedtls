@@ -1,5 +1,4 @@
 from setuptools import setup, Extension
-from Cython.Build import cythonize
 
 
 version = "0.1"
@@ -23,7 +22,7 @@ setup(
     license="Apache 2.0 License",
     url="https://synss.github.io/python-mbedtls",
     download_url=download_url,
-    ext_modules=cythonize(extensions),
+    ext_modules=extensions,
     setup_requires=setup_requires,
     classifiers=[
         "Development Status :: 3 - Alpha",
