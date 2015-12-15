@@ -58,6 +58,3 @@ docs/_build/
 
 # PyBuilder
 target/
-
-# Autoenv
-.env
