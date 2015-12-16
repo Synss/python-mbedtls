@@ -20,6 +20,7 @@ from Crypto.Cipher import DES as pcDES
 from mbedtls.cipher import *
 from mbedtls.cipher import CIPHER_NAME, get_supported_ciphers
 from mbedtls.cipher import Cipher
+from mbedtls.exceptions import *
 # pylint: enable=import-error
 
 
