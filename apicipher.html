@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>mbedtls.cipher Module API &mdash; python-mbedtls 0.1 documentation</title>
+    <title>mbedtls.cipher Module API &mdash; python-mbedtls 0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,8 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-mbedtls 0.1 documentation" href="index.html" />
-    <link rel="prev" title="Python wrapper to mbed TLS" href="readme.html" />
+    <link rel="top" title="python-mbedtls 0.2 documentation" href="index.html" />
+    <link rel="next" title="mbedtls.md Module API" href="apimd.html" />
+    <link rel="prev" title="Python wrapper to mbed TLS" href="index.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -40,60 +41,6 @@
   <div class="section" id="module-mbedtls.cipher">
 <span id="mbedtls-cipher-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.cipher" title="mbedtls.cipher"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.cipher" title="Permalink to this headline">¶</a></h1>
 <p>Ciphers for symmetric encryption and decryption.</p>
-<dl class="exception">
-<dt id="mbedtls.cipher.AllocFailedError">
-<em class="property">exception </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">AllocFailedError</code><a class="headerlink" href="#mbedtls.cipher.AllocFailedError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exception raised when allocation failed.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="mbedtls.cipher.InvalidKeyLengthError">
-<em class="property">exception </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">InvalidKeyLengthError</code><a class="headerlink" href="#mbedtls.cipher.InvalidKeyLengthError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised for invalid key length.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="mbedtls.cipher.InvalidInputLengthError">
-<em class="property">exception </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">InvalidInputLengthError</code><a class="headerlink" href="#mbedtls.cipher.InvalidInputLengthError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised for invalid input length.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="mbedtls.cipher.InvalidPaddingError">
-<em class="property">exception </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">InvalidPaddingError</code><a class="headerlink" href="#mbedtls.cipher.InvalidPaddingError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised for invalid padding.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="mbedtls.cipher.FeatureUnavailableError">
-<em class="property">exception </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">FeatureUnavailableError</code><a class="headerlink" href="#mbedtls.cipher.FeatureUnavailableError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when calling a feature that is not available.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="mbedtls.cipher.BadInputDataError">
-<em class="property">exception </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">BadInputDataError</code><a class="headerlink" href="#mbedtls.cipher.BadInputDataError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised for bad input data.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="mbedtls.cipher.FullBlockExpectedError">
-<em class="property">exception </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">FullBlockExpectedError</code><a class="headerlink" href="#mbedtls.cipher.FullBlockExpectedError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when encryption expects full blocks.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="mbedtls.cipher.AuthFailedError">
-<em class="property">exception </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">AuthFailedError</code><a class="headerlink" href="#mbedtls.cipher.AuthFailedError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when authentication failed.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="mbedtls.cipher.UnsupportedCipherError">
-<em class="property">exception </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">UnsupportedCipherError</code><a class="headerlink" href="#mbedtls.cipher.UnsupportedCipherError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised upon trying to instantiate an unsupported cipher.</p>
-</dd></dl>
-
 <dl class="class">
 <dt id="mbedtls.cipher.Mode">
 <em class="property">class </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">Mode</code><a class="headerlink" href="#mbedtls.cipher.Mode" title="Permalink to this definition">¶</a></dt>
@@ -402,7 +349,8 @@ encryption and decryption are unavailable.</li>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="readme.html" title="previous chapter">Python wrapper to mbed TLS</a></li>
+      <li>Previous: <a href="index.html" title="previous chapter">Python wrapper to mbed TLS</a></li>
+      <li>Next: <a href="apimd.html" title="next chapter"><code class="docutils literal"><span class="pre">mbedtls.md</span></code> Module API</a></li>
   </ul></li>
 </ul>
 </div>

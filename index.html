@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to python-mbedtls’s documentation! &mdash; python-mbedtls 0.1 documentation</title>
+    <title>Python wrapper to mbed TLS &mdash; python-mbedtls 0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-mbedtls 0.1 documentation" href="#" />
-    <link rel="next" title="Python wrapper to mbed TLS" href="readme.html" />
+    <link rel="top" title="python-mbedtls 0.2 documentation" href="#" />
+    <link rel="next" title="mbedtls.cipher Module API" href="apicipher.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -37,29 +37,101 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-python-mbedtls-s-documentation">
-<h1>Welcome to python-mbedtls&#8217;s documentation!<a class="headerlink" href="#welcome-to-python-mbedtls-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Contents:</p>
+  <div class="section" id="python-wrapper-to-mbed-tls">
+<h1>Python wrapper to mbed TLS<a class="headerlink" href="#python-wrapper-to-mbed-tls" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://synss.github.io/python-mbedtls">python-mbedtls</a> is a thin wrapper to ARM&#8217;s mbed TLS library.</p>
+<p>According to the <a class="reference external" href="https://tls.mbed.org">official mbed TLS website</a></p>
+<blockquote>
+<div>mbed TLS (formerly known as PolarSSL) makes it trivially easy for
+developers to include cryptographic and SSL/TLS capabilities in their
+(embedded) products, facilitating this functionality with a minimal
+coding footprint.</div></blockquote>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p><cite>python-mbedtls</cite> is licensed under the Apache 2.0 license in order to be fully
+compatible with mbed TLS.  The Apache 2.0 license enables the use of
+<cite>python-mbedtls</cite> in both open source and closed source projects.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The wrapper is currently developed and tested on Debian Jessie and targets
+Python 3.4.  It probably works with earlier Python releases although this was
+not tested.</p>
+<div class="section" id="mbed-tls">
+<h3>mbed TLS<a class="headerlink" href="#mbed-tls" title="Permalink to this headline">¶</a></h3>
+<p><cite>python-mbedtls</cite> requires the mbed TLS library that can be installed
+with:</p>
+<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/ARMmbed/mbedtls.git mbedtls.git
+cd mbedtls.git
+SHARED=1 make no_test
+sudo make install
+</pre></div>
+</div>
+</div>
+<div class="section" id="id1">
+<h3>python-mbedtls<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Building <cite>python-mbedtls</cite> requires Cython:</p>
+<div class="highlight-python"><div class="highlight"><pre>python3 -m pip install cython
+</pre></div>
+</div>
+<p>then,</p>
+<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/Synss/python-mbedtls.git python-mbedtls.git
+cd python-mbedtls.git
+python3 setup.py build_ext
+</pre></div>
+</div>
+<p>The unit tests further require <cite>nose</cite> and <cite>pyCrypto</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>python3 -m pip install nose pycrypto
+nosetests -v tests
+</pre></div>
+</div>
+</div>
+<div class="section" id="hashing-module-md-h">
+<h3>Hashing module (<cite>md.h</cite>)<a class="headerlink" href="#hashing-module-md-h" title="Permalink to this headline">¶</a></h3>
+<p>The hashing module is wrapped, which provides message, file, and HMAC
+with the following algorithms: MD5, SHA-1, SHA-2, and RIPEMD-160.</p>
+</div>
+<div class="section" id="symmetric-cipher-module-cipher-h">
+<h3>Symmetric cipher module (<cite>cipher.h</cite>)<a class="headerlink" href="#symmetric-cipher-module-cipher-h" title="Permalink to this headline">¶</a></h3>
+<p>The symmetric cipher module is wrapped, which provides:</p>
+<ul class="simple">
+<li>Aes encryption/decryption (128, 192, and 256 bits) in ECB, CBC, CFB128,
+CTR, GCM, or CCM mode;</li>
+<li>Arc4 encryption/decryption;</li>
+<li>Blowfish encryption/decryption in ECB, CBC, CFB64, or CTR mode;</li>
+<li>Camellia encryption/decryption (128, 192, and 256 bits) in ECB, CBC,
+CFB128, CTR, GCM, or CCM mode;</li>
+<li>DES encryption/decryption in ECB, or CBC mode;</li>
+</ul>
+<dl class="docutils">
+<dt>Notes:</dt>
+<dd>Tagging and padding are not wrapped.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="contribution">
+<h2>Contribution<a class="headerlink" href="#contribution" title="Permalink to this headline">¶</a></h2>
+<p><cite>python-mbedtls</cite> is in an early stage of development and contributions
+in any form is welcome.  Note, however, that bugs against mbed TLS
+should be reported upstream directly.</p>
+</div>
+<div class="section" id="api-documentation">
+<h2>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="readme.html">Python wrapper to mbed TLS</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#license">License</a></li>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#api-documentation">API documentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#contribution">Contribution</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html"><code class="docutils literal"><span class="pre">mbedtls.cipher</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="docutils literal"><span class="pre">mbedtls.md</span></code> Module API</a></li>
 </ul>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
 <li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
 <li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
 </ul>
+</div>
 </div>
 
 
@@ -70,14 +142,26 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to python-mbedtls&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#">Python wrapper to mbed TLS</a><ul>
+<li><a class="reference internal" href="#license">License</a></li>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#mbed-tls">mbed TLS</a></li>
+<li><a class="reference internal" href="#id1">python-mbedtls</a></li>
+<li><a class="reference internal" href="#hashing-module-md-h">Hashing module (<cite>md.h</cite>)</a></li>
+<li><a class="reference internal" href="#symmetric-cipher-module-cipher-h">Symmetric cipher module (<cite>cipher.h</cite>)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#contribution">Contribution</a></li>
+<li><a class="reference internal" href="#api-documentation">API documentation</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="readme.html" title="next chapter">Python wrapper to mbed TLS</a></li>
+      <li>Next: <a href="apicipher.html" title="next chapter"><code class="docutils literal"><span class="pre">mbedtls.cipher</span></code> Module API</a></li>
   </ul></li>
 </ul>
 </div>
