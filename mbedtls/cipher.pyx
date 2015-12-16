@@ -8,60 +8,11 @@ __license__ = "Apache License 2.0"
 
 cimport ccipher
 from libc.stdlib cimport malloc, free
+from mbedtls.exceptions import *
 import enum
 
-__all__ = ("AllocFailedError",
-           "InvalidKeyLengthError", 
-           "InvalidInputLengthError",
-           "InvalidPaddingError",
-           "FeatureUnavailableError",
-           "BadInputDataError",
-           "FullBlockExpectedError",
-           "AuthFailedError",
-           "UnsupportedCipherError",
-           "Mode",
-           "Aes", "Camellia", "Des", "DesEde", "DesEde3", "Blowfish", "Arc4",
-           )
-
-
-class AllocFailedError(MemoryError):
-    """Exception raised when allocation failed."""
-
-
-class _ErrorBase(Exception):
-    """Base class for cipher exceptions."""
-
-
-class InvalidKeyLengthError(_ErrorBase):
-    """Raised for invalid key length."""
-
-
-class InvalidInputLengthError(_ErrorBase):
-    """Raised for invalid input length."""
-
-
-class InvalidPaddingError(_ErrorBase):
-    """Raised for invalid padding."""
-
-
-class FeatureUnavailableError(_ErrorBase):
-    """Raised when calling a feature that is not available."""
-
-
-class BadInputDataError(_ErrorBase):
-    """Raised for bad input data."""
-
-
-class FullBlockExpectedError(_ErrorBase):
-    """Raised when encryption expects full blocks."""
-
-
-class AuthFailedError(_ErrorBase):
-    """Raised when authentication failed."""
-
-
-class UnsupportedCipherError(_ErrorBase):
-    """Raised upon trying to instantiate an unsupported cipher."""
+__all__ = ("Mode", "Aes", "Camellia", "Des", "DesEde", "DesEde3",
+           "Blowfish", "Arc4")
 
 
 CIPHER_NAME = (
@@ -118,24 +69,6 @@ CIPHER_NAME = (
 )
 
 
-cpdef check_error(const int err):
-    if not err:
-        return
-    else:
-        raise {
-            # Blowfish-specific
-            -0x0016: InvalidKeyLengthError,
-            -0x0018: InvalidInputLengthError,
-            # Common errors
-            -0x6080: FeatureUnavailableError,
-            -0x6100: BadInputDataError,
-            -0x6180: AllocFailedError,
-            -0x6200: InvalidPaddingError,
-            -0x6280: FullBlockExpectedError,
-            -0x6300: AuthFailedError,
-        }.get(err, _ErrorBase)()
-
-
 cpdef get_supported_ciphers():
     """Return the set of ciphers supported by the generic
     cipher module.
@@ -161,17 +94,16 @@ cdef _c_setup(ccipher.mbedtls_cipher_context_t* ctx,
     appropriate values.
 
     """
-    check_error(ccipher.mbedtls_cipher_setup(
-        ctx, ccipher.mbedtls_cipher_info_from_string(&cipher_name[0])))
+    return ccipher.mbedtls_cipher_setup(
+        ctx, ccipher.mbedtls_cipher_info_from_string(&cipher_name[0]))
 
 
 cdef _c_set_key(ccipher.mbedtls_cipher_context_t* ctx,
                 unsigned char[:] c_key,
                 ccipher.mbedtls_operation_t operation):
     """Set the key to use with the given context."""
-    cdef int err = ccipher.mbedtls_cipher_setkey(
-        ctx, &c_key[0], 8 * c_key.shape[0], operation)
-    check_error(err)
+    return ccipher.mbedtls_cipher_setkey(ctx, &c_key[0], 8 * c_key.shape[0],
+                                         operation)
 
 
 cdef _c_crypt(ccipher.mbedtls_cipher_context_t* ctx,
@@ -187,13 +119,15 @@ cdef _c_crypt(ccipher.mbedtls_cipher_context_t* ctx,
     cdef size_t sz = c_input.shape[0] + _c_get_block_size(ctx)
     cdef unsigned char* output = <unsigned char*>malloc(
         sz * sizeof(unsigned char))
-    cdef int err
     if not output:
         raise MemoryError()
+    cdef int err
     try:
         err = ccipher.mbedtls_cipher_crypt(
             ctx, &c_iv[0], c_iv.shape[0],
             &c_input[0], c_input.shape[0], output, &olen)
+        # We can call `check_error` directly here because we return a
+        # python object.
         check_error(err)
         # The list comprehension is required.
         return bytes([output[n] for n in range(olen)])
@@ -272,8 +206,8 @@ cdef class Cipher:
         if cipher_name not in get_supported_ciphers():
             raise UnsupportedCipherError("unsupported cipher: %r" % cipher_name)
         cdef char[:] c_cipher_name = bytearray(cipher_name)
-        _c_setup(&self._enc_ctx, c_cipher_name)
-        _c_setup(&self._dec_ctx, c_cipher_name)
+        check_error(_c_setup(&self._enc_ctx, c_cipher_name))
+        check_error(_c_setup(&self._dec_ctx, c_cipher_name))
 
     cpdef _setkey(self, key):
         """Set the encryption/decryption key."""
@@ -282,8 +216,8 @@ cdef class Cipher:
         # Casting read-only only buffer to typed memoryview fails, so we
         # cast to bytearray.
         c_key = bytearray(key)
-        _c_set_key(&self._enc_ctx, c_key, ccipher.MBEDTLS_ENCRYPT)
-        _c_set_key(&self._dec_ctx, c_key, ccipher.MBEDTLS_DECRYPT)
+        check_error(_c_set_key(&self._enc_ctx, c_key, ccipher.MBEDTLS_ENCRYPT))
+        check_error(_c_set_key(&self._dec_ctx, c_key, ccipher.MBEDTLS_DECRYPT))
 
     def __str__(self):
         """Return the name of the cipher."""

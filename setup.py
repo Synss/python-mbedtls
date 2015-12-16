@@ -7,6 +7,7 @@ download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
 
 
 extensions = [
+    Extension("mbedtls.exceptions", ["mbedtls/exceptions.pyx"]),
     Extension("mbedtls.cipher", ["mbedtls/cipher.pyx"],
               libraries=["mbedtls"],
               ),
