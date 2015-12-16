@@ -67,6 +67,11 @@ cpdef check_error(const int err):
             # Blowfish-specific
             -0x0016: InvalidKeyLengthError,
             -0x0018: InvalidInputLengthError,
+            # MD errors
+            -0x5080: FeatureUnavailableError,
+            -0x5100: BadInputDataError,
+            -0x5180: AllocFailedError,
+            -0x5200: IOError,
             # Cipher errors
             -0x6080: FeatureUnavailableError,
             -0x6100: BadInputDataError,
