@@ -5,16 +5,12 @@
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=invalid-name
 
+from functools import partial
 import random
 
 from nose.plugins.skip import SkipTest
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_raises
 from nose.tools import raises
-
-from Crypto.Cipher import AES as pcAES
-from Crypto.Cipher import ARC4 as pcARC4
-from Crypto.Cipher import Blowfish as pcBlowfish
-from Crypto.Cipher import DES as pcDES
 
 # pylint: disable=import-error
 from mbedtls.cipher import *
@@ -84,347 +80,214 @@ def test_zero_length_raises_unsupported_cipher():
     Cipher(b"", b"", b"")
 
 
-class _TestCipherBase:
-
-    """Test functions common to all ciphers."""
-
-    def __init__(self, cipher, *args):
-        self.args = args
-        self.cls = cipher
-
-    def setup(self):
-        _cipher = self.cls(*self.args, key=None, iv=None)
-        self.block = _rnd(_cipher.block_size)
-        self.iv = _rnd(_cipher.iv_size)
-        self.key = _rnd(_cipher.key_size)
-        self.cipher = self.cls(*self.args, key=self.key, iv=self.iv)
-
-    def test_encrypt_decrypt(self):
-        assert_equal(self.cipher.decrypt(self.cipher.encrypt(self.block)),
-                     self.block)
-
-
-class _Test_FixedKeyLength_Mixin:
-
-    @raises(BadInputDataError)
-    def test_long_enc_key_raises(self):
-        self.cls(*self.args, key=self.key + _rnd(1), iv=self.iv)
-
-    @raises(BadInputDataError)
-    def test_short_enc_key_raises(self):
-        self.cls(*self.args, key=self.key[1:], iv=self.iv)
-
-
-class _Test_FixedIvLength_Mixin:
-    # IV is ignored in ECB and CTR modes.
-
-    @raises(FeatureUnavailableError)
-    def test_long_iv_raises(self):
-        self.cls(*self.args, key=self.key, iv=self.iv + b"\x00")
-
-    @raises(BadInputDataError)
-    def test_short_iv_raises(self):
-        if not self.iv_size <= 1:
-            raise SkipTest("test invalid in this context")
-        self.cls(*self.args, key=self.key, iv=self.iv[1:])
-
-
-class _Test_FixedBlockLength_Mixin:
-
-    @raises(FullBlockExpectedError)
-    def test_long_block_raises(self):
-        self.cipher.encrypt(self.block + b"\x00")
-
-    @raises(FullBlockExpectedError)
-    def test_short_block_raises(self):
-        self.cipher.encrypt(self.block[1:])
-
-
-class _Test_VariableBlockLength_Mixin:
-
-    def test_long_block(self):
-        block = self.block + _rnd(1)
-        enc = self.cipher.encrypt(block)
-        dec = self.cipher.decrypt(enc)
-        assert_equal(dec, block)
-
-    def test_short_block(self):
-        block = self.block[1:]
-        enc = self.cipher.encrypt(block)
-        dec = self.cipher.decrypt(enc)
-        assert_equal(dec, block)
-
-
-class _Test_Aes(_TestCipherBase):
-
-    def __init__(self, bitlength, mode):
-        super().__init__(Aes, bitlength, mode)
-
-
-class Test_Aes_128_ECB(_Test_Aes,
-                       _Test_FixedKeyLength_Mixin,
-                       _Test_FixedBlockLength_Mixin,
-                       ):
-
-    def __init__(self):
-        super().__init__(128, Mode.ECB)
-
-    def test_check_against_pycrypto(self):
-        cipher = pcAES.new(self.key, pcAES.MODE_ECB, self.iv)
-        assert_equal(self.cipher.encrypt(self.block),
-                     cipher.encrypt(self.block))
-
-
-class Test_Aes_192_ECB(_Test_Aes,
-                       _Test_FixedKeyLength_Mixin,
-                       _Test_FixedBlockLength_Mixin,
-                       ):
-
-    def __init__(self):
-        super().__init__(128, Mode.ECB)
-
-
-class Test_Aes_256_ECB(_Test_Aes,
-                       _Test_FixedKeyLength_Mixin,
-                       _Test_FixedBlockLength_Mixin,
-                       ):
-
-    def __init__(self):
-        super().__init__(256, Mode.ECB)
-
-
-class Test_Aes_128_CBC(_Test_Aes,
-                       _Test_FixedKeyLength_Mixin,
-                       _Test_VariableBlockLength_Mixin,
-                       ):
-
-    def __init__(self):
-        super().__init__(128, Mode.CBC)
-
-
-class Test_Aes_128_CFB128(_Test_Aes,
-                          ):
-
-    def __init__(self):
-        super().__init__(128, Mode.CFB128)
-
-
-class Test_Aes_128_CTR(_Test_Aes):
-
-    def __init__(self):
-        super().__init__(128, Mode.CTR)
-
-
-class Test_Aes_128_GCM(_Test_Aes):
-
-    def __init__(self):
-        super().__init__(128, Mode.GCM)
-
-    # We test the accessors here as all three expected values
-    # are different.
-
-    def test_block_size_accessor(self):
-        assert_equal(self.cipher.block_size, 16)
-
-    def test_iv_size_accessor(self):
-        assert_equal(self.cipher.iv_size, 12)
-
-    def test_key_size_accessor(self):
-        assert_equal(self.cipher.key_size, 128 // 8)
-
-    def test_name_accessor(self):
-        assert_equal(self.cipher._name, b"AES-128-GCM")
-
-
-class _Test_Aes_128_CCM(_Test_Aes):
-
-    def __init__(self):
-        super().__init__(128, Mode.CCM)
-
-
-class _Test_Camellia(_TestCipherBase):
-
-    def __init__(self, bitlength, mode):
-        super().__init__(Camellia, bitlength, mode)
-
-
-class Test_Camellia_128_ECB(_Test_Camellia):
-
-    def __init__(self):
-        super().__init__(128, Mode.ECB)
-
-
-class Test_Camellia_128_CBC(_Test_Camellia):
-
-    def __init__(self):
-        super().__init__(128, Mode.CBC)
-
-
-class Test_Camellia_128_CFB128(_Test_Camellia):
-
-    def __init__(self):
-        super().__init__(128, Mode.CFB128)
-
-
-class Test_Camellia_128_CTR(_Test_Camellia):
-
-    def __init__(self):
-        super().__init__(128, Mode.CTR)
-
-
-class Test_Camellia_128_GCM(_Test_Camellia):
-
-    def __init__(self):
-        super().__init__(128, Mode.GCM)
-
-
-class _Test_Camellia_128_CCM(_Test_Camellia):
-
-    def __init__(self):
-        super().__init__(128, Mode.CCM)
-
-
-class _Test_DES(_TestCipherBase):
-
-    def __init__(self, mode):
-        super().__init__(Des, mode)
-
-
-class Test_DES_ECB(_Test_DES):
-
-    def __init__(self):
-        super().__init__(Mode.ECB)
-
-    def test_check_against_pycrypto(self):
-        cipher = pcDES.new(self.key, pcDES.MODE_ECB, self.iv)
-        assert_equal(self.cipher.encrypt(self.block),
-                     cipher.encrypt(self.block))
-
-
-class Test_DES_CBC(_Test_DES):
-
-    def __init__(self):
-        super().__init__(Mode.CBC)
-
-
-class _Test_DES_EDE(_TestCipherBase):
-
-    def __init__(self, mode):
-        super().__init__(DesEde, mode)
-
-
-class Test_DES_EDE_ECB(_Test_DES_EDE):
-
-    def __init__(self):
-        super().__init__(Mode.ECB)
-
-
-class Test_DES_EDE_CBC(_Test_DES_EDE):
-
-    def __init__(self):
-        super().__init__(Mode.CBC)
-
-
-class _Test_DES_EDE3(_TestCipherBase):
-
-    def __init__(self, mode):
-        super().__init__(DesEde3, mode)
-
-
-class Test_DES_EDE3_ECB(_Test_DES_EDE3):
-
-    def __init__(self):
-        super().__init__(Mode.ECB)
-
-
-class Test_DES_EDE3_CBC(_Test_DES_EDE3):
-
-    def __init__(self):
-        super().__init__(Mode.CBC)
-
-
-class _Test_Blowfish(_TestCipherBase):
-
-    def __init__(self, mode):
-        super().__init__(Blowfish, mode)
-
-    @raises(InvalidKeyLengthError)
-    def test_long_key_raises(self):
-        key = _rnd(1024)
-        cipher = self.cls(*self.args, key=key, iv=self.iv)
-        cipher.decrypt(self.block)
-
-    @raises(InvalidKeyLengthError)
-    def test_short_key_raises(self):
-        key = _rnd(32 // 8 - 1)
-        cipher = self.cls(*self.args, key=key, iv=self.iv)
-        cipher.encrypt(self.block)
-
-    def test_short_key(self):
-        key = _rnd(32 // 8)  # The shortest possible key.
-        cipher = self.cls(*self.args, key=key, iv=self.iv)
-        enc = cipher.encrypt(self.block)
-        dec = cipher.decrypt(enc)
-        assert dec == self.block
-
-    def test_long_key(self):
-        key = _rnd(448 // 8)  # The longest possible key.
-        cipher = self.cls(*self.args, key=key, iv=self.iv)
-        enc = cipher.encrypt(self.block)
-        dec = cipher.decrypt(enc)
-        assert dec == self.block
-
-
-class Test_Blowfish_ECB(_Test_Blowfish):
-
-    def __init__(self):
-        super().__init__(Mode.ECB)
-
-    def test_check_against_pycrypto(self):
-        cipher = pcBlowfish.new(self.key, pcBlowfish.MODE_ECB, self.iv)
-        assert_equal(self.cipher.encrypt(self.block),
-                     cipher.encrypt(self.block))
-
-
-class Test_Blowfish_CBC(_Test_Blowfish):
-
-    def __init__(self):
-        super().__init__(Mode.CBC)
-
-
-class Test_Blowfish_CFB64(_Test_Blowfish):
-
-    def __init__(self):
-        super().__init__(Mode.CFB64)
-
-
-class Test_Blowfish_CTR(_Test_Blowfish):
-
-    def __init__(self):
-        super().__init__(Mode.CTR)
-
-
-class _Test_Arc4(_TestCipherBase):
-
-    def __init__(self, bitlength):
-        super().__init__(Arc4, bitlength)
-
-    def test_long_block(self):
-        block = _rnd(1024)
-        enc = self.cipher.encrypt(block)
-        dec = self.cipher.decrypt(enc)
-        assert dec == block
-
-
-class Test_Arc4_128(_Test_Arc4):
-
-    def __init__(self):
-        super().__init__(128)
-
-    def setup(self):
-        super().setup()
-
-    def test_check_against_pycrypto(self):
-        cipher = pcARC4.new(self.key)
-        assert_equal(self.cipher.encrypt(self.block),
-                     cipher.encrypt(self.block))
+def setup_cipher(name):
+    cipher = Cipher(name, key=None, iv=None)
+    key = _rnd(cipher.key_size)
+    iv = _rnd(cipher.iv_size)
+    block = _rnd(cipher.block_size)
+    return key, iv, block
+
+
+def get_ciphers():
+    return (name for name in sorted(get_supported_ciphers())
+            if not name.endswith(b"CCM"))  # Not compiled by default.
+
+
+def is_streaming(cipher):
+    return cipher.name.startswith(b"ARC") or cipher.mode not in {Mode.ECB}
+
+
+def skip_mode(mode):
+    raise SkipTest("Skip %s mode" % mode.name)
+
+
+def skip_test(message):
+    raise SkipTest(message)
+skip_test.__test__ = False
+
+
+def fail_test(message):
+    assert False, message
+fail_test.__test__ = False
+
+
+def check_encrypt_decrypt(cipher, block):
+    assert_equal(cipher.decrypt(cipher.encrypt(block)), block)
+
+
+def test_encrypt_decrypt():
+
+    for name in get_ciphers():
+        description = "check_encrypt_decrypt(%s)" % name.decode()
+        key, iv, block = setup_cipher(name)
+        cipher = Cipher(name, key=key, iv=iv)
+        test = partial(check_encrypt_decrypt, cipher, block)
+        test.description = description
+        yield test
+
+
+def test_check_against_pycrypto():
+    try:
+        import Crypto.Cipher as pc
+        # We must import the following to have them in scope.
+        # pylint: disable=unused-import
+        from Crypto.Cipher import AES
+        from Crypto.Cipher import ARC4
+        from Crypto.Cipher import Blowfish
+        from Crypto.Cipher import DES
+        from Crypto.Cipher import DES3
+        # pylint: enable=unused-import
+    except ImportError as exc:
+        raise SkipTest(str(exc))
+
+    MODE_LOOKUP = {
+        Mode.ECB: pc.blockalgo.MODE_ECB,
+        Mode.CBC: pc.blockalgo.MODE_CBC,
+        Mode.CFB: pc.blockalgo.MODE_CFB,
+        Mode.CTR: pc.blockalgo.MODE_CTR,
+    }
+
+    def check_against_pycrypto(cipher, ref, block):
+        assert_equal(cipher.encrypt(block), ref.encrypt(block))
+
+    for name in get_ciphers():
+        description = "check_against_pycrypto(%s)" % name.decode()
+        key, iv, block = setup_cipher(name)
+        cipher = Cipher(name, key=key, iv=iv)
+        if cipher.mode in {Mode.CTR, Mode.CFB}:
+            # Counter actually requires the counter.
+            skip_mode.description = description
+            yield skip_mode, cipher.mode
+            continue
+
+        try:
+            pc_mode = MODE_LOOKUP[cipher.mode]
+        except KeyError:
+            skip_test.description = description
+            yield skip_test, ("mode %s no available in pyCrypto" %
+                              cipher.mode.name)
+            continue
+
+        try:
+            if name.startswith(b"AES"):
+                ref = pc.AES.new(key, pc_mode, iv)
+            elif name.startswith(b"ARC4"):
+                ref = pc.ARC4.new(key)
+            elif name.startswith(b"BLOWFISH"):
+                ref = pc.Blowfish.new(key, pc_mode, iv)
+            elif name.startswith(b"DES-EDE"):
+                # Must precede DES.
+                ref = pc.DES3.new(key, pc_mode, iv)
+            elif name.startswith(b"DES"):
+                ref = pc.DES.new(key, pc_mode, iv)
+            else:
+                skip_test.description = description
+                yield skip_test, "%s not available in pyCrypto" % cipher
+                continue
+        except ValueError as exc:
+            # Catch exceptions from pyCrypto.
+            fail_test.description = description
+            yield fail_test, str(exc)
+            continue
+
+        # Use partial to avoid late binding in report.
+        if cipher.mode is Mode.CBC:
+            # mbed TLS adds a block to CBC (probably due to padding) so
+            # that pyCrypto returns one block less.
+            test = partial(assert_equal, cipher.encrypt(block)[:len(block)],
+                           ref.encrypt(block))
+        else:
+            test = partial(assert_equal, cipher.encrypt(block),
+                           ref.encrypt(block))
+        test.description = description
+        yield test
+
+
+def test_check_against_openssl():
+    from binascii import hexlify
+    from subprocess import PIPE, Popen
+
+    CIPHER_LOOKUP = {
+        b"AES-128-CFB128": "aes-128-cfb",
+        b"AES-192-CFB128": "aes-192-cfb",
+        b"AES-256-CFB128": "aes-256-cfb",
+        b"CAMELLIA-128-CFB128": "camellia-128-cfb",
+        b"CAMELLIA-192-CFB128": "camellia-192-cfb",
+        b"CAMELLIA-256-CFB128": "camellia-256-cfb",
+        b"BLOWFISH-ECB": "bf-ecb",
+        b"BLOWFISH-CBC": "bf-cbc",
+        b"BLOWFISH-CFB64": "bf-cfb",
+        b"ARC4-128": "rc4",
+    }
+
+    for name in get_ciphers():
+        description = "check_against_openssl(%s)" % name.decode()
+        key, iv, block = setup_cipher(name)
+        cipher = Cipher(name, key=key, iv=iv)
+        if cipher.mode in {Mode.GCM}:
+            skip_mode.description = description
+            yield skip_mode, cipher.mode
+            continue
+        if cipher.name in {b"ARC4-128", b"DES-EDE3-ECB", b"DES-EDE-ECB",
+                           b"CAMELLIA-256-ECB",
+                           b"CAMELLIA-128-CTR", b"CAMELLIA-192-CTR",
+                           b"CAMELLIA-256-CTR",
+                           b"BLOWFISH-CTR",
+                           }:
+            yield skip_test, "%s not available in openssl" % cipher
+            continue
+
+        openssl_cipher = CIPHER_LOOKUP.get(
+            cipher.name, cipher.name.decode("ascii").lower())
+
+        openssl = Popen(("openssl enc -%s -K %s -iv %s -nosalt" % (
+            openssl_cipher,
+            hexlify(key).decode("ascii"),
+            hexlify(iv).decode("ascii")) +
+            (" -nopad" if cipher.mode is Mode.ECB else "")
+        ).split(),
+            stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        out, err = openssl.communicate(input=block)
+        if err:
+            fail_test.description = description
+            yield fail_test, ":".join((str(cipher), openssl_cipher,
+                                       err.decode().splitlines()[0]))
+            continue
+
+        test = partial(assert_equal, cipher.encrypt(block), out)
+        test.description = description
+        yield test
+
+
+def test_streaming_ciphers():
+    for name in get_ciphers():
+        description = "check_stream_cipher(%s)" % name.decode()
+        key, iv, block = setup_cipher(name)
+        cipher = Cipher(name, key=key, iv=iv)
+        if is_streaming(cipher):
+            block = _rnd(20000)
+            check_encrypt_decrypt.description = description
+            yield check_encrypt_decrypt, cipher, block
+
+
+def test_fixed_block_size_ciphers():
+
+    def check_encrypt_raises(cipher, block, exc):
+        with assert_raises(exc):
+            cipher.encrypt(block)
+
+    for name in get_ciphers():
+        key, iv, block = setup_cipher(name)
+        cipher = Cipher(name, key=key, iv=iv)
+        if not is_streaming(cipher):
+            description = "long_block_raises(%s)" % name.decode()
+            test = partial(check_encrypt_raises, cipher, block + _rnd(1),
+                           FullBlockExpectedError)
+            test.description = description
+            yield test
+
+            description = "short_block_raises(%s)" % name.decode()
+            test = partial(check_encrypt_raises, cipher, block[1:],
+                           FullBlockExpectedError)
+            test.description = description
+            yield test
