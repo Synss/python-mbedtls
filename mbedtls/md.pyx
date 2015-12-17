@@ -165,6 +165,38 @@ cdef class MessageDigest:
         return _c_md_hmac(self._info, bytearray(key), bytearray(message))
 
 
+class Md2(MessageDigest):
+
+    """MD2 message-digest algorithm.
+
+    Parameters:
+        name (bytes): The MD name known to mbed TLS.
+
+    Attributes:
+        size (int): The size of the message digest, in bytes.
+        name (bytes): The name of the message digest.
+
+    """
+    def __init__(self):
+        super().__init__(b"MD2")
+
+
+class Md4(MessageDigest):
+
+    """MD4 message-digest algorithm.
+
+    Parameters:
+        name (bytes): The MD name known to mbed TLS.
+
+    Attributes:
+        size (int): The size of the message digest, in bytes.
+        name (bytes): The name of the message digest.
+
+    """
+    def __init__(self):
+        super().__init__(b"MD4")
+
+
 class Md5(MessageDigest):
 
     """MD5 message-digest algorithm.
