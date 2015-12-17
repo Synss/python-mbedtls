@@ -4,6 +4,7 @@
 # pylint: disable=missing-docstring
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=invalid-name
+from functools import partial
 import hashlib
 import hmac
 
@@ -11,10 +12,14 @@ from nose.tools import assert_equal
 
 # pylint: disable=import-error
 from mbedtls.md import *
-from mbedtls.md import MD_NAME, get_supported_mds
+from mbedtls.md import MD_NAME, get_supported_mds, MessageDigest
 # pylint: enable=import-error
 
 from . import _rnd
+
+
+def available_mds():
+    return get_supported_mds()
 
 
 def test_md_list():
@@ -22,8 +27,8 @@ def test_md_list():
 
 
 def test_get_supported_mds():
-    mdl = get_supported_mds()
-    assert mdl and set(mdl).issubset(set(MD_NAME))
+    mds = available_mds()
+    assert mds and mds.issubset(set(MD_NAME))
 
 
 def test_digest_file():
@@ -43,58 +48,28 @@ def test_digest_hmac():
     assert_equal(md5.digest_hmac(key, msg), ref.digest())
 
 
-class _TestDigestBase:
-
-    def __init__(self, md_cls):
-        self.cls = md_cls
-
-    def setup(self):
-        self.md = self.cls()
-
-    def test_check_against_reference_impl(self):
+def test_check_against_hashlib():
+    for name in available_mds():
         msg = _rnd(1024)
-        ref = hashlib.new(str(self.md))
+        md = MessageDigest(name)
+        ref = hashlib.new(name.decode("ascii"))
         ref.update(msg)
-        assert_equal(self.md.digest(msg), ref.digest())
+        # Use partial to have the correct name in failed reports (by
+        # avoiding late bindings).
+        test = partial(assert_equal, md.digest(msg), ref.digest())
+        test.description = "check_against_hashlib(%s)" % name.decode("ascii")
+        yield test
 
 
-class Test_MD5(_TestDigestBase):
+def test_instantiation():
+    import inspect
+    import mbedtls.md
 
-    def __init__(self):
-        super().__init__(Md5)
+    def isdigest(cls):
+        return (inspect.isclass(cls) and
+                cls is not MessageDigest and
+                issubclass(cls, MessageDigest))
 
-
-class Test_SHA1(_TestDigestBase):
-
-    def __init__(self):
-        super().__init__(Sha1)
-
-
-class Test_SHA224(_TestDigestBase):
-
-    def __init__(self):
-        super().__init__(Sha224)
-
-
-class Test_SHA256(_TestDigestBase):
-
-    def __init__(self):
-        super().__init__(Sha256)
-
-
-class Test_SHA384(_TestDigestBase):
-
-    def __init__(self):
-        super().__init__(Sha384)
-
-
-class Test_SHA512(_TestDigestBase):
-
-    def __init__(self):
-        super().__init__(Sha512)
-
-
-class Test_Ripemd160(_TestDigestBase):
-
-    def __init__(self):
-        super().__init__(Ripemd160)
+    for name, cls in inspect.getmembers(mbedtls.md, predicate=isdigest):
+        cls.description = "check_instantiation(%s)" % name
+        yield cls
