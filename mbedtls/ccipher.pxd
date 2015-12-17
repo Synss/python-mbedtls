@@ -47,7 +47,8 @@ cdef extern from "mbedtls/cipher.h":
 
     unsigned int mbedtls_cipher_get_block_size(
         const mbedtls_cipher_context_t* ctx)
-    # mbedtls_cipher_get_cipher_mode
+    mbedtls_cipher_mode_t mbedtls_cipher_get_cipher_mode(
+        const mbedtls_cipher_context_t* ctx)
     int mbedtls_cipher_get_iv_size(
         const mbedtls_cipher_context_t* ctx)
     mbedtls_cipher_type_t mbedtls_cipher_get_type(
