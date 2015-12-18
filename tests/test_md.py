@@ -8,68 +8,99 @@ from functools import partial
 import hashlib
 import hmac
 
+from nose.plugins.skip import SkipTest
 from nose.tools import assert_equal
 
 # pylint: disable=import-error
-from mbedtls.md import *
-from mbedtls.md import MD_NAME, get_supported_mds, MessageDigest
+import mbedtls.md as md
+from mbedtls.md import MD_NAME
 # pylint: enable=import-error
 
 from . import _rnd
 
 
-def available_mds():
-    return get_supported_mds()
+def make_chunks(buffer, size):
+    for i in range(0, len(buffer), size):
+        yield buffer[i:i+size]
+
+
+def test_make_chunks():
+    buffer = _rnd(1024)
+    assert_equal(b"".join(buf for buf in make_chunks(buffer, 100)),
+                 buffer)
 
 
 def test_md_list():
     assert len(MD_NAME) == 10
 
 
-def test_get_supported_mds():
-    mds = available_mds()
-    assert mds and mds.issubset(set(MD_NAME))
+def test_algorithms():
+    assert set(md.algorithms_guaranteed).issubset(md.algorithms_available)
 
 
-def test_digest_file():
-    md5 = Md5()
-    ref = hashlib.md5()
-    with open(__file__, mode="r") as file:
-        for line in file:
-            ref.update(line.encode("ascii"))
-    assert_equal(md5.digest_file(__file__), ref.digest())
-
-
-def test_digest_hmac():
-    md5 = Md5()
-    msg = _rnd(1024)
-    key = _rnd(16)
-    ref = hmac.new(key, msg, digestmod="MD5")
-    assert_equal(md5.digest_hmac(key, msg), ref.digest())
-
-
-def test_check_against_hashlib():
-    for name in available_mds():
-        msg = _rnd(1024)
-        md = MessageDigest(name)
-        ref = hashlib.new(name.decode("ascii"))
-        ref.update(msg)
+def test_check_against_hashlib_nobuf():
+    for name in md.algorithms_available:
+        buf = _rnd(1024)
+        alg = md.new(name, buf)
+        ref = hashlib.new(name, buf)
         # Use partial to have the correct name in failed reports (by
         # avoiding late bindings).
-        test = partial(assert_equal, md.digest(msg), ref.digest())
-        test.description = "check_against_hashlib(%s)" % name.decode("ascii")
+        test = partial(assert_equal, alg.digest(), ref.digest())
+        test.description = "check_against_hashlib_nobuf(%s)" % name
+        yield test
+
+
+def test_check_against_hashlib_buf():
+    for name in md.algorithms_available:
+        buf = _rnd(4096)
+        alg = md.new(name)
+        ref = hashlib.new(name)
+        for chunk in make_chunks(buf, 500):
+            alg.update(chunk)
+            ref.update(chunk)
+        test = partial(assert_equal, alg.digest(), ref.digest())
+        test.description = "check_against_hashlib_buf(%s)" % name
+        yield test
+
+
+def test_check_against_hmac_nobuf():
+    for name in md.algorithms_available:
+        buf = _rnd(1024)
+        key = _rnd(16)
+        alg = md.new_hmac(key, buf, digestmod=name)
+        ref = hmac.new(key, buf, digestmod=name)
+        # Use partial to have the correct name in failed reports (by
+        # avoiding late bindings).
+        test = partial(assert_equal, alg.digest(), ref.digest())
+        test.description = "check_against_hmac_nobuf(%s)" % name
+        yield test
+
+
+def test_check_against_hmac_buf():
+    for name in md.algorithms_available:
+        buf = _rnd(4096)
+        key = _rnd(16)
+        alg = md.new_hmac(key, digestmod=name)
+        ref = hmac.new(key, digestmod=name)
+        for chunk in make_chunks(buf, 500):
+            alg.update(chunk)
+            ref.update(chunk)
+        test = partial(assert_equal, alg.digest(), ref.digest())
+        test.description = "check_against_hmac_buf(%s)" % name
         yield test
 
 
 def test_instantiation():
     import inspect
-    import mbedtls.md
 
-    def isdigest(cls):
-        return (inspect.isclass(cls) and
-                cls is not MessageDigest and
-                issubclass(cls, MessageDigest))
+    def check_instantiation(fun, name):
+        alg1 = fun()
+        alg2 = md.new(name)
+        assert_equal(type(alg1), type(alg2))
+        assert_equal(alg1.name, alg2.name)
 
-    for name, cls in inspect.getmembers(mbedtls.md, predicate=isdigest):
-        cls.description = "check_instantiation(%s)" % name
-        yield cls
+    for name, member in inspect.getmembers(md):
+        if name in md.algorithms_available:
+            test = partial(check_instantiation, member, name)
+            test.description = "check_instantiation(%s)" % name
+            yield test

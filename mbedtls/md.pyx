@@ -9,9 +9,6 @@ cimport cmd
 from libc.stdlib cimport malloc, free
 from mbedtls.exceptions import *
 
-__all__ = ("Sha1", "Sha224", "Sha256", "Sha384", "Sha512",
-           "Md5", "Ripemd160")
-
 
 MD_NAME = (
     # Define as bytes to map to `const char*` without conversion.
@@ -28,7 +25,7 @@ MD_NAME = (
 )
 
 
-def get_supported_mds():
+def __get_supported_mds():
     """Return the set of digests supported by the generic
     message digest module.
 
@@ -43,14 +40,18 @@ def get_supported_mds():
     return mds
 
 
+algorithms_guaranteed = ("md5", "sha1", "sha224", "sha256", "sha384", "sha512")
+algorithms_available = {name.decode("ascii").lower()
+                        for name in  __get_supported_mds()}
+
+
+__all__ = algorithms_guaranteed + ("new", "algorithms_guaranteed",
+                                   "algorithms_available")
+
+
 cdef _c_get_size(const cmd.mbedtls_md_info_t* md_info):
     """Return the size of the message digest output."""
     return cmd.mbedtls_md_get_size(md_info)
-
-
-cdef _c_get_type(const cmd.mbedtls_md_info_t* md_info):
-    """Return the type of the message digest output."""
-    return cmd.mbedtls_md_get_type(md_info)
 
 
 cdef _c_get_name(const cmd.mbedtls_md_info_t* md_info):
@@ -58,66 +59,7 @@ cdef _c_get_name(const cmd.mbedtls_md_info_t* md_info):
     return cmd.mbedtls_md_get_name(md_info)
 
 
-cdef _c_md(const cmd.mbedtls_md_info_t* md_info,
-           unsigned char[:] input):
-    """Return the digest output of `input`."""
-    cdef size_t sz = _c_get_size(md_info)
-    cdef unsigned char* output = <unsigned char*>malloc(
-        sz * sizeof(unsigned char))
-    if not output:
-        raise MemoryError()
-    cdef int err
-    try:
-        err = cmd.mbedtls_md(
-            md_info, &input[0], input.shape[0],
-            output)
-        check_error(err)
-        # The list comprehension is required.
-        return bytes([output[n] for n in range(sz)])
-    finally:
-        free(output)
-
-
-cdef _c_md_file(const cmd.mbedtls_md_info_t* md_info,
-                char[:] path):
-    """Return the digest of the contents of the file at `path`."""
-    cdef size_t sz = _c_get_size(md_info)
-    cdef unsigned char* output = <unsigned char*>malloc(
-        sz * sizeof(unsigned char))
-    if not output:
-        raise MemoryError()
-    cdef int err
-    try:
-        err = cmd.mbedtls_md_file(md_info, &path[0], output)
-        check_error(err)
-        # The list comprehension is required.
-        return bytes([output[n] for n in range(sz)])
-    finally:
-        free(output)
-
-
-cdef _c_md_hmac(const cmd.mbedtls_md_info_t* md_info,
-                unsigned char[:] key,
-                unsigned char[:] input):
-    """Return the HMAC of the input with key."""
-    cdef size_t sz = _c_get_size(md_info)
-    cdef unsigned char* output = <unsigned char*>malloc(
-        sz * sizeof(unsigned char))
-    if not output:
-        raise MemoryError()
-    cdef int err
-    try:
-        err = cmd.mbedtls_md_hmac(
-            md_info, &key[0], key.shape[0], &input[0], input.shape[0], output)
-        check_error(err)
-        # The list comprehension is required.
-        return bytes([output[n] for n in range(sz)])
-    finally:
-        free(output)
-
-
-cdef class MessageDigest:
-
+cdef class MDBase:
     """Wrap and encapsulate the md library from mbed TLS.
 
     Parameters:
@@ -129,182 +71,165 @@ cdef class MessageDigest:
 
     """
     cdef const cmd.mbedtls_md_info_t* _info
+    cdef cmd.mbedtls_md_context_t _ctx
 
-    def __init__(self, name):
-        self._info = cmd.mbedtls_md_info_from_string(name)
+    def __init__(self, name, buffer, hmac):
+        if not isinstance(name, str):
+            raise TypeError("name must be a string")
+        self._info = cmd.mbedtls_md_info_from_string(
+            name.upper().encode("ascii"))
+        check_error(cmd.mbedtls_md_setup(&self._ctx, self._info, hmac))
+
+    def __cinit__(self):
+        """Initialize an `md_context` (as NONE)."""
+        cmd.mbedtls_md_init(&self._ctx)
+
+    def __dealloc__(self):
+        """Free and clear the internal structures of ctx."""
+        cmd.mbedtls_md_free(&self._ctx)
 
     def __str__(self):
         """Return the name of the message digest output."""
-        return self.name.decode("ascii")
+        return self.name
 
     @property
-    def size(self):
-        """Return the size of the message digest output."""
+    def digest_size(self):
+        """The size of the resulting hash in bytes."""
         return _c_get_size(self._info)
 
     @property
-    def _type(self):
-        """Return the type of the message digest output."""
-        return _c_get_type(self._info)
+    def block_size(self):
+        """The internal block size of the hash algorithm in bytes."""
+        raise NotImplementedError
 
     @property
     def name(self):
-        """Return the name of the message digest output."""
-        return _c_get_name(self._info)
+        """The canonical name of the hashing algorithm."""
+        return _c_get_name(self._info).decode("ascii").lower()
 
-    cpdef digest(self, message):
+
+cdef class Hash(MDBase):
+
+    """Wrap and encapsulate the md library from mbed TLS.
+
+    Parameters:
+        name (bytes): The MD name known to mbed TLS.
+
+    Attributes:
+        size (int): The size of the message digest, in bytes.
+        name (bytes): The name of the message digest.
+
+    """
+    def __init__(self, name, buffer=None):
+        super().__init__(name, buffer, 0)
+        check_error(cmd.mbedtls_md_starts(&self._ctx))
+        self.update(buffer)
+
+    cpdef update(self, buffer):
+        """Update the hash object with the `buffer`."""
+        if not buffer:
+            return
+        cdef unsigned char[:] buf = bytearray(buffer)
+        check_error(cmd.mbedtls_md_update(&self._ctx, &buf[0], buf.shape[0]))
+
+    cpdef digest(self):
         """Return the digest output of `message`."""
-        return _c_md(self._info, bytearray(message))
+        cdef size_t sz = self.digest_size
+        cdef unsigned char* output = <unsigned char*>malloc(
+            sz * sizeof(unsigned char))
+        if not output:
+            raise MemoryError()
+        try:
+            check_error(cmd.mbedtls_md_finish(&self._ctx, output))
+            return bytes([output[n] for n in range(self.digest_size)])
+        finally:
+            free(output)
 
-    cpdef digest_file(self, path):
-        """Return the digest of the contents of the file at `path`."""
-        return _c_md_file(self._info, bytearray(path.encode("ascii")))
 
-    cpdef digest_hmac(self, key, message):
+cdef class Hmac(MDBase):
+
+    def __init__(self, key, name, buffer=None):
+        super().__init__(name, buffer, 1)
+        cdef unsigned char[:] c_key = bytearray(key)
+        check_error(cmd.mbedtls_md_hmac_starts(
+            &self._ctx, &c_key[0], c_key.shape[0]))
+        self.update(buffer)
+
+    cpdef update(self, buffer):
+        """Update the HMAC object with `buffer`."""
+        if not buffer:
+            return
+        cdef unsigned char[:] buf = bytearray(buffer)
+        check_error(cmd.mbedtls_md_hmac_update(&self._ctx, &buf[0],
+                                               buf.shape[0]))
+
+    cpdef digest(self):
         """Return the HMAC of key and message."""
-        return _c_md_hmac(self._info, bytearray(key), bytearray(message))
+        cdef size_t sz = self.digest_size
+        cdef unsigned char* output = <unsigned char*>malloc(
+            sz * sizeof(unsigned char))
+        if not output:
+            raise MemoryError()
+        try:
+            check_error(cmd.mbedtls_md_hmac_finish(&self._ctx, output))
+            return bytes([output[n] for n in range(self.digest_size)])
+        finally:
+            free(output)
 
 
-class Md2(MessageDigest):
-
-    """MD2 message-digest algorithm.
-
-    Parameters:
-        name (bytes): The MD name known to mbed TLS.
-
-    Attributes:
-        size (int): The size of the message digest, in bytes.
-        name (bytes): The name of the message digest.
-
-    """
-    def __init__(self):
-        super().__init__(b"MD2")
+def new_hmac(key, buffer=None, digestmod=None):
+    return Hmac(key, digestmod, buffer)
 
 
-class Md4(MessageDigest):
-
-    """MD4 message-digest algorithm.
-
-    Parameters:
-        name (bytes): The MD name known to mbed TLS.
-
-    Attributes:
-        size (int): The size of the message digest, in bytes.
-        name (bytes): The name of the message digest.
+def new(name, buffer=None):
+    """A generic constructor that takes the string name of the desired
+    algorithm as its first parameter.
 
     """
-    def __init__(self):
-        super().__init__(b"MD4")
+    return Hash(name, buffer)
 
 
-class Md5(MessageDigest):
-
-    """MD5 message-digest algorithm.
-
-    Parameters:
-        name (bytes): The MD name known to mbed TLS.
-
-    Attributes:
-        size (int): The size of the message digest, in bytes.
-        name (bytes): The name of the message digest.
-
-    """
-    def __init__(self):
-        super().__init__(b"MD5")
+def md2(buffer=None):
+    """MD2 message-digest algorithm."""
+    return Hash("md2", buffer)
 
 
-class Sha1(MessageDigest):
-
-    """Secure Hash Algorithm 1 (SHA-1).
-
-    Parameters:
-        name (bytes): The MD name known to mbed TLS.
-
-    Attributes:
-        size (int): The size of the message digest, in bytes.
-        name (bytes): The name of the message digest.
-
-    """
-    def __init__(self):
-        super().__init__(b"SHA1")
+def md4(buffer=None):
+    """MD4 message-digest algorithm."""
+    return Hash("md4", buffer)
 
 
-class Sha224(MessageDigest):
-
-    """Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value.
-
-    Parameters:
-        name (bytes): The MD name known to mbed TLS.
-
-    Attributes:
-        size (int): The size of the message digest, in bytes.
-        name (bytes): The name of the message digest.
-
-    """
-    def __init__(self):
-        super().__init__(b"SHA224")
+def md5(buffer=None):
+    """MD5 message-digest algorithm."""
+    return Hash("md5", buffer)
 
 
-class Sha256(MessageDigest):
-
-    """Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value.
-
-    Parameters:
-        name (bytes): The MD name known to mbed TLS.
-
-    Attributes:
-        size (int): The size of the message digest, in bytes.
-        name (bytes): The name of the message digest.
-
-    """
-    def __init__(self):
-        super().__init__(b"SHA256")
+def sha1(buffer=None):
+    """Secure Hash Algorithm 1 (SHA-1)."""
+    return Hash("sha1", buffer)
 
 
-class Sha384(MessageDigest):
-
-    """Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value.
-
-    Parameters:
-        name (bytes): The MD name known to mbed TLS.
-
-    Attributes:
-        size (int): The size of the message digest, in bytes.
-        name (bytes): The name of the message digest.
-
-    """
-    def __init__(self):
-        super().__init__(b"SHA384")
+def sha224(buffer=None):
+    """Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value."""
+    return Hash("sha224", buffer)
 
 
-class Sha512(MessageDigest):
-
-    """Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value.
-
-    Parameters:
-        name (bytes): The MD name known to mbed TLS.
-
-    Attributes:
-        size (int): The size of the message digest, in bytes.
-        name (bytes): The name of the message digest.
-
-    """
-    def __init__(self):
-        super().__init__(b"SHA512")
+def sha256(buffer=None):
+    """Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value."""
+    return Hash("sha256", buffer)
 
 
-class Ripemd160(MessageDigest):
+def sha384(buffer=None):
+    """Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value."""
+    return Hash("sha384", buffer)
 
+
+def sha512(buffer=None):
+    """Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value."""
+    return Hash("sha512", buffer)
+
+
+def ripemd160(buffer=None):
     """RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
-    160 bits hash value.
-
-    Parameters:
-        name (bytes): The MD name known to mbed TLS.
-
-    Attributes:
-        size (int): The size of the message digest, in bytes.
-        name (bytes): The name of the message digest.
-
-    """
-    def __init__(self):
-        super().__init__(b"RIPEMD160")
+    160 bits hash value."""
+    return Hash("ripemd160", buffer)

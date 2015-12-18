@@ -23,34 +23,37 @@ cdef extern from "mbedtls/md.h":
     void mbedtls_md_init(mbedtls_md_context_t *ctx)
     void mbedtls_md_free(mbedtls_md_context_t *ctx)
 
-    # mbedtls_md_setup
+    int mbedtls_md_setup(
+        mbedtls_md_context_t *ctx,
+        const mbedtls_md_info_t *md_info,
+        int hmac)
+
     # mbedtls_md_clone
     unsigned char mbedtls_md_get_size(const mbedtls_md_info_t *md_info)
-    mbedtls_md_type_t mbedtls_md_get_type(const mbedtls_md_info_t *md_info)
+    # mbedtls_md_get_type
     const char *mbedtls_md_get_name(const mbedtls_md_info_t *md_info)
 
-    # mbedtls_md_starts
-    # mbedtls_md_update
-    # mbedtls_md_finish
-
-    int mbedtls_md(
-        const mbedtls_md_info_t *md_info,
+    int mbedtls_md_starts(mbedtls_md_context_t *ctx)
+    int mbedtls_md_update(
+        mbedtls_md_context_t *ctx,
         const unsigned char *input,
-        size_t ilen,
+        size_t ilen)
+    int mbedtls_md_finish(
+        mbedtls_md_context_t *ctx,
         unsigned char *output)
-    int mbedtls_md_file(
-        const mbedtls_md_info_t *md_info,
-        const char *path,
-        unsigned char *output)
+    # mbedtls_md
+    # mbedtls_md_file
 
-    # mbedtls_md_hmac_starts
-    # mbedtls_md_hmac_update
-    # mbedtls_md_hmac_finish
-    # mbedtls_md_hmac_reset
-    int mbedtls_md_hmac(
-        const mbedtls_md_info_t *md_info,
+    int mbedtls_md_hmac_starts(
+        mbedtls_md_context_t *ctx,
         const unsigned char *key,
-        size_t keylen,
+        size_t keylen)
+    int mbedtls_md_hmac_update(
+        mbedtls_md_context_t *ctx,
         const unsigned char *input,
-        size_t ilen,
+        size_t ilen)
+    int mbedtls_md_hmac_finish(
+        mbedtls_md_context_t *ctx,
         unsigned char *output)
+    # mbedtls_md_hmac_reset
+    # mbedtls_md_hmac
