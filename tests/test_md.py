@@ -8,12 +8,12 @@ from functools import partial
 import hashlib
 import hmac
 
-from nose.plugins.skip import SkipTest
 from nose.tools import assert_equal
 
 # pylint: disable=import-error
-import mbedtls.md as md
-from mbedtls.md import MD_NAME
+from mbedtls._md import MD_NAME
+import mbedtls.hash as md_hash
+import mbedtls.hmac as md_hmac
 # pylint: enable=import-error
 
 from . import _rnd
@@ -35,13 +35,14 @@ def test_md_list():
 
 
 def test_algorithms():
-    assert set(md.algorithms_guaranteed).issubset(md.algorithms_available)
+    assert set(md_hash.algorithms_guaranteed).issubset(
+        md_hash.algorithms_available)
 
 
 def test_check_against_hashlib_nobuf():
-    for name in md.algorithms_available:
+    for name in md_hash.algorithms_available:
         buf = _rnd(1024)
-        alg = md.new(name, buf)
+        alg = md_hash.new(name, buf)
         ref = hashlib.new(name, buf)
         # Use partial to have the correct name in failed reports (by
         # avoiding late bindings).
@@ -51,9 +52,9 @@ def test_check_against_hashlib_nobuf():
 
 
 def test_check_against_hashlib_buf():
-    for name in md.algorithms_available:
+    for name in md_hash.algorithms_available:
         buf = _rnd(4096)
-        alg = md.new(name)
+        alg = md_hash.new(name)
         ref = hashlib.new(name)
         for chunk in make_chunks(buf, 500):
             alg.update(chunk)
@@ -64,10 +65,10 @@ def test_check_against_hashlib_buf():
 
 
 def test_check_against_hmac_nobuf():
-    for name in md.algorithms_available:
+    for name in md_hmac.algorithms_available:
         buf = _rnd(1024)
         key = _rnd(16)
-        alg = md.new_hmac(key, buf, digestmod=name)
+        alg = md_hmac.new(key, buf, digestmod=name)
         ref = hmac.new(key, buf, digestmod=name)
         # Use partial to have the correct name in failed reports (by
         # avoiding late bindings).
@@ -77,10 +78,10 @@ def test_check_against_hmac_nobuf():
 
 
 def test_check_against_hmac_buf():
-    for name in md.algorithms_available:
+    for name in md_hmac.algorithms_available:
         buf = _rnd(4096)
         key = _rnd(16)
-        alg = md.new_hmac(key, digestmod=name)
+        alg = md_hmac.new(key, digestmod=name)
         ref = hmac.new(key, digestmod=name)
         for chunk in make_chunks(buf, 500):
             alg.update(chunk)
@@ -95,12 +96,12 @@ def test_instantiation():
 
     def check_instantiation(fun, name):
         alg1 = fun()
-        alg2 = md.new(name)
+        alg2 = md_hash.new(name)
         assert_equal(type(alg1), type(alg2))
         assert_equal(alg1.name, alg2.name)
 
-    for name, member in inspect.getmembers(md):
-        if name in md.algorithms_available:
+    for name, member in inspect.getmembers(md_hash):
+        if name in md_hash.algorithms_available:
             test = partial(check_instantiation, member, name)
             test.description = "check_instantiation(%s)" % name
             yield test

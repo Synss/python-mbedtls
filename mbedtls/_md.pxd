@@ -57,3 +57,8 @@ cdef extern from "mbedtls/md.h":
         unsigned char *output)
     # mbedtls_md_hmac_reset
     # mbedtls_md_hmac
+
+
+cdef class MDBase:
+    cdef const mbedtls_md_info_t* _info
+    cdef mbedtls_md_context_t _ctx
