@@ -11,6 +11,9 @@ extensions = [
     Extension("mbedtls.cipher", ["mbedtls/cipher.pyx"],
               libraries=["mbedtls"],
               ),
+    Extension("mbedtls.md", ["mbedtls/md.pyx"],
+              libraries=["mbedtls"],
+              ),
 ]
 setup_requires = ["cython"]
 

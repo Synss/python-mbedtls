@@ -9,7 +9,7 @@ debug:
 test:
 	nosetests -v tests
 
-doc:
+html:
 	cd docs && make html
 
 clean:
