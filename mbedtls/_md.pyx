@@ -96,6 +96,31 @@ cdef class MDBase:
         def __get__(self):
             return _md.mbedtls_md_get_name(self._info).decode("ascii").lower()
 
+    cdef _update(self, const unsigned char *input, size_t ilen):
+        return -0x5100  # Bad input data error.
+
+    cdef _finish(self, const unsigned char *output):
+        return -0x5100  # Bad input data error.
+
+    cpdef update(self, buffer):
+        if not buffer:
+            return
+        cdef unsigned char[:] buf = bytearray(buffer)
+        check_error(self._update(&buf[0], buf.shape[0]))
+
+    cpdef digest(self):
+        """Return the digest output of `message`."""
+        cdef size_t sz = self.digest_size
+        cdef unsigned char* output = <unsigned char*>malloc(
+            sz * sizeof(unsigned char))
+        if not output:
+            raise MemoryError()
+        try:
+            check_error(self._finish(output))
+            return bytes([output[n] for n in range(self.digest_size)])
+        finally:
+            free(output)
+
     def hexdigest(self):
         """Like digest except the digest is returned as a string object
         of double length.

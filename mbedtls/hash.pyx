@@ -37,25 +37,13 @@ cdef class Hash(_md.MDBase):
         check_error(_md.mbedtls_md_starts(&self._ctx))
         self.update(buffer)
 
-    cpdef update(self, buffer):
+    cdef _update(self, const unsigned char *input, size_t ilen):
         """Update the hash object with the `buffer`."""
-        if not buffer:
-            return
-        cdef unsigned char[:] buf = bytearray(buffer)
-        check_error(_md.mbedtls_md_update(&self._ctx, &buf[0], buf.shape[0]))
+        return _md.mbedtls_md_update(&self._ctx, input, ilen)
 
-    cpdef digest(self):
+    cdef _finish(self, unsigned char *output):
         """Return the digest output of `message`."""
-        cdef size_t sz = self.digest_size
-        cdef unsigned char* output = <unsigned char*>malloc(
-            sz * sizeof(unsigned char))
-        if not output:
-            raise MemoryError()
-        try:
-            check_error(_md.mbedtls_md_finish(&self._ctx, output))
-            return bytes([output[n] for n in range(self.digest_size)])
-        finally:
-            free(output)
+        return _md.mbedtls_md_finish(&self._ctx, output)
 
     cpdef copy(self):
         """Return a copy ("clone") of the hash object."""

@@ -40,26 +40,13 @@ cdef class Hmac(_md.MDBase):
             &self._ctx, &c_key[0], c_key.shape[0]))
         self.update(buffer)
 
-    cpdef update(self, buffer):
+    cdef _update(self, const unsigned char *input, size_t ilen):
         """Update the HMAC object with `buffer`."""
-        if not buffer:
-            return
-        cdef unsigned char[:] buf = bytearray(buffer)
-        check_error(_md.mbedtls_md_hmac_update(&self._ctx, &buf[0],
-                                               buf.shape[0]))
+        return _md.mbedtls_md_hmac_update(&self._ctx, input, ilen)
 
-    cpdef digest(self):
+    cdef _finish(self, unsigned char *output):
         """Return the HMAC of key and message."""
-        cdef size_t sz = self.digest_size
-        cdef unsigned char* output = <unsigned char*>malloc(
-            sz * sizeof(unsigned char))
-        if not output:
-            raise MemoryError()
-        try:
-            check_error(_md.mbedtls_md_hmac_finish(&self._ctx, output))
-            return bytes([output[n] for n in range(self.digest_size)])
-        finally:
-            free(output)
+        return _md.mbedtls_md_hmac_finish(&self._ctx, output)
 
     cpdef copy(self):
         """Return a copy ("clone") of the HMAC object.
