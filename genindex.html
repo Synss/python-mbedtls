@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &mdash; python-mbedtls 0.2 documentation</title>
+    <title>Index &mdash; python-mbedtls 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2',
+        VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-mbedtls 0.2 documentation" href="index.html" />
+    <link rel="top" title="python-mbedtls 0.1 documentation" href="index.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -45,6 +45,7 @@
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
+ | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#K"><strong>K</strong></a>
  | <a href="#M"><strong>M</strong></a>
@@ -101,6 +102,14 @@
   <dt><a href="apicipher.html#mbedtls.cipher.DesEde3.block_size">(mbedtls.cipher.DesEde3 attribute)</a>
   </dt>
 
+        
+  <dt><a href="apimd.html#mbedtls.hash.Hash.block_size">(mbedtls.hash.Hash attribute)</a>
+  </dt>
+
+        
+  <dt><a href="apimd.html#mbedtls.hmac.Hmac.block_size">(mbedtls.hmac.Hmac attribute)</a>
+  </dt>
+
       </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
@@ -119,6 +128,18 @@
   </dt>
 
   </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="apimd.html#mbedtls.hash.Hash.copy">copy() (mbedtls.hash.Hash method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="apimd.html#mbedtls.hmac.Hmac.copy">(mbedtls.hmac.Hmac method)</a>
+  </dt>
+
+      </dl></dd>
+  </dl></td>
 </tr></table>
 
 <h2 id="D">D</h2>
@@ -136,6 +157,32 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="apicipher.html#mbedtls.cipher.DesEde3">DesEde3 (class in mbedtls.cipher)</a>
+  </dt>
+
+      
+  <dt><a href="apimd.html#mbedtls.hash.Hash.digest_size">digest_size (mbedtls.hash.Hash attribute)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="apimd.html#mbedtls.hmac.Hmac.digest_size">(mbedtls.hmac.Hmac attribute)</a>
+  </dt>
+
+      </dl></dd>
+  </dl></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="apimd.html#mbedtls.hash.Hash">Hash (class in mbedtls.hash)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="apimd.html#mbedtls.hmac.Hmac">Hmac (class in mbedtls.hmac)</a>
   </dt>
 
   </dl></td>
@@ -221,15 +268,45 @@
   </dt>
 
       
-  <dt><a href="apimd.html#module-mbedtls.md">mbedtls.md (module)</a>
+  <dt><a href="apimd.html#module-mbedtls.hash">mbedtls.hash (module)</a>
   </dt>
 
+      
+  <dt><a href="apimd.html#module-mbedtls.hmac">mbedtls.hmac (module)</a>
+  </dt>
+
+      
+  <dt><a href="apimd.html#mbedtls.hash.md2">md2() (in module mbedtls.hash)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="apimd.html#mbedtls.hmac.md2">(in module mbedtls.hmac)</a>
+  </dt>
+
+      </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="apimd.html#mbedtls.md.Md5">Md5 (class in mbedtls.md)</a>
+  <dt><a href="apimd.html#mbedtls.hash.md4">md4() (in module mbedtls.hash)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="apimd.html#mbedtls.hmac.md4">(in module mbedtls.hmac)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="apimd.html#mbedtls.hash.md5">md5() (in module mbedtls.hash)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="apimd.html#mbedtls.hmac.md5">(in module mbedtls.hmac)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="apicipher.html#mbedtls.cipher.Mode">Mode (class in mbedtls.cipher)</a>
   </dt>
@@ -241,32 +318,24 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="apimd.html#mbedtls.md.Md5.name">name (mbedtls.md.Md5 attribute)</a>
+  <dt><a href="apimd.html#mbedtls.hash.Hash.name">name (mbedtls.hash.Hash attribute)</a>
   </dt>
 
       <dd><dl>
         
-  <dt><a href="apimd.html#mbedtls.md.Ripemd160.name">(mbedtls.md.Ripemd160 attribute)</a>
+  <dt><a href="apimd.html#mbedtls.hmac.Hmac.name">(mbedtls.hmac.Hmac attribute)</a>
   </dt>
 
-        
-  <dt><a href="apimd.html#mbedtls.md.Sha1.name">(mbedtls.md.Sha1 attribute)</a>
+      </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="apimd.html#mbedtls.hash.new">new() (in module mbedtls.hash)</a>
   </dt>
 
+      <dd><dl>
         
-  <dt><a href="apimd.html#mbedtls.md.Sha224.name">(mbedtls.md.Sha224 attribute)</a>
-  </dt>
-
-        
-  <dt><a href="apimd.html#mbedtls.md.Sha256.name">(mbedtls.md.Sha256 attribute)</a>
-  </dt>
-
-        
-  <dt><a href="apimd.html#mbedtls.md.Sha384.name">(mbedtls.md.Sha384 attribute)</a>
-  </dt>
-
-        
-  <dt><a href="apimd.html#mbedtls.md.Sha512.name">(mbedtls.md.Sha512 attribute)</a>
+  <dt><a href="apimd.html#mbedtls.hmac.new">(in module mbedtls.hmac)</a>
   </dt>
 
       </dl></dd>
@@ -277,9 +346,15 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="apimd.html#mbedtls.md.Ripemd160">Ripemd160 (class in mbedtls.md)</a>
+  <dt><a href="apimd.html#mbedtls.hash.ripemd160">ripemd160() (in module mbedtls.hash)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="apimd.html#mbedtls.hmac.ripemd160">(in module mbedtls.hmac)</a>
+  </dt>
+
+      </dl></dd>
   </dl></td>
 </tr></table>
 
@@ -287,54 +362,54 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="apimd.html#mbedtls.md.Sha1">Sha1 (class in mbedtls.md)</a>
-  </dt>
-
-      
-  <dt><a href="apimd.html#mbedtls.md.Sha224">Sha224 (class in mbedtls.md)</a>
-  </dt>
-
-      
-  <dt><a href="apimd.html#mbedtls.md.Sha256">Sha256 (class in mbedtls.md)</a>
-  </dt>
-
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="apimd.html#mbedtls.md.Sha384">Sha384 (class in mbedtls.md)</a>
-  </dt>
-
-      
-  <dt><a href="apimd.html#mbedtls.md.Sha512">Sha512 (class in mbedtls.md)</a>
-  </dt>
-
-      
-  <dt><a href="apimd.html#mbedtls.md.Md5.size">size (mbedtls.md.Md5 attribute)</a>
+  <dt><a href="apimd.html#mbedtls.hash.sha1">sha1() (in module mbedtls.hash)</a>
   </dt>
 
       <dd><dl>
         
-  <dt><a href="apimd.html#mbedtls.md.Ripemd160.size">(mbedtls.md.Ripemd160 attribute)</a>
+  <dt><a href="apimd.html#mbedtls.hmac.sha1">(in module mbedtls.hmac)</a>
   </dt>
 
-        
-  <dt><a href="apimd.html#mbedtls.md.Sha1.size">(mbedtls.md.Sha1 attribute)</a>
+      </dl></dd>
+      
+  <dt><a href="apimd.html#mbedtls.hash.sha224">sha224() (in module mbedtls.hash)</a>
   </dt>
 
+      <dd><dl>
         
-  <dt><a href="apimd.html#mbedtls.md.Sha224.size">(mbedtls.md.Sha224 attribute)</a>
+  <dt><a href="apimd.html#mbedtls.hmac.sha224">(in module mbedtls.hmac)</a>
   </dt>
 
-        
-  <dt><a href="apimd.html#mbedtls.md.Sha256.size">(mbedtls.md.Sha256 attribute)</a>
+      </dl></dd>
+      
+  <dt><a href="apimd.html#mbedtls.hash.sha256">sha256() (in module mbedtls.hash)</a>
   </dt>
 
+      <dd><dl>
         
-  <dt><a href="apimd.html#mbedtls.md.Sha384.size">(mbedtls.md.Sha384 attribute)</a>
+  <dt><a href="apimd.html#mbedtls.hmac.sha256">(in module mbedtls.hmac)</a>
   </dt>
 
+      </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="apimd.html#mbedtls.hash.sha384">sha384() (in module mbedtls.hash)</a>
+  </dt>
+
+      <dd><dl>
         
-  <dt><a href="apimd.html#mbedtls.md.Sha512.size">(mbedtls.md.Sha512 attribute)</a>
+  <dt><a href="apimd.html#mbedtls.hmac.sha384">(in module mbedtls.hmac)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="apimd.html#mbedtls.hash.sha512">sha512() (in module mbedtls.hash)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="apimd.html#mbedtls.hmac.sha512">(in module mbedtls.hmac)</a>
   </dt>
 
       </dl></dd>

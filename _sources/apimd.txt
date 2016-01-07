@@ -1,4 +1,10 @@
-:mod:`mbedtls.md` Module API
-============================
+:mod:`mbedtls.hash` Module API
+==============================
 
-.. automodule:: mbedtls.md
+.. automodule:: mbedtls.hash
+
+
+:mod:`mbedtls.hmac` Module API
+==============================
+
+.. automodule:: mbedtls.hmac

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>mbedtls.md Module API &mdash; python-mbedtls 0.2 documentation</title>
+    <title>mbedtls.hash Module API &mdash; python-mbedtls 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2',
+        VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-mbedtls 0.2 documentation" href="index.html" />
+    <link rel="top" title="python-mbedtls 0.1 documentation" href="index.html" />
     <link rel="prev" title="mbedtls.cipher Module API" href="apicipher.html" />
    
   
@@ -37,13 +37,16 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-mbedtls.md">
-<span id="mbedtls-md-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.md" title="mbedtls.md"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.md</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.md" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-mbedtls.hash">
+<span id="mbedtls-hash-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.hash" title="mbedtls.hash"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.hash</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.hash" title="Permalink to this headline">¶</a></h1>
 <p>Generic message digest wrapper (hash algorithm).</p>
 <dl class="class">
-<dt id="mbedtls.md.Sha1">
-<em class="property">class </em><code class="descclassname">mbedtls.md.</code><code class="descname">Sha1</code><a class="headerlink" href="#mbedtls.md.Sha1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 1 (SHA-1).</p>
+<dt id="mbedtls.hash.Hash">
+<em class="property">class </em><code class="descclassname">mbedtls.hash.</code><code class="descname">Hash</code><a class="headerlink" href="#mbedtls.hash.Hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrap and encapsulate hash calculations.</p>
+<p>This class is a wrapper for the hash calculations in the md module
+of mbed TLS.  The interface follows the recommendation from PEP 452
+for unkeyed hashes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -53,174 +56,206 @@
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="mbedtls.md.Sha1.size">
-<code class="descname">size</code><a class="headerlink" href="#mbedtls.md.Sha1.size" title="Permalink to this definition">¶</a></dt>
+<dt id="mbedtls.hash.Hash.digest_size">
+<code class="descname">digest_size</code><a class="headerlink" href="#mbedtls.hash.Hash.digest_size" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>int</em> &#8211; The size of the message digest, in bytes.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="mbedtls.md.Sha1.name">
-<code class="descname">name</code><a class="headerlink" href="#mbedtls.md.Sha1.name" title="Permalink to this definition">¶</a></dt>
+<dt id="mbedtls.hash.Hash.block_size">
+<code class="descname">block_size</code><a class="headerlink" href="#mbedtls.hash.Hash.block_size" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; Not implemented.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.hash.Hash.name">
+<code class="descname">name</code><a class="headerlink" href="#mbedtls.hash.Hash.name" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>bytes</em> &#8211; The name of the message digest.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.md.Sha224">
-<em class="property">class </em><code class="descclassname">mbedtls.md.</code><code class="descname">Sha224</code><a class="headerlink" href="#mbedtls.md.Sha224" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>bytes</em>) &#8211; The MD name known to mbed TLS.</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="mbedtls.md.Sha224.size">
-<code class="descname">size</code><a class="headerlink" href="#mbedtls.md.Sha224.size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the message digest, in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.md.Sha224.name">
-<code class="descname">name</code><a class="headerlink" href="#mbedtls.md.Sha224.name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bytes</em> &#8211; The name of the message digest.</p>
+<dl class="method">
+<dt id="mbedtls.hash.Hash.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.Hash.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy (&#8220;clone&#8221;) of the hash object.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="mbedtls.md.Sha256">
-<em class="property">class </em><code class="descclassname">mbedtls.md.</code><code class="descname">Sha256</code><a class="headerlink" href="#mbedtls.md.Sha256" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>bytes</em>) &#8211; The MD name known to mbed TLS.</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="mbedtls.md.Sha256.size">
-<code class="descname">size</code><a class="headerlink" href="#mbedtls.md.Sha256.size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the message digest, in bytes.</p>
+<dl class="function">
+<dt id="mbedtls.hash.md2">
+<code class="descclassname">mbedtls.hash.</code><code class="descname">md2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.md2" title="Permalink to this definition">¶</a></dt>
+<dd><p>MD2 message-digest algorithm.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="mbedtls.md.Sha256.name">
-<code class="descname">name</code><a class="headerlink" href="#mbedtls.md.Sha256.name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bytes</em> &#8211; The name of the message digest.</p>
+<dl class="function">
+<dt id="mbedtls.hash.md4">
+<code class="descclassname">mbedtls.hash.</code><code class="descname">md4</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.md4" title="Permalink to this definition">¶</a></dt>
+<dd><p>MD4 message-digest algorithm.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.md.Sha384">
-<em class="property">class </em><code class="descclassname">mbedtls.md.</code><code class="descname">Sha384</code><a class="headerlink" href="#mbedtls.md.Sha384" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>bytes</em>) &#8211; The MD name known to mbed TLS.</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="mbedtls.md.Sha384.size">
-<code class="descname">size</code><a class="headerlink" href="#mbedtls.md.Sha384.size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the message digest, in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.md.Sha384.name">
-<code class="descname">name</code><a class="headerlink" href="#mbedtls.md.Sha384.name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bytes</em> &#8211; The name of the message digest.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.md.Sha512">
-<em class="property">class </em><code class="descclassname">mbedtls.md.</code><code class="descname">Sha512</code><a class="headerlink" href="#mbedtls.md.Sha512" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>bytes</em>) &#8211; The MD name known to mbed TLS.</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="mbedtls.md.Sha512.size">
-<code class="descname">size</code><a class="headerlink" href="#mbedtls.md.Sha512.size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the message digest, in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.md.Sha512.name">
-<code class="descname">name</code><a class="headerlink" href="#mbedtls.md.Sha512.name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bytes</em> &#8211; The name of the message digest.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.md.Md5">
-<em class="property">class </em><code class="descclassname">mbedtls.md.</code><code class="descname">Md5</code><a class="headerlink" href="#mbedtls.md.Md5" title="Permalink to this definition">¶</a></dt>
+<dl class="function">
+<dt id="mbedtls.hash.md5">
+<code class="descclassname">mbedtls.hash.</code><code class="descname">md5</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.md5" title="Permalink to this definition">¶</a></dt>
 <dd><p>MD5 message-digest algorithm.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>bytes</em>) &#8211; The MD name known to mbed TLS.</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="mbedtls.md.Md5.size">
-<code class="descname">size</code><a class="headerlink" href="#mbedtls.md.Md5.size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the message digest, in bytes.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="mbedtls.md.Md5.name">
-<code class="descname">name</code><a class="headerlink" href="#mbedtls.md.Md5.name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bytes</em> &#8211; The name of the message digest.</p>
+<dl class="function">
+<dt id="mbedtls.hash.new">
+<code class="descclassname">mbedtls.hash.</code><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>A generic constructor that takes the string name of the desired
+algorithm as its first parameter.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.md.Ripemd160">
-<em class="property">class </em><code class="descclassname">mbedtls.md.</code><code class="descname">Ripemd160</code><a class="headerlink" href="#mbedtls.md.Ripemd160" title="Permalink to this definition">¶</a></dt>
+<dl class="function">
+<dt id="mbedtls.hash.ripemd160">
+<code class="descclassname">mbedtls.hash.</code><code class="descname">ripemd160</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.ripemd160" title="Permalink to this definition">¶</a></dt>
 <dd><p>RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
 160 bits hash value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hash.sha1">
+<code class="descclassname">mbedtls.hash.</code><code class="descname">sha1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.sha1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Secure Hash Algorithm 1 (SHA-1).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hash.sha224">
+<code class="descclassname">mbedtls.hash.</code><code class="descname">sha224</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.sha224" title="Permalink to this definition">¶</a></dt>
+<dd><p>Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hash.sha256">
+<code class="descclassname">mbedtls.hash.</code><code class="descname">sha256</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.sha256" title="Permalink to this definition">¶</a></dt>
+<dd><p>Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hash.sha384">
+<code class="descclassname">mbedtls.hash.</code><code class="descname">sha384</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.sha384" title="Permalink to this definition">¶</a></dt>
+<dd><p>Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hash.sha512">
+<code class="descclassname">mbedtls.hash.</code><code class="descname">sha512</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.sha512" title="Permalink to this definition">¶</a></dt>
+<dd><p>Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mbedtls.hmac">
+<span id="mbedtls-hmac-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.hmac" title="mbedtls.hmac"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.hmac</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.hmac" title="Permalink to this headline">¶</a></h1>
+<p>Generic message digest wrapper (hash algorithm).</p>
+<dl class="class">
+<dt id="mbedtls.hmac.Hmac">
+<em class="property">class </em><code class="descclassname">mbedtls.hmac.</code><code class="descname">Hmac</code><a class="headerlink" href="#mbedtls.hmac.Hmac" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrap and encapsulate HMAC calculations.</p>
+<p>This class is a wrapper for the HMAC calculations in the md module
+of mbed TLS.  The interface follows the recommendation from PEP 452
+for keyed hashes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>bytes</em>) &#8211; The MD name known to mbed TLS.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>bytes</em>) &#8211; The key to use.</li>
+<li><strong>name</strong> (<em>bytes</em>) &#8211; The MD name known to mbed TLS.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="mbedtls.md.Ripemd160.size">
-<code class="descname">size</code><a class="headerlink" href="#mbedtls.md.Ripemd160.size" title="Permalink to this definition">¶</a></dt>
+<dt id="mbedtls.hmac.Hmac.digest_size">
+<code class="descname">digest_size</code><a class="headerlink" href="#mbedtls.hmac.Hmac.digest_size" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>int</em> &#8211; The size of the message digest, in bytes.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="mbedtls.md.Ripemd160.name">
-<code class="descname">name</code><a class="headerlink" href="#mbedtls.md.Ripemd160.name" title="Permalink to this definition">¶</a></dt>
+<dt id="mbedtls.hmac.Hmac.block_size">
+<code class="descname">block_size</code><a class="headerlink" href="#mbedtls.hmac.Hmac.block_size" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; Not implemented.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.hmac.Hmac.name">
+<code class="descname">name</code><a class="headerlink" href="#mbedtls.hmac.Hmac.name" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>bytes</em> &#8211; The name of the message digest.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="mbedtls.hmac.Hmac.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.Hmac.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy (&#8220;clone&#8221;) of the HMAC object.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Not implemented in mbed TLS, raises NotImplementedError.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hmac.md2">
+<code class="descclassname">mbedtls.hmac.</code><code class="descname">md2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.md2" title="Permalink to this definition">¶</a></dt>
+<dd><p>MD2 message-digest algorithm.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hmac.md4">
+<code class="descclassname">mbedtls.hmac.</code><code class="descname">md4</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.md4" title="Permalink to this definition">¶</a></dt>
+<dd><p>MD4 message-digest algorithm.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hmac.md5">
+<code class="descclassname">mbedtls.hmac.</code><code class="descname">md5</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.md5" title="Permalink to this definition">¶</a></dt>
+<dd><p>MD5 message-digest algorithm.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hmac.new">
+<code class="descclassname">mbedtls.hmac.</code><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>A generic constructor that takes the key algorithm as its first
+parameter.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hmac.ripemd160">
+<code class="descclassname">mbedtls.hmac.</code><code class="descname">ripemd160</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.ripemd160" title="Permalink to this definition">¶</a></dt>
+<dd><p>RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
+160 bits hash value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hmac.sha1">
+<code class="descclassname">mbedtls.hmac.</code><code class="descname">sha1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.sha1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Secure Hash Algorithm 1 (SHA-1).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hmac.sha224">
+<code class="descclassname">mbedtls.hmac.</code><code class="descname">sha224</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.sha224" title="Permalink to this definition">¶</a></dt>
+<dd><p>Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hmac.sha256">
+<code class="descclassname">mbedtls.hmac.</code><code class="descname">sha256</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.sha256" title="Permalink to this definition">¶</a></dt>
+<dd><p>Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hmac.sha384">
+<code class="descclassname">mbedtls.hmac.</code><code class="descname">sha384</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.sha384" title="Permalink to this definition">¶</a></dt>
+<dd><p>Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.hmac.sha512">
+<code class="descclassname">mbedtls.hmac.</code><code class="descname">sha512</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.sha512" title="Permalink to this definition">¶</a></dt>
+<dd><p>Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value.</p>
 </dd></dl>
 
 </div>
@@ -230,7 +265,13 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
+<li><a class="reference internal" href="#module-mbedtls.hmac"><code class="docutils literal"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+</ul>
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
