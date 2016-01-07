@@ -49,16 +49,6 @@ __all__ = algorithms_guaranteed + ("new", "algorithms_guaranteed",
                                    "algorithms_available")
 
 
-cdef _c_get_size(const _md.mbedtls_md_info_t* md_info):
-    """Return the size of the message digest output."""
-    return _md.mbedtls_md_get_size(md_info)
-
-
-cdef _c_get_name(const _md.mbedtls_md_info_t* md_info):
-    """Return the name of the message digest output."""
-    return _md.mbedtls_md_get_name(md_info)
-
-
 cdef class MDBase:
     """Wrap and encapsulate the md library from mbed TLS.
 
@@ -90,17 +80,17 @@ cdef class MDBase:
         """Return the name of the message digest output."""
         return self.name
 
-    @property
-    def digest_size(self):
+    property digest_size:
         """The size of the resulting hash in bytes."""
-        return _c_get_size(self._info)
+        def __get__(self):
+            return _md.mbedtls_md_get_size(self._info)
 
-    @property
-    def block_size(self):
+    property block_size:
         """The internal block size of the hash algorithm in bytes."""
-        raise NotImplementedError
+        def __get__(self):
+            raise NotImplementedError
 
-    @property
-    def name(self):
+    property name:
         """The canonical name of the hashing algorithm."""
-        return _c_get_name(self._info).decode("ascii").lower()
+        def __get__(self):
+            return _md.mbedtls_md_get_name(self._info).decode("ascii").lower()
