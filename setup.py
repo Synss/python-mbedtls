@@ -8,23 +8,18 @@ download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
 
 extensions = [
     Extension("mbedtls.exceptions", ["mbedtls/exceptions.pyx"]),
-    Extension("mbedtls.cipher", ["mbedtls/cipher.pyx"],
+] + [
+    Extension("mbedtls.cipher.%s" % name, ["mbedtls/cipher/%s.pyx" % name],
               libraries=["mbedtls"],
-              include_dirs=["."],
-              ),
-    Extension("mbedtls._md", ["mbedtls/_md.pyx"],
+              include_dirs=["."],)
+    for name in "_cipher AES ARC4 Blowfish Camellia DES DES3 DES3dbl".split()
+] + [
+    Extension("mbedtls.%s" % name, ["mbedtls/%s.pyx" % name],
               libraries=["mbedtls"],
-              include_dirs=["."],
-              ),
-    Extension("mbedtls.hash", ["mbedtls/hash.pyx"],
-              libraries=["mbedtls"],
-              include_dirs=["."],
-              ),
-    Extension("mbedtls.hmac", ["mbedtls/hmac.pyx"],
-              libraries=["mbedtls"],
-              include_dirs=["."],
-              ),
+              include_dirs=["."],)
+    for name in "_md hash hmac".split()
 ]
+
 setup_requires = ["cython"]
 
 

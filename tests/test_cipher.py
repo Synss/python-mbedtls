@@ -12,10 +12,18 @@ from nose.tools import assert_equal, assert_raises
 from nose.tools import raises
 
 # pylint: disable=import-error
-from mbedtls.cipher import *
-from mbedtls.cipher import CIPHER_NAME, get_supported_ciphers
-from mbedtls.cipher import Cipher
+from mbedtls.cipher._cipher import *
+from mbedtls.cipher._cipher import CIPHER_NAME, get_supported_ciphers
+from mbedtls.cipher._cipher import Cipher
 from mbedtls.exceptions import *
+
+import mbedtls.cipher.AES as mb_AES
+import mbedtls.cipher.ARC4 as mb_ARC4
+import mbedtls.cipher.Blowfish as mb_Blowfish
+import mbedtls.cipher.Camellia as mb_Camellia
+import mbedtls.cipher.DES as mb_DES
+import mbedtls.cipher.DES3 as mb_DES3
+import mbedtls.cipher.DES3dbl as mb_DES3dbl
 # pylint: enable=import-error
 
 from . import _rnd
@@ -50,7 +58,23 @@ def setup_cipher(name):
     key = _rnd(cipher.key_size)
     iv = _rnd(cipher.iv_size)
     block = _rnd(cipher.block_size)
-    return key, iv, block
+    if name.startswith(b"AES"):
+        cls = mb_AES.Aes
+    elif name.startswith(b"ARC4"):
+        cls = mb_ARC4.Arc4
+    elif name.startswith(b"BLOWFISH"):
+        cls = mb_Blowfish.Blowfish
+    elif name.startswith(b"CAMELLIA"):
+        cls = mb_Camellia.Camellia
+    elif name.startswith(b"DES-EDE3"):
+        cls = mb_DES3.DesEde3
+    elif name.startswith(b"DES-EDE"):
+        cls = mb_DES3dbl.DesEde
+    elif name.startswith(b"DES"):
+        cls = mb_DES.Des
+    else:
+        raise NotImplementedError
+    return cls, key, cipher.mode, iv, block
 
 
 def get_ciphers():
@@ -77,11 +101,10 @@ def check_encrypt_decrypt(cipher, block):
 
 
 def test_encrypt_decrypt():
-
     for name in get_ciphers():
         description = "check_encrypt_decrypt(%s)" % name.decode()
-        key, iv, block = setup_cipher(name)
-        cipher = Cipher(name, key=key, iv=iv)
+        cls, key, mode, iv, block = setup_cipher(name)
+        cipher = cls(key, mode, iv)
         test = partial(check_encrypt_decrypt, cipher, block)
         test.description = description
         yield test
@@ -113,15 +136,15 @@ def test_check_against_pycrypto():
 
     for name in get_ciphers():
         description = "check_against_pycrypto(%s)" % name.decode()
-        key, iv, block = setup_cipher(name)
-        cipher = Cipher(name, key=key, iv=iv)
-        if cipher.mode not in pc_supported_modes.difference(
+        cls, key, mode, iv, block = setup_cipher(name)
+        if mode not in pc_supported_modes.difference(
                 {MODE_CTR, MODE_CFB}):
             # Counter actually requires the counter.
             skip_test.description = description
             yield skip_test, "encryption mode unsupported"
             continue
 
+        cipher = cls(key, mode, iv)
         try:
             if name.startswith(b"AES"):
                 ref = pc.AES.new(key, cipher.mode, iv)
@@ -176,21 +199,21 @@ def test_check_against_openssl():
 
     for name in get_ciphers():
         description = "check_against_openssl(%s)" % name.decode()
-        key, iv, block = setup_cipher(name)
-        cipher = Cipher(name, key=key, iv=iv)
-        if cipher.mode == MODE_GCM:
+        cls, key, mode, iv, block = setup_cipher(name)
+        if mode == MODE_GCM:
             skip_test.description = description
             yield skip_test, "encryption mode unsupported"
             continue
-        if cipher.name in {b"ARC4-128", b"DES-EDE3-ECB", b"DES-EDE-ECB",
-                           b"CAMELLIA-256-ECB",
-                           b"CAMELLIA-128-CTR", b"CAMELLIA-192-CTR",
-                           b"CAMELLIA-256-CTR",
-                           b"BLOWFISH-CTR",
-                           }:
-            yield skip_test, "%s not available in openssl" % cipher
+        if name in {b"ARC4-128", b"DES-EDE3-ECB", b"DES-EDE-ECB",
+                    b"CAMELLIA-256-ECB",
+                    b"CAMELLIA-128-CTR", b"CAMELLIA-192-CTR",
+                    b"CAMELLIA-256-CTR",
+                    b"BLOWFISH-CTR",
+                    }:
+            yield skip_test, "%s not available in openssl" % name
             continue
 
+        cipher = cls(key, mode, iv)
         openssl_cipher = CIPHER_LOOKUP.get(
             cipher.name, cipher.name.decode("ascii").lower())
 
@@ -216,8 +239,8 @@ def test_check_against_openssl():
 def test_streaming_ciphers():
     for name in get_ciphers():
         description = "check_stream_cipher(%s)" % name.decode()
-        key, iv, block = setup_cipher(name)
-        cipher = Cipher(name, key=key, iv=iv)
+        cls, key, mode, iv, block = setup_cipher(name)
+        cipher = cls(key, mode, iv)
         if is_streaming(cipher):
             block = _rnd(20000)
             check_encrypt_decrypt.description = description
@@ -231,8 +254,8 @@ def test_fixed_block_size_ciphers():
             cipher.encrypt(block)
 
     for name in get_ciphers():
-        key, iv, block = setup_cipher(name)
-        cipher = Cipher(name, key=key, iv=iv)
+        cls, key, mode, iv, block = setup_cipher(name)
+        cipher = cls(key, mode, iv)
         if not is_streaming(cipher):
             description = "long_block_raises(%s)" % name.decode()
             test = partial(check_encrypt_raises, cipher, block + _rnd(1),

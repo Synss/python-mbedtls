@@ -91,3 +91,13 @@ cdef extern from "mbedtls/cipher.h":
 
     # mbedtls_cipher_auth_encrypt
     # mbedtls_cipher_auth_decrypt
+
+
+cdef class Cipher:
+    # Encapsulate two contexts to push the keys into mbedtls ASAP.
+    cdef mbedtls_cipher_context_t _enc_ctx
+    cdef mbedtls_cipher_context_t _dec_ctx
+    cdef object _iv
+
+    cpdef _setup(self, cipher_name)
+    cpdef _setkey(self, key)
