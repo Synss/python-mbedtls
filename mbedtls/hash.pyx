@@ -57,6 +57,12 @@ cdef class Hash(_md.MDBase):
         finally:
             free(output)
 
+    cpdef copy(self):
+        """Return a copy ("clone") of the hash object."""
+        obj = Hash(self.name)
+        check_error(_md.mbedtls_md_clone(&obj._ctx, &self._ctx))
+        return obj
+
 
 def new(name, buffer=None):
     """A generic constructor that takes the string name of the desired

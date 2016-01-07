@@ -28,7 +28,8 @@ cdef extern from "mbedtls/md.h":
         const mbedtls_md_info_t *md_info,
         int hmac)
 
-    # mbedtls_md_clone
+    int mbedtls_md_clone(mbedtls_md_context_t *dst,
+                         const mbedtls_md_context_t *src)
     unsigned char mbedtls_md_get_size(const mbedtls_md_info_t *md_info)
     # mbedtls_md_get_type
     const char *mbedtls_md_get_name(const mbedtls_md_info_t *md_info)

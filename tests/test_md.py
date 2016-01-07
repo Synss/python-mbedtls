@@ -39,13 +39,26 @@ def test_algorithms():
         md_hash.algorithms_available)
 
 
+def test_copy_hash():
+    for name in md_hash.algorithms_available:
+        buf0 = _rnd(512)
+        buf1 = _rnd(512)
+        alg = md_hash.new(name, buf0)
+        copy = alg.copy()
+        alg.update(buf1)
+        copy.update(buf1)
+        # Use partial to have the correct name in failed reports (by
+        # avoiding late bindings).
+        test = partial(assert_equal, alg.digest(), copy.digest())
+        test.description = "test_copy_hash(%s)" % name
+        yield test
+
+
 def test_check_against_hashlib_nobuf():
     for name in md_hash.algorithms_available:
         buf = _rnd(1024)
         alg = md_hash.new(name, buf)
         ref = hashlib.new(name, buf)
-        # Use partial to have the correct name in failed reports (by
-        # avoiding late bindings).
         test = partial(assert_equal, alg.digest(), ref.digest())
         test.description = "check_against_hashlib_nobuf(%s)" % name
         yield test

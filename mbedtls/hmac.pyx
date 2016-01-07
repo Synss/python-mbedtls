@@ -61,6 +61,15 @@ cdef class Hmac(_md.MDBase):
         finally:
             free(output)
 
+    cpdef copy(self):
+        """Return a copy ("clone") of the HMAC object.
+
+        Warning:
+            Not implemented in mbed TLS, raises NotImplementedError.
+
+        """
+        raise NotImplementedError
+
 
 def new(key, buffer=None, digestmod=None):
     """A generic constructor that takes the key algorithm as its first
