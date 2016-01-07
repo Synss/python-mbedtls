@@ -59,11 +59,7 @@ def get_ciphers():
 
 
 def is_streaming(cipher):
-    return cipher.name.startswith(b"ARC") or cipher.mode not in {Mode.ECB}
-
-
-def skip_mode(mode):
-    raise SkipTest("Skip %s mode" % mode.name)
+    return cipher.name.startswith(b"ARC") or cipher.mode is not MODE_ECB
 
 
 def skip_test(message):
@@ -105,11 +101,11 @@ def test_check_against_pycrypto():
     except ImportError as exc:
         raise SkipTest(str(exc))
 
-    MODE_LOOKUP = {
-        Mode.ECB: pc.blockalgo.MODE_ECB,
-        Mode.CBC: pc.blockalgo.MODE_CBC,
-        Mode.CFB: pc.blockalgo.MODE_CFB,
-        Mode.CTR: pc.blockalgo.MODE_CTR,
+    pc_supported_modes = {
+        MODE_ECB,
+        MODE_CBC,
+        MODE_CFB,
+        MODE_CTR,
     }
 
     def check_against_pycrypto(cipher, ref, block):
@@ -119,32 +115,25 @@ def test_check_against_pycrypto():
         description = "check_against_pycrypto(%s)" % name.decode()
         key, iv, block = setup_cipher(name)
         cipher = Cipher(name, key=key, iv=iv)
-        if cipher.mode in {Mode.CTR, Mode.CFB}:
+        if cipher.mode not in pc_supported_modes.difference(
+                {MODE_CTR, MODE_CFB}):
             # Counter actually requires the counter.
-            skip_mode.description = description
-            yield skip_mode, cipher.mode
-            continue
-
-        try:
-            pc_mode = MODE_LOOKUP[cipher.mode]
-        except KeyError:
             skip_test.description = description
-            yield skip_test, ("mode %s no available in pyCrypto" %
-                              cipher.mode.name)
+            yield skip_test, "encryption mode unsupported"
             continue
 
         try:
             if name.startswith(b"AES"):
-                ref = pc.AES.new(key, pc_mode, iv)
+                ref = pc.AES.new(key, cipher.mode, iv)
             elif name.startswith(b"ARC4"):
                 ref = pc.ARC4.new(key)
             elif name.startswith(b"BLOWFISH"):
-                ref = pc.Blowfish.new(key, pc_mode, iv)
+                ref = pc.Blowfish.new(key, cipher.mode, iv)
             elif name.startswith(b"DES-EDE"):
                 # Must precede DES.
-                ref = pc.DES3.new(key, pc_mode, iv)
+                ref = pc.DES3.new(key, cipher.mode, iv)
             elif name.startswith(b"DES"):
-                ref = pc.DES.new(key, pc_mode, iv)
+                ref = pc.DES.new(key, cipher.mode, iv)
             else:
                 skip_test.description = description
                 yield skip_test, "%s not available in pyCrypto" % cipher
@@ -156,7 +145,7 @@ def test_check_against_pycrypto():
             continue
 
         # Use partial to avoid late binding in report.
-        if cipher.mode is Mode.CBC:
+        if cipher.mode is MODE_CBC:
             # mbed TLS adds a block to CBC (probably due to padding) so
             # that pyCrypto returns one block less.
             test = partial(assert_equal, cipher.encrypt(block)[:len(block)],
@@ -189,9 +178,9 @@ def test_check_against_openssl():
         description = "check_against_openssl(%s)" % name.decode()
         key, iv, block = setup_cipher(name)
         cipher = Cipher(name, key=key, iv=iv)
-        if cipher.mode in {Mode.GCM}:
-            skip_mode.description = description
-            yield skip_mode, cipher.mode
+        if cipher.mode == MODE_GCM:
+            skip_test.description = description
+            yield skip_test, "encryption mode unsupported"
             continue
         if cipher.name in {b"ARC4-128", b"DES-EDE3-ECB", b"DES-EDE-ECB",
                            b"CAMELLIA-256-ECB",
@@ -209,7 +198,7 @@ def test_check_against_openssl():
             openssl_cipher,
             hexlify(key).decode("ascii"),
             hexlify(iv).decode("ascii")) +
-            (" -nopad" if cipher.mode is Mode.ECB else "")
+            (" -nopad" if cipher.mode is MODE_ECB else "")
         ).split(),
             stdin=PIPE, stdout=PIPE, stderr=PIPE)
         out, err = openssl.communicate(input=block)

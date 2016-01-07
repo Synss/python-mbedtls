@@ -18,7 +18,16 @@ cdef extern from "mbedtls/cipher.h":
         pass
 
     ctypedef enum mbedtls_cipher_mode_t:
-        pass
+        # The numbering is standardized.
+        MBEDTLS_MODE_NONE = 0,
+        MBEDTLS_MODE_ECB,
+        MBEDTLS_MODE_CBC,
+        MBEDTLS_MODE_CFB,
+        MBEDTLS_MODE_OFB,
+        MBEDTLS_MODE_CTR,
+        MBEDTLS_MODE_GCM,
+        MBEDTLS_MODE_STREAM,
+        MBEDTLS_MODE_CCM
 
     ctypedef enum mbedtls_operation_t:
         pass

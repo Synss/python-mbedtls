@@ -9,10 +9,6 @@ __license__ = "Apache License 2.0"
 cimport ccipher
 from libc.stdlib cimport malloc, free
 from mbedtls.exceptions import *
-import enum
-
-__all__ = ("Mode", "Aes", "Camellia", "Des", "DesEde", "DesEde3",
-           "Blowfish", "Arc4")
 
 
 CIPHER_NAME = (
@@ -69,30 +65,43 @@ CIPHER_NAME = (
 )
 
 
-class AutoNumber(enum.Enum):
+MODE_ECB = ccipher.MBEDTLS_MODE_ECB
+MODE_CBC = ccipher.MBEDTLS_MODE_CBC
+MODE_CFB = ccipher.MBEDTLS_MODE_CFB
+MODE_OFB = ccipher.MBEDTLS_MODE_OFB
+MODE_CTR = ccipher.MBEDTLS_MODE_CTR
+MODE_GCM = ccipher.MBEDTLS_MODE_GCM
+MODE_STREAM = ccipher.MBEDTLS_MODE_STREAM
+MODE_CCM = ccipher.MBEDTLS_MODE_CCM
 
-    """AutoNumber class from the `enum` doc."""
 
-    def __new__(cls):
-        value = len(cls.__members__)  # Do not add 1, we start at 0!
-        obj = object.__new__(cls)
-        obj._value_ = value
-        return obj
+__supported_modes = {
+    MODE_ECB,
+    MODE_CBC,
+    MODE_CFB,
+    MODE_CTR,
+    MODE_GCM,
+    MODE_CCM
+}
 
 
-class Mode(AutoNumber):
+cpdef _get_mode_name(mode):
+    return {
+        1: "ECB",
+        2: "CBC",
+        3: "CFB",
+        4: "OFB",
+        5: "CTR",
+        6: "GCM",
+        7: "STREAM",
+        8: "CCM"
+    }[mode]
 
-    """Enum with supported encryption modes."""
 
-    NONE = ()
-    ECB = ()
-    CBC = ()
-    CFB = ()
-    OFB = ()
-    CTR = ()
-    GCM = ()
-    STREAM = ()
-    CCM = ()
+__all__ = (
+    "MODE_ECB", "MODE_CBC", "MODE_CFB", "MODE_CTR", "MODE_GCM", "MODE_CCM",
+    "Aes", "Camellia", "Des", "DesEde", "DesEde3", "Blowfish", "Arc4"
+)
 
 
 cpdef get_supported_ciphers():
@@ -207,7 +216,7 @@ cdef class Cipher:
 
         Attributes:
             block_size (int): The block size for the cipher in bytes.
-            mode (Mode): The mode of operation of the cipher.
+            mode (int): The mode of operation of the cipher.
             iv_size (int): The size of the cipher's IV/NONCE in bytes.
             key_size (int): The size of the cipher's key, in bytes.
 
@@ -264,7 +273,7 @@ cdef class Cipher:
     property mode:
         """Return the mode of operation of the cipher."""
         def __get__(self):
-            return Mode(_c_get_cipher_mode(&self._enc_ctx))
+            return _c_get_cipher_mode(&self._enc_ctx)
 
     property iv_size:
         """Return the size of the cipher's IV/NONCE in bytes."""
@@ -300,7 +309,7 @@ class Aes(Cipher):
 
     Parameters:
         bitlength (int): The size of the key, in bits.
-        mode (Mode): The mode of operation of the cipher.
+        mode (int): The mode of operation of the cipher.
         key (bytes or None): The key to encrypt decrypt.  If None,
             encryption and decryption are unavailable.
         iv (bytes or None): The initialization vector (IV).  The IV is
@@ -318,10 +327,11 @@ class Aes(Cipher):
         if bitlength not in {128, 192, 256}:
             raise InvalidKeyLengthError(
                 "bitlength must 128, 192, or 256, got %r" % bitlength)
-        if mode not in {Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR,
-                        Mode.GCM, Mode.CCM}:
+        if mode not in {MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR,
+                        MODE_GCM, MODE_CCM}:
             raise FeatureUnavailableError("unsupported mode %r" % mode)
-        name = ("AES-%i-%s" % (bitlength, mode.name)).encode("ascii")
+        name = ("AES-%i-%s" %
+                (bitlength, _get_mode_name(mode))).encode("ascii")
         super().__init__(name, key, iv)
 
 
@@ -331,7 +341,7 @@ class Camellia(Cipher):
 
     Parameters:
         bitlength (int): The size of the key, in bits.
-        mode (Mode): The mode of operation of the cipher.
+        mode (int): The mode of operation of the cipher.
         key (bytes or None): The key to encrypt decrypt.  If None,
             encryption and decryption are unavailable.
         iv (bytes or None): The initialization vector (IV).  The IV is
@@ -349,10 +359,11 @@ class Camellia(Cipher):
         if bitlength not in {128, 192, 256}:
             raise InvalidKeyLengthError(
                 "bitlength must 128, 192, or 256, got %r" % bitlength)
-        if mode not in {Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR,
-                        Mode.GCM, Mode.CCM}:
+        if mode not in {MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR,
+                        MODE_GCM, MODE_CCM}:
             raise FeatureUnavailableError("unsupported mode %r" % mode)
-        name = ("CAMELLIA-%i-%s" % (bitlength, mode.name)).encode("ascii")
+        name = ("CAMELLIA-%i-%s" %
+                (bitlength, _get_mode_name(mode))).encode("ascii")
         super().__init__(name, key, iv)
 
 
@@ -362,7 +373,7 @@ class Des(Cipher):
     in the 70's.
 
     Parameters:
-        mode (Mode): The mode of operation of the cipher.
+        mode (int): The mode of operation of the cipher.
         key (bytes or None): The key to encrypt decrypt.  If None,
             encryption and decryption are unavailable.
         iv (bytes or None): The initialization vector (IV).  The IV is
@@ -377,9 +388,9 @@ class Des(Cipher):
 
     """
     def __init__(self, mode, key, iv=None):
-        if mode not in {Mode.ECB, Mode.CBC}:
+        if mode not in {MODE_ECB, MODE_CBC}:
             raise FeatureUnavailableError("unsupported mode %r" % mode)
-        name = ("DES-%s" % (mode.name,)).encode("ascii")
+        name = ("DES-%s" % _get_mode_name(mode.name)).encode("ascii")
         super().__init__(name, key, iv)
 
 
@@ -389,7 +400,7 @@ class DesEde(Cipher):
     or DES-EDE).
 
     Parameters:
-        mode (Mode): The mode of operation of the cipher.
+        mode (int): The mode of operation of the cipher.
         key (bytes or None): The key to encrypt decrypt.  If None,
             encryption and decryption are unavailable.
         iv (bytes or None): The initialization vector (IV).  The IV is
@@ -404,9 +415,9 @@ class DesEde(Cipher):
 
     """
     def __init__(self, mode, key, iv=None):
-        if mode not in {Mode.ECB, Mode.CBC}:
+        if mode not in {MODE_ECB, MODE_CBC}:
             raise FeatureUnavailableError("unsupported mode %r" % mode)
-        name = ("DES-EDE-%s" % (mode.name,)).encode("ascii")
+        name = ("DES-EDE-%s" % _get_mode_name(mode)).encode("ascii")
         super().__init__(name, key, iv)
 
 
@@ -416,7 +427,7 @@ class DesEde3(Cipher):
     Triple DES, or DES-EDE3).
 
     Parameters:
-        mode (Mode): The mode of operation of the cipher.
+        mode (int): The mode of operation of the cipher.
         key (bytes or None): The key to encrypt decrypt.  If None,
             encryption and decryption are unavailable.
         iv (bytes or None): The initialization vector (IV).  The IV is
@@ -431,9 +442,9 @@ class DesEde3(Cipher):
 
     """
     def __init__(self, mode, key, iv=None):
-        if mode not in {Mode.ECB, Mode.CBC}:
+        if mode not in {MODE_ECB, MODE_CBC}:
             raise FeatureUnavailableError("unsupported mode %r" % mode)
-        name = ("DES-EDE3-%s" % (mode.name,)).encode("ascii")
+        name = ("DES-EDE3-%s" % _get_mode_name(mode)).encode("ascii")
         super().__init__(name, key, iv)
 
 
@@ -442,7 +453,7 @@ class Blowfish(Cipher):
     """Blowfish cipher designed by Bruce Schneier in 1993.
 
     Parameters:
-        mode (Mode): The mode of operation of the cipher.
+        mode (int): The mode of operation of the cipher.
         key (bytes or None): The key to encrypt decrypt.  If None,
             encryption and decryption are unavailable.
         iv (bytes or None): The initialization vector (IV).  The IV is
@@ -457,9 +468,9 @@ class Blowfish(Cipher):
 
     """
     def __init__(self, mode, key, iv=None):
-        if mode not in {Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR}:
+        if mode not in {MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR}:
             raise FeatureUnavailableError("unsupported mode %r" % mode)
-        name = ("BLOWFISH-%s" % (mode.name,)).encode("ascii")
+        name = ("BLOWFISH-%s" % _get_mode_name(mode)).encode("ascii")
         super().__init__(name, key, iv)
 
 
