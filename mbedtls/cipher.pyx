@@ -8,60 +8,11 @@ __license__ = "Apache License 2.0"
 
 cimport ccipher
 from libc.stdlib cimport malloc, free
+from mbedtls.exceptions import *
 import enum
 
-__all__ = ("AllocFailedError",
-           "InvalidKeyLengthError", 
-           "InvalidInputLengthError",
-           "InvalidPaddingError",
-           "FeatureUnavailableError",
-           "BadInputDataError",
-           "FullBlockExpectedError",
-           "AuthFailedError",
-           "UnsupportedCipherError",
-           "Mode",
-           "Aes", "Camellia", "Des", "DesEde", "DesEde3", "Blowfish", "Arc4",
-           )
-
-
-class AllocFailedError(MemoryError):
-    """Exception raised when allocation failed."""
-
-
-class _ErrorBase(Exception):
-    """Base class for cipher exceptions."""
-
-
-class InvalidKeyLengthError(_ErrorBase):
-    """Raised for invalid key length."""
-
-
-class InvalidInputLengthError(_ErrorBase):
-    """Raised for invalid input length."""
-
-
-class InvalidPaddingError(_ErrorBase):
-    """Raised for invalid padding."""
-
-
-class FeatureUnavailableError(_ErrorBase):
-    """Raised when calling a feature that is not available."""
-
-
-class BadInputDataError(_ErrorBase):
-    """Raised for bad input data."""
-
-
-class FullBlockExpectedError(_ErrorBase):
-    """Raised when encryption expects full blocks."""
-
-
-class AuthFailedError(_ErrorBase):
-    """Raised when authentication failed."""
-
-
-class UnsupportedCipherError(_ErrorBase):
-    """Raised upon trying to instantiate an unsupported cipher."""
+__all__ = ("Mode", "Aes", "Camellia", "Des", "DesEde", "DesEde3",
+           "Blowfish", "Arc4")
 
 
 CIPHER_NAME = (
@@ -118,22 +69,30 @@ CIPHER_NAME = (
 )
 
 
-cpdef check_error(const int err):
-    if not err:
-        return
-    else:
-        raise {
-            # Blowfish-specific
-            -0x0016: InvalidKeyLengthError,
-            -0x0018: InvalidInputLengthError,
-            # Common errors
-            -0x6080: FeatureUnavailableError,
-            -0x6100: BadInputDataError,
-            -0x6180: AllocFailedError,
-            -0x6200: InvalidPaddingError,
-            -0x6280: FullBlockExpectedError,
-            -0x6300: AuthFailedError,
-        }.get(err, _ErrorBase)()
+class AutoNumber(enum.Enum):
+
+    """AutoNumber class from the `enum` doc."""
+
+    def __new__(cls):
+        value = len(cls.__members__)  # Do not add 1, we start at 0!
+        obj = object.__new__(cls)
+        obj._value_ = value
+        return obj
+
+
+class Mode(AutoNumber):
+
+    """Enum with supported encryption modes."""
+
+    NONE = ()
+    ECB = ()
+    CBC = ()
+    CFB = ()
+    OFB = ()
+    CTR = ()
+    GCM = ()
+    STREAM = ()
+    CCM = ()
 
 
 cpdef get_supported_ciphers():
@@ -161,17 +120,16 @@ cdef _c_setup(ccipher.mbedtls_cipher_context_t* ctx,
     appropriate values.
 
     """
-    check_error(ccipher.mbedtls_cipher_setup(
-        ctx, ccipher.mbedtls_cipher_info_from_string(&cipher_name[0])))
+    return ccipher.mbedtls_cipher_setup(
+        ctx, ccipher.mbedtls_cipher_info_from_string(&cipher_name[0]))
 
 
 cdef _c_set_key(ccipher.mbedtls_cipher_context_t* ctx,
                 unsigned char[:] c_key,
                 ccipher.mbedtls_operation_t operation):
     """Set the key to use with the given context."""
-    cdef int err = ccipher.mbedtls_cipher_setkey(
-        ctx, &c_key[0], 8 * c_key.shape[0], operation)
-    check_error(err)
+    return ccipher.mbedtls_cipher_setkey(ctx, &c_key[0], 8 * c_key.shape[0],
+                                         operation)
 
 
 cdef _c_crypt(ccipher.mbedtls_cipher_context_t* ctx,
@@ -187,13 +145,15 @@ cdef _c_crypt(ccipher.mbedtls_cipher_context_t* ctx,
     cdef size_t sz = c_input.shape[0] + _c_get_block_size(ctx)
     cdef unsigned char* output = <unsigned char*>malloc(
         sz * sizeof(unsigned char))
-    cdef int err
     if not output:
         raise MemoryError()
+    cdef int err
     try:
         err = ccipher.mbedtls_cipher_crypt(
             ctx, &c_iv[0], c_iv.shape[0],
             &c_input[0], c_input.shape[0], output, &olen)
+        # We can call `check_error` directly here because we return a
+        # python object.
         check_error(err)
         # The list comprehension is required.
         return bytes([output[n] for n in range(olen)])
@@ -204,6 +164,11 @@ cdef _c_crypt(ccipher.mbedtls_cipher_context_t* ctx,
 cdef _c_get_block_size(ccipher.mbedtls_cipher_context_t* ctx):
     """Return the block size for the cipher."""
     return ccipher.mbedtls_cipher_get_block_size(ctx)
+
+
+cdef _c_get_cipher_mode(ccipher.mbedtls_cipher_context_t* ctx):
+    """Return the mode of operation of the cipher."""
+    return ccipher.mbedtls_cipher_get_cipher_mode(ctx)
 
 
 cdef _c_get_iv_size(ccipher.mbedtls_cipher_context_t* ctx):
@@ -242,6 +207,7 @@ cdef class Cipher:
 
         Attributes:
             block_size (int): The block size for the cipher in bytes.
+            mode (Mode): The mode of operation of the cipher.
             iv_size (int): The size of the cipher's IV/NONCE in bytes.
             key_size (int): The size of the cipher's key, in bytes.
 
@@ -249,6 +215,7 @@ cdef class Cipher:
     # Encapsulate two contexts to push the keys into mbedtls ASAP.
     cdef ccipher.mbedtls_cipher_context_t _enc_ctx
     cdef ccipher.mbedtls_cipher_context_t _dec_ctx
+    cdef object _iv
 
     def __init__(self, cipher_name, key, iv):
         # Casting read-only only buffer to typed memoryview fails, so we
@@ -272,8 +239,8 @@ cdef class Cipher:
         if cipher_name not in get_supported_ciphers():
             raise UnsupportedCipherError("unsupported cipher: %r" % cipher_name)
         cdef char[:] c_cipher_name = bytearray(cipher_name)
-        _c_setup(&self._enc_ctx, c_cipher_name)
-        _c_setup(&self._dec_ctx, c_cipher_name)
+        check_error(_c_setup(&self._enc_ctx, c_cipher_name))
+        check_error(_c_setup(&self._dec_ctx, c_cipher_name))
 
     cpdef _setkey(self, key):
         """Set the encryption/decryption key."""
@@ -282,17 +249,22 @@ cdef class Cipher:
         # Casting read-only only buffer to typed memoryview fails, so we
         # cast to bytearray.
         c_key = bytearray(key)
-        _c_set_key(&self._enc_ctx, c_key, ccipher.MBEDTLS_ENCRYPT)
-        _c_set_key(&self._dec_ctx, c_key, ccipher.MBEDTLS_DECRYPT)
+        check_error(_c_set_key(&self._enc_ctx, c_key, ccipher.MBEDTLS_ENCRYPT))
+        check_error(_c_set_key(&self._dec_ctx, c_key, ccipher.MBEDTLS_DECRYPT))
 
     def __str__(self):
         """Return the name of the cipher."""
-        return self._name.decode("ascii")
+        return self.name.decode("ascii")
 
     @property
     def block_size(self):
         """Return the block size for the cipher."""
         return _c_get_block_size(&self._enc_ctx)
+
+    @property
+    def mode(self):
+        """Return the mode of operation of the cipher."""
+        return Mode(_c_get_cipher_mode(&self._enc_ctx))
 
     @property
     def iv_size(self):
@@ -305,7 +277,7 @@ cdef class Cipher:
         return _c_get_type(&self._enc_ctx)
 
     @property
-    def _name(self):
+    def name(self):
         """Return the name of the cipher."""
         return _c_get_name(&self._enc_ctx)
 
@@ -319,20 +291,6 @@ cdef class Cipher:
 
     def decrypt(self, message):
         return _c_crypt(&self._dec_ctx, self._iv, message)
-
-
-@enum.unique
-class Mode(enum.Enum):
-
-    """Enum with supported encryption modes."""
-
-    CBC = "CBC"
-    CCM = "CCM"
-    CFB64 = "CFB64"
-    CFB128 = "CFB128"
-    CTR = "CTR"
-    ECB = "ECB"
-    GCM = "GCM"
 
 
 class Aes(Cipher):
@@ -360,10 +318,10 @@ class Aes(Cipher):
         if bitlength not in {128, 192, 256}:
             raise InvalidKeyLengthError(
                 "bitlength must 128, 192, or 256, got %r" % bitlength)
-        if mode not in {Mode.ECB, Mode.CBC, Mode.CFB128, Mode.CTR,
+        if mode not in {Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR,
                         Mode.GCM, Mode.CCM}:
             raise FeatureUnavailableError("unsupported mode %r" % mode)
-        name = ("AES-%i-%s" % (bitlength, mode.value)).encode("ascii")
+        name = ("AES-%i-%s" % (bitlength, mode.name)).encode("ascii")
         super().__init__(name, key, iv)
 
 
@@ -391,10 +349,10 @@ class Camellia(Cipher):
         if bitlength not in {128, 192, 256}:
             raise InvalidKeyLengthError(
                 "bitlength must 128, 192, or 256, got %r" % bitlength)
-        if mode not in {Mode.ECB, Mode.CBC, Mode.CFB128, Mode.CTR,
+        if mode not in {Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR,
                         Mode.GCM, Mode.CCM}:
             raise FeatureUnavailableError("unsupported mode %r" % mode)
-        name = ("CAMELLIA-%i-%s" % (bitlength, mode.value)).encode("ascii")
+        name = ("CAMELLIA-%i-%s" % (bitlength, mode.name)).encode("ascii")
         super().__init__(name, key, iv)
 
 
@@ -421,7 +379,7 @@ class Des(Cipher):
     def __init__(self, mode, key, iv=None):
         if mode not in {Mode.ECB, Mode.CBC}:
             raise FeatureUnavailableError("unsupported mode %r" % mode)
-        name = ("DES-%s" % (mode.value,)).encode("ascii")
+        name = ("DES-%s" % (mode.name,)).encode("ascii")
         super().__init__(name, key, iv)
 
 
@@ -448,7 +406,7 @@ class DesEde(Cipher):
     def __init__(self, mode, key, iv=None):
         if mode not in {Mode.ECB, Mode.CBC}:
             raise FeatureUnavailableError("unsupported mode %r" % mode)
-        name = ("DES-EDE-%s" % (mode.value,)).encode("ascii")
+        name = ("DES-EDE-%s" % (mode.name,)).encode("ascii")
         super().__init__(name, key, iv)
 
 
@@ -475,7 +433,7 @@ class DesEde3(Cipher):
     def __init__(self, mode, key, iv=None):
         if mode not in {Mode.ECB, Mode.CBC}:
             raise FeatureUnavailableError("unsupported mode %r" % mode)
-        name = ("DES-EDE3-%s" % (mode.value,)).encode("ascii")
+        name = ("DES-EDE3-%s" % (mode.name,)).encode("ascii")
         super().__init__(name, key, iv)
 
 
@@ -499,9 +457,9 @@ class Blowfish(Cipher):
 
     """
     def __init__(self, mode, key, iv=None):
-        if mode not in {Mode.ECB, Mode.CBC, Mode.CFB64, Mode.CTR}:
+        if mode not in {Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR}:
             raise FeatureUnavailableError("unsupported mode %r" % mode)
-        name = ("BLOWFISH-%s" % (mode.value,)).encode("ascii")
+        name = ("BLOWFISH-%s" % (mode.name,)).encode("ascii")
         super().__init__(name, key, iv)
 
 
