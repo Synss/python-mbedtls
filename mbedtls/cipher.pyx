@@ -256,35 +256,35 @@ cdef class Cipher:
         """Return the name of the cipher."""
         return self.name.decode("ascii")
 
-    @property
-    def block_size(self):
+    property block_size:
         """Return the block size for the cipher."""
-        return _c_get_block_size(&self._enc_ctx)
+        def __get__(self):
+            return _c_get_block_size(&self._enc_ctx)
 
-    @property
-    def mode(self):
+    property mode:
         """Return the mode of operation of the cipher."""
-        return Mode(_c_get_cipher_mode(&self._enc_ctx))
+        def __get__(self):
+            return Mode(_c_get_cipher_mode(&self._enc_ctx))
 
-    @property
-    def iv_size(self):
+    property iv_size:
         """Return the size of the cipher's IV/NONCE in bytes."""
-        return _c_get_iv_size(&self._enc_ctx)
+        def __get__(self):
+            return _c_get_iv_size(&self._enc_ctx)
 
-    @property
-    def _type(self):
+    property _type:
         """Return the type of the cipher."""
-        return _c_get_type(&self._enc_ctx)
+        def __get__(self):
+            return _c_get_type(&self._enc_ctx)
 
-    @property
-    def name(self):
+    property name:
         """Return the name of the cipher."""
-        return _c_get_name(&self._enc_ctx)
+        def __get__(self):
+            return _c_get_name(&self._enc_ctx)
 
-    @property
-    def key_size(self):
+    property key_size:
         """Return the size of the ciphers' key."""
-        return _c_get_key_size(&self._enc_ctx)
+        def __get__(self):
+            return _c_get_key_size(&self._enc_ctx)
 
     def encrypt(self, message):
         return _c_crypt(&self._enc_ctx, self._iv, message)
