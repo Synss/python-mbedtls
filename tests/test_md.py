@@ -54,6 +54,16 @@ def test_copy_hash():
         yield test
 
 
+def test_check_hexdigest_against_hashlib():
+    for name in md_hash.algorithms_available:
+        buf = _rnd(1024)
+        alg = md_hash.new(name, buf)
+        ref = hashlib.new(name, buf)
+        test = partial(assert_equal, alg.hexdigest(), ref.hexdigest())
+        test.description = "check_hexdigest_against_hashlib(%s)" % name
+        yield test
+
+
 def test_check_against_hashlib_nobuf():
     for name in md_hash.algorithms_available:
         buf = _rnd(1024)

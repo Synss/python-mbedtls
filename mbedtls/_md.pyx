@@ -7,6 +7,7 @@ __license__ = "Apache License 2.0"
 
 cimport _md
 from libc.stdlib cimport malloc, free
+import binascii
 from mbedtls.exceptions import *
 
 
@@ -94,3 +95,10 @@ cdef class MDBase:
         """The canonical name of the hashing algorithm."""
         def __get__(self):
             return _md.mbedtls_md_get_name(self._info).decode("ascii").lower()
+
+    def hexdigest(self):
+        """Like digest except the digest is returned as a string object
+        of double length.
+
+        """
+        return binascii.hexlify(self.digest()).decode("ascii")
