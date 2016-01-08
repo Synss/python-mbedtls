@@ -10,16 +10,6 @@ import _cipher
 from mbedtls.exceptions import *
 
 
-MODE_ECB = _cipher.MODE_ECB
-MODE_CBC = _cipher.MODE_CBC
-MODE_CFB = _cipher.MODE_CFB
-# MODE_OFB = _cipher.MODE_OFB
-MODE_CTR = _cipher.MODE_CTR
-MODE_GCM = _cipher.MODE_GCM
-# MODE_STREAM = _cipher.MODE_STREAM
-MODE_CCM = _cipher.MODE_CCM
-
-
 block_size = 16
 key_size = None
 
@@ -43,11 +33,17 @@ def new(key, mode, iv=None):
     if len(key) not in {16, 24, 32}:
         raise InvalidKeyLengthError(
             "key size must 16, 24, or 32 bytes, got %r" % len(key))
-    if mode not in {MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR,
-                    MODE_GCM, MODE_CCM}:
+    if mode not in {
+        _cipher.MODE_ECB,
+        _cipher.MODE_CBC,
+        _cipher.MODE_CFB,
+        _cipher.MODE_CTR,
+        _cipher.MODE_GCM,
+        _cipher.MODE_CCM,
+    }:
         raise FeatureUnavailableError("unsupported mode %r" % mode)
     mode_name = _cipher._get_mode_name(mode)
-    if mode is MODE_CFB:
+    if mode is _cipher.MODE_CFB:
         mode_name += "128"
     name = ("CAMELLIA-%i-%s" % (len(key) * 8, mode_name)).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)

@@ -11,16 +11,6 @@ import _cipher
 from mbedtls.exceptions import *
 
 
-MODE_ECB = _cipher.MODE_ECB
-MODE_CBC = _cipher.MODE_CBC
-MODE_CFB = _cipher.MODE_CFB
-# MODE_OFB = _cipher.MODE_OFB
-MODE_CTR = _cipher.MODE_CTR
-# MODE_GCM = _cipher.MODE_GCM
-# MODE_STREAM = _cipher.MODE_STREAM
-# MODE_CCM = _cipher.MODE_CCM
-
-
 block_size = 8
 key_size = None
 
@@ -44,10 +34,15 @@ def new(key, mode, iv=None):
     if len(key) not in range(4, 57):
         raise InvalidKeyLengthError(
             "key size must be 4 to 57 bytes, got %i" % (key_size, len(key)))
-    if mode not in {MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR}:
+    if mode not in {
+        _cipher.MODE_ECB,
+        _cipher.MODE_CBC,
+        _cipher.MODE_CFB,
+        _cipher.MODE_CTR,
+    }:
         raise FeatureUnavailableError("unsupported mode %r" % mode)
     mode_name = _cipher._get_mode_name(mode)
-    if mode is MODE_CFB:
+    if mode is _cipher.MODE_CFB:
         mode_name += "64"
     name = ("BLOWFISH-%s" % mode_name).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)

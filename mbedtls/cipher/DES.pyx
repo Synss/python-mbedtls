@@ -45,7 +45,10 @@ def new(key, mode, iv=None):
     if len(key) != key_size:
         raise InvalidKeyLengthError(
             "key size must be 16 bytes, got %r" % len(key))
-    if mode not in {MODE_ECB, MODE_CBC}:
+    if mode not in {
+        _cipher.MODE_ECB,
+        _cipher.MODE_CBC,
+    }:
         raise FeatureUnavailableError("unsupported mode %r" % mode)
     mode_name = _cipher._get_mode_name(mode)
     name = ("DES-%s" % mode_name).encode("ascii")
