@@ -17,13 +17,7 @@ from mbedtls.cipher._cipher import CIPHER_NAME, get_supported_ciphers
 from mbedtls.cipher._cipher import Cipher
 from mbedtls.exceptions import *
 
-import mbedtls.cipher.AES as mb_AES
-import mbedtls.cipher.ARC4 as mb_ARC4
-import mbedtls.cipher.Blowfish as mb_Blowfish
-import mbedtls.cipher.Camellia as mb_Camellia
-import mbedtls.cipher.DES as mb_DES
-import mbedtls.cipher.DES3 as mb_DES3
-import mbedtls.cipher.DES3dbl as mb_DES3dbl
+import mbedtls.cipher as mb
 # pylint: enable=import-error
 
 from . import _rnd
@@ -69,19 +63,19 @@ def setup_cipher(name):
     iv = _rnd(cipher.iv_size)
     block = _rnd(cipher.block_size)
     if name.startswith(b"AES"):
-        mod = mb_AES
+        mod = mb.AES
     elif name.startswith(b"ARC4"):
-        mod = mb_ARC4
+        mod = mb.ARC4
     elif name.startswith(b"BLOWFISH"):
-        mod = mb_Blowfish
+        mod = mb.Blowfish
     elif name.startswith(b"CAMELLIA"):
-        mod = mb_Camellia
+        mod = mb.Camellia
     elif name.startswith(b"DES-EDE3"):
-        mod = mb_DES3
+        mod = mb.DES3
     elif name.startswith(b"DES-EDE"):
-        mod = mb_DES3dbl
+        mod = mb.DES3dbl
     elif name.startswith(b"DES"):
-        mod = mb_DES
+        mod = mb.DES
     else:
         raise NotImplementedError
     return mod, key, cipher.mode, iv, block
@@ -194,28 +188,19 @@ def test_check_against_pycrypto():
             yield skip_test, "encryption mode unsupported"
             continue
 
-        cipher = mod.new(key, mode, iv)
-        try:
-            if name.startswith(b"AES"):
-                ref = pc.AES.new(key, cipher.mode, iv)
-            elif name.startswith(b"ARC4"):
-                ref = pc.ARC4.new(key)
-            elif name.startswith(b"BLOWFISH"):
-                ref = pc.Blowfish.new(key, cipher.mode, iv)
-            elif name.startswith(b"DES-EDE"):
-                # Must precede DES.
-                ref = pc.DES3.new(key, cipher.mode, iv)
-            elif name.startswith(b"DES"):
-                ref = pc.DES.new(key, cipher.mode, iv)
-            else:
-                skip_test.description = description
-                yield skip_test, "%s not available in pyCrypto" % cipher
-                continue
-        except ValueError as exc:
-            # Catch exceptions from pyCrypto.
-            fail_test.description = description
-            yield fail_test, str(exc)
+        ref_mod = {
+            mb.AES: pc.AES,
+            mb.ARC4: pc.ARC4,
+            mb.Blowfish: pc.Blowfish,
+            mb.DES: pc.DES,
+            mb.DES3: pc.DES3,
+        }.get(mod, None)
+        if ref_mod is None:
+            skip_test.description = description
+            yield skip_test, "%s not available in pyCrypto" % cipher
             continue
+        cipher = mod.new(key, mode, iv)
+        ref = ref_mod.new(key, mode, iv)
 
         # Use partial to avoid late binding in report.
         if cipher.mode is MODE_CBC:

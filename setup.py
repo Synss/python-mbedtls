@@ -11,8 +11,9 @@ extensions = [
 ] + [
     Extension("mbedtls.cipher.%s" % name, ["mbedtls/cipher/%s.pyx" % name],
               libraries=["mbedtls"],
-              include_dirs=["."],)
-    for name in "_cipher AES ARC4 Blowfish Camellia DES DES3 DES3dbl".split()
+              include_dirs=["."],) for name in
+    "_cipher __init__".split() +
+    "AES ARC4 Blowfish Camellia DES DES3 DES3dbl".split()
 ] + [
     Extension("mbedtls.%s" % name, ["mbedtls/%s.pyx" % name],
               libraries=["mbedtls"],
