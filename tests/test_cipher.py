@@ -40,21 +40,31 @@ def test_get_supported_ciphers():
 
 @raises(UnsupportedCipherError)
 def test_wrong_size_raises_unsupported_cipher():
-    Cipher(b"AES-512-ECB", b"", b"")
+    Cipher(b"AES-512-ECB", b"", 0, b"")
 
 
 @raises(UnsupportedCipherError)
 def test_random_name_raises_unsupported_cipher():
-    Cipher(b"RANDOM TEXT IS NOT A CIPHER", b"", b"")
+    Cipher(b"RANDOM TEXT IS NOT A CIPHER", b"", 0, b"")
 
 
 @raises(UnsupportedCipherError)
 def test_zero_length_raises_unsupported_cipher():
-    Cipher(b"", b"", b"")
+    Cipher(b"", b"", 0, b"")
+
+
+@raises(ValueError)
+def test_cbc_raises_value_error_without_iv():
+    Cipher(b"AES-512-CBC", b"", MODE_CBC, b"")
+
+
+@raises(ValueError)
+def test_cfb_raises_value_error_without_iv():
+    Cipher(b"AES-512-CFB", b"", MODE_CFB, b"")
 
 
 def setup_cipher(name):
-    cipher = Cipher(name, key=None, iv=None)
+    cipher = Cipher(name, key=None, mode=None, iv=b"\x00")
     key = _rnd(cipher.key_size)
     iv = _rnd(cipher.iv_size)
     block = _rnd(cipher.block_size)

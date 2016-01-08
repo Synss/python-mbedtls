@@ -43,4 +43,4 @@ def new(key, mode, iv=None):
     if mode is MODE_CFB:
         mode_name += "64"
     name = ("BLOWFISH-%s" % mode_name).encode("ascii")
-    return _cipher.Cipher(name, key, iv)
+    return _cipher.Cipher(name, key, mode, iv)

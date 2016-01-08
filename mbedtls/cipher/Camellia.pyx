@@ -47,4 +47,4 @@ def new(key, mode, iv=None):
     if mode is MODE_CFB:
         mode_name += "128"
     name = ("CAMELLIA-%i-%s" % (bitlength, mode_name)).encode("ascii")
-    return _cipher.Cipher(name, key, iv)
+    return _cipher.Cipher(name, key, mode, iv)

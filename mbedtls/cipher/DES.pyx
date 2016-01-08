@@ -42,4 +42,4 @@ def new(key, mode, iv=None):
         raise FeatureUnavailableError("unsupported mode %r" % mode)
     mode_name = _cipher._get_mode_name(mode)
     name = ("DES-%s" % mode_name).encode("ascii")
-    return _cipher.Cipher(name, key, iv)
+    return _cipher.Cipher(name, key, mode, iv)

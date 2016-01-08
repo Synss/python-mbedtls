@@ -209,6 +209,7 @@ cdef class Cipher:
         name (bytes): The cipher name known to mbed TLS.
         key (bytes or None): The key to encrypt decrypt.  If None,
             encryption and decryption are unavailable.
+        mode (int): The mode of operation of the cipher.
         iv (bytes or None): The initialization vector (IV).  The IV is
             required for every mode but ECB and CTR where it is ignored.
             If not set, the IV is initialized to all 0, which should not
@@ -221,9 +222,9 @@ cdef class Cipher:
             key_size (int): The size of the cipher's key, in bytes.
 
     """
-    def __init__(self, cipher_name, key, iv):
-        # Casting read-only only buffer to typed memoryview fails, so we
-        # cast to bytearray.
+    def __init__(self, cipher_name, key, mode, iv):
+        if mode in {MODE_CBC, MODE_CFB} and not iv:
+            raise ValueError("mode requires an IV")
         self._setup(cipher_name)
         self._setkey(key)
         self._iv = iv if iv else b"\x00" * self.iv_size

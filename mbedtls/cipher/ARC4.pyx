@@ -31,4 +31,4 @@ def new(key, mode=None, iv=None):
         raise InvalidKeyLengthError(
             "bitlength must be 128, got %r" % bitlength)
     name = ("ARC4-%i" % (bitlength,)).encode("ascii")
-    return _cipher.Cipher(name, key, iv)
+    return _cipher.Cipher(name, key, mode, iv)
