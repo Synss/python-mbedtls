@@ -12,9 +12,11 @@ import _cipher
 from mbedtls.exceptions import *
 
 
-class Arc4(_cipher.Cipher):
+def new(key, mode=None, iv=None):
+    """Return a `Cipher` object that can perform ARC4 encryption and
+    decryption.
 
-    """Alleged River Cipher 4 cipher (ARC4 or ARCFOUR) designed in 1987
+    Alleged River Cipher 4 cipher (ARC4 or ARCFOUR) designed in 1987
     at RSA Security.
 
     Parameters:
@@ -23,16 +25,10 @@ class Arc4(_cipher.Cipher):
         mode (None): The feedback mode is ignored for ARC4.
         iv (None): ARC4 does not use IV.
 
-    Attributes:
-        block_size (int): The block size for the cipher in bytes.
-        iv_size (int): The size of the cipher's IV/NONCE in bytes.
-        key_size (int): The size of the cipher's key, in bytes.
-
     """
-    def __init__(self, key, mode=None, iv=None):
-        bitlength = len(key) * 8
-        if bitlength not in {128}:
-            raise InvalidKeyLengthError(
-                "bitlength must be 128, got %r" % bitlength)
-        name = ("ARC4-%i" % (bitlength,)).encode("ascii")
-        super().__init__(name, key, iv)
+    bitlength = len(key) * 8
+    if bitlength not in {128}:
+        raise InvalidKeyLengthError(
+            "bitlength must be 128, got %r" % bitlength)
+    name = ("ARC4-%i" % (bitlength,)).encode("ascii")
+    return _cipher.Cipher(name, key, iv)

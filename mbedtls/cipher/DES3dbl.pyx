@@ -22,9 +22,11 @@ MODE_CBC = _cipher.MODE_CBC
 # MODE_CCM = _cipher.MODE_CCM
 
 
-class DesEde(_cipher.Cipher):
+def new(key, mode, iv=None):
+    """Return a `Cipher` object that can perform two-key triple DES
+    encryption and decryption.
 
-    """Two-key triple DES cipher (also known as DES3, 3DES, Triple DES,
+    Two-key triple DES cipher (also known as DES3, 3DES, Triple DES,
     or DES-EDE).
 
     Parameters:
@@ -36,15 +38,9 @@ class DesEde(_cipher.Cipher):
             If not set, the IV is initialized to all 0, which should not
             be used for encryption.
 
-    Attributes:
-        block_size (int): The block size for the cipher in bytes.
-        iv_size (int): The size of the cipher's IV/NONCE in bytes.
-        key_size (int): The size of the cipher's key, in bytes.
-
     """
-    def __init__(self, key, mode, iv=None):
-        if mode not in {MODE_ECB, MODE_CBC}:
-            raise FeatureUnavailableError("unsupported mode %r" % mode)
-        mode_name = _cipher._get_mode_name(mode)
-        name = ("DES-EDE-%s" % mode_name).encode("ascii")
-        super().__init__(name, key, iv)
+    if mode not in {MODE_ECB, MODE_CBC}:
+        raise FeatureUnavailableError("unsupported mode %r" % mode)
+    mode_name = _cipher._get_mode_name(mode)
+    name = ("DES-EDE-%s" % mode_name).encode("ascii")
+    return _cipher.Cipher(name, key, iv)

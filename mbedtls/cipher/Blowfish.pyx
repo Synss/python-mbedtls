@@ -21,9 +21,11 @@ MODE_CTR = _cipher.MODE_CTR
 # MODE_CCM = _cipher.MODE_CCM
 
 
-class Blowfish(_cipher.Cipher):
+def new(key, mode, iv=None):
+    """Return a `Cipher` object that can perform Blowfish encryption and
+    decryption.
 
-    """Blowfish cipher designed by Bruce Schneier in 1993.
+    Blowfish cipher designed by Bruce Schneier in 1993.
 
     Parameters:
         key (bytes or None): The key to encrypt decrypt.  If None,
@@ -34,17 +36,11 @@ class Blowfish(_cipher.Cipher):
             If not set, the IV is initialized to all 0, which should not
             be used for encryption.
 
-    Attributes:
-        block_size (int): The block size for the cipher in bytes.
-        iv_size (int): The size of the cipher's IV/NONCE in bytes.
-        key_size (int): The size of the cipher's key, in bytes.
-
     """
-    def __init__(self, key, mode, iv=None):
-        if mode not in {MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR}:
-            raise FeatureUnavailableError("unsupported mode %r" % mode)
-        mode_name = _cipher._get_mode_name(mode)
-        if mode is MODE_CFB:
-            mode_name += "64"
-        name = ("BLOWFISH-%s" % mode_name).encode("ascii")
-        super().__init__(name, key, iv)
+    if mode not in {MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR}:
+        raise FeatureUnavailableError("unsupported mode %r" % mode)
+    mode_name = _cipher._get_mode_name(mode)
+    if mode is MODE_CFB:
+        mode_name += "64"
+    name = ("BLOWFISH-%s" % mode_name).encode("ascii")
+    return _cipher.Cipher(name, key, iv)

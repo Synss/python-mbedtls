@@ -23,9 +23,11 @@ MODE_GCM = _cipher.MODE_GCM
 MODE_CCM = _cipher.MODE_CCM
 
 
-class Aes(_cipher.Cipher):
+def new(key, mode, iv=None):
+    """Return a `Cipher` object that can perform AES encryption and
+    decryption.
 
-    """Advanced Encryption Standard (AES) cipher established by the U.S.
+    Advanced Encryption Standard (AES) cipher established by the U.S.
     NIST in 2001.
 
     Parameters:
@@ -37,22 +39,16 @@ class Aes(_cipher.Cipher):
             If not set, the IV is initialized to all 0, which should not
             be used for encryption.
 
-    Attributes:
-        block_size (int): The block size for the cipher in bytes.
-        iv_size (int): The size of the cipher's IV/NONCE in bytes.
-        key_size (int): The size of the cipher's key, in bytes.
-
     """
-    def __init__(self, key, mode, iv=None):
-        bitlength = len(key) * 8
-        if bitlength not in {128, 192, 256}:
-            raise InvalidKeyLengthError(
-                "bitlength must 128, 192, or 256, got %r" % bitlength)
-        if mode not in {MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR,
-                        MODE_GCM, MODE_CCM}:
-            raise FeatureUnavailableError("unsupported mode %r" % mode)
-        mode_name = _cipher._get_mode_name(mode)
-        if mode is MODE_CFB:
-            mode_name += "128"
-        name = ("AES-%i-%s" % (bitlength, mode_name)).encode("ascii")
-        super().__init__(name, key, iv)
+    bitlength = len(key) * 8
+    if bitlength not in {128, 192, 256}:
+        raise InvalidKeyLengthError(
+            "bitlength must 128, 192, or 256, got %r" % bitlength)
+    if mode not in {MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR,
+                    MODE_GCM, MODE_CCM}:
+        raise FeatureUnavailableError("unsupported mode %r" % mode)
+    mode_name = _cipher._get_mode_name(mode)
+    if mode is MODE_CFB:
+        mode_name += "128"
+    name = ("AES-%i-%s" % (bitlength, mode_name)).encode("ascii")
+    return _cipher.Cipher(name, key, iv)

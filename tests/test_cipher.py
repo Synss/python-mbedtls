@@ -59,22 +59,22 @@ def setup_cipher(name):
     iv = _rnd(cipher.iv_size)
     block = _rnd(cipher.block_size)
     if name.startswith(b"AES"):
-        cls = mb_AES.Aes
+        mod = mb_AES
     elif name.startswith(b"ARC4"):
-        cls = mb_ARC4.Arc4
+        mod = mb_ARC4
     elif name.startswith(b"BLOWFISH"):
-        cls = mb_Blowfish.Blowfish
+        mod = mb_Blowfish
     elif name.startswith(b"CAMELLIA"):
-        cls = mb_Camellia.Camellia
+        mod = mb_Camellia
     elif name.startswith(b"DES-EDE3"):
-        cls = mb_DES3.DesEde3
+        mod = mb_DES3
     elif name.startswith(b"DES-EDE"):
-        cls = mb_DES3dbl.DesEde
+        mod = mb_DES3dbl
     elif name.startswith(b"DES"):
-        cls = mb_DES.Des
+        mod = mb_DES
     else:
         raise NotImplementedError
-    return cls, key, cipher.mode, iv, block
+    return mod, key, cipher.mode, iv, block
 
 
 def get_ciphers():
@@ -103,8 +103,8 @@ def check_encrypt_decrypt(cipher, block):
 def test_encrypt_decrypt():
     for name in get_ciphers():
         description = "check_encrypt_decrypt(%s)" % name.decode()
-        cls, key, mode, iv, block = setup_cipher(name)
-        cipher = cls(key, mode, iv)
+        mod, key, mode, iv, block = setup_cipher(name)
+        cipher = mod.new(key, mode, iv)
         test = partial(check_encrypt_decrypt, cipher, block)
         test.description = description
         yield test
@@ -136,7 +136,7 @@ def test_check_against_pycrypto():
 
     for name in get_ciphers():
         description = "check_against_pycrypto(%s)" % name.decode()
-        cls, key, mode, iv, block = setup_cipher(name)
+        mod, key, mode, iv, block = setup_cipher(name)
         if mode not in pc_supported_modes.difference(
                 {MODE_CTR, MODE_CFB}):
             # Counter actually requires the counter.
@@ -144,7 +144,7 @@ def test_check_against_pycrypto():
             yield skip_test, "encryption mode unsupported"
             continue
 
-        cipher = cls(key, mode, iv)
+        cipher = mod.new(key, mode, iv)
         try:
             if name.startswith(b"AES"):
                 ref = pc.AES.new(key, cipher.mode, iv)
@@ -199,7 +199,7 @@ def test_check_against_openssl():
 
     for name in get_ciphers():
         description = "check_against_openssl(%s)" % name.decode()
-        cls, key, mode, iv, block = setup_cipher(name)
+        mod, key, mode, iv, block = setup_cipher(name)
         if mode == MODE_GCM:
             skip_test.description = description
             yield skip_test, "encryption mode unsupported"
@@ -213,7 +213,7 @@ def test_check_against_openssl():
             yield skip_test, "%s not available in openssl" % name
             continue
 
-        cipher = cls(key, mode, iv)
+        cipher = mod.new(key, mode, iv)
         openssl_cipher = CIPHER_LOOKUP.get(
             cipher.name, cipher.name.decode("ascii").lower())
 
@@ -239,8 +239,8 @@ def test_check_against_openssl():
 def test_streaming_ciphers():
     for name in get_ciphers():
         description = "check_stream_cipher(%s)" % name.decode()
-        cls, key, mode, iv, block = setup_cipher(name)
-        cipher = cls(key, mode, iv)
+        mod, key, mode, iv, block = setup_cipher(name)
+        cipher = mod.new(key, mode, iv)
         if is_streaming(cipher):
             block = _rnd(20000)
             check_encrypt_decrypt.description = description
@@ -254,8 +254,8 @@ def test_fixed_block_size_ciphers():
             cipher.encrypt(block)
 
     for name in get_ciphers():
-        cls, key, mode, iv, block = setup_cipher(name)
-        cipher = cls(key, mode, iv)
+        mod, key, mode, iv, block = setup_cipher(name)
+        cipher = mod.new(key, mode, iv)
         if not is_streaming(cipher):
             description = "long_block_raises(%s)" % name.decode()
             test = partial(check_encrypt_raises, cipher, block + _rnd(1),
