@@ -18,7 +18,16 @@ cdef extern from "mbedtls/cipher.h":
         pass
 
     ctypedef enum mbedtls_cipher_mode_t:
-        pass
+        # The numbering is standardized.
+        MBEDTLS_MODE_NONE = 0,
+        MBEDTLS_MODE_ECB,
+        MBEDTLS_MODE_CBC,
+        MBEDTLS_MODE_CFB,
+        MBEDTLS_MODE_OFB,
+        MBEDTLS_MODE_CTR,
+        MBEDTLS_MODE_GCM,
+        MBEDTLS_MODE_STREAM,
+        MBEDTLS_MODE_CCM
 
     ctypedef enum mbedtls_operation_t:
         pass
@@ -82,3 +91,13 @@ cdef extern from "mbedtls/cipher.h":
 
     # mbedtls_cipher_auth_encrypt
     # mbedtls_cipher_auth_decrypt
+
+
+cdef class Cipher:
+    # Encapsulate two contexts to push the keys into mbedtls ASAP.
+    cdef mbedtls_cipher_context_t _enc_ctx
+    cdef mbedtls_cipher_context_t _dec_ctx
+    cdef object _iv
+
+    cpdef _setup(self, cipher_name)
+    cpdef _setkey(self, key)
