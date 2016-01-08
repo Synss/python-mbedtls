@@ -18,7 +18,7 @@ extensions = [
     Extension("mbedtls.%s" % name, ["mbedtls/%s.pyx" % name],
               libraries=["mbedtls"],
               include_dirs=["."],)
-    for name in "_md hash hmac".split()
+    for name in "_md __init__ hash hmac".split()
 ]
 
 setup_requires = ["cython"]
