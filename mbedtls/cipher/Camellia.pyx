@@ -20,6 +20,10 @@ MODE_GCM = _cipher.MODE_GCM
 MODE_CCM = _cipher.MODE_CCM
 
 
+block_size = 16
+key_size = None
+
+
 def new(key, mode, iv=None):
     """Return a `Cipher` object that can perform Camellia encryption and
     decryption.
@@ -36,15 +40,14 @@ def new(key, mode, iv=None):
             be used for encryption.
 
     """
-    bitlength = len(key) * 8
-    if bitlength not in {128, 192, 256}:
+    if len(key) not in {16, 24, 32}:
         raise InvalidKeyLengthError(
-            "bitlength must 128, 192, or 256, got %r" % bitlength)
+            "key size must 16, 24, or 32 bytes, got %r" % len(key))
     if mode not in {MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR,
                     MODE_GCM, MODE_CCM}:
         raise FeatureUnavailableError("unsupported mode %r" % mode)
     mode_name = _cipher._get_mode_name(mode)
     if mode is MODE_CFB:
         mode_name += "128"
-    name = ("CAMELLIA-%i-%s" % (bitlength, mode_name)).encode("ascii")
+    name = ("CAMELLIA-%i-%s" % (len(key) * 8, mode_name)).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)

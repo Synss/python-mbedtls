@@ -22,6 +22,10 @@ MODE_CBC = _cipher.MODE_CBC
 # MODE_CCM = _cipher.MODE_CCM
 
 
+block_size = 8
+key_size = 8
+
+
 def new(key, mode, iv=None):
     """Return a `Cipher` object that can perform DES encryption and
     decryption.
@@ -38,6 +42,9 @@ def new(key, mode, iv=None):
             be used for encryption.
 
     """
+    if len(key) != key_size:
+        raise InvalidKeyLengthError(
+            "key size must be 16 bytes, got %r" % len(key))
     if mode not in {MODE_ECB, MODE_CBC}:
         raise FeatureUnavailableError("unsupported mode %r" % mode)
     mode_name = _cipher._get_mode_name(mode)

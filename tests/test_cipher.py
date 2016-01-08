@@ -120,6 +120,46 @@ def test_encrypt_decrypt():
         yield test
 
 
+def test_module_level_block_size_variable():
+    for name in get_ciphers():
+        description = ("test_module_level_block_size_variable(%s)" %
+                       name.decode())
+        mod, key, mode, iv, block = setup_cipher(name)
+        cipher = mod.new(key, mode, iv)
+        test = partial(assert_equal, cipher.block_size, mod.block_size)
+        test.description = description
+        yield test
+
+
+def test_module_level_key_size_variable():
+    for name in get_ciphers():
+        description = ("test_module_level_block_size_variable(%s)" %
+                       name.decode())
+        mod, key, mode, iv, block = setup_cipher(name)
+        if mod.key_size is None:
+            skip_test.description = description
+            yield skip_test, "module defines variable-length key"
+            continue
+        cipher = mod.new(key, mode, iv)
+        test = partial(assert_equal, cipher.key_size, mod.key_size)
+        test.description = description
+        yield test
+
+
+def test_wrong_key_size_raises_invalid_key_size_error():
+    for name in get_ciphers():
+        description = "wrong_key_size_raises(%s)" % name.decode()
+        mod, key, mode, iv, block = setup_cipher(name)
+        if mod.key_size is None:
+            skip_test.description = description
+            yield skip_test, "module defines variable-length key"
+            continue
+        test = partial(assert_raises, InvalidKeyLengthError,
+                       mod.new, key + b"\x00", mode, iv)
+        test.description = description
+        yield test
+
+
 def test_check_against_pycrypto():
     try:
         import Crypto.Cipher as pc

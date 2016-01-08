@@ -12,6 +12,10 @@ import _cipher
 from mbedtls.exceptions import *
 
 
+block_size = 1
+key_size = 16
+
+
 def new(key, mode=None, iv=None):
     """Return a `Cipher` object that can perform ARC4 encryption and
     decryption.
@@ -26,9 +30,8 @@ def new(key, mode=None, iv=None):
         iv (None): ARC4 does not use IV.
 
     """
-    bitlength = len(key) * 8
-    if bitlength not in {128}:
+    if len(key) != key_size:
         raise InvalidKeyLengthError(
-            "bitlength must be 128, got %r" % bitlength)
-    name = ("ARC4-%i" % (bitlength,)).encode("ascii")
+            "key size must be %i bytes, got %i" % (key_size, len(key)))
+    name = ("ARC4-%i" % (len(key) * 8)).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)
