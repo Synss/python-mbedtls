@@ -13,6 +13,10 @@ extensions = [
               libraries=["mbedtls"],
               include_dirs=["."])
 ] + [
+    Extension("mbedtls.random", ["mbedtls/random.pyx"],
+              libraries=["mbedtls"],
+              include_dirs=["."],)
+] + [
     Extension("mbedtls.cipher.%s" % name, ["mbedtls/cipher/%s.pyx" % name],
               libraries=["mbedtls"],
               include_dirs=["."],) for name in
