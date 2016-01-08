@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>mbedtls.cipher Module API &mdash; python-mbedtls 0.1 documentation</title>
+    <title>mbedtls.cipher Package API &mdash; python-mbedtls 0.3 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-mbedtls 0.1 documentation" href="index.html" />
+    <link rel="top" title="python-mbedtls 0.3 documentation" href="index.html" />
     <link rel="next" title="mbedtls.hash Module API" href="apimd.html" />
     <link rel="prev" title="Python wrapper to mbed TLS" href="index.html" />
    
@@ -39,28 +39,118 @@
           <div class="body" role="main">
             
   <div class="section" id="module-mbedtls.cipher">
-<span id="mbedtls-cipher-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.cipher" title="mbedtls.cipher"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.cipher" title="Permalink to this headline">¶</a></h1>
-<p>Ciphers for symmetric encryption and decryption.</p>
+<span id="mbedtls-cipher-package-api"></span><h1><a class="reference internal" href="#module-mbedtls.cipher" title="mbedtls.cipher"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher</span></code></a> Package API<a class="headerlink" href="#module-mbedtls.cipher" title="Permalink to this headline">¶</a></h1>
+<p>The cipher package provide symmetric encryption and decryption.</p>
+<p>The API follows the recommendations from PEP 272 &#8220;API for Block
+Encryption Algorithms&#8221;</p>
 <dl class="class">
-<dt id="mbedtls.cipher.Mode">
-<em class="property">class </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">Mode</code><a class="headerlink" href="#mbedtls.cipher.Mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Enum with supported encryption modes.</p>
+<dt id="mbedtls.cipher.Cipher">
+<em class="property">class </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">Cipher</code><a class="headerlink" href="#mbedtls.cipher.Cipher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrap and encapsulate the cipher library from mbed TLS.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>bytes</em>) &#8211; The cipher name known to mbed TLS.</li>
+<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+encryption and decryption are unavailable.</li>
+<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+required for every mode but ECB and CTR where it is ignored.
+If not set, the IV is initialized to all 0, which should not
+be used for encryption.</li>
+<li><strong>Attributes</strong> &#8211; block_size (int): The block size for the cipher in bytes.
+mode (int): The mode of operation of the cipher.
+iv_size (int): The size of the cipher&#8217;s IV/NONCE in bytes.
+key_size (int): The size of the cipher&#8217;s key, in bytes.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="mbedtls.cipher.Cipher.block_size">
+<code class="descname">block_size</code><a class="headerlink" href="#mbedtls.cipher.Cipher.block_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the block size for the cipher.</p>
 </dd></dl>
 
-<dl class="class">
-<dt id="mbedtls.cipher.Aes">
-<em class="property">class </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">Aes</code><a class="headerlink" href="#mbedtls.cipher.Aes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Advanced Encryption Standard (AES) cipher established by the U.S.
+<dl class="attribute">
+<dt id="mbedtls.cipher.Cipher.iv_size">
+<code class="descname">iv_size</code><a class="headerlink" href="#mbedtls.cipher.Cipher.iv_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the size of the cipher&#8217;s IV/NONCE in bytes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.cipher.Cipher.key_size">
+<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.cipher.Cipher.key_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the size of the ciphers&#8217; key.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.cipher.Cipher.mode">
+<code class="descname">mode</code><a class="headerlink" href="#mbedtls.cipher.Cipher.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the mode of operation of the cipher.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.cipher.Cipher.name">
+<code class="descname">name</code><a class="headerlink" href="#mbedtls.cipher.Cipher.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the cipher.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="data">
+<dt id="mbedtls.cipher.MODE_ECB">
+<code class="descclassname">mbedtls.cipher.</code><code class="descname">MODE_ECB</code><a class="headerlink" href="#mbedtls.cipher.MODE_ECB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="mbedtls.cipher.MODE_CBC">
+<code class="descclassname">mbedtls.cipher.</code><code class="descname">MODE_CBC</code><a class="headerlink" href="#mbedtls.cipher.MODE_CBC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="mbedtls.cipher.MODE_CFB">
+<code class="descclassname">mbedtls.cipher.</code><code class="descname">MODE_CFB</code><a class="headerlink" href="#mbedtls.cipher.MODE_CFB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="mbedtls.cipher.MODE_CTR">
+<code class="descclassname">mbedtls.cipher.</code><code class="descname">MODE_CTR</code><a class="headerlink" href="#mbedtls.cipher.MODE_CTR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="mbedtls.cipher.MODE_GCM">
+<code class="descclassname">mbedtls.cipher.</code><code class="descname">MODE_GCM</code><a class="headerlink" href="#mbedtls.cipher.MODE_GCM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="mbedtls.cipher.MODE_CCM">
+<code class="descclassname">mbedtls.cipher.</code><code class="descname">MODE_CCM</code><a class="headerlink" href="#mbedtls.cipher.MODE_CCM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-mbedtls.cipher.AES">
+<span id="mbedtls-cipher-aes-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.AES" title="mbedtls.cipher.AES"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher.AES</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.AES" title="Permalink to this headline">¶</a></h1>
+<p>Advanced Encryption Standard (AES) cipher established by the U.S.
+NIST in 2001.</p>
+<dl class="function">
+<dt id="mbedtls.cipher.AES.new">
+<code class="descclassname">mbedtls.cipher.AES.</code><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.cipher.AES.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>Cipher</cite> object that can perform AES encryption and
+decryption.</p>
+<p>Advanced Encryption Standard (AES) cipher established by the U.S.
 NIST in 2001.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>bitlength</strong> (<em>int</em>) &#8211; The size of the key, in bits.</li>
-<li><strong>mode</strong> (<a class="reference internal" href="#mbedtls.cipher.Mode" title="mbedtls.cipher.Mode"><em>Mode</em></a>) &#8211; The mode of operation of the cipher.</li>
 <li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
 encryption and decryption are unavailable.</li>
+<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
 <li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
 required for every mode but ECB and CTR where it is ignored.
 If not set, the IV is initialized to all 0, which should not
@@ -70,272 +160,268 @@ be used for encryption.</li>
 </tr>
 </tbody>
 </table>
-<dl class="attribute">
-<dt id="mbedtls.cipher.Aes.block_size">
-<code class="descname">block_size</code><a class="headerlink" href="#mbedtls.cipher.Aes.block_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The block size for the cipher in bytes.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="mbedtls.cipher.Aes.iv_size">
-<code class="descname">iv_size</code><a class="headerlink" href="#mbedtls.cipher.Aes.iv_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s IV/NONCE in bytes.</p>
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.AES.block_size = 16</code></dt>
+<dd><p>Block size in bytes.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="mbedtls.cipher.Aes.key_size">
-<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.cipher.Aes.key_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s key, in bytes.</p>
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.AES.key_size = None</code></dt>
+<dd><p>Key size in bytes.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.cipher.Camellia">
-<em class="property">class </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">Camellia</code><a class="headerlink" href="#mbedtls.cipher.Camellia" title="Permalink to this definition">¶</a></dt>
-<dd><p>Camellia cipher developed by Japan&#8217;s Mitsubishi an NTT in 2000.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>bitlength</strong> (<em>int</em>) &#8211; The size of the key, in bits.</li>
-<li><strong>mode</strong> (<a class="reference internal" href="#mbedtls.cipher.Mode" title="mbedtls.cipher.Mode"><em>Mode</em></a>) &#8211; The mode of operation of the cipher.</li>
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
-encryption and decryption are unavailable.</li>
-<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
-required for every mode but ECB and CTR where it is ignored.
-If not set, the IV is initialized to all 0, which should not
-be used for encryption.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="mbedtls.cipher.Camellia.block_size">
-<code class="descname">block_size</code><a class="headerlink" href="#mbedtls.cipher.Camellia.block_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The block size for the cipher in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.Camellia.iv_size">
-<code class="descname">iv_size</code><a class="headerlink" href="#mbedtls.cipher.Camellia.iv_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s IV/NONCE in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.Camellia.key_size">
-<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.cipher.Camellia.key_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s key, in bytes.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.cipher.Des">
-<em class="property">class </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">Des</code><a class="headerlink" href="#mbedtls.cipher.Des" title="Permalink to this definition">¶</a></dt>
-<dd><p>Data Encryption Standard (DES) cipher developed by IBM
-in the 70&#8217;s.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>mode</strong> (<a class="reference internal" href="#mbedtls.cipher.Mode" title="mbedtls.cipher.Mode"><em>Mode</em></a>) &#8211; The mode of operation of the cipher.</li>
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
-encryption and decryption are unavailable.</li>
-<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
-required for every mode but ECB and CTR where it is ignored.
-If not set, the IV is initialized to all 0, which should not
-be used for encryption.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="mbedtls.cipher.Des.block_size">
-<code class="descname">block_size</code><a class="headerlink" href="#mbedtls.cipher.Des.block_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The block size for the cipher in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.Des.iv_size">
-<code class="descname">iv_size</code><a class="headerlink" href="#mbedtls.cipher.Des.iv_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s IV/NONCE in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.Des.key_size">
-<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.cipher.Des.key_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s key, in bytes.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.cipher.DesEde">
-<em class="property">class </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">DesEde</code><a class="headerlink" href="#mbedtls.cipher.DesEde" title="Permalink to this definition">¶</a></dt>
-<dd><p>Two-key triple DES cipher (also known as DES3, 3DES, Triple DES,
-or DES-EDE).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>mode</strong> (<a class="reference internal" href="#mbedtls.cipher.Mode" title="mbedtls.cipher.Mode"><em>Mode</em></a>) &#8211; The mode of operation of the cipher.</li>
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
-encryption and decryption are unavailable.</li>
-<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
-required for every mode but ECB and CTR where it is ignored.
-If not set, the IV is initialized to all 0, which should not
-be used for encryption.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="mbedtls.cipher.DesEde.block_size">
-<code class="descname">block_size</code><a class="headerlink" href="#mbedtls.cipher.DesEde.block_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The block size for the cipher in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.DesEde.iv_size">
-<code class="descname">iv_size</code><a class="headerlink" href="#mbedtls.cipher.DesEde.iv_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s IV/NONCE in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.DesEde.key_size">
-<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.cipher.DesEde.key_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s key, in bytes.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.cipher.DesEde3">
-<em class="property">class </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">DesEde3</code><a class="headerlink" href="#mbedtls.cipher.DesEde3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Three-key triple DES cipher (also known as DES3, 3DES,
-Triple DES, or DES-EDE3).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>mode</strong> (<a class="reference internal" href="#mbedtls.cipher.Mode" title="mbedtls.cipher.Mode"><em>Mode</em></a>) &#8211; The mode of operation of the cipher.</li>
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
-encryption and decryption are unavailable.</li>
-<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
-required for every mode but ECB and CTR where it is ignored.
-If not set, the IV is initialized to all 0, which should not
-be used for encryption.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="mbedtls.cipher.DesEde3.block_size">
-<code class="descname">block_size</code><a class="headerlink" href="#mbedtls.cipher.DesEde3.block_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The block size for the cipher in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.DesEde3.iv_size">
-<code class="descname">iv_size</code><a class="headerlink" href="#mbedtls.cipher.DesEde3.iv_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s IV/NONCE in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.DesEde3.key_size">
-<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.cipher.DesEde3.key_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s key, in bytes.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.cipher.Blowfish">
-<em class="property">class </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">Blowfish</code><a class="headerlink" href="#mbedtls.cipher.Blowfish" title="Permalink to this definition">¶</a></dt>
-<dd><p>Blowfish cipher designed by Bruce Schneier in 1993.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>mode</strong> (<a class="reference internal" href="#mbedtls.cipher.Mode" title="mbedtls.cipher.Mode"><em>Mode</em></a>) &#8211; The mode of operation of the cipher.</li>
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
-encryption and decryption are unavailable.</li>
-<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
-required for every mode but ECB and CTR where it is ignored.
-If not set, the IV is initialized to all 0, which should not
-be used for encryption.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="mbedtls.cipher.Blowfish.block_size">
-<code class="descname">block_size</code><a class="headerlink" href="#mbedtls.cipher.Blowfish.block_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The block size for the cipher in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.Blowfish.iv_size">
-<code class="descname">iv_size</code><a class="headerlink" href="#mbedtls.cipher.Blowfish.iv_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s IV/NONCE in bytes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.Blowfish.key_size">
-<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.cipher.Blowfish.key_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s key, in bytes.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.cipher.Arc4">
-<em class="property">class </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">Arc4</code><a class="headerlink" href="#mbedtls.cipher.Arc4" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alleged River Cipher 4 cipher (ARC4 or ARCFOUR) designed in 1987
+</div>
+<div class="section" id="module-mbedtls.cipher.ARC4">
+<span id="mbedtls-cipher-arc4-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.ARC4" title="mbedtls.cipher.ARC4"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher.ARC4</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.ARC4" title="Permalink to this headline">¶</a></h1>
+<p>Alleged River Cipher 4 cipher (ARC4 or ARCFOUR) designed in 1987
+at RSA Security.</p>
+<dl class="function">
+<dt id="mbedtls.cipher.ARC4.new">
+<code class="descclassname">mbedtls.cipher.ARC4.</code><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.cipher.ARC4.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>Cipher</cite> object that can perform ARC4 encryption and
+decryption.</p>
+<p>Alleged River Cipher 4 cipher (ARC4 or ARCFOUR) designed in 1987
 at RSA Security.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>bitlength</strong> (<em>int</em>) &#8211; The size of the key, in bits.</li>
 <li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
 encryption and decryption are unavailable.</li>
+<li><strong>mode</strong> (<em>None</em>) &#8211; The feedback mode is ignored for ARC4.</li>
 <li><strong>iv</strong> (<em>None</em>) &#8211; ARC4 does not use IV.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
-<dl class="attribute">
-<dt id="mbedtls.cipher.Arc4.block_size">
-<code class="descname">block_size</code><a class="headerlink" href="#mbedtls.cipher.Arc4.block_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The block size for the cipher in bytes.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="mbedtls.cipher.Arc4.iv_size">
-<code class="descname">iv_size</code><a class="headerlink" href="#mbedtls.cipher.Arc4.iv_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s IV/NONCE in bytes.</p>
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.ARC4.block_size = 1</code></dt>
+<dd><p>Block size in bytes.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="mbedtls.cipher.Arc4.key_size">
-<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.cipher.Arc4.key_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> &#8211; The size of the cipher&#8217;s key, in bytes.</p>
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.ARC4.key_size = 16</code></dt>
+<dd><p>Key size in bytes.</p>
 </dd></dl>
 
+</div>
+<div class="section" id="module-mbedtls.cipher.Blowfish">
+<span id="mbedtls-cipher-blowfish-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.Blowfish" title="mbedtls.cipher.Blowfish"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher.Blowfish</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.Blowfish" title="Permalink to this headline">¶</a></h1>
+<p>Blowfish cipher designed by Bruce Schneier in 1993.</p>
+<dl class="function">
+<dt id="mbedtls.cipher.Blowfish.new">
+<code class="descclassname">mbedtls.cipher.Blowfish.</code><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.cipher.Blowfish.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>Cipher</cite> object that can perform Blowfish encryption and
+decryption.</p>
+<p>Blowfish cipher designed by Bruce Schneier in 1993.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+encryption and decryption are unavailable.</li>
+<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+required for every mode but ECB and CTR where it is ignored.
+If not set, the IV is initialized to all 0, which should not
+be used for encryption.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.Blowfish.block_size = 8</code></dt>
+<dd><p>Block size in bytes.</p>
+</dd></dl>
+
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.Blowfish.key_size = None</code></dt>
+<dd><p>Key size in bytes.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mbedtls.cipher.Camellia">
+<span id="mbedtls-cipher-camellia-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.Camellia" title="mbedtls.cipher.Camellia"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher.Camellia</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.Camellia" title="Permalink to this headline">¶</a></h1>
+<p>Camellia cipher developed by Japan&#8217;s Mitsubishi an NTT in 2000.</p>
+<dl class="function">
+<dt id="mbedtls.cipher.Camellia.new">
+<code class="descclassname">mbedtls.cipher.Camellia.</code><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.cipher.Camellia.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>Cipher</cite> object that can perform Camellia encryption and
+decryption.</p>
+<p>Camellia cipher developed by Japan&#8217;s Mitsubishi an NTT in 2000.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+encryption and decryption are unavailable.</li>
+<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+required for every mode but ECB and CTR where it is ignored.
+If not set, the IV is initialized to all 0, which should not
+be used for encryption.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.Camellia.block_size = 16</code></dt>
+<dd><p>Block size in bytes.</p>
+</dd></dl>
+
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.Camellia.key_size = None</code></dt>
+<dd><p>Key size in bytes.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mbedtls.cipher.DES">
+<span id="mbedtls-cipher-des-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.DES" title="mbedtls.cipher.DES"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher.DES</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.DES" title="Permalink to this headline">¶</a></h1>
+<p>Data Encryption Standard (DES) cipher developed by IBM
+in the 70&#8217;s.</p>
+<dl class="function">
+<dt id="mbedtls.cipher.DES.new">
+<code class="descclassname">mbedtls.cipher.DES.</code><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.cipher.DES.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>Cipher</cite> object that can perform DES encryption and
+decryption.</p>
+<p>Data Encryption Standard (DES) cipher developed by IBM in the 70&#8217;s.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+encryption and decryption are unavailable.</li>
+<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+required for every mode but ECB and CTR where it is ignored.
+If not set, the IV is initialized to all 0, which should not
+be used for encryption.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.DES.block_size = 8</code></dt>
+<dd><p>Block size in bytes.</p>
+</dd></dl>
+
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.DES.key_size = 8</code></dt>
+<dd><p>Key size in bytes.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mbedtls.cipher.DES3dbl">
+<span id="mbedtls-cipher-des3dbl-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.DES3dbl" title="mbedtls.cipher.DES3dbl"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher.DES3dbl</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.DES3dbl" title="Permalink to this headline">¶</a></h1>
+<p>Two-key triple DES cipher (also known as DES3, 3DES, Triple DES,
+or DES-EDE).</p>
+<dl class="function">
+<dt id="mbedtls.cipher.DES3dbl.new">
+<code class="descclassname">mbedtls.cipher.DES3dbl.</code><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.cipher.DES3dbl.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>Cipher</cite> object that can perform two-key triple DES
+encryption and decryption.</p>
+<p>Two-key triple DES cipher (also known as DES3, 3DES, Triple DES,
+or DES-EDE).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+encryption and decryption are unavailable.</li>
+<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+required for every mode but ECB and CTR where it is ignored.
+If not set, the IV is initialized to all 0, which should not
+be used for encryption.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.DES3dbl.block_size = 8</code></dt>
+<dd><p>Block size in bytes.</p>
+</dd></dl>
+
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.DES3dbl.key_size = 16</code></dt>
+<dd><p>Key size in bytes.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mbedtls.cipher.DES3">
+<span id="mbedtls-cipher-des3-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.DES3" title="mbedtls.cipher.DES3"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher.DES3</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.DES3" title="Permalink to this headline">¶</a></h1>
+<p>Three-key triple DES cipher (also known as DES3, 3DES,
+Triple DES, or DES-EDE3).</p>
+<dl class="function">
+<dt id="mbedtls.cipher.DES3.new">
+<code class="descclassname">mbedtls.cipher.DES3.</code><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.cipher.DES3.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>Cipher</cite> object that can perform three-key triple DES
+encryption and decryption.</p>
+<p>Three-key triple DES cipher (also known as DES3, 3DES,
+Triple DES, or DES-EDE3).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+encryption and decryption are unavailable.</li>
+<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+required for every mode but ECB and CTR where it is ignored.
+If not set, the IV is initialized to all 0, which should not
+be used for encryption.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.DES3.block_size = 8</code></dt>
+<dd><p>Block size in bytes.</p>
+</dd></dl>
+
+<dl class="data">
+<dt>
+<code class="descname">mbedtls.cipher.DES3.key_size = 24</code></dt>
+<dd><p>Key size in bytes.</p>
 </dd></dl>
 
 </div>
@@ -345,7 +431,19 @@ encryption and decryption are unavailable.</li>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
+<li><a class="reference internal" href="#module-mbedtls.cipher.AES"><code class="docutils literal"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
+<li><a class="reference internal" href="#module-mbedtls.cipher.ARC4"><code class="docutils literal"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
+<li><a class="reference internal" href="#module-mbedtls.cipher.Blowfish"><code class="docutils literal"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
+<li><a class="reference internal" href="#module-mbedtls.cipher.Camellia"><code class="docutils literal"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
+<li><a class="reference internal" href="#module-mbedtls.cipher.DES"><code class="docutils literal"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
+<li><a class="reference internal" href="#module-mbedtls.cipher.DES3dbl"><code class="docutils literal"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
+<li><a class="reference internal" href="#module-mbedtls.cipher.DES3"><code class="docutils literal"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
+</ul>
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
@@ -379,7 +477,7 @@ encryption and decryption are unavailable.</li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2015, Mathias Laurin.
+      &copy;2016, Mathias Laurin.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.3</a>
