@@ -234,11 +234,11 @@ static CYTHON_INLINE float __PYX_NAN() {
   #endif
 #endif
 
-#define __PYX_HAVE__mbedtls__hmac
-#define __PYX_HAVE_API__mbedtls__hmac
+#define __PYX_HAVE__mbedtls__cipher___cipher
+#define __PYX_HAVE_API__mbedtls__cipher___cipher
+#include "mbedtls/cipher.h"
 #include "string.h"
 #include "stdlib.h"
-#include "mbedtls/md.h"
 #include "pythread.h"
 #include "stdio.h"
 #include "pystate.h"
@@ -450,7 +450,7 @@ static const char *__pyx_filename;
 
 
 static const char *__pyx_f[] = {
-  "mbedtls/hmac.pyx",
+  "mbedtls/cipher/_cipher.pyx",
   "stringsource",
 };
 struct __pyx_memoryview_obj;
@@ -547,37 +547,47 @@ typedef volatile __pyx_atomic_int_type __pyx_atomic_int;
 
 
 /*--- Type declarations ---*/
-struct __pyx_obj_7mbedtls_3_md_MDBase;
-struct __pyx_obj_7mbedtls_4hmac_Hmac;
+struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher;
 struct __pyx_array_obj;
 struct __pyx_MemviewEnum_obj;
 struct __pyx_memoryview_obj;
 struct __pyx_memoryviewslice_obj;
 
-/* "_md.pxd":63
+/* "mbedtls/cipher/_cipher.pxd":9
  * 
+ * cdef:
+ *     enum: MAX_BLOCK_LENGTH = 16             # <<<<<<<<<<<<<<
+ *     enum: MAX_IV_LENGTH = 16
  * 
- * cdef class MDBase:             # <<<<<<<<<<<<<<
- *     cdef const mbedtls_md_info_t* _info
- *     cdef mbedtls_md_context_t _ctx
  */
-struct __pyx_obj_7mbedtls_3_md_MDBase {
-  PyObject_HEAD
-  struct __pyx_vtabstruct_7mbedtls_3_md_MDBase *__pyx_vtab;
-  mbedtls_md_info_t const *_info;
-  mbedtls_md_context_t _ctx;
+enum  {
+  __pyx_e_7mbedtls_6cipher_7_cipher_MAX_BLOCK_LENGTH = 16
 };
 
-
-/* "mbedtls/hmac.pyx":18
+/* "mbedtls/cipher/_cipher.pxd":10
+ * cdef:
+ *     enum: MAX_BLOCK_LENGTH = 16
+ *     enum: MAX_IV_LENGTH = 16             # <<<<<<<<<<<<<<
  * 
  * 
- * cdef class Hmac(_md.MDBase):             # <<<<<<<<<<<<<<
- * 
- *     """Wrap and encapsulate HMAC calculations.
  */
-struct __pyx_obj_7mbedtls_4hmac_Hmac {
-  struct __pyx_obj_7mbedtls_3_md_MDBase __pyx_base;
+enum  {
+  __pyx_e_7mbedtls_6cipher_7_cipher_MAX_IV_LENGTH = 16
+};
+
+/* "mbedtls/cipher/_cipher.pxd":96
+ * 
+ * 
+ * cdef class Cipher:             # <<<<<<<<<<<<<<
+ *     # Encapsulate two contexts to push the keys into mbedtls ASAP.
+ *     cdef mbedtls_cipher_context_t _enc_ctx
+ */
+struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher {
+  PyObject_HEAD
+  struct __pyx_vtabstruct_7mbedtls_6cipher_7_cipher_Cipher *__pyx_vtab;
+  mbedtls_cipher_context_t _enc_ctx;
+  mbedtls_cipher_context_t _dec_ctx;
+  PyObject *_iv;
 };
 
 
@@ -658,36 +668,19 @@ struct __pyx_memoryviewslice_obj {
 
 
 
-/* "_md.pxd":63
+/* "mbedtls/cipher/_cipher.pyx":204
  * 
  * 
- * cdef class MDBase:             # <<<<<<<<<<<<<<
- *     cdef const mbedtls_md_info_t* _info
- *     cdef mbedtls_md_context_t _ctx
+ * cdef class Cipher:             # <<<<<<<<<<<<<<
+ * 
+ *     """Wrap and encapsulate the cipher library from mbed TLS.
  */
 
-struct __pyx_vtabstruct_7mbedtls_3_md_MDBase {
-  PyObject *(*_update)(struct __pyx_obj_7mbedtls_3_md_MDBase *, unsigned char const *, size_t);
-  PyObject *(*_finish)(struct __pyx_obj_7mbedtls_3_md_MDBase *, unsigned char const *);
-  PyObject *(*update)(struct __pyx_obj_7mbedtls_3_md_MDBase *, PyObject *, int __pyx_skip_dispatch);
-  PyObject *(*digest)(struct __pyx_obj_7mbedtls_3_md_MDBase *, int __pyx_skip_dispatch);
+struct __pyx_vtabstruct_7mbedtls_6cipher_7_cipher_Cipher {
+  PyObject *(*_setup)(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *, PyObject *, int __pyx_skip_dispatch);
+  PyObject *(*_setkey)(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *, PyObject *, int __pyx_skip_dispatch);
 };
-static struct __pyx_vtabstruct_7mbedtls_3_md_MDBase *__pyx_vtabptr_7mbedtls_3_md_MDBase;
-
-
-/* "mbedtls/hmac.pyx":18
- * 
- * 
- * cdef class Hmac(_md.MDBase):             # <<<<<<<<<<<<<<
- * 
- *     """Wrap and encapsulate HMAC calculations.
- */
-
-struct __pyx_vtabstruct_7mbedtls_4hmac_Hmac {
-  struct __pyx_vtabstruct_7mbedtls_3_md_MDBase __pyx_base;
-  PyObject *(*copy)(struct __pyx_obj_7mbedtls_4hmac_Hmac *, int __pyx_skip_dispatch);
-};
-static struct __pyx_vtabstruct_7mbedtls_4hmac_Hmac *__pyx_vtabptr_7mbedtls_4hmac_Hmac;
+static struct __pyx_vtabstruct_7mbedtls_6cipher_7_cipher_Cipher *__pyx_vtabptr_7mbedtls_6cipher_7_cipher_Cipher;
 
 
 /* "View.MemoryView":304
@@ -803,19 +796,24 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_GetAttrStr(PyObject* obj, PyObject
 
 static PyObject *__Pyx_GetBuiltinName(PyObject *name);
 
-static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
-    Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
-
-static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
-
-static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
-    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
-    const char* function_name);
-
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
+#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
+static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key) {
+    PyObject *value;
+    value = PyDict_GetItemWithError(d, key);
+    if (unlikely(!value)) {
+        if (!PyErr_Occurred()) {
+            PyObject* args = PyTuple_Pack(1, key);
+            if (likely(args))
+                PyErr_SetObject(PyExc_KeyError, args);
+            Py_XDECREF(args);
+        }
+        return NULL;
+    }
+    Py_INCREF(value);
+    return value;
+}
 #else
-#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
+    #define __Pyx_PyDict_GetItem(d, key) PyObject_GetItem(d, key)
 #endif
 
 static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name);
@@ -823,10 +821,47 @@ static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name);
 static void __Pyx_RaiseBufferIndexError(int axis);
 
 #if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
+#else
+#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
+#endif
+
+#if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg);
 #endif
 
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
+#else
+#define __Pyx_PyObject_CallNoArg(func) __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL)
+#endif
+
+static CYTHON_INLINE void __Pyx_ErrRestore(PyObject *type, PyObject *value, PyObject *tb);
+static CYTHON_INLINE void __Pyx_ErrFetch(PyObject **type, PyObject **value, PyObject **tb);
+
+static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE int __Pyx_ListComp_Append(PyObject* list, PyObject* x) {
+    PyListObject* L = (PyListObject*) list;
+    Py_ssize_t len = Py_SIZE(list);
+    if (likely(L->allocated > len)) {
+        Py_INCREF(x);
+        PyList_SET_ITEM(list, len, x);
+        Py_SIZE(list) = len+1;
+        return 0;
+    }
+    return PyList_Append(list, x);
+}
+#else
+#define __Pyx_ListComp_Append(L,x) PyList_Append(L,x)
+#endif
+
+static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb);
+
+static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value, PyObject **tb);
 
 static CYTHON_INLINE int  __Pyx_GetBufferAndValidate(Py_buffer* buf, PyObject* obj,
     __Pyx_TypeInfo* dtype, int flags, int nd, int cast, __Pyx_BufFmt_StackElem* stack);
@@ -857,16 +892,26 @@ static CYTHON_INLINE int __pyx_sub_acquisition_count_locked(
 static CYTHON_INLINE void __Pyx_INC_MEMVIEW(__Pyx_memviewslice *, int, int);
 static CYTHON_INLINE void __Pyx_XDEC_MEMVIEW(__Pyx_memviewslice *, int, int);
 
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
-#else
-#define __Pyx_PyObject_CallNoArg(func) __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL)
-#endif
+static CYTHON_INLINE void __Pyx_ExceptionSave(PyObject **type, PyObject **value, PyObject **tb);
+static void __Pyx_ExceptionReset(PyObject *type, PyObject *value, PyObject *tb);
 
-static CYTHON_INLINE void __Pyx_ErrRestore(PyObject *type, PyObject *value, PyObject *tb);
-static CYTHON_INLINE void __Pyx_ErrFetch(PyObject **type, PyObject **value, PyObject **tb);
+static CYTHON_INLINE long __Pyx_div_long(long, long);
 
-static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
+static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
+    Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
+
+static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
+
+static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
+    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
+    const char* function_name);
+
+static CYTHON_INLINE int __Pyx_CheckKeywordStrings(PyObject *kwdict, const char* function_name, int kw_allowed);
+
+static CYTHON_INLINE int __Pyx_PySequence_ContainsTF(PyObject* item, PyObject* seq, int eq) {
+    int result = PySequence_Contains(seq, item);
+    return unlikely(result < 0) ? result : (result == (eq == Py_EQ));
+}
 
 static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
     const char *name, int exact);
@@ -905,13 +950,6 @@ static CYTHON_INLINE void __Pyx_RaiseNoneNotIterableError(void);
 
 static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type);
 
-static CYTHON_INLINE void __Pyx_ExceptionSave(PyObject **type, PyObject **value, PyObject **tb);
-static void __Pyx_ExceptionReset(PyObject *type, PyObject *value, PyObject *tb);
-
-static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb);
-
-static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value, PyObject **tb);
-
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
 
 #define __Pyx_GetItemInt(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
@@ -939,22 +977,6 @@ static CYTHON_UNUSED int __pyx_memoryview_getbuffer(PyObject *__pyx_v_self, Py_b
 static PyObject *__pyx_memoryview_transpose(PyObject *__pyx_v_self); /*proto*/
 static PyObject *__pyx_memoryview__get__base(PyObject *__pyx_v_self); /*proto*/
 static PyObject *__pyx_memoryview_get_shape(PyObject *__pyx_v_self); /*proto*/
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE int __Pyx_ListComp_Append(PyObject* list, PyObject* x) {
-    PyListObject* L = (PyListObject*) list;
-    Py_ssize_t len = Py_SIZE(list);
-    if (likely(L->allocated > len)) {
-        Py_INCREF(x);
-        PyList_SET_ITEM(list, len, x);
-        Py_SIZE(list) = len+1;
-        return 0;
-    }
-    return PyList_Append(list, x);
-}
-#else
-#define __Pyx_ListComp_Append(L,x) PyList_Append(L,x)
-#endif
-
 static PyObject *__pyx_memoryview_get_strides(PyObject *__pyx_v_self); /*proto*/
 static PyObject *__pyx_memoryview_get_suboffsets(PyObject *__pyx_v_self); /*proto*/
 static PyObject *__pyx_memoryview_get_ndim(PyObject *__pyx_v_self); /*proto*/
@@ -1002,16 +1024,10 @@ static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname);
   #define __PYX_FORCE_INIT_THREADS 0
 #endif
 
-static CYTHON_INLINE long __Pyx_div_long(long, long);
-
 static PyObject *__pyx_memoryviewslice__get__base(PyObject *__pyx_v_self); /*proto*/
 static void __Pyx_WriteUnraisable(const char *name, int clineno,
                                   int lineno, const char *filename,
                                   int full_traceback, int nogil);
-
-static void __Pyx_call_next_tp_dealloc(PyObject* obj, destructor current_tp_dealloc);
-
-static void* __Pyx_GetVtable(PyObject *dict);
 
 static int __Pyx_SetVtable(PyObject *dict, void *vtable);
 
@@ -1057,7 +1073,19 @@ typedef struct {
 static Py_ssize_t __Pyx_zeros[] = {0, 0, 0, 0, 0, 0, 0, 0};
 static Py_ssize_t __Pyx_minusones[] = {-1, -1, -1, -1, -1, -1, -1, -1};
 
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_mbedtls_cipher_mode_t(mbedtls_cipher_mode_t value);
+
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
+
+static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *);
+
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_char(unsigned char value);
+
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_int(unsigned int value);
+
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_mbedtls_cipher_type_t(mbedtls_cipher_type_t value);
+
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
 static int __pyx_memviewslice_is_contig(const __Pyx_memviewslice *mvs,
                                         char order, int ndim);
@@ -1075,8 +1103,6 @@ __pyx_memoryview_copy_new_contig(const __Pyx_memviewslice *from_mvs,
 static CYTHON_INLINE PyObject *__pyx_capsule_create(void *p, const char *sig);
 
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
-
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
 static CYTHON_INLINE char __Pyx_PyInt_As_char(PyObject *);
 
@@ -1096,27 +1122,16 @@ static int __Pyx_ValidateAndInit_memviewslice(
 
 static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_char(PyObject *);
 
+static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_char(PyObject *);
+
 static CYTHON_INLINE int __Pyx_StrEq(const char *, const char *);
 
 static int __Pyx_check_binary_version(void);
 
-#if !defined(__Pyx_PyIdentifier_FromString)
-#if PY_MAJOR_VERSION < 3
-  #define __Pyx_PyIdentifier_FromString(s) PyString_FromString(s)
-#else
-  #define __Pyx_PyIdentifier_FromString(s) PyUnicode_FromString(s)
-#endif
-#endif
-
-static PyObject *__Pyx_ImportModule(const char *name);
-
-static PyTypeObject *__Pyx_ImportType(const char *module_name, const char *class_name, size_t size, int strict);
-
 static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
-static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac__update(struct __pyx_obj_7mbedtls_4hmac_Hmac *__pyx_v_self, unsigned char const *__pyx_v_input, size_t __pyx_v_ilen); /* proto*/
-static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac__finish(struct __pyx_obj_7mbedtls_4hmac_Hmac *__pyx_v_self, unsigned char *__pyx_v_output); /* proto*/
-static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac_copy(CYTHON_UNUSED struct __pyx_obj_7mbedtls_4hmac_Hmac *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher_6Cipher__setup(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_cipher_name, int __pyx_skip_dispatch); /* proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher_6Cipher__setkey(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_key, int __pyx_skip_dispatch); /* proto*/
 static char *__pyx_memoryview_get_item_pointer(struct __pyx_memoryview_obj *__pyx_v_self, PyObject *__pyx_v_index); /* proto*/
 static PyObject *__pyx_memoryview_is_slice(struct __pyx_memoryview_obj *__pyx_v_self, PyObject *__pyx_v_obj); /* proto*/
 static PyObject *__pyx_memoryview_setitem_slice_assignment(struct __pyx_memoryview_obj *__pyx_v_self, PyObject *__pyx_v_dst, PyObject *__pyx_v_src); /* proto*/
@@ -1131,11 +1146,8 @@ static PyObject *__pyx_memoryviewslice_assign_item_from_object(struct __pyx_memo
 
 /* Module declarations from 'libc.stdlib' */
 
-/* Module declarations from 'mbedtls._md' */
-static PyTypeObject *__pyx_ptype_7mbedtls_3_md_MDBase = 0;
-
-/* Module declarations from 'mbedtls.hmac' */
-static PyTypeObject *__pyx_ptype_7mbedtls_4hmac_Hmac = 0;
+/* Module declarations from 'mbedtls.cipher._cipher' */
+static PyTypeObject *__pyx_ptype_7mbedtls_6cipher_7_cipher_Cipher = 0;
 static PyTypeObject *__pyx_array_type = 0;
 static PyTypeObject *__pyx_MemviewEnum_type = 0;
 static PyTypeObject *__pyx_memoryview_type = 0;
@@ -1145,6 +1157,17 @@ static PyObject *strided = 0;
 static PyObject *indirect = 0;
 static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__get_mode_name(PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher_get_supported_ciphers(int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_setup(mbedtls_cipher_context_t *, __Pyx_memviewslice); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_set_key(mbedtls_cipher_context_t *, __Pyx_memviewslice, mbedtls_operation_t); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_crypt(mbedtls_cipher_context_t *, PyObject *, PyObject *); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_get_block_size(mbedtls_cipher_context_t *); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_get_cipher_mode(mbedtls_cipher_context_t *); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_get_iv_size(mbedtls_cipher_context_t *); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_get_type(mbedtls_cipher_context_t *); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_get_name(mbedtls_cipher_context_t *); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_get_key_size(mbedtls_cipher_context_t *); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char *, char *); /*proto*/
 static void *__pyx_align_pointer(void *, size_t); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo *); /*proto*/
@@ -1178,94 +1201,153 @@ static void __pyx_memoryview_refcount_objects_in_slice(char *, Py_ssize_t *, Py_
 static void __pyx_memoryview_slice_assign_scalar(__Pyx_memviewslice *, int, size_t, void *, int); /*proto*/
 static void __pyx_memoryview__slice_assign_scalar(char *, Py_ssize_t *, Py_ssize_t *, int, size_t, void *); /*proto*/
 static __Pyx_TypeInfo __Pyx_TypeInfo_unsigned_char = { "unsigned char", NULL, sizeof(unsigned char), { 0 }, 0, IS_UNSIGNED(unsigned char) ? 'U' : 'I', IS_UNSIGNED(unsigned char), 0 };
-#define __Pyx_MODULE_NAME "mbedtls.hmac"
-int __pyx_module_is_main_mbedtls__hmac = 0;
+static __Pyx_TypeInfo __Pyx_TypeInfo_char = { "char", NULL, sizeof(char), { 0 }, 0, 'H', IS_UNSIGNED(char), 0 };
+#define __Pyx_MODULE_NAME "mbedtls.cipher._cipher"
+int __pyx_module_is_main_mbedtls__cipher___cipher = 0;
 
-/* Implementation of 'mbedtls.hmac' */
-static PyObject *__pyx_builtin_super;
-static PyObject *__pyx_builtin_NotImplementedError;
-static PyObject *__pyx_builtin_ValueError;
-static PyObject *__pyx_builtin_MemoryError;
+/* Implementation of 'mbedtls.cipher._cipher' */
 static PyObject *__pyx_builtin_enumerate;
+static PyObject *__pyx_builtin_MemoryError;
 static PyObject *__pyx_builtin_range;
+static PyObject *__pyx_builtin_ValueError;
 static PyObject *__pyx_builtin_Ellipsis;
 static PyObject *__pyx_builtin_TypeError;
 static PyObject *__pyx_builtin_id;
 static PyObject *__pyx_builtin_IndexError;
+static char __pyx_k_[] = "\000";
 static char __pyx_k_O[] = "O";
 static char __pyx_k_c[] = "c";
 static char __pyx_k_id[] = "id";
-static char __pyx_k_md[] = "_md";
-static char __pyx_k__14[] = "*";
+static char __pyx_k_iv[] = "iv";
+static char __pyx_k_CBC[] = "CBC";
+static char __pyx_k_CCM[] = "CCM";
+static char __pyx_k_CFB[] = "CFB";
+static char __pyx_k_CTR[] = "CTR";
+static char __pyx_k_ECB[] = "ECB";
+static char __pyx_k_GCM[] = "GCM";
+static char __pyx_k_OFB[] = "OFB";
+static char __pyx_k__18[] = "*";
+static char __pyx_k_all[] = "__all__";
 static char __pyx_k_key[] = "key";
-static char __pyx_k_md2[] = "md2";
-static char __pyx_k_md4[] = "md4";
-static char __pyx_k_md5[] = "md5";
-static char __pyx_k_new[] = "new";
 static char __pyx_k_obj[] = "obj";
-static char __pyx_k_Hash[] = "Hash";
+static char __pyx_k_NONE[] = "NONE";
+static char __pyx_k_NULL[] = "NULL";
 static char __pyx_k_base[] = "base";
-static char __pyx_k_copy[] = "copy";
-static char __pyx_k_init[] = "__init__";
 static char __pyx_k_main[] = "__main__";
 static char __pyx_k_mode[] = "mode";
 static char __pyx_k_name[] = "name";
 static char __pyx_k_ndim[] = "ndim";
 static char __pyx_k_pack[] = "pack";
-static char __pyx_k_sha1[] = "sha1";
 static char __pyx_k_size[] = "size";
 static char __pyx_k_step[] = "step";
 static char __pyx_k_stop[] = "stop";
 static char __pyx_k_test[] = "__test__";
 static char __pyx_k_ASCII[] = "ASCII";
+static char __pyx_k_ascii[] = "ascii";
 static char __pyx_k_class[] = "__class__";
 static char __pyx_k_error[] = "error";
 static char __pyx_k_flags[] = "flags";
 static char __pyx_k_range[] = "range";
+static char __pyx_k_setup[] = "_setup";
 static char __pyx_k_shape[] = "shape";
 static char __pyx_k_start[] = "start";
-static char __pyx_k_super[] = "super";
+static char __pyx_k_Cipher[] = "Cipher";
+static char __pyx_k_STREAM[] = "STREAM";
 static char __pyx_k_author[] = "__author__";
-static char __pyx_k_buffer[] = "buffer";
+static char __pyx_k_decode[] = "decode";
 static char __pyx_k_encode[] = "encode";
 static char __pyx_k_format[] = "format";
 static char __pyx_k_import[] = "__import__";
 static char __pyx_k_name_2[] = "__name__";
-static char __pyx_k_sha224[] = "sha224";
-static char __pyx_k_sha256[] = "sha256";
-static char __pyx_k_sha384[] = "sha384";
-static char __pyx_k_sha512[] = "sha512";
+static char __pyx_k_setkey[] = "_setkey";
 static char __pyx_k_struct[] = "struct";
 static char __pyx_k_unpack[] = "unpack";
+static char __pyx_k_DES_CBC[] = "DES-CBC";
+static char __pyx_k_DES_ECB[] = "DES-ECB";
 static char __pyx_k_fortran[] = "fortran";
+static char __pyx_k_iv_size[] = "iv_size";
 static char __pyx_k_license[] = "__license__";
 static char __pyx_k_memview[] = "memview";
+static char __pyx_k_ARC4_128[] = "ARC4-128";
 static char __pyx_k_Ellipsis[] = "Ellipsis";
+static char __pyx_k_MODE_CBC[] = "MODE_CBC";
+static char __pyx_k_MODE_CCM[] = "MODE_CCM";
+static char __pyx_k_MODE_CFB[] = "MODE_CFB";
+static char __pyx_k_MODE_CTR[] = "MODE_CTR";
+static char __pyx_k_MODE_ECB[] = "MODE_ECB";
+static char __pyx_k_MODE_GCM[] = "MODE_GCM";
+static char __pyx_k_MODE_OFB[] = "MODE_OFB";
 static char __pyx_k_itemsize[] = "itemsize";
 static char __pyx_k_TypeError[] = "TypeError";
 static char __pyx_k_copyright[] = "__copyright__";
-static char __pyx_k_digestmod[] = "digestmod";
 static char __pyx_k_enumerate[] = "enumerate";
-static char __pyx_k_ripemd160[] = "ripemd160";
 static char __pyx_k_IndexError[] = "IndexError";
 static char __pyx_k_ValueError[] = "ValueError";
 static char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
+static char __pyx_k_AES_128_CBC[] = "AES-128-CBC";
+static char __pyx_k_AES_128_CCM[] = "AES-128-CCM";
+static char __pyx_k_AES_128_CTR[] = "AES-128-CTR";
+static char __pyx_k_AES_128_ECB[] = "AES-128-ECB";
+static char __pyx_k_AES_128_GCM[] = "AES-128-GCM";
+static char __pyx_k_AES_192_CBC[] = "AES-192-CBC";
+static char __pyx_k_AES_192_CCM[] = "AES-192-CCM";
+static char __pyx_k_AES_192_CTR[] = "AES-192-CTR";
+static char __pyx_k_AES_192_ECB[] = "AES-192-ECB";
+static char __pyx_k_AES_192_GCM[] = "AES-192-GCM";
+static char __pyx_k_AES_256_CBC[] = "AES-256-CBC";
+static char __pyx_k_AES_256_CCM[] = "AES-256-CCM";
+static char __pyx_k_AES_256_CTR[] = "AES-256-CTR";
+static char __pyx_k_AES_256_ECB[] = "AES-256-ECB";
+static char __pyx_k_AES_256_GCM[] = "AES-256-GCM";
+static char __pyx_k_CIPHER_NAME[] = "CIPHER_NAME";
+static char __pyx_k_DES_EDE_CBC[] = "DES-EDE-CBC";
+static char __pyx_k_DES_EDE_ECB[] = "DES-EDE-ECB";
+static char __pyx_k_MODE_STREAM[] = "MODE_STREAM";
 static char __pyx_k_MemoryError[] = "MemoryError";
 static char __pyx_k_check_error[] = "check_error";
-static char __pyx_k_mbedtls_hmac[] = "mbedtls.hmac";
+static char __pyx_k_cipher_name[] = "cipher_name";
+static char __pyx_k_BLOWFISH_CBC[] = "BLOWFISH-CBC";
+static char __pyx_k_BLOWFISH_CTR[] = "BLOWFISH-CTR";
+static char __pyx_k_BLOWFISH_ECB[] = "BLOWFISH-ECB";
+static char __pyx_k_DES_EDE3_CBC[] = "DES-EDE3-CBC";
+static char __pyx_k_DES_EDE3_ECB[] = "DES-EDE3-ECB";
 static char __pyx_k_pyx_getbuffer[] = "__pyx_getbuffer";
+static char __pyx_k_AES_128_CFB128[] = "AES-128-CFB128";
+static char __pyx_k_AES_192_CFB128[] = "AES-192-CFB128";
+static char __pyx_k_AES_256_CFB128[] = "AES-256-CFB128";
+static char __pyx_k_BLOWFISH_CFB64[] = "BLOWFISH-CFB64";
 static char __pyx_k_Mathias_Laurin[] = "Mathias Laurin";
 static char __pyx_k_allocate_buffer[] = "allocate_buffer";
 static char __pyx_k_dtype_is_object[] = "dtype_is_object";
+static char __pyx_k_supported_modes[] = "__supported_modes";
+static char __pyx_k_CAMELLIA_128_CBC[] = "CAMELLIA-128-CBC";
+static char __pyx_k_CAMELLIA_128_CCM[] = "CAMELLIA-128-CCM";
+static char __pyx_k_CAMELLIA_128_CTR[] = "CAMELLIA-128-CTR";
+static char __pyx_k_CAMELLIA_128_ECB[] = "CAMELLIA-128-ECB";
+static char __pyx_k_CAMELLIA_128_GCM[] = "CAMELLIA-128-GCM";
+static char __pyx_k_CAMELLIA_192_CBC[] = "CAMELLIA-192-CBC";
+static char __pyx_k_CAMELLIA_192_CCM[] = "CAMELLIA-192-CCM";
+static char __pyx_k_CAMELLIA_192_CTR[] = "CAMELLIA-192-CTR";
+static char __pyx_k_CAMELLIA_192_ECB[] = "CAMELLIA-192-ECB";
+static char __pyx_k_CAMELLIA_192_GCM[] = "CAMELLIA-192-GCM";
+static char __pyx_k_CAMELLIA_256_CBC[] = "CAMELLIA-256-CBC";
+static char __pyx_k_CAMELLIA_256_CCM[] = "CAMELLIA-256-CCM";
+static char __pyx_k_CAMELLIA_256_CTR[] = "CAMELLIA-256-CTR";
+static char __pyx_k_CAMELLIA_256_ECB[] = "CAMELLIA-256-ECB";
+static char __pyx_k_CAMELLIA_256_GCM[] = "CAMELLIA-256-GCM";
 static char __pyx_k_Apache_License_2_0[] = "Apache License 2.0";
 static char __pyx_k_mbedtls_exceptions[] = "mbedtls.exceptions";
 static char __pyx_k_strided_and_direct[] = "<strided and direct>";
-static char __pyx_k_NotImplementedError[] = "NotImplementedError";
-static char __pyx_k_algorithms_available[] = "algorithms_available";
+static char __pyx_k_CAMELLIA_128_CFB128[] = "CAMELLIA-128-CFB128";
+static char __pyx_k_CAMELLIA_192_CFB128[] = "CAMELLIA-192-CFB128";
+static char __pyx_k_CAMELLIA_256_CFB128[] = "CAMELLIA-256-CFB128";
+static char __pyx_k_mode_requires_an_IV[] = "mode requires an IV";
 static char __pyx_k_strided_and_indirect[] = "<strided and indirect>";
-static char __pyx_k_algorithms_guaranteed[] = "algorithms_guaranteed";
+static char __pyx_k_unsupported_cipher_r[] = "unsupported cipher: %r";
 static char __pyx_k_contiguous_and_direct[] = "<contiguous and direct>";
+static char __pyx_k_FullBlockExpectedError[] = "FullBlockExpectedError";
 static char __pyx_k_MemoryView_of_r_object[] = "<MemoryView of %r object>";
+static char __pyx_k_UnsupportedCipherError[] = "UnsupportedCipherError";
 static char __pyx_k_MemoryView_of_r_at_0x_x[] = "<MemoryView of %r at 0x%x>";
 static char __pyx_k_contiguous_and_indirect[] = "<contiguous and indirect>";
 static char __pyx_k_Cannot_index_with_type_s[] = "Cannot index with type '%s'";
@@ -1275,61 +1357,133 @@ static char __pyx_k_Invalid_shape_in_axis_d_d[] = "Invalid shape in axis %d: %d.
 static char __pyx_k_Index_out_of_bounds_axis_d[] = "Index out of bounds (axis %d)";
 static char __pyx_k_Step_may_not_be_zero_axis_d[] = "Step may not be zero (axis %d)";
 static char __pyx_k_itemsize_0_for_cython_array[] = "itemsize <= 0 for cython.array";
+static char __pyx_k_Return_the_name_of_the_cipher[] = "Return the name of the cipher.";
+static char __pyx_k_Return_the_type_of_the_cipher[] = "Return the type of the cipher.";
 static char __pyx_k_unable_to_allocate_array_data[] = "unable to allocate array data.";
-static char __pyx_k_home_laurin_src_python_mbedtls[] = "/home/laurin/src/python-mbedtls.git/mbedtls/hmac.pyx";
 static char __pyx_k_strided_and_direct_or_indirect[] = "<strided and direct or indirect>";
+static char __pyx_k_Return_the_mode_of_operation_of[] = "Return the mode of operation of the cipher.";
+static char __pyx_k_Return_the_size_of_the_cipher_s[] = "Return the size of the cipher's IV/NONCE in bytes.";
 static char __pyx_k_All_dimensions_preceding_dimensi[] = "All dimensions preceding dimension %d must be indexed and not sliced";
 static char __pyx_k_Buffer_view_does_not_expose_stri[] = "Buffer view does not expose strides";
 static char __pyx_k_Can_only_create_a_buffer_that_is[] = "Can only create a buffer that is contiguous in memory.";
 static char __pyx_k_Cannot_transpose_memoryview_with[] = "Cannot transpose memoryview with indirect dimensions";
+static char __pyx_k_Ciphers_for_symmetric_encryption[] = "Ciphers for symmetric encryption and decryption.";
 static char __pyx_k_Copyright_2015_Elaborated_Networ[] = "Copyright 2015, Elaborated Networks GmbH";
 static char __pyx_k_Empty_shape_tuple_for_cython_arr[] = "Empty shape tuple for cython.array";
-static char __pyx_k_Generic_message_digest_wrapper_h[] = "Generic message digest wrapper (hash algorithm).";
 static char __pyx_k_Indirect_dimensions_not_supporte[] = "Indirect dimensions not supported";
 static char __pyx_k_Invalid_mode_expected_c_or_fortr[] = "Invalid mode, expected 'c' or 'fortran', got %s";
 static char __pyx_k_Out_of_bounds_on_buffer_access_a[] = "Out of bounds on buffer access (axis %d)";
+static char __pyx_k_Return_the_block_size_for_the_ci[] = "Return the block size for the cipher.";
+static char __pyx_k_Return_the_size_of_the_ciphers_k[] = "Return the size of the ciphers' key.";
 static char __pyx_k_Unable_to_convert_item_to_object[] = "Unable to convert item to object";
 static char __pyx_k_got_differing_extents_in_dimensi[] = "got differing extents in dimension %d (got %d and %d)";
 static char __pyx_k_unable_to_allocate_shape_and_str[] = "unable to allocate shape and strides.";
+static PyObject *__pyx_kp_b_;
+static PyObject *__pyx_kp_b_AES_128_CBC;
+static PyObject *__pyx_kp_b_AES_128_CCM;
+static PyObject *__pyx_kp_b_AES_128_CFB128;
+static PyObject *__pyx_kp_b_AES_128_CTR;
+static PyObject *__pyx_kp_b_AES_128_ECB;
+static PyObject *__pyx_kp_b_AES_128_GCM;
+static PyObject *__pyx_kp_b_AES_192_CBC;
+static PyObject *__pyx_kp_b_AES_192_CCM;
+static PyObject *__pyx_kp_b_AES_192_CFB128;
+static PyObject *__pyx_kp_b_AES_192_CTR;
+static PyObject *__pyx_kp_b_AES_192_ECB;
+static PyObject *__pyx_kp_b_AES_192_GCM;
+static PyObject *__pyx_kp_b_AES_256_CBC;
+static PyObject *__pyx_kp_b_AES_256_CCM;
+static PyObject *__pyx_kp_b_AES_256_CFB128;
+static PyObject *__pyx_kp_b_AES_256_CTR;
+static PyObject *__pyx_kp_b_AES_256_ECB;
+static PyObject *__pyx_kp_b_AES_256_GCM;
+static PyObject *__pyx_kp_b_ARC4_128;
 static PyObject *__pyx_n_s_ASCII;
 static PyObject *__pyx_kp_s_Apache_License_2_0;
+static PyObject *__pyx_kp_b_BLOWFISH_CBC;
+static PyObject *__pyx_kp_b_BLOWFISH_CFB64;
+static PyObject *__pyx_kp_b_BLOWFISH_CTR;
+static PyObject *__pyx_kp_b_BLOWFISH_ECB;
 static PyObject *__pyx_kp_s_Buffer_view_does_not_expose_stri;
+static PyObject *__pyx_kp_b_CAMELLIA_128_CBC;
+static PyObject *__pyx_kp_b_CAMELLIA_128_CCM;
+static PyObject *__pyx_kp_b_CAMELLIA_128_CFB128;
+static PyObject *__pyx_kp_b_CAMELLIA_128_CTR;
+static PyObject *__pyx_kp_b_CAMELLIA_128_ECB;
+static PyObject *__pyx_kp_b_CAMELLIA_128_GCM;
+static PyObject *__pyx_kp_b_CAMELLIA_192_CBC;
+static PyObject *__pyx_kp_b_CAMELLIA_192_CCM;
+static PyObject *__pyx_kp_b_CAMELLIA_192_CFB128;
+static PyObject *__pyx_kp_b_CAMELLIA_192_CTR;
+static PyObject *__pyx_kp_b_CAMELLIA_192_ECB;
+static PyObject *__pyx_kp_b_CAMELLIA_192_GCM;
+static PyObject *__pyx_kp_b_CAMELLIA_256_CBC;
+static PyObject *__pyx_kp_b_CAMELLIA_256_CCM;
+static PyObject *__pyx_kp_b_CAMELLIA_256_CFB128;
+static PyObject *__pyx_kp_b_CAMELLIA_256_CTR;
+static PyObject *__pyx_kp_b_CAMELLIA_256_ECB;
+static PyObject *__pyx_kp_b_CAMELLIA_256_GCM;
+static PyObject *__pyx_n_s_CBC;
+static PyObject *__pyx_n_s_CCM;
+static PyObject *__pyx_n_s_CFB;
+static PyObject *__pyx_n_s_CIPHER_NAME;
+static PyObject *__pyx_n_s_CTR;
 static PyObject *__pyx_kp_s_Can_only_create_a_buffer_that_is;
 static PyObject *__pyx_kp_s_Cannot_index_with_type_s;
+static PyObject *__pyx_n_s_Cipher;
 static PyObject *__pyx_kp_s_Copyright_2015_Elaborated_Networ;
+static PyObject *__pyx_kp_b_DES_CBC;
+static PyObject *__pyx_kp_b_DES_ECB;
+static PyObject *__pyx_kp_b_DES_EDE3_CBC;
+static PyObject *__pyx_kp_b_DES_EDE3_ECB;
+static PyObject *__pyx_kp_b_DES_EDE_CBC;
+static PyObject *__pyx_kp_b_DES_EDE_ECB;
+static PyObject *__pyx_n_s_ECB;
 static PyObject *__pyx_n_s_Ellipsis;
 static PyObject *__pyx_kp_s_Empty_shape_tuple_for_cython_arr;
-static PyObject *__pyx_n_s_Hash;
+static PyObject *__pyx_n_s_FullBlockExpectedError;
+static PyObject *__pyx_n_s_GCM;
 static PyObject *__pyx_n_s_IndexError;
 static PyObject *__pyx_kp_s_Indirect_dimensions_not_supporte;
 static PyObject *__pyx_kp_s_Invalid_mode_expected_c_or_fortr;
 static PyObject *__pyx_kp_s_Invalid_shape_in_axis_d_d;
+static PyObject *__pyx_n_s_MODE_CBC;
+static PyObject *__pyx_n_s_MODE_CCM;
+static PyObject *__pyx_n_s_MODE_CFB;
+static PyObject *__pyx_n_s_MODE_CTR;
+static PyObject *__pyx_n_s_MODE_ECB;
+static PyObject *__pyx_n_s_MODE_GCM;
+static PyObject *__pyx_n_s_MODE_OFB;
+static PyObject *__pyx_n_s_MODE_STREAM;
 static PyObject *__pyx_kp_s_Mathias_Laurin;
 static PyObject *__pyx_n_s_MemoryError;
 static PyObject *__pyx_kp_s_MemoryView_of_r_at_0x_x;
 static PyObject *__pyx_kp_s_MemoryView_of_r_object;
-static PyObject *__pyx_n_s_NotImplementedError;
+static PyObject *__pyx_n_b_NONE;
+static PyObject *__pyx_n_b_NULL;
 static PyObject *__pyx_n_b_O;
+static PyObject *__pyx_n_s_OFB;
 static PyObject *__pyx_kp_s_Out_of_bounds_on_buffer_access_a;
+static PyObject *__pyx_n_s_STREAM;
 static PyObject *__pyx_n_s_TypeError;
 static PyObject *__pyx_kp_s_Unable_to_convert_item_to_object;
+static PyObject *__pyx_n_s_UnsupportedCipherError;
 static PyObject *__pyx_n_s_ValueError;
-static PyObject *__pyx_n_s__14;
-static PyObject *__pyx_n_s_algorithms_available;
-static PyObject *__pyx_n_s_algorithms_guaranteed;
+static PyObject *__pyx_n_s__18;
+static PyObject *__pyx_n_s_all;
 static PyObject *__pyx_n_s_allocate_buffer;
+static PyObject *__pyx_n_s_ascii;
 static PyObject *__pyx_n_s_author;
 static PyObject *__pyx_n_s_base;
-static PyObject *__pyx_n_s_buffer;
 static PyObject *__pyx_n_s_c;
 static PyObject *__pyx_n_u_c;
 static PyObject *__pyx_n_s_check_error;
+static PyObject *__pyx_n_s_cipher_name;
 static PyObject *__pyx_n_s_class;
 static PyObject *__pyx_kp_s_contiguous_and_direct;
 static PyObject *__pyx_kp_s_contiguous_and_indirect;
-static PyObject *__pyx_n_s_copy;
 static PyObject *__pyx_n_s_copyright;
-static PyObject *__pyx_n_s_digestmod;
+static PyObject *__pyx_n_s_decode;
 static PyObject *__pyx_n_s_dtype_is_object;
 static PyObject *__pyx_n_s_encode;
 static PyObject *__pyx_n_s_enumerate;
@@ -1339,38 +1493,29 @@ static PyObject *__pyx_n_s_format;
 static PyObject *__pyx_n_s_fortran;
 static PyObject *__pyx_n_u_fortran;
 static PyObject *__pyx_kp_s_got_differing_extents_in_dimensi;
-static PyObject *__pyx_kp_s_home_laurin_src_python_mbedtls;
 static PyObject *__pyx_n_s_id;
 static PyObject *__pyx_n_s_import;
-static PyObject *__pyx_n_s_init;
 static PyObject *__pyx_n_s_itemsize;
 static PyObject *__pyx_kp_s_itemsize_0_for_cython_array;
+static PyObject *__pyx_n_s_iv;
+static PyObject *__pyx_n_s_iv_size;
 static PyObject *__pyx_n_s_key;
 static PyObject *__pyx_n_s_license;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_mbedtls_exceptions;
-static PyObject *__pyx_n_s_mbedtls_hmac;
-static PyObject *__pyx_n_s_md;
-static PyObject *__pyx_n_s_md2;
-static PyObject *__pyx_n_s_md4;
-static PyObject *__pyx_n_s_md5;
 static PyObject *__pyx_n_s_memview;
 static PyObject *__pyx_n_s_mode;
+static PyObject *__pyx_kp_s_mode_requires_an_IV;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_n_s_name_2;
 static PyObject *__pyx_n_s_ndim;
-static PyObject *__pyx_n_s_new;
 static PyObject *__pyx_n_s_obj;
 static PyObject *__pyx_n_s_pack;
 static PyObject *__pyx_n_s_pyx_getbuffer;
 static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
-static PyObject *__pyx_n_s_ripemd160;
-static PyObject *__pyx_n_s_sha1;
-static PyObject *__pyx_n_s_sha224;
-static PyObject *__pyx_n_s_sha256;
-static PyObject *__pyx_n_s_sha384;
-static PyObject *__pyx_n_s_sha512;
+static PyObject *__pyx_n_s_setkey;
+static PyObject *__pyx_n_s_setup;
 static PyObject *__pyx_n_s_shape;
 static PyObject *__pyx_n_s_size;
 static PyObject *__pyx_n_s_start;
@@ -1380,23 +1525,28 @@ static PyObject *__pyx_kp_s_strided_and_direct;
 static PyObject *__pyx_kp_s_strided_and_direct_or_indirect;
 static PyObject *__pyx_kp_s_strided_and_indirect;
 static PyObject *__pyx_n_s_struct;
-static PyObject *__pyx_n_s_super;
+static PyObject *__pyx_n_s_supported_modes;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_kp_s_unable_to_allocate_array_data;
 static PyObject *__pyx_kp_s_unable_to_allocate_shape_and_str;
 static PyObject *__pyx_n_s_unpack;
-static int __pyx_pf_7mbedtls_4hmac_4Hmac___init__(struct __pyx_obj_7mbedtls_4hmac_Hmac *__pyx_v_self, PyObject *__pyx_v_key, PyObject *__pyx_v_name, PyObject *__pyx_v_buffer); /* proto */
-static PyObject *__pyx_pf_7mbedtls_4hmac_4Hmac_2copy(struct __pyx_obj_7mbedtls_4hmac_Hmac *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7mbedtls_4hmac_new(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer, PyObject *__pyx_v_digestmod); /* proto */
-static PyObject *__pyx_pf_7mbedtls_4hmac_2md2(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer); /* proto */
-static PyObject *__pyx_pf_7mbedtls_4hmac_4md4(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer); /* proto */
-static PyObject *__pyx_pf_7mbedtls_4hmac_6md5(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer); /* proto */
-static PyObject *__pyx_pf_7mbedtls_4hmac_8sha1(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer); /* proto */
-static PyObject *__pyx_pf_7mbedtls_4hmac_10sha224(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer); /* proto */
-static PyObject *__pyx_pf_7mbedtls_4hmac_12sha256(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer); /* proto */
-static PyObject *__pyx_pf_7mbedtls_4hmac_14sha384(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer); /* proto */
-static PyObject *__pyx_pf_7mbedtls_4hmac_16sha512(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer); /* proto */
-static PyObject *__pyx_pf_7mbedtls_4hmac_18ripemd160(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer); /* proto */
+static PyObject *__pyx_kp_s_unsupported_cipher_r;
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher__get_mode_name(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_mode); /* proto */
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_2get_supported_ciphers(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static int __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher___init__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_cipher_name, PyObject *__pyx_v_key, PyObject *__pyx_v_mode, PyObject *__pyx_v_iv); /* proto */
+static int __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_2__cinit__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self); /* proto */
+static void __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_4__dealloc__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_6_setup(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_cipher_name); /* proto */
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_8_setkey(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_key); /* proto */
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_10__str__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_10block_size___get__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_4mode___get__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_7iv_size___get__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_5_type___get__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_4name___get__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_8key_size___get__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_12encrypt(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_message); /* proto */
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_14decrypt(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_message); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_array___pyx_pf_15View_dot_MemoryView_5array_4__dealloc__(struct __pyx_array_obj *__pyx_v_self); /* proto */
@@ -1429,15 +1579,21 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_20
 static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_22copy_fortran(struct __pyx_memoryview_obj *__pyx_v_self); /* proto */
 static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewslice___dealloc__(struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView_16_memoryviewslice_4base___get__(struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
-static PyObject *__pyx_tp_new_7mbedtls_4hmac_Hmac(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_7mbedtls_6cipher_7_cipher_Cipher(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_array(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_Enum(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_memoryview(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new__memoryviewslice(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_1;
+static PyObject *__pyx_int_2;
+static PyObject *__pyx_int_3;
+static PyObject *__pyx_int_4;
+static PyObject *__pyx_int_5;
+static PyObject *__pyx_int_6;
+static PyObject *__pyx_int_7;
+static PyObject *__pyx_int_8;
 static PyObject *__pyx_int_neg_1;
-static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__2;
 static PyObject *__pyx_tuple__3;
 static PyObject *__pyx_tuple__4;
@@ -1446,50 +1602,1284 @@ static PyObject *__pyx_tuple__6;
 static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_tuple__8;
 static PyObject *__pyx_tuple__9;
-static PyObject *__pyx_slice__10;
-static PyObject *__pyx_slice__11;
-static PyObject *__pyx_slice__12;
+static PyObject *__pyx_slice__14;
+static PyObject *__pyx_slice__15;
+static PyObject *__pyx_slice__16;
+static PyObject *__pyx_tuple__10;
+static PyObject *__pyx_tuple__11;
+static PyObject *__pyx_tuple__12;
 static PyObject *__pyx_tuple__13;
-static PyObject *__pyx_tuple__15;
 static PyObject *__pyx_tuple__17;
 static PyObject *__pyx_tuple__19;
+static PyObject *__pyx_tuple__20;
 static PyObject *__pyx_tuple__21;
+static PyObject *__pyx_tuple__22;
 static PyObject *__pyx_tuple__23;
+static PyObject *__pyx_tuple__24;
 static PyObject *__pyx_tuple__25;
-static PyObject *__pyx_tuple__27;
-static PyObject *__pyx_tuple__29;
-static PyObject *__pyx_tuple__31;
-static PyObject *__pyx_tuple__33;
-static PyObject *__pyx_tuple__35;
-static PyObject *__pyx_tuple__36;
-static PyObject *__pyx_tuple__37;
-static PyObject *__pyx_tuple__38;
-static PyObject *__pyx_tuple__39;
-static PyObject *__pyx_codeobj__16;
-static PyObject *__pyx_codeobj__18;
-static PyObject *__pyx_codeobj__20;
-static PyObject *__pyx_codeobj__22;
-static PyObject *__pyx_codeobj__24;
-static PyObject *__pyx_codeobj__26;
-static PyObject *__pyx_codeobj__28;
-static PyObject *__pyx_codeobj__30;
-static PyObject *__pyx_codeobj__32;
-static PyObject *__pyx_codeobj__34;
 
-/* "mbedtls/hmac.pyx":36
+/* "mbedtls/cipher/_cipher.pyx":88
+ * 
+ * 
+ * cpdef _get_mode_name(mode):             # <<<<<<<<<<<<<<
+ *     return {
+ *         1: "ECB",
+ */
+
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_1_get_mode_name(PyObject *__pyx_self, PyObject *__pyx_v_mode); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__get_mode_name(PyObject *__pyx_v_mode, CYTHON_UNUSED int __pyx_skip_dispatch) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_get_mode_name", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":89
+ * 
+ * cpdef _get_mode_name(mode):
+ *     return {             # <<<<<<<<<<<<<<
+ *         1: "ECB",
+ *         2: "CBC",
+ */
+  __Pyx_XDECREF(__pyx_r);
+
+  /* "mbedtls/cipher/_cipher.pyx":90
+ * cpdef _get_mode_name(mode):
+ *     return {
+ *         1: "ECB",             # <<<<<<<<<<<<<<
+ *         2: "CBC",
+ *         3: "CFB",
+ */
+  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_t_1, __pyx_int_1, __pyx_n_s_ECB) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_1, __pyx_int_2, __pyx_n_s_CBC) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_1, __pyx_int_3, __pyx_n_s_CFB) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_1, __pyx_int_4, __pyx_n_s_OFB) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_1, __pyx_int_5, __pyx_n_s_CTR) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_1, __pyx_int_6, __pyx_n_s_GCM) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_1, __pyx_int_7, __pyx_n_s_STREAM) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_1, __pyx_int_8, __pyx_n_s_CCM) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "mbedtls/cipher/_cipher.pyx":98
+ *         7: "STREAM",
+ *         8: "CCM"
+ *     }[mode]             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_t_1, __pyx_v_mode); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
+  goto __pyx_L0;
+
+  /* "mbedtls/cipher/_cipher.pyx":88
+ * 
+ * 
+ * cpdef _get_mode_name(mode):             # <<<<<<<<<<<<<<
+ *     return {
+ *         1: "ECB",
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher._get_mode_name", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_1_get_mode_name(PyObject *__pyx_self, PyObject *__pyx_v_mode); /*proto*/
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_1_get_mode_name(PyObject *__pyx_self, PyObject *__pyx_v_mode) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("_get_mode_name (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher__get_mode_name(__pyx_self, ((PyObject *)__pyx_v_mode));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher__get_mode_name(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_mode) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_get_mode_name", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __pyx_f_7mbedtls_6cipher_7_cipher__get_mode_name(__pyx_v_mode, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher._get_mode_name", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mbedtls/cipher/_cipher.pyx":107
+ * 
+ * 
+ * cpdef get_supported_ciphers():             # <<<<<<<<<<<<<<
+ *     """Return the set of ciphers supported by the generic
+ *     cipher module.
+ */
+
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_3get_supported_ciphers(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher_get_supported_ciphers(CYTHON_UNUSED int __pyx_skip_dispatch) {
+  PyObject *__pyx_v_cipher_lookup = NULL;
+  int const *__pyx_v_cipher_types;
+  size_t __pyx_v_n;
+  PyObject *__pyx_v_ciphers = NULL;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  size_t __pyx_t_2;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  Py_ssize_t __pyx_t_5;
+  PyObject *(*__pyx_t_6)(PyObject *);
+  int __pyx_t_7;
+  int __pyx_t_8;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("get_supported_ciphers", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":112
  * 
  *     """
- *     def __init__(self, key, name, buffer=None):             # <<<<<<<<<<<<<<
- *         super().__init__(name, buffer, 1)
- *         cdef unsigned char[:] c_key = bytearray(key)
+ *     cipher_lookup = {n: v for n, v in enumerate(CIPHER_NAME)}             # <<<<<<<<<<<<<<
+ *     cdef const int* cipher_types = _cipher.mbedtls_cipher_list()
+ *     cdef size_t n = 0
+ */
+  { /* enter inner scope */
+    size_t __pyx_7genexpr__pyx_v_n;
+    PyObject *__pyx_7genexpr__pyx_v_v = NULL;
+    __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L5_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = 0;
+    __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_CIPHER_NAME); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L5_error;}
+    __Pyx_GOTREF(__pyx_t_3);
+    if (likely(PyList_CheckExact(__pyx_t_3)) || PyTuple_CheckExact(__pyx_t_3)) {
+      __pyx_t_4 = __pyx_t_3; __Pyx_INCREF(__pyx_t_4); __pyx_t_5 = 0;
+      __pyx_t_6 = NULL;
+    } else {
+      __pyx_t_5 = -1; __pyx_t_4 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L5_error;}
+      __Pyx_GOTREF(__pyx_t_4);
+      __pyx_t_6 = Py_TYPE(__pyx_t_4)->tp_iternext; if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L5_error;}
+    }
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    for (;;) {
+      if (likely(!__pyx_t_6)) {
+        if (likely(PyList_CheckExact(__pyx_t_4))) {
+          if (__pyx_t_5 >= PyList_GET_SIZE(__pyx_t_4)) break;
+          #if CYTHON_COMPILING_IN_CPYTHON
+          __pyx_t_3 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_5); __Pyx_INCREF(__pyx_t_3); __pyx_t_5++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L5_error;}
+          #else
+          __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L5_error;}
+          __Pyx_GOTREF(__pyx_t_3);
+          #endif
+        } else {
+          if (__pyx_t_5 >= PyTuple_GET_SIZE(__pyx_t_4)) break;
+          #if CYTHON_COMPILING_IN_CPYTHON
+          __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_4, __pyx_t_5); __Pyx_INCREF(__pyx_t_3); __pyx_t_5++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L5_error;}
+          #else
+          __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L5_error;}
+          __Pyx_GOTREF(__pyx_t_3);
+          #endif
+        }
+      } else {
+        __pyx_t_3 = __pyx_t_6(__pyx_t_4);
+        if (unlikely(!__pyx_t_3)) {
+          PyObject* exc_type = PyErr_Occurred();
+          if (exc_type) {
+            if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
+            else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L5_error;}
+          }
+          break;
+        }
+        __Pyx_GOTREF(__pyx_t_3);
+      }
+      __Pyx_XDECREF_SET(__pyx_7genexpr__pyx_v_v, __pyx_t_3);
+      __pyx_t_3 = 0;
+      __pyx_7genexpr__pyx_v_n = __pyx_t_2;
+      __pyx_t_2 = (__pyx_t_2 + 1);
+      __pyx_t_3 = __Pyx_PyInt_FromSize_t(__pyx_7genexpr__pyx_v_n); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L5_error;}
+      __Pyx_GOTREF(__pyx_t_3);
+      if (unlikely(PyDict_SetItem(__pyx_t_1, (PyObject*)__pyx_t_3, (PyObject*)__pyx_7genexpr__pyx_v_v))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L5_error;}
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_XDECREF(__pyx_7genexpr__pyx_v_v);
+    goto __pyx_L8_exit_scope;
+    __pyx_L5_error:;
+    __Pyx_XDECREF(__pyx_7genexpr__pyx_v_v);
+    goto __pyx_L1_error;
+    __pyx_L8_exit_scope:;
+  } /* exit inner scope */
+  __pyx_v_cipher_lookup = ((PyObject*)__pyx_t_1);
+  __pyx_t_1 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":113
+ *     """
+ *     cipher_lookup = {n: v for n, v in enumerate(CIPHER_NAME)}
+ *     cdef const int* cipher_types = _cipher.mbedtls_cipher_list()             # <<<<<<<<<<<<<<
+ *     cdef size_t n = 0
+ *     ciphers = set()
+ */
+  __pyx_v_cipher_types = mbedtls_cipher_list();
+
+  /* "mbedtls/cipher/_cipher.pyx":114
+ *     cipher_lookup = {n: v for n, v in enumerate(CIPHER_NAME)}
+ *     cdef const int* cipher_types = _cipher.mbedtls_cipher_list()
+ *     cdef size_t n = 0             # <<<<<<<<<<<<<<
+ *     ciphers = set()
+ *     while cipher_types[n]:
+ */
+  __pyx_v_n = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":115
+ *     cdef const int* cipher_types = _cipher.mbedtls_cipher_list()
+ *     cdef size_t n = 0
+ *     ciphers = set()             # <<<<<<<<<<<<<<
+ *     while cipher_types[n]:
+ *         ciphers.add(cipher_lookup[cipher_types[n]])
+ */
+  __pyx_t_1 = PySet_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_v_ciphers = ((PyObject*)__pyx_t_1);
+  __pyx_t_1 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":116
+ *     cdef size_t n = 0
+ *     ciphers = set()
+ *     while cipher_types[n]:             # <<<<<<<<<<<<<<
+ *         ciphers.add(cipher_lookup[cipher_types[n]])
+ *         n += 1
+ */
+  while (1) {
+    __pyx_t_7 = ((__pyx_v_cipher_types[__pyx_v_n]) != 0);
+    if (!__pyx_t_7) break;
+
+    /* "mbedtls/cipher/_cipher.pyx":117
+ *     ciphers = set()
+ *     while cipher_types[n]:
+ *         ciphers.add(cipher_lookup[cipher_types[n]])             # <<<<<<<<<<<<<<
+ *         n += 1
+ *     return ciphers
+ */
+    __pyx_t_1 = __Pyx_PyInt_From_int((__pyx_v_cipher_types[__pyx_v_n])); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_cipher_lookup, __pyx_t_1); if (unlikely(__pyx_t_4 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_8 = PySet_Add(__pyx_v_ciphers, __pyx_t_4); if (unlikely(__pyx_t_8 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+    /* "mbedtls/cipher/_cipher.pyx":118
+ *     while cipher_types[n]:
+ *         ciphers.add(cipher_lookup[cipher_types[n]])
+ *         n += 1             # <<<<<<<<<<<<<<
+ *     return ciphers
+ * 
+ */
+    __pyx_v_n = (__pyx_v_n + 1);
+  }
+
+  /* "mbedtls/cipher/_cipher.pyx":119
+ *         ciphers.add(cipher_lookup[cipher_types[n]])
+ *         n += 1
+ *     return ciphers             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(__pyx_v_ciphers);
+  __pyx_r = __pyx_v_ciphers;
+  goto __pyx_L0;
+
+  /* "mbedtls/cipher/_cipher.pyx":107
+ * 
+ * 
+ * cpdef get_supported_ciphers():             # <<<<<<<<<<<<<<
+ *     """Return the set of ciphers supported by the generic
+ *     cipher module.
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.get_supported_ciphers", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_cipher_lookup);
+  __Pyx_XDECREF(__pyx_v_ciphers);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_3get_supported_ciphers(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_7mbedtls_6cipher_7_cipher_2get_supported_ciphers[] = "Return the set of ciphers supported by the generic\n    cipher module.\n\n    ";
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_3get_supported_ciphers(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("get_supported_ciphers (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_2get_supported_ciphers(__pyx_self);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_2get_supported_ciphers(CYTHON_UNUSED PyObject *__pyx_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("get_supported_ciphers", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __pyx_f_7mbedtls_6cipher_7_cipher_get_supported_ciphers(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 107; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.get_supported_ciphers", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mbedtls/cipher/_cipher.pyx":126
+ * 
+ * 
+ * cdef _c_setup(_cipher.mbedtls_cipher_context_t* ctx,             # <<<<<<<<<<<<<<
+ *               char[:] cipher_name):
+ *     """Initialize and fill the cipher context structure with the
+ */
+
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_setup(mbedtls_cipher_context_t *__pyx_v_ctx, __Pyx_memviewslice __pyx_v_cipher_name) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  Py_ssize_t __pyx_t_1;
+  int __pyx_t_2;
+  PyObject *__pyx_t_3 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_c_setup", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":132
+ * 
+ *     """
+ *     return _cipher.mbedtls_cipher_setup(             # <<<<<<<<<<<<<<
+ *         ctx, _cipher.mbedtls_cipher_info_from_string(&cipher_name[0]))
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+
+  /* "mbedtls/cipher/_cipher.pyx":133
+ *     """
+ *     return _cipher.mbedtls_cipher_setup(
+ *         ctx, _cipher.mbedtls_cipher_info_from_string(&cipher_name[0]))             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_t_1 = 0;
+  __pyx_t_2 = -1;
+  if (__pyx_t_1 < 0) {
+    __pyx_t_1 += __pyx_v_cipher_name.shape[0];
+    if (unlikely(__pyx_t_1 < 0)) __pyx_t_2 = 0;
+  } else if (unlikely(__pyx_t_1 >= __pyx_v_cipher_name.shape[0])) __pyx_t_2 = 0;
+  if (unlikely(__pyx_t_2 != -1)) {
+    __Pyx_RaiseBufferIndexError(__pyx_t_2);
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 133; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+
+  /* "mbedtls/cipher/_cipher.pyx":132
+ * 
+ *     """
+ *     return _cipher.mbedtls_cipher_setup(             # <<<<<<<<<<<<<<
+ *         ctx, _cipher.mbedtls_cipher_info_from_string(&cipher_name[0]))
+ * 
+ */
+  __pyx_t_3 = __Pyx_PyInt_From_int(mbedtls_cipher_setup(__pyx_v_ctx, mbedtls_cipher_info_from_string((&(*((char *) ( /* dim=0 */ (__pyx_v_cipher_name.data + __pyx_t_1 * __pyx_v_cipher_name.strides[0]) ))))))); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 132; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_r = __pyx_t_3;
+  __pyx_t_3 = 0;
+  goto __pyx_L0;
+
+  /* "mbedtls/cipher/_cipher.pyx":126
+ * 
+ * 
+ * cdef _c_setup(_cipher.mbedtls_cipher_context_t* ctx,             # <<<<<<<<<<<<<<
+ *               char[:] cipher_name):
+ *     """Initialize and fill the cipher context structure with the
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher._c_setup", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mbedtls/cipher/_cipher.pyx":136
+ * 
+ * 
+ * cdef _c_set_key(_cipher.mbedtls_cipher_context_t* ctx,             # <<<<<<<<<<<<<<
+ *                 unsigned char[:] c_key,
+ *                 _cipher.mbedtls_operation_t operation):
+ */
+
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_set_key(mbedtls_cipher_context_t *__pyx_v_ctx, __Pyx_memviewslice __pyx_v_c_key, mbedtls_operation_t __pyx_v_operation) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  Py_ssize_t __pyx_t_1;
+  int __pyx_t_2;
+  PyObject *__pyx_t_3 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_c_set_key", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":140
+ *                 _cipher.mbedtls_operation_t operation):
+ *     """Set the key to use with the given context."""
+ *     return _cipher.mbedtls_cipher_setkey(ctx, &c_key[0], 8 * c_key.shape[0],             # <<<<<<<<<<<<<<
+ *                                          operation)
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = 0;
+  __pyx_t_2 = -1;
+  if (__pyx_t_1 < 0) {
+    __pyx_t_1 += __pyx_v_c_key.shape[0];
+    if (unlikely(__pyx_t_1 < 0)) __pyx_t_2 = 0;
+  } else if (unlikely(__pyx_t_1 >= __pyx_v_c_key.shape[0])) __pyx_t_2 = 0;
+  if (unlikely(__pyx_t_2 != -1)) {
+    __Pyx_RaiseBufferIndexError(__pyx_t_2);
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 140; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+
+  /* "mbedtls/cipher/_cipher.pyx":141
+ *     """Set the key to use with the given context."""
+ *     return _cipher.mbedtls_cipher_setkey(ctx, &c_key[0], 8 * c_key.shape[0],
+ *                                          operation)             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_t_3 = __Pyx_PyInt_From_int(mbedtls_cipher_setkey(__pyx_v_ctx, (&(*((unsigned char *) ( /* dim=0 */ (__pyx_v_c_key.data + __pyx_t_1 * __pyx_v_c_key.strides[0]) )))), (8 * (__pyx_v_c_key.shape[0])), __pyx_v_operation)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 140; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_r = __pyx_t_3;
+  __pyx_t_3 = 0;
+  goto __pyx_L0;
+
+  /* "mbedtls/cipher/_cipher.pyx":136
+ * 
+ * 
+ * cdef _c_set_key(_cipher.mbedtls_cipher_context_t* ctx,             # <<<<<<<<<<<<<<
+ *                 unsigned char[:] c_key,
+ *                 _cipher.mbedtls_operation_t operation):
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher._c_set_key", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mbedtls/cipher/_cipher.pyx":144
+ * 
+ * 
+ * cdef _c_crypt(_cipher.mbedtls_cipher_context_t* ctx,             # <<<<<<<<<<<<<<
+ *               object iv, object input):
+ *     """Generic all-in-one encryption/decryption."""
+ */
+
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_crypt(mbedtls_cipher_context_t *__pyx_v_ctx, PyObject *__pyx_v_iv, PyObject *__pyx_v_input) {
+  __Pyx_memviewslice __pyx_v_c_iv = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_c_input = { 0, 0, { 0 }, { 0 }, { 0 } };
+  size_t __pyx_v_olen;
+  size_t __pyx_v_sz;
+  unsigned char *__pyx_v_output;
+  int __pyx_v_err;
+  size_t __pyx_v_n;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  int __pyx_t_1;
+  int __pyx_t_2;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  __Pyx_memviewslice __pyx_t_6 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_7 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  size_t __pyx_t_8;
+  Py_ssize_t __pyx_t_9;
+  int __pyx_t_10;
+  Py_ssize_t __pyx_t_11;
+  PyObject *__pyx_t_12 = NULL;
+  PyObject *__pyx_t_13 = NULL;
+  size_t __pyx_t_14;
+  int __pyx_t_15;
+  char const *__pyx_t_16;
+  PyObject *__pyx_t_17 = NULL;
+  PyObject *__pyx_t_18 = NULL;
+  PyObject *__pyx_t_19 = NULL;
+  PyObject *__pyx_t_20 = NULL;
+  PyObject *__pyx_t_21 = NULL;
+  PyObject *__pyx_t_22 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_c_crypt", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":148
+ *     """Generic all-in-one encryption/decryption."""
+ *     # Make sure that `c_iv` has at least size 1 before dereferencing.
+ *     if not input:             # <<<<<<<<<<<<<<
+ *         raise FullBlockExpectedError()
+ *     cdef unsigned char[:] c_iv = (
+ */
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_input); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 148; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = ((!__pyx_t_1) != 0);
+  if (__pyx_t_2) {
+
+    /* "mbedtls/cipher/_cipher.pyx":149
+ *     # Make sure that `c_iv` has at least size 1 before dereferencing.
+ *     if not input:
+ *         raise FullBlockExpectedError()             # <<<<<<<<<<<<<<
+ *     cdef unsigned char[:] c_iv = (
+ *         bytearray(iv) if iv else bytearray(b"\x00"))
+ */
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_FullBlockExpectedError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 149; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_5 = NULL;
+    if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_4))) {
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_4);
+      if (likely(__pyx_t_5)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
+        __Pyx_INCREF(__pyx_t_5);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_4, function);
+      }
+    }
+    if (__pyx_t_5) {
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 149; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    } else {
+      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 149; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    }
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_Raise(__pyx_t_3, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 149; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+    /* "mbedtls/cipher/_cipher.pyx":148
+ *     """Generic all-in-one encryption/decryption."""
+ *     # Make sure that `c_iv` has at least size 1 before dereferencing.
+ *     if not input:             # <<<<<<<<<<<<<<
+ *         raise FullBlockExpectedError()
+ *     cdef unsigned char[:] c_iv = (
+ */
+  }
+
+  /* "mbedtls/cipher/_cipher.pyx":151
+ *         raise FullBlockExpectedError()
+ *     cdef unsigned char[:] c_iv = (
+ *         bytearray(iv) if iv else bytearray(b"\x00"))             # <<<<<<<<<<<<<<
+ *     cdef unsigned char[:] c_input = bytearray(input)
+ *     cdef size_t olen
+ */
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_iv); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 151; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__pyx_t_2) {
+    __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 151; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_INCREF(__pyx_v_iv);
+    __Pyx_GIVEREF(__pyx_v_iv);
+    PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_v_iv);
+    __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)(&PyByteArray_Type)), __pyx_t_3, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 151; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_char(__pyx_t_4);
+    if (unlikely(!__pyx_t_7.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 151; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_6 = __pyx_t_7;
+    __pyx_t_7.memview = NULL;
+    __pyx_t_7.data = NULL;
+  } else {
+    __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)(&PyByteArray_Type)), __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 151; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_char(__pyx_t_4);
+    if (unlikely(!__pyx_t_7.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 151; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_6 = __pyx_t_7;
+    __pyx_t_7.memview = NULL;
+    __pyx_t_7.data = NULL;
+  }
+  __pyx_v_c_iv = __pyx_t_6;
+  __pyx_t_6.memview = NULL;
+  __pyx_t_6.data = NULL;
+
+  /* "mbedtls/cipher/_cipher.pyx":152
+ *     cdef unsigned char[:] c_iv = (
+ *         bytearray(iv) if iv else bytearray(b"\x00"))
+ *     cdef unsigned char[:] c_input = bytearray(input)             # <<<<<<<<<<<<<<
+ *     cdef size_t olen
+ *     cdef size_t sz = c_input.shape[0] + _c_get_block_size(ctx)
+ */
+  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 152; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_INCREF(__pyx_v_input);
+  __Pyx_GIVEREF(__pyx_v_input);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_input);
+  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)(&PyByteArray_Type)), __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 152; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_char(__pyx_t_3);
+  if (unlikely(!__pyx_t_6.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 152; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_v_c_input = __pyx_t_6;
+  __pyx_t_6.memview = NULL;
+  __pyx_t_6.data = NULL;
+
+  /* "mbedtls/cipher/_cipher.pyx":154
+ *     cdef unsigned char[:] c_input = bytearray(input)
+ *     cdef size_t olen
+ *     cdef size_t sz = c_input.shape[0] + _c_get_block_size(ctx)             # <<<<<<<<<<<<<<
+ *     cdef unsigned char* output = <unsigned char*>malloc(
+ *         sz * sizeof(unsigned char))
+ */
+  __pyx_t_3 = PyInt_FromSsize_t((__pyx_v_c_input.shape[0])); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 154; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = __pyx_f_7mbedtls_6cipher_7_cipher__c_get_block_size(__pyx_v_ctx); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 154; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = PyNumber_Add(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 154; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_8 = __Pyx_PyInt_As_size_t(__pyx_t_5); if (unlikely((__pyx_t_8 == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 154; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_v_sz = __pyx_t_8;
+
+  /* "mbedtls/cipher/_cipher.pyx":155
+ *     cdef size_t olen
+ *     cdef size_t sz = c_input.shape[0] + _c_get_block_size(ctx)
+ *     cdef unsigned char* output = <unsigned char*>malloc(             # <<<<<<<<<<<<<<
+ *         sz * sizeof(unsigned char))
+ *     if not output:
+ */
+  __pyx_v_output = ((unsigned char *)malloc((__pyx_v_sz * (sizeof(unsigned char)))));
+
+  /* "mbedtls/cipher/_cipher.pyx":157
+ *     cdef unsigned char* output = <unsigned char*>malloc(
+ *         sz * sizeof(unsigned char))
+ *     if not output:             # <<<<<<<<<<<<<<
+ *         raise MemoryError()
+ *     cdef int err
+ */
+  __pyx_t_2 = ((!(__pyx_v_output != 0)) != 0);
+  if (__pyx_t_2) {
+
+    /* "mbedtls/cipher/_cipher.pyx":158
+ *         sz * sizeof(unsigned char))
+ *     if not output:
+ *         raise MemoryError()             # <<<<<<<<<<<<<<
+ *     cdef int err
+ *     try:
+ */
+    PyErr_NoMemory(); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 158; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+    /* "mbedtls/cipher/_cipher.pyx":157
+ *     cdef unsigned char* output = <unsigned char*>malloc(
+ *         sz * sizeof(unsigned char))
+ *     if not output:             # <<<<<<<<<<<<<<
+ *         raise MemoryError()
+ *     cdef int err
+ */
+  }
+
+  /* "mbedtls/cipher/_cipher.pyx":160
+ *         raise MemoryError()
+ *     cdef int err
+ *     try:             # <<<<<<<<<<<<<<
+ *         err = _cipher.mbedtls_cipher_crypt(
+ *             ctx, &c_iv[0], c_iv.shape[0],
+ */
+  /*try:*/ {
+
+    /* "mbedtls/cipher/_cipher.pyx":162
+ *     try:
+ *         err = _cipher.mbedtls_cipher_crypt(
+ *             ctx, &c_iv[0], c_iv.shape[0],             # <<<<<<<<<<<<<<
+ *             &c_input[0], c_input.shape[0], output, &olen)
+ *         # We can call `check_error` directly here because we return a
+ */
+    __pyx_t_9 = 0;
+    __pyx_t_10 = -1;
+    if (__pyx_t_9 < 0) {
+      __pyx_t_9 += __pyx_v_c_iv.shape[0];
+      if (unlikely(__pyx_t_9 < 0)) __pyx_t_10 = 0;
+    } else if (unlikely(__pyx_t_9 >= __pyx_v_c_iv.shape[0])) __pyx_t_10 = 0;
+    if (unlikely(__pyx_t_10 != -1)) {
+      __Pyx_RaiseBufferIndexError(__pyx_t_10);
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 162; __pyx_clineno = __LINE__; goto __pyx_L6_error;}
+    }
+
+    /* "mbedtls/cipher/_cipher.pyx":163
+ *         err = _cipher.mbedtls_cipher_crypt(
+ *             ctx, &c_iv[0], c_iv.shape[0],
+ *             &c_input[0], c_input.shape[0], output, &olen)             # <<<<<<<<<<<<<<
+ *         # We can call `check_error` directly here because we return a
+ *         # python object.
+ */
+    __pyx_t_11 = 0;
+    __pyx_t_10 = -1;
+    if (__pyx_t_11 < 0) {
+      __pyx_t_11 += __pyx_v_c_input.shape[0];
+      if (unlikely(__pyx_t_11 < 0)) __pyx_t_10 = 0;
+    } else if (unlikely(__pyx_t_11 >= __pyx_v_c_input.shape[0])) __pyx_t_10 = 0;
+    if (unlikely(__pyx_t_10 != -1)) {
+      __Pyx_RaiseBufferIndexError(__pyx_t_10);
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 163; __pyx_clineno = __LINE__; goto __pyx_L6_error;}
+    }
+
+    /* "mbedtls/cipher/_cipher.pyx":161
+ *     cdef int err
+ *     try:
+ *         err = _cipher.mbedtls_cipher_crypt(             # <<<<<<<<<<<<<<
+ *             ctx, &c_iv[0], c_iv.shape[0],
+ *             &c_input[0], c_input.shape[0], output, &olen)
+ */
+    __pyx_v_err = mbedtls_cipher_crypt(__pyx_v_ctx, (&(*((unsigned char *) ( /* dim=0 */ (__pyx_v_c_iv.data + __pyx_t_9 * __pyx_v_c_iv.strides[0]) )))), (__pyx_v_c_iv.shape[0]), (&(*((unsigned char *) ( /* dim=0 */ (__pyx_v_c_input.data + __pyx_t_11 * __pyx_v_c_input.strides[0]) )))), (__pyx_v_c_input.shape[0]), __pyx_v_output, (&__pyx_v_olen));
+
+    /* "mbedtls/cipher/_cipher.pyx":166
+ *         # We can call `check_error` directly here because we return a
+ *         # python object.
+ *         check_error(err)             # <<<<<<<<<<<<<<
+ *         # The list comprehension is required.
+ *         return bytes([output[n] for n in range(olen)])
+ */
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_check_error); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 166; __pyx_clineno = __LINE__; goto __pyx_L6_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_err); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 166; __pyx_clineno = __LINE__; goto __pyx_L6_error;}
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_12 = NULL;
+    if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_4))) {
+      __pyx_t_12 = PyMethod_GET_SELF(__pyx_t_4);
+      if (likely(__pyx_t_12)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
+        __Pyx_INCREF(__pyx_t_12);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_4, function);
+      }
+    }
+    if (!__pyx_t_12) {
+      __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 166; __pyx_clineno = __LINE__; goto __pyx_L6_error;}
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_GOTREF(__pyx_t_5);
+    } else {
+      __pyx_t_13 = PyTuple_New(1+1); if (unlikely(!__pyx_t_13)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 166; __pyx_clineno = __LINE__; goto __pyx_L6_error;}
+      __Pyx_GOTREF(__pyx_t_13);
+      __Pyx_GIVEREF(__pyx_t_12); PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_t_12); __pyx_t_12 = NULL;
+      __Pyx_GIVEREF(__pyx_t_3);
+      PyTuple_SET_ITEM(__pyx_t_13, 0+1, __pyx_t_3);
+      __pyx_t_3 = 0;
+      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_13, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 166; __pyx_clineno = __LINE__; goto __pyx_L6_error;}
+      __Pyx_GOTREF(__pyx_t_5);
+      __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+
+    /* "mbedtls/cipher/_cipher.pyx":168
+ *         check_error(err)
+ *         # The list comprehension is required.
+ *         return bytes([output[n] for n in range(olen)])             # <<<<<<<<<<<<<<
+ *     finally:
+ *         free(output)
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_5 = PyList_New(0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 168; __pyx_clineno = __LINE__; goto __pyx_L6_error;}
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_8 = __pyx_v_olen;
+    for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_8; __pyx_t_14+=1) {
+      __pyx_v_n = __pyx_t_14;
+      __pyx_t_4 = __Pyx_PyInt_From_unsigned_char((__pyx_v_output[__pyx_v_n])); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 168; __pyx_clineno = __LINE__; goto __pyx_L6_error;}
+      __Pyx_GOTREF(__pyx_t_4);
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_5, (PyObject*)__pyx_t_4))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 168; __pyx_clineno = __LINE__; goto __pyx_L6_error;}
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    }
+    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 168; __pyx_clineno = __LINE__; goto __pyx_L6_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_GIVEREF(__pyx_t_5);
+    PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5);
+    __pyx_t_5 = 0;
+    __pyx_t_5 = __Pyx_PyObject_Call(((PyObject *)(&PyBytes_Type)), __pyx_t_4, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 168; __pyx_clineno = __LINE__; goto __pyx_L6_error;}
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_r = __pyx_t_5;
+    __pyx_t_5 = 0;
+    goto __pyx_L5_return;
+  }
+
+  /* "mbedtls/cipher/_cipher.pyx":170
+ *         return bytes([output[n] for n in range(olen)])
+ *     finally:
+ *         free(output)             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  /*finally:*/ {
+    /*exception exit:*/{
+      __pyx_L6_error:;
+      __pyx_t_17 = 0; __pyx_t_18 = 0; __pyx_t_19 = 0; __pyx_t_20 = 0; __pyx_t_21 = 0; __pyx_t_22 = 0;
+      __PYX_XDEC_MEMVIEW(&__pyx_t_7, 1);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_6, 1);
+      __Pyx_XDECREF(__pyx_t_12); __pyx_t_12 = 0;
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_XDECREF(__pyx_t_13); __pyx_t_13 = 0;
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      if (PY_MAJOR_VERSION >= 3) __Pyx_ExceptionSwap(&__pyx_t_20, &__pyx_t_21, &__pyx_t_22);
+      if ((PY_MAJOR_VERSION < 3) || unlikely(__Pyx_GetException(&__pyx_t_17, &__pyx_t_18, &__pyx_t_19) < 0)) __Pyx_ErrFetch(&__pyx_t_17, &__pyx_t_18, &__pyx_t_19);
+      __Pyx_XGOTREF(__pyx_t_17);
+      __Pyx_XGOTREF(__pyx_t_18);
+      __Pyx_XGOTREF(__pyx_t_19);
+      __Pyx_XGOTREF(__pyx_t_20);
+      __Pyx_XGOTREF(__pyx_t_21);
+      __Pyx_XGOTREF(__pyx_t_22);
+      __pyx_t_10 = __pyx_lineno; __pyx_t_15 = __pyx_clineno; __pyx_t_16 = __pyx_filename;
+      {
+        free(__pyx_v_output);
+      }
+      if (PY_MAJOR_VERSION >= 3) {
+        __Pyx_XGIVEREF(__pyx_t_20);
+        __Pyx_XGIVEREF(__pyx_t_21);
+        __Pyx_XGIVEREF(__pyx_t_22);
+        __Pyx_ExceptionReset(__pyx_t_20, __pyx_t_21, __pyx_t_22);
+      }
+      __Pyx_XGIVEREF(__pyx_t_17);
+      __Pyx_XGIVEREF(__pyx_t_18);
+      __Pyx_XGIVEREF(__pyx_t_19);
+      __Pyx_ErrRestore(__pyx_t_17, __pyx_t_18, __pyx_t_19);
+      __pyx_t_17 = 0; __pyx_t_18 = 0; __pyx_t_19 = 0; __pyx_t_20 = 0; __pyx_t_21 = 0; __pyx_t_22 = 0;
+      __pyx_lineno = __pyx_t_10; __pyx_clineno = __pyx_t_15; __pyx_filename = __pyx_t_16;
+      goto __pyx_L1_error;
+    }
+    __pyx_L5_return: {
+      __pyx_t_22 = __pyx_r;
+      __pyx_r = 0;
+      free(__pyx_v_output);
+      __pyx_r = __pyx_t_22;
+      __pyx_t_22 = 0;
+      goto __pyx_L0;
+    }
+  }
+
+  /* "mbedtls/cipher/_cipher.pyx":144
+ * 
+ * 
+ * cdef _c_crypt(_cipher.mbedtls_cipher_context_t* ctx,             # <<<<<<<<<<<<<<
+ *               object iv, object input):
+ *     """Generic all-in-one encryption/decryption."""
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_6, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_7, 1);
+  __Pyx_XDECREF(__pyx_t_12);
+  __Pyx_XDECREF(__pyx_t_13);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher._c_crypt", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_c_iv, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_c_input, 1);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mbedtls/cipher/_cipher.pyx":173
+ * 
+ * 
+ * cdef _c_get_block_size(_cipher.mbedtls_cipher_context_t* ctx):             # <<<<<<<<<<<<<<
+ *     """Return the block size for the cipher."""
+ *     return _cipher.mbedtls_cipher_get_block_size(ctx)
+ */
+
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_get_block_size(mbedtls_cipher_context_t *__pyx_v_ctx) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_c_get_block_size", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":175
+ * cdef _c_get_block_size(_cipher.mbedtls_cipher_context_t* ctx):
+ *     """Return the block size for the cipher."""
+ *     return _cipher.mbedtls_cipher_get_block_size(ctx)             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_unsigned_int(mbedtls_cipher_get_block_size(__pyx_v_ctx)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 175; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "mbedtls/cipher/_cipher.pyx":173
+ * 
+ * 
+ * cdef _c_get_block_size(_cipher.mbedtls_cipher_context_t* ctx):             # <<<<<<<<<<<<<<
+ *     """Return the block size for the cipher."""
+ *     return _cipher.mbedtls_cipher_get_block_size(ctx)
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher._c_get_block_size", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mbedtls/cipher/_cipher.pyx":178
+ * 
+ * 
+ * cdef _c_get_cipher_mode(_cipher.mbedtls_cipher_context_t* ctx):             # <<<<<<<<<<<<<<
+ *     """Return the mode of operation of the cipher."""
+ *     return _cipher.mbedtls_cipher_get_cipher_mode(ctx)
+ */
+
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_get_cipher_mode(mbedtls_cipher_context_t *__pyx_v_ctx) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_c_get_cipher_mode", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":180
+ * cdef _c_get_cipher_mode(_cipher.mbedtls_cipher_context_t* ctx):
+ *     """Return the mode of operation of the cipher."""
+ *     return _cipher.mbedtls_cipher_get_cipher_mode(ctx)             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_mbedtls_cipher_mode_t(mbedtls_cipher_get_cipher_mode(__pyx_v_ctx)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 180; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "mbedtls/cipher/_cipher.pyx":178
+ * 
+ * 
+ * cdef _c_get_cipher_mode(_cipher.mbedtls_cipher_context_t* ctx):             # <<<<<<<<<<<<<<
+ *     """Return the mode of operation of the cipher."""
+ *     return _cipher.mbedtls_cipher_get_cipher_mode(ctx)
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher._c_get_cipher_mode", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mbedtls/cipher/_cipher.pyx":183
+ * 
+ * 
+ * cdef _c_get_iv_size(_cipher.mbedtls_cipher_context_t* ctx):             # <<<<<<<<<<<<<<
+ *     """Return the size of the cipher's IV/NONCE in bytes."""
+ *     return _cipher.mbedtls_cipher_get_iv_size(ctx)
+ */
+
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_get_iv_size(mbedtls_cipher_context_t *__pyx_v_ctx) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_c_get_iv_size", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":185
+ * cdef _c_get_iv_size(_cipher.mbedtls_cipher_context_t* ctx):
+ *     """Return the size of the cipher's IV/NONCE in bytes."""
+ *     return _cipher.mbedtls_cipher_get_iv_size(ctx)             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_int(mbedtls_cipher_get_iv_size(__pyx_v_ctx)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 185; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "mbedtls/cipher/_cipher.pyx":183
+ * 
+ * 
+ * cdef _c_get_iv_size(_cipher.mbedtls_cipher_context_t* ctx):             # <<<<<<<<<<<<<<
+ *     """Return the size of the cipher's IV/NONCE in bytes."""
+ *     return _cipher.mbedtls_cipher_get_iv_size(ctx)
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher._c_get_iv_size", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mbedtls/cipher/_cipher.pyx":188
+ * 
+ * 
+ * cdef _c_get_type(_cipher.mbedtls_cipher_context_t* ctx):             # <<<<<<<<<<<<<<
+ *     """Return the type of the cipher."""
+ *     return _cipher.mbedtls_cipher_get_type(ctx)
+ */
+
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_get_type(mbedtls_cipher_context_t *__pyx_v_ctx) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_c_get_type", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":190
+ * cdef _c_get_type(_cipher.mbedtls_cipher_context_t* ctx):
+ *     """Return the type of the cipher."""
+ *     return _cipher.mbedtls_cipher_get_type(ctx)             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_mbedtls_cipher_type_t(mbedtls_cipher_get_type(__pyx_v_ctx)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "mbedtls/cipher/_cipher.pyx":188
+ * 
+ * 
+ * cdef _c_get_type(_cipher.mbedtls_cipher_context_t* ctx):             # <<<<<<<<<<<<<<
+ *     """Return the type of the cipher."""
+ *     return _cipher.mbedtls_cipher_get_type(ctx)
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher._c_get_type", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mbedtls/cipher/_cipher.pyx":193
+ * 
+ * 
+ * cdef _c_get_name(_cipher.mbedtls_cipher_context_t* ctx):             # <<<<<<<<<<<<<<
+ *     """Return the name of the cipher."""
+ *     ret = _cipher.mbedtls_cipher_get_name(ctx)
+ */
+
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_get_name(mbedtls_cipher_context_t *__pyx_v_ctx) {
+  char const *__pyx_v_ret;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_c_get_name", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":195
+ * cdef _c_get_name(_cipher.mbedtls_cipher_context_t* ctx):
+ *     """Return the name of the cipher."""
+ *     ret = _cipher.mbedtls_cipher_get_name(ctx)             # <<<<<<<<<<<<<<
+ *     return ret if ret is not NULL else b"NONE"
+ * 
+ */
+  __pyx_v_ret = mbedtls_cipher_get_name(__pyx_v_ctx);
+
+  /* "mbedtls/cipher/_cipher.pyx":196
+ *     """Return the name of the cipher."""
+ *     ret = _cipher.mbedtls_cipher_get_name(ctx)
+ *     return ret if ret is not NULL else b"NONE"             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  if (((__pyx_v_ret != NULL) != 0)) {
+    __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_ret); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 196; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_1 = __pyx_t_2;
+    __pyx_t_2 = 0;
+  } else {
+    __Pyx_INCREF(__pyx_n_b_NONE);
+    __pyx_t_1 = __pyx_n_b_NONE;
+  }
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "mbedtls/cipher/_cipher.pyx":193
+ * 
+ * 
+ * cdef _c_get_name(_cipher.mbedtls_cipher_context_t* ctx):             # <<<<<<<<<<<<<<
+ *     """Return the name of the cipher."""
+ *     ret = _cipher.mbedtls_cipher_get_name(ctx)
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher._c_get_name", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mbedtls/cipher/_cipher.pyx":199
+ * 
+ * 
+ * cdef _c_get_key_size(_cipher.mbedtls_cipher_context_t* ctx):             # <<<<<<<<<<<<<<
+ *     """Return the size of the ciphers' key."""
+ *     return _cipher.mbedtls_cipher_get_key_bitlen(ctx) // 8
+ */
+
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher__c_get_key_size(mbedtls_cipher_context_t *__pyx_v_ctx) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_c_get_key_size", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":201
+ * cdef _c_get_key_size(_cipher.mbedtls_cipher_context_t* ctx):
+ *     """Return the size of the ciphers' key."""
+ *     return _cipher.mbedtls_cipher_get_key_bitlen(ctx) // 8             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_long(__Pyx_div_long(mbedtls_cipher_get_key_bitlen(__pyx_v_ctx), 8)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 201; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "mbedtls/cipher/_cipher.pyx":199
+ * 
+ * 
+ * cdef _c_get_key_size(_cipher.mbedtls_cipher_context_t* ctx):             # <<<<<<<<<<<<<<
+ *     """Return the size of the ciphers' key."""
+ *     return _cipher.mbedtls_cipher_get_key_bitlen(ctx) // 8
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher._c_get_key_size", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mbedtls/cipher/_cipher.pyx":225
+ * 
+ *     """
+ *     def __init__(self, cipher_name, key, mode, iv):             # <<<<<<<<<<<<<<
+ *         if mode in {MODE_CBC, MODE_CFB} and not iv:
+ *             raise ValueError("mode requires an IV")
  */
 
 /* Python wrapper */
-static int __pyx_pw_7mbedtls_4hmac_4Hmac_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static int __pyx_pw_7mbedtls_4hmac_4Hmac_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static int __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  PyObject *__pyx_v_cipher_name = 0;
   PyObject *__pyx_v_key = 0;
-  PyObject *__pyx_v_name = 0;
-  PyObject *__pyx_v_buffer = 0;
+  PyObject *__pyx_v_mode = 0;
+  PyObject *__pyx_v_iv = 0;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -1497,13 +2887,13 @@ static int __pyx_pw_7mbedtls_4hmac_4Hmac_1__init__(PyObject *__pyx_v_self, PyObj
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__init__ (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_key,&__pyx_n_s_name,&__pyx_n_s_buffer,0};
-    PyObject* values[3] = {0,0,0};
-    values[2] = ((PyObject *)Py_None);
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_cipher_name,&__pyx_n_s_key,&__pyx_n_s_mode,&__pyx_n_s_iv,0};
+    PyObject* values[4] = {0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
         case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
         case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
         case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
@@ -1513,372 +2903,348 @@ static int __pyx_pw_7mbedtls_4hmac_4Hmac_1__init__(PyObject *__pyx_v_self, PyObj
       kw_args = PyDict_Size(__pyx_kwds);
       switch (pos_args) {
         case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_key)) != 0)) kw_args--;
+        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_cipher_name)) != 0)) kw_args--;
         else goto __pyx_L5_argtuple_error;
         case  1:
-        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_name)) != 0)) kw_args--;
+        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_key)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 36; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 4, 4, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  2:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_buffer);
-          if (value) { values[2] = value; kw_args--; }
+        if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_mode)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 4, 4, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  3:
+        if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_iv)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 4, 4, 3); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 36; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 4) {
+      goto __pyx_L5_argtuple_error;
     } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+      values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
     }
-    __pyx_v_key = values[0];
-    __pyx_v_name = values[1];
-    __pyx_v_buffer = values[2];
+    __pyx_v_cipher_name = values[0];
+    __pyx_v_key = values[1];
+    __pyx_v_mode = values[2];
+    __pyx_v_iv = values[3];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 36; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__init__", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
-  __Pyx_AddTraceback("mbedtls.hmac.Hmac.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7mbedtls_4hmac_4Hmac___init__(((struct __pyx_obj_7mbedtls_4hmac_Hmac *)__pyx_v_self), __pyx_v_key, __pyx_v_name, __pyx_v_buffer);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher___init__(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self), __pyx_v_cipher_name, __pyx_v_key, __pyx_v_mode, __pyx_v_iv);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_7mbedtls_4hmac_4Hmac___init__(struct __pyx_obj_7mbedtls_4hmac_Hmac *__pyx_v_self, PyObject *__pyx_v_key, PyObject *__pyx_v_name, PyObject *__pyx_v_buffer) {
-  __Pyx_memviewslice __pyx_v_c_key = { 0, 0, { 0 }, { 0 }, { 0 } };
+static int __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher___init__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_cipher_name, PyObject *__pyx_v_key, PyObject *__pyx_v_mode, PyObject *__pyx_v_iv) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
+  int __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  Py_ssize_t __pyx_t_4;
+  int __pyx_t_3;
+  PyObject *__pyx_t_4 = NULL;
   PyObject *__pyx_t_5 = NULL;
-  __Pyx_memviewslice __pyx_t_6 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  Py_ssize_t __pyx_t_7;
-  int __pyx_t_8;
-  PyObject *__pyx_t_9 = NULL;
+  int __pyx_t_6;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "mbedtls/hmac.pyx":37
+  /* "mbedtls/cipher/_cipher.pyx":226
  *     """
- *     def __init__(self, key, name, buffer=None):
- *         super().__init__(name, buffer, 1)             # <<<<<<<<<<<<<<
- *         cdef unsigned char[:] c_key = bytearray(key)
- *         check_error(_md.mbedtls_md_hmac_starts(
+ *     def __init__(self, cipher_name, key, mode, iv):
+ *         if mode in {MODE_CBC, MODE_CFB} and not iv:             # <<<<<<<<<<<<<<
+ *             raise ValueError("mode requires an IV")
+ *         self._setup(cipher_name)
  */
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac));
-  __Pyx_GIVEREF(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac));
-  PyTuple_SET_ITEM(__pyx_t_2, 0, ((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac));
-  __Pyx_INCREF(((PyObject *)__pyx_v_self));
-  __Pyx_GIVEREF(((PyObject *)__pyx_v_self));
-  PyTuple_SET_ITEM(__pyx_t_2, 1, ((PyObject *)__pyx_v_self));
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_init); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = NULL;
-  __pyx_t_4 = 0;
-  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_3)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_3);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
-      __pyx_t_4 = 1;
-    }
-  }
-  __pyx_t_5 = PyTuple_New(3+__pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_5);
-  if (__pyx_t_3) {
-    __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3); __pyx_t_3 = NULL;
-  }
-  __Pyx_INCREF(__pyx_v_name);
-  __Pyx_GIVEREF(__pyx_v_name);
-  PyTuple_SET_ITEM(__pyx_t_5, 0+__pyx_t_4, __pyx_v_name);
-  __Pyx_INCREF(__pyx_v_buffer);
-  __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_5, 1+__pyx_t_4, __pyx_v_buffer);
-  __Pyx_INCREF(__pyx_int_1);
-  __Pyx_GIVEREF(__pyx_int_1);
-  PyTuple_SET_ITEM(__pyx_t_5, 2+__pyx_t_4, __pyx_int_1);
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_INCREF(__pyx_v_mode);
+  __pyx_t_2 = __pyx_v_mode;
+  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_MODE_CBC); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = PyObject_RichCompare(__pyx_t_2, __pyx_t_4, Py_EQ); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_6 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "mbedtls/hmac.pyx":38
- *     def __init__(self, key, name, buffer=None):
- *         super().__init__(name, buffer, 1)
- *         cdef unsigned char[:] c_key = bytearray(key)             # <<<<<<<<<<<<<<
- *         check_error(_md.mbedtls_md_hmac_starts(
- *             &self._ctx, &c_key[0], c_key.shape[0]))
- */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_INCREF(__pyx_v_key);
-  __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_key);
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyByteArray_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_char(__pyx_t_2);
-  if (unlikely(!__pyx_t_6.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_v_c_key = __pyx_t_6;
-  __pyx_t_6.memview = NULL;
-  __pyx_t_6.data = NULL;
-
-  /* "mbedtls/hmac.pyx":39
- *         super().__init__(name, buffer, 1)
- *         cdef unsigned char[:] c_key = bytearray(key)
- *         check_error(_md.mbedtls_md_hmac_starts(             # <<<<<<<<<<<<<<
- *             &self._ctx, &c_key[0], c_key.shape[0]))
- *         self.update(buffer)
- */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_check_error); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-
-  /* "mbedtls/hmac.pyx":40
- *         cdef unsigned char[:] c_key = bytearray(key)
- *         check_error(_md.mbedtls_md_hmac_starts(
- *             &self._ctx, &c_key[0], c_key.shape[0]))             # <<<<<<<<<<<<<<
- *         self.update(buffer)
- * 
- */
-  __pyx_t_7 = 0;
-  __pyx_t_8 = -1;
-  if (__pyx_t_7 < 0) {
-    __pyx_t_7 += __pyx_v_c_key.shape[0];
-    if (unlikely(__pyx_t_7 < 0)) __pyx_t_8 = 0;
-  } else if (unlikely(__pyx_t_7 >= __pyx_v_c_key.shape[0])) __pyx_t_8 = 0;
-  if (unlikely(__pyx_t_8 != -1)) {
-    __Pyx_RaiseBufferIndexError(__pyx_t_8);
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-
-  /* "mbedtls/hmac.pyx":39
- *         super().__init__(name, buffer, 1)
- *         cdef unsigned char[:] c_key = bytearray(key)
- *         check_error(_md.mbedtls_md_hmac_starts(             # <<<<<<<<<<<<<<
- *             &self._ctx, &c_key[0], c_key.shape[0]))
- *         self.update(buffer)
- */
-  __pyx_t_5 = __Pyx_PyInt_From_int(mbedtls_md_hmac_starts((&__pyx_v_self->__pyx_base._ctx), (&(*((unsigned char *) ( /* dim=0 */ (__pyx_v_c_key.data + __pyx_t_7 * __pyx_v_c_key.strides[0]) )))), (__pyx_v_c_key.shape[0]))); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_3 = NULL;
-  if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_1))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_1);
-    if (likely(__pyx_t_3)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
-      __Pyx_INCREF(__pyx_t_3);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_1, function);
-    }
-  }
-  if (!__pyx_t_3) {
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_5); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_GOTREF(__pyx_t_2);
+  if (!__pyx_t_6) {
   } else {
-    __pyx_t_9 = PyTuple_New(1+1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_9);
-    __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_3); __pyx_t_3 = NULL;
-    __Pyx_GIVEREF(__pyx_t_5);
-    PyTuple_SET_ITEM(__pyx_t_9, 0+1, __pyx_t_5);
-    __pyx_t_5 = 0;
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_9, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+    __pyx_t_3 = __pyx_t_6;
+    goto __pyx_L6_bool_binop_done;
   }
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_MODE_CFB); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_4 = PyObject_RichCompare(__pyx_t_2, __pyx_t_5, Py_EQ); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_6 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_3 = __pyx_t_6;
+  __pyx_L6_bool_binop_done:;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_6 = (__pyx_t_3 != 0);
+  if (__pyx_t_6) {
+  } else {
+    __pyx_t_1 = __pyx_t_6;
+    goto __pyx_L4_bool_binop_done;
+  }
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_v_iv); if (unlikely(__pyx_t_6 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = ((!__pyx_t_6) != 0);
+  __pyx_t_1 = __pyx_t_3;
+  __pyx_L4_bool_binop_done:;
+  if (__pyx_t_1) {
 
-  /* "mbedtls/hmac.pyx":41
- *         check_error(_md.mbedtls_md_hmac_starts(
- *             &self._ctx, &c_key[0], c_key.shape[0]))
- *         self.update(buffer)             # <<<<<<<<<<<<<<
- * 
- *     cdef _update(self, const unsigned char *input, size_t ilen):
+    /* "mbedtls/cipher/_cipher.pyx":227
+ *     def __init__(self, cipher_name, key, mode, iv):
+ *         if mode in {MODE_CBC, MODE_CFB} and not iv:
+ *             raise ValueError("mode requires an IV")             # <<<<<<<<<<<<<<
+ *         self._setup(cipher_name)
+ *         self._setkey(key)
  */
-  __pyx_t_2 = ((struct __pyx_vtabstruct_7mbedtls_4hmac_Hmac *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.update(((struct __pyx_obj_7mbedtls_3_md_MDBase *)__pyx_v_self), __pyx_v_buffer, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_Raise(__pyx_t_2, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+    /* "mbedtls/cipher/_cipher.pyx":226
+ *     """
+ *     def __init__(self, cipher_name, key, mode, iv):
+ *         if mode in {MODE_CBC, MODE_CFB} and not iv:             # <<<<<<<<<<<<<<
+ *             raise ValueError("mode requires an IV")
+ *         self._setup(cipher_name)
+ */
+  }
+
+  /* "mbedtls/cipher/_cipher.pyx":228
+ *         if mode in {MODE_CBC, MODE_CFB} and not iv:
+ *             raise ValueError("mode requires an IV")
+ *         self._setup(cipher_name)             # <<<<<<<<<<<<<<
+ *         self._setkey(key)
+ *         self._iv = iv if iv else b"\x00" * self.iv_size
+ */
+  __pyx_t_2 = ((struct __pyx_vtabstruct_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self->__pyx_vtab)->_setup(__pyx_v_self, __pyx_v_cipher_name, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 228; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":36
+  /* "mbedtls/cipher/_cipher.pyx":229
+ *             raise ValueError("mode requires an IV")
+ *         self._setup(cipher_name)
+ *         self._setkey(key)             # <<<<<<<<<<<<<<
+ *         self._iv = iv if iv else b"\x00" * self.iv_size
+ * 
+ */
+  __pyx_t_2 = ((struct __pyx_vtabstruct_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self->__pyx_vtab)->_setkey(__pyx_v_self, __pyx_v_key, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 229; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":230
+ *         self._setup(cipher_name)
+ *         self._setkey(key)
+ *         self._iv = iv if iv else b"\x00" * self.iv_size             # <<<<<<<<<<<<<<
+ * 
+ *     def __cinit__(self):
+ */
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_iv); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 230; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__pyx_t_1) {
+    __Pyx_INCREF(__pyx_v_iv);
+    __pyx_t_2 = __pyx_v_iv;
+  } else {
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_iv_size); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 230; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_5 = PyNumber_Multiply(__pyx_kp_b_, __pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 230; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_2 = __pyx_t_5;
+    __pyx_t_5 = 0;
+  }
+  __Pyx_GIVEREF(__pyx_t_2);
+  __Pyx_GOTREF(__pyx_v_self->_iv);
+  __Pyx_DECREF(__pyx_v_self->_iv);
+  __pyx_v_self->_iv = __pyx_t_2;
+  __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":225
  * 
  *     """
- *     def __init__(self, key, name, buffer=None):             # <<<<<<<<<<<<<<
- *         super().__init__(name, buffer, 1)
- *         cdef unsigned char[:] c_key = bytearray(key)
+ *     def __init__(self, cipher_name, key, mode, iv):             # <<<<<<<<<<<<<<
+ *         if mode in {MODE_CBC, MODE_CFB} and not iv:
+ *             raise ValueError("mode requires an IV")
  */
 
   /* function exit code */
   __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_6, 1);
-  __Pyx_XDECREF(__pyx_t_9);
-  __Pyx_AddTraceback("mbedtls.hmac.Hmac.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
-  __PYX_XDEC_MEMVIEW(&__pyx_v_c_key, 1);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":43
- *         self.update(buffer)
+/* "mbedtls/cipher/_cipher.pyx":232
+ *         self._iv = iv if iv else b"\x00" * self.iv_size
  * 
- *     cdef _update(self, const unsigned char *input, size_t ilen):             # <<<<<<<<<<<<<<
- *         """Update the HMAC object with `buffer`."""
- *         return _md.mbedtls_md_hmac_update(&self._ctx, input, ilen)
+ *     def __cinit__(self):             # <<<<<<<<<<<<<<
+ *         """Initialize a `cipher_context` (as NONE)."""
+ *         _cipher.mbedtls_cipher_init(&self._enc_ctx)
  */
 
-static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac__update(struct __pyx_obj_7mbedtls_4hmac_Hmac *__pyx_v_self, unsigned char const *__pyx_v_input, size_t __pyx_v_ilen) {
-  PyObject *__pyx_r = NULL;
+/* Python wrapper */
+static int __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_3__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_3__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  int __pyx_r;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("_update", 0);
+  __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
+  if (unlikely(PyTuple_GET_SIZE(__pyx_args) > 0)) {
+    __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 0, 0, PyTuple_GET_SIZE(__pyx_args)); return -1;}
+  if (unlikely(__pyx_kwds) && unlikely(PyDict_Size(__pyx_kwds) > 0) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "__cinit__", 0))) return -1;
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_2__cinit__(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self));
 
-  /* "mbedtls/hmac.pyx":45
- *     cdef _update(self, const unsigned char *input, size_t ilen):
- *         """Update the HMAC object with `buffer`."""
- *         return _md.mbedtls_md_hmac_update(&self._ctx, input, ilen)             # <<<<<<<<<<<<<<
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_2__cinit__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__cinit__", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":234
+ *     def __cinit__(self):
+ *         """Initialize a `cipher_context` (as NONE)."""
+ *         _cipher.mbedtls_cipher_init(&self._enc_ctx)             # <<<<<<<<<<<<<<
+ *         _cipher.mbedtls_cipher_init(&self._dec_ctx)
  * 
- *     cdef _finish(self, unsigned char *output):
  */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(mbedtls_md_hmac_update((&__pyx_v_self->__pyx_base._ctx), __pyx_v_input, __pyx_v_ilen)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
+  mbedtls_cipher_init((&__pyx_v_self->_enc_ctx));
 
-  /* "mbedtls/hmac.pyx":43
- *         self.update(buffer)
+  /* "mbedtls/cipher/_cipher.pyx":235
+ *         """Initialize a `cipher_context` (as NONE)."""
+ *         _cipher.mbedtls_cipher_init(&self._enc_ctx)
+ *         _cipher.mbedtls_cipher_init(&self._dec_ctx)             # <<<<<<<<<<<<<<
  * 
- *     cdef _update(self, const unsigned char *input, size_t ilen):             # <<<<<<<<<<<<<<
- *         """Update the HMAC object with `buffer`."""
- *         return _md.mbedtls_md_hmac_update(&self._ctx, input, ilen)
+ *     def __dealloc__(self):
+ */
+  mbedtls_cipher_init((&__pyx_v_self->_dec_ctx));
+
+  /* "mbedtls/cipher/_cipher.pyx":232
+ *         self._iv = iv if iv else b"\x00" * self.iv_size
+ * 
+ *     def __cinit__(self):             # <<<<<<<<<<<<<<
+ *         """Initialize a `cipher_context` (as NONE)."""
+ *         _cipher.mbedtls_cipher_init(&self._enc_ctx)
  */
 
   /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("mbedtls.hmac.Hmac._update", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":47
- *         return _md.mbedtls_md_hmac_update(&self._ctx, input, ilen)
+/* "mbedtls/cipher/_cipher.pyx":237
+ *         _cipher.mbedtls_cipher_init(&self._dec_ctx)
  * 
- *     cdef _finish(self, unsigned char *output):             # <<<<<<<<<<<<<<
- *         """Return the HMAC of key and message."""
- *         return _md.mbedtls_md_hmac_finish(&self._ctx, output)
+ *     def __dealloc__(self):             # <<<<<<<<<<<<<<
+ *         """Free and clear the cipher-specific context of ctx."""
+ *         _cipher.mbedtls_cipher_free(&self._enc_ctx)
  */
 
-static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac__finish(struct __pyx_obj_7mbedtls_4hmac_Hmac *__pyx_v_self, unsigned char *__pyx_v_output) {
-  PyObject *__pyx_r = NULL;
+/* Python wrapper */
+static void __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_5__dealloc__(PyObject *__pyx_v_self); /*proto*/
+static void __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_5__dealloc__(PyObject *__pyx_v_self) {
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("_finish", 0);
+  __Pyx_RefNannySetupContext("__dealloc__ (wrapper)", 0);
+  __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_4__dealloc__(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self));
 
-  /* "mbedtls/hmac.pyx":49
- *     cdef _finish(self, unsigned char *output):
- *         """Return the HMAC of key and message."""
- *         return _md.mbedtls_md_hmac_finish(&self._ctx, output)             # <<<<<<<<<<<<<<
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+}
+
+static void __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_4__dealloc__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self) {
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__dealloc__", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":239
+ *     def __dealloc__(self):
+ *         """Free and clear the cipher-specific context of ctx."""
+ *         _cipher.mbedtls_cipher_free(&self._enc_ctx)             # <<<<<<<<<<<<<<
+ *         _cipher.mbedtls_cipher_free(&self._dec_ctx)
  * 
- *     cpdef copy(self):
  */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(mbedtls_md_hmac_finish((&__pyx_v_self->__pyx_base._ctx), __pyx_v_output)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
+  mbedtls_cipher_free((&__pyx_v_self->_enc_ctx));
 
-  /* "mbedtls/hmac.pyx":47
- *         return _md.mbedtls_md_hmac_update(&self._ctx, input, ilen)
+  /* "mbedtls/cipher/_cipher.pyx":240
+ *         """Free and clear the cipher-specific context of ctx."""
+ *         _cipher.mbedtls_cipher_free(&self._enc_ctx)
+ *         _cipher.mbedtls_cipher_free(&self._dec_ctx)             # <<<<<<<<<<<<<<
  * 
- *     cdef _finish(self, unsigned char *output):             # <<<<<<<<<<<<<<
- *         """Return the HMAC of key and message."""
- *         return _md.mbedtls_md_hmac_finish(&self._ctx, output)
+ *     cpdef _setup(self, cipher_name):
+ */
+  mbedtls_cipher_free((&__pyx_v_self->_dec_ctx));
+
+  /* "mbedtls/cipher/_cipher.pyx":237
+ *         _cipher.mbedtls_cipher_init(&self._dec_ctx)
+ * 
+ *     def __dealloc__(self):             # <<<<<<<<<<<<<<
+ *         """Free and clear the cipher-specific context of ctx."""
+ *         _cipher.mbedtls_cipher_free(&self._enc_ctx)
  */
 
   /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("mbedtls.hmac.Hmac._finish", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = 0;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
-  return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":51
- *         return _md.mbedtls_md_hmac_finish(&self._ctx, output)
+/* "mbedtls/cipher/_cipher.pyx":242
+ *         _cipher.mbedtls_cipher_free(&self._dec_ctx)
  * 
- *     cpdef copy(self):             # <<<<<<<<<<<<<<
- *         """Return a copy ("clone") of the HMAC object.
- * 
+ *     cpdef _setup(self, cipher_name):             # <<<<<<<<<<<<<<
+ *         """Initialize the context with `cipher_info_from_string`."""
+ *         if cipher_name not in get_supported_ciphers():
  */
 
-static PyObject *__pyx_pw_7mbedtls_4hmac_4Hmac_3copy(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac_copy(CYTHON_UNUSED struct __pyx_obj_7mbedtls_4hmac_Hmac *__pyx_v_self, int __pyx_skip_dispatch) {
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_7_setup(PyObject *__pyx_v_self, PyObject *__pyx_v_cipher_name); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher_6Cipher__setup(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_cipher_name, int __pyx_skip_dispatch) {
+  __Pyx_memviewslice __pyx_v_c_cipher_name = { 0, 0, { 0 }, { 0 }, { 0 } };
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
+  int __pyx_t_7;
+  __Pyx_memviewslice __pyx_t_8 = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("copy", 0);
+  __Pyx_RefNannySetupContext("_setup", 0);
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_setup); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 242; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7mbedtls_4hmac_4Hmac_3copy)) {
+    if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_7_setup)) {
       __Pyx_XDECREF(__pyx_r);
       __Pyx_INCREF(__pyx_t_1);
       __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
@@ -1891,13 +3257,20 @@ static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac_copy(CYTHON_UNUSED struct __pyx_ob
           __Pyx_DECREF_SET(__pyx_t_3, function);
         }
       }
-      if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (!__pyx_t_4) {
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_cipher_name); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 242; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_2);
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 242; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
+        __Pyx_INCREF(__pyx_v_cipher_name);
+        __Pyx_GIVEREF(__pyx_v_cipher_name);
+        PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_v_cipher_name);
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 242; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       }
-      __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __pyx_r = __pyx_t_2;
       __pyx_t_2 = 0;
@@ -1907,62 +3280,221 @@ static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac_copy(CYTHON_UNUSED struct __pyx_ob
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "mbedtls/hmac.pyx":58
- * 
- *         """
- *         raise NotImplementedError             # <<<<<<<<<<<<<<
- * 
+  /* "mbedtls/cipher/_cipher.pyx":244
+ *     cpdef _setup(self, cipher_name):
+ *         """Initialize the context with `cipher_info_from_string`."""
+ *         if cipher_name not in get_supported_ciphers():             # <<<<<<<<<<<<<<
+ *             raise UnsupportedCipherError("unsupported cipher: %r" % cipher_name)
+ *         cdef char[:] c_cipher_name = bytearray(cipher_name)
+ */
+  __pyx_t_1 = __pyx_f_7mbedtls_6cipher_7_cipher_get_supported_ciphers(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 244; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_6 = (__Pyx_PySequence_ContainsTF(__pyx_v_cipher_name, __pyx_t_1, Py_NE)); if (unlikely(__pyx_t_6 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 244; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_7 = (__pyx_t_6 != 0);
+  if (__pyx_t_7) {
+
+    /* "mbedtls/cipher/_cipher.pyx":245
+ *         """Initialize the context with `cipher_info_from_string`."""
+ *         if cipher_name not in get_supported_ciphers():
+ *             raise UnsupportedCipherError("unsupported cipher: %r" % cipher_name)             # <<<<<<<<<<<<<<
+ *         cdef char[:] c_cipher_name = bytearray(cipher_name)
+ *         check_error(_c_setup(&self._enc_ctx, c_cipher_name))
+ */
+    __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_UnsupportedCipherError); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 245; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = __Pyx_PyString_Format(__pyx_kp_s_unsupported_cipher_r, __pyx_v_cipher_name); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 245; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_5 = NULL;
+    if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_5)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_5);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+      }
+    }
+    if (!__pyx_t_5) {
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 245; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+    } else {
+      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 245; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5); __pyx_t_5 = NULL;
+      __Pyx_GIVEREF(__pyx_t_3);
+      PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_t_3);
+      __pyx_t_3 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 245; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 245; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+    /* "mbedtls/cipher/_cipher.pyx":244
+ *     cpdef _setup(self, cipher_name):
+ *         """Initialize the context with `cipher_info_from_string`."""
+ *         if cipher_name not in get_supported_ciphers():             # <<<<<<<<<<<<<<
+ *             raise UnsupportedCipherError("unsupported cipher: %r" % cipher_name)
+ *         cdef char[:] c_cipher_name = bytearray(cipher_name)
+ */
+  }
+
+  /* "mbedtls/cipher/_cipher.pyx":246
+ *         if cipher_name not in get_supported_ciphers():
+ *             raise UnsupportedCipherError("unsupported cipher: %r" % cipher_name)
+ *         cdef char[:] c_cipher_name = bytearray(cipher_name)             # <<<<<<<<<<<<<<
+ *         check_error(_c_setup(&self._enc_ctx, c_cipher_name))
+ *         check_error(_c_setup(&self._dec_ctx, c_cipher_name))
+ */
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 246; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_INCREF(__pyx_v_cipher_name);
+  __Pyx_GIVEREF(__pyx_v_cipher_name);
+  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_cipher_name);
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyByteArray_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 246; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_char(__pyx_t_2);
+  if (unlikely(!__pyx_t_8.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 246; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_v_c_cipher_name = __pyx_t_8;
+  __pyx_t_8.memview = NULL;
+  __pyx_t_8.data = NULL;
+
+  /* "mbedtls/cipher/_cipher.pyx":247
+ *             raise UnsupportedCipherError("unsupported cipher: %r" % cipher_name)
+ *         cdef char[:] c_cipher_name = bytearray(cipher_name)
+ *         check_error(_c_setup(&self._enc_ctx, c_cipher_name))             # <<<<<<<<<<<<<<
+ *         check_error(_c_setup(&self._dec_ctx, c_cipher_name))
  * 
  */
-  __Pyx_Raise(__pyx_builtin_NotImplementedError, 0, 0, 0);
-  {__pyx_filename = __pyx_f[0]; __pyx_lineno = 58; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_check_error); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 247; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4 = __pyx_f_7mbedtls_6cipher_7_cipher__c_setup((&__pyx_v_self->_enc_ctx), __pyx_v_c_cipher_name); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 247; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_3 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_1))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_1);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_1, function);
+    }
+  }
+  if (!__pyx_t_3) {
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 247; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_GOTREF(__pyx_t_2);
+  } else {
+    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 247; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3); __pyx_t_3 = NULL;
+    __Pyx_GIVEREF(__pyx_t_4);
+    PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_4);
+    __pyx_t_4 = 0;
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 247; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  }
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":51
- *         return _md.mbedtls_md_hmac_finish(&self._ctx, output)
+  /* "mbedtls/cipher/_cipher.pyx":248
+ *         cdef char[:] c_cipher_name = bytearray(cipher_name)
+ *         check_error(_c_setup(&self._enc_ctx, c_cipher_name))
+ *         check_error(_c_setup(&self._dec_ctx, c_cipher_name))             # <<<<<<<<<<<<<<
  * 
- *     cpdef copy(self):             # <<<<<<<<<<<<<<
- *         """Return a copy ("clone") of the HMAC object.
+ *     cpdef _setkey(self, key):
+ */
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_check_error); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 248; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_5 = __pyx_f_7mbedtls_6cipher_7_cipher__c_setup((&__pyx_v_self->_dec_ctx), __pyx_v_c_cipher_name); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 248; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_4 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_1))) {
+    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_1);
+    if (likely(__pyx_t_4)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+      __Pyx_INCREF(__pyx_t_4);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_1, function);
+    }
+  }
+  if (!__pyx_t_4) {
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_5); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 248; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_GOTREF(__pyx_t_2);
+  } else {
+    __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 248; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4); __pyx_t_4 = NULL;
+    __Pyx_GIVEREF(__pyx_t_5);
+    PyTuple_SET_ITEM(__pyx_t_3, 0+1, __pyx_t_5);
+    __pyx_t_5 = 0;
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 248; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  }
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":242
+ *         _cipher.mbedtls_cipher_free(&self._dec_ctx)
  * 
+ *     cpdef _setup(self, cipher_name):             # <<<<<<<<<<<<<<
+ *         """Initialize the context with `cipher_info_from_string`."""
+ *         if cipher_name not in get_supported_ciphers():
  */
 
   /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("mbedtls.hmac.Hmac.copy", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_XDECREF(__pyx_t_5);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_8, 1);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher._setup", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_c_cipher_name, 1);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7mbedtls_4hmac_4Hmac_3copy(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_4Hmac_2copy[] = "Return a copy (\"clone\") of the HMAC object.\n\n        Warning:\n            Not implemented in mbed TLS, raises NotImplementedError.\n\n        ";
-static PyObject *__pyx_pw_7mbedtls_4hmac_4Hmac_3copy(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_7_setup(PyObject *__pyx_v_self, PyObject *__pyx_v_cipher_name); /*proto*/
+static char __pyx_doc_7mbedtls_6cipher_7_cipher_6Cipher_6_setup[] = "Initialize the context with `cipher_info_from_string`.";
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_7_setup(PyObject *__pyx_v_self, PyObject *__pyx_v_cipher_name) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("copy (wrapper)", 0);
-  __pyx_r = __pyx_pf_7mbedtls_4hmac_4Hmac_2copy(((struct __pyx_obj_7mbedtls_4hmac_Hmac *)__pyx_v_self));
+  __Pyx_RefNannySetupContext("_setup (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_6_setup(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self), ((PyObject *)__pyx_v_cipher_name));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7mbedtls_4hmac_4Hmac_2copy(struct __pyx_obj_7mbedtls_4hmac_Hmac *__pyx_v_self) {
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_6_setup(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_cipher_name) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("copy", 0);
+  __Pyx_RefNannySetupContext("_setup", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7mbedtls_4hmac_4Hmac_copy(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7mbedtls_6cipher_7_cipher_6Cipher__setup(__pyx_v_self, __pyx_v_cipher_name, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 242; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -1971,7 +3503,7 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_4Hmac_2copy(struct __pyx_obj_7mbedtls_4
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("mbedtls.hmac.Hmac.copy", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher._setup", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -1979,311 +3511,266 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_4Hmac_2copy(struct __pyx_obj_7mbedtls_4
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":61
+/* "mbedtls/cipher/_cipher.pyx":250
+ *         check_error(_c_setup(&self._dec_ctx, c_cipher_name))
  * 
- * 
- * def new(key, buffer=None, digestmod=None):             # <<<<<<<<<<<<<<
- *     """A generic constructor that takes the key algorithm as its first
- *     parameter.
+ *     cpdef _setkey(self, key):             # <<<<<<<<<<<<<<
+ *         """Set the encryption/decryption key."""
+ *         if not key:
  */
 
-/* Python wrapper */
-static PyObject *__pyx_pw_7mbedtls_4hmac_1new(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_new[] = "A generic constructor that takes the key algorithm as its first\n    parameter.\n\n    ";
-static PyMethodDef __pyx_mdef_7mbedtls_4hmac_1new = {"new", (PyCFunction)__pyx_pw_7mbedtls_4hmac_1new, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_new};
-static PyObject *__pyx_pw_7mbedtls_4hmac_1new(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_key = 0;
-  PyObject *__pyx_v_buffer = 0;
-  PyObject *__pyx_v_digestmod = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("new (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_key,&__pyx_n_s_buffer,&__pyx_n_s_digestmod,0};
-    PyObject* values[3] = {0,0,0};
-    values[1] = ((PyObject *)Py_None);
-    values[2] = ((PyObject *)Py_None);
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_key)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_buffer);
-          if (value) { values[1] = value; kw_args--; }
-        }
-        case  2:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_digestmod);
-          if (value) { values[2] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "new") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_key = values[0];
-    __pyx_v_buffer = values[1];
-    __pyx_v_digestmod = values[2];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("new", 0, 1, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("mbedtls.hmac.new", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7mbedtls_4hmac_new(__pyx_self, __pyx_v_key, __pyx_v_buffer, __pyx_v_digestmod);
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_7mbedtls_4hmac_new(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer, PyObject *__pyx_v_digestmod) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
-  int __pyx_t_2;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("new", 0);
-  __Pyx_INCREF(__pyx_v_digestmod);
-
-  /* "mbedtls/hmac.pyx":66
- * 
- *     """
- *     if digestmod is None:             # <<<<<<<<<<<<<<
- *         digestmod = "md5"
- *     return Hmac(key, digestmod, buffer)
- */
-  __pyx_t_1 = (__pyx_v_digestmod == Py_None);
-  __pyx_t_2 = (__pyx_t_1 != 0);
-  if (__pyx_t_2) {
-
-    /* "mbedtls/hmac.pyx":67
- *     """
- *     if digestmod is None:
- *         digestmod = "md5"             # <<<<<<<<<<<<<<
- *     return Hmac(key, digestmod, buffer)
- * 
- */
-    __Pyx_INCREF(__pyx_n_s_md5);
-    __Pyx_DECREF_SET(__pyx_v_digestmod, __pyx_n_s_md5);
-
-    /* "mbedtls/hmac.pyx":66
- * 
- *     """
- *     if digestmod is None:             # <<<<<<<<<<<<<<
- *         digestmod = "md5"
- *     return Hmac(key, digestmod, buffer)
- */
-  }
-
-  /* "mbedtls/hmac.pyx":68
- *     if digestmod is None:
- *         digestmod = "md5"
- *     return Hmac(key, digestmod, buffer)             # <<<<<<<<<<<<<<
- * 
- * 
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_3 = PyTuple_New(3); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_INCREF(__pyx_v_key);
-  __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_v_key);
-  __Pyx_INCREF(__pyx_v_digestmod);
-  __Pyx_GIVEREF(__pyx_v_digestmod);
-  PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_v_digestmod);
-  __Pyx_INCREF(__pyx_v_buffer);
-  __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_3, 2, __pyx_v_buffer);
-  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac), __pyx_t_3, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
-  goto __pyx_L0;
-
-  /* "mbedtls/hmac.pyx":61
- * 
- * 
- * def new(key, buffer=None, digestmod=None):             # <<<<<<<<<<<<<<
- *     """A generic constructor that takes the key algorithm as its first
- *     parameter.
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("mbedtls.hmac.new", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XDECREF(__pyx_v_digestmod);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "mbedtls/hmac.pyx":71
- * 
- * 
- * def md2(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """MD2 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md2")
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_7mbedtls_4hmac_3md2(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_2md2[] = "MD2 message-digest algorithm.";
-static PyMethodDef __pyx_mdef_7mbedtls_4hmac_3md2 = {"md2", (PyCFunction)__pyx_pw_7mbedtls_4hmac_3md2, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_2md2};
-static PyObject *__pyx_pw_7mbedtls_4hmac_3md2(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_key = 0;
-  PyObject *__pyx_v_buffer = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("md2 (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_key,&__pyx_n_s_buffer,0};
-    PyObject* values[2] = {0,0};
-    values[1] = ((PyObject *)Py_None);
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_key)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_buffer);
-          if (value) { values[1] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "md2") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_key = values[0];
-    __pyx_v_buffer = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("md2", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("mbedtls.hmac.md2", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7mbedtls_4hmac_2md2(__pyx_self, __pyx_v_key, __pyx_v_buffer);
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_7mbedtls_4hmac_2md2(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer) {
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_9_setkey(PyObject *__pyx_v_self, PyObject *__pyx_v_key); /*proto*/
+static PyObject *__pyx_f_7mbedtls_6cipher_7_cipher_6Cipher__setkey(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_key, int __pyx_skip_dispatch) {
+  PyObject *__pyx_v_c_key = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
+  int __pyx_t_7;
+  __Pyx_memviewslice __pyx_t_8 = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("md2", 0);
+  __Pyx_RefNannySetupContext("_setkey", 0);
+  /* Check if called by wrapper */
+  if (unlikely(__pyx_skip_dispatch)) ;
+  /* Check if overridden in Python */
+  else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_setkey); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 250; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_9_setkey)) {
+      __Pyx_XDECREF(__pyx_r);
+      __Pyx_INCREF(__pyx_t_1);
+      __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+      if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_3))) {
+        __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+        if (likely(__pyx_t_4)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+          __Pyx_INCREF(__pyx_t_4);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_3, function);
+        }
+      }
+      if (!__pyx_t_4) {
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_key); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 250; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_2);
+      } else {
+        __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 250; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
+        __Pyx_INCREF(__pyx_v_key);
+        __Pyx_GIVEREF(__pyx_v_key);
+        PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_v_key);
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 250; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_r = __pyx_t_2;
+      __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      goto __pyx_L0;
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  }
 
-  /* "mbedtls/hmac.pyx":73
- * def md2(key, buffer=None):
- *     """MD2 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md2")             # <<<<<<<<<<<<<<
- * 
- * 
+  /* "mbedtls/cipher/_cipher.pyx":252
+ *     cpdef _setkey(self, key):
+ *         """Set the encryption/decryption key."""
+ *         if not key:             # <<<<<<<<<<<<<<
+ *             return
+ *         # Casting read-only only buffer to typed memoryview fails, so we
  */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_v_key); if (unlikely(__pyx_t_6 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 252; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_7 = ((!__pyx_t_6) != 0);
+  if (__pyx_t_7) {
+
+    /* "mbedtls/cipher/_cipher.pyx":253
+ *         """Set the encryption/decryption key."""
+ *         if not key:
+ *             return             # <<<<<<<<<<<<<<
+ *         # Casting read-only only buffer to typed memoryview fails, so we
+ *         # cast to bytearray.
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+    goto __pyx_L0;
+
+    /* "mbedtls/cipher/_cipher.pyx":252
+ *     cpdef _setkey(self, key):
+ *         """Set the encryption/decryption key."""
+ *         if not key:             # <<<<<<<<<<<<<<
+ *             return
+ *         # Casting read-only only buffer to typed memoryview fails, so we
+ */
+  }
+
+  /* "mbedtls/cipher/_cipher.pyx":256
+ *         # Casting read-only only buffer to typed memoryview fails, so we
+ *         # cast to bytearray.
+ *         c_key = bytearray(key)             # <<<<<<<<<<<<<<
+ *         check_error(_c_set_key(&self._enc_ctx, c_key, _cipher.MBEDTLS_ENCRYPT))
+ *         check_error(_c_set_key(&self._dec_ctx, c_key, _cipher.MBEDTLS_DECRYPT))
+ */
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 256; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_key);
   __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
-  __Pyx_INCREF(__pyx_v_buffer);
-  __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_key);
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyByteArray_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 256; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_c_key = ((PyObject*)__pyx_t_2);
+  __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":257
+ *         # cast to bytearray.
+ *         c_key = bytearray(key)
+ *         check_error(_c_set_key(&self._enc_ctx, c_key, _cipher.MBEDTLS_ENCRYPT))             # <<<<<<<<<<<<<<
+ *         check_error(_c_set_key(&self._dec_ctx, c_key, _cipher.MBEDTLS_DECRYPT))
+ * 
+ */
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_check_error); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 257; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_char(__pyx_v_c_key);
+  if (unlikely(!__pyx_t_8.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 257; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_f_7mbedtls_6cipher_7_cipher__c_set_key((&__pyx_v_self->_enc_ctx), __pyx_t_8, ((mbedtls_operation_t)MBEDTLS_ENCRYPT)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 257; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_md2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_8, 1);
+  __pyx_t_5 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_1))) {
+    __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_1);
+    if (likely(__pyx_t_5)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+      __Pyx_INCREF(__pyx_t_5);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_1, function);
+    }
+  }
+  if (!__pyx_t_5) {
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 257; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_GOTREF(__pyx_t_2);
+  } else {
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 257; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5); __pyx_t_5 = NULL;
+    __Pyx_GIVEREF(__pyx_t_3);
+    PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_t_3);
+    __pyx_t_3 = 0;
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_4, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 257; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
-  goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":71
+  /* "mbedtls/cipher/_cipher.pyx":258
+ *         c_key = bytearray(key)
+ *         check_error(_c_set_key(&self._enc_ctx, c_key, _cipher.MBEDTLS_ENCRYPT))
+ *         check_error(_c_set_key(&self._dec_ctx, c_key, _cipher.MBEDTLS_DECRYPT))             # <<<<<<<<<<<<<<
  * 
+ *     def __str__(self):
+ */
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_check_error); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_char(__pyx_v_c_key);
+  if (unlikely(!__pyx_t_8.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __pyx_f_7mbedtls_6cipher_7_cipher__c_set_key((&__pyx_v_self->_dec_ctx), __pyx_t_8, ((mbedtls_operation_t)MBEDTLS_DECRYPT)); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_8, 1);
+  __pyx_t_3 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_1))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_1);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_1, function);
+    }
+  }
+  if (!__pyx_t_3) {
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_GOTREF(__pyx_t_2);
+  } else {
+    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3); __pyx_t_3 = NULL;
+    __Pyx_GIVEREF(__pyx_t_4);
+    PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_4);
+    __pyx_t_4 = 0;
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  }
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":250
+ *         check_error(_c_setup(&self._dec_ctx, c_cipher_name))
  * 
- * def md2(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """MD2 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md2")
+ *     cpdef _setkey(self, key):             # <<<<<<<<<<<<<<
+ *         """Set the encryption/decryption key."""
+ *         if not key:
  */
 
   /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("mbedtls.hmac.md2", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_XDECREF(__pyx_t_5);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_8, 1);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher._setkey", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_c_key);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_9_setkey(PyObject *__pyx_v_self, PyObject *__pyx_v_key); /*proto*/
+static char __pyx_doc_7mbedtls_6cipher_7_cipher_6Cipher_8_setkey[] = "Set the encryption/decryption key.";
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_9_setkey(PyObject *__pyx_v_self, PyObject *__pyx_v_key) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("_setkey (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_8_setkey(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self), ((PyObject *)__pyx_v_key));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_8_setkey(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_key) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_setkey", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __pyx_f_7mbedtls_6cipher_7_cipher_6Cipher__setkey(__pyx_v_self, __pyx_v_key, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 250; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher._setkey", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -2291,137 +3778,74 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_2md2(CYTHON_UNUSED PyObject *__pyx_self
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":76
+/* "mbedtls/cipher/_cipher.pyx":260
+ *         check_error(_c_set_key(&self._dec_ctx, c_key, _cipher.MBEDTLS_DECRYPT))
  * 
- * 
- * def md4(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """MD4 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md4")
+ *     def __str__(self):             # <<<<<<<<<<<<<<
+ *         """Return the name of the cipher."""
+ *         return self.name.decode("ascii")
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7mbedtls_4hmac_5md4(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_4md4[] = "MD4 message-digest algorithm.";
-static PyMethodDef __pyx_mdef_7mbedtls_4hmac_5md4 = {"md4", (PyCFunction)__pyx_pw_7mbedtls_4hmac_5md4, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_4md4};
-static PyObject *__pyx_pw_7mbedtls_4hmac_5md4(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_key = 0;
-  PyObject *__pyx_v_buffer = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_11__str__(PyObject *__pyx_v_self); /*proto*/
+static char __pyx_doc_7mbedtls_6cipher_7_cipher_6Cipher_10__str__[] = "Return the name of the cipher.";
+#if CYTHON_COMPILING_IN_CPYTHON
+struct wrapperbase __pyx_wrapperbase_7mbedtls_6cipher_7_cipher_6Cipher_10__str__;
+#endif
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_11__str__(PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("md4 (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_key,&__pyx_n_s_buffer,0};
-    PyObject* values[2] = {0,0};
-    values[1] = ((PyObject *)Py_None);
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_key)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_buffer);
-          if (value) { values[1] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "md4") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_key = values[0];
-    __pyx_v_buffer = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("md4", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("mbedtls.hmac.md4", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7mbedtls_4hmac_4md4(__pyx_self, __pyx_v_key, __pyx_v_buffer);
+  __Pyx_RefNannySetupContext("__str__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_10__str__(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7mbedtls_4hmac_4md4(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer) {
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_10__str__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("md4", 0);
+  __Pyx_RefNannySetupContext("__str__", 0);
 
-  /* "mbedtls/hmac.pyx":78
- * def md4(key, buffer=None):
- *     """MD4 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md4")             # <<<<<<<<<<<<<<
+  /* "mbedtls/cipher/_cipher.pyx":262
+ *     def __str__(self):
+ *         """Return the name of the cipher."""
+ *         return self.name.decode("ascii")             # <<<<<<<<<<<<<<
  * 
- * 
+ *     property block_size:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 262; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_decode); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 262; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(__pyx_v_key);
-  __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
-  __Pyx_INCREF(__pyx_v_buffer);
-  __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_md4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 262; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":76
+  /* "mbedtls/cipher/_cipher.pyx":260
+ *         check_error(_c_set_key(&self._dec_ctx, c_key, _cipher.MBEDTLS_DECRYPT))
  * 
- * 
- * def md4(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """MD4 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md4")
+ *     def __str__(self):             # <<<<<<<<<<<<<<
+ *         """Return the name of the cipher."""
+ *         return self.name.decode("ascii")
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("mbedtls.hmac.md4", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher.__str__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -2429,137 +3853,62 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_4md4(CYTHON_UNUSED PyObject *__pyx_self
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":81
+/* "mbedtls/cipher/_cipher.pyx":266
+ *     property block_size:
+ *         """Return the block size for the cipher."""
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return _c_get_block_size(&self._enc_ctx)
  * 
- * 
- * def md5(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """MD5 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md5")
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7mbedtls_4hmac_7md5(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_6md5[] = "MD5 message-digest algorithm.";
-static PyMethodDef __pyx_mdef_7mbedtls_4hmac_7md5 = {"md5", (PyCFunction)__pyx_pw_7mbedtls_4hmac_7md5, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_6md5};
-static PyObject *__pyx_pw_7mbedtls_4hmac_7md5(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_key = 0;
-  PyObject *__pyx_v_buffer = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_10block_size_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_10block_size_1__get__(PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("md5 (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_key,&__pyx_n_s_buffer,0};
-    PyObject* values[2] = {0,0};
-    values[1] = ((PyObject *)Py_None);
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_key)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_buffer);
-          if (value) { values[1] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "md5") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_key = values[0];
-    __pyx_v_buffer = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("md5", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("mbedtls.hmac.md5", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7mbedtls_4hmac_6md5(__pyx_self, __pyx_v_key, __pyx_v_buffer);
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_10block_size___get__(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7mbedtls_4hmac_6md5(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer) {
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_10block_size___get__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("md5", 0);
+  __Pyx_RefNannySetupContext("__get__", 0);
 
-  /* "mbedtls/hmac.pyx":83
- * def md5(key, buffer=None):
- *     """MD5 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md5")             # <<<<<<<<<<<<<<
+  /* "mbedtls/cipher/_cipher.pyx":267
+ *         """Return the block size for the cipher."""
+ *         def __get__(self):
+ *             return _c_get_block_size(&self._enc_ctx)             # <<<<<<<<<<<<<<
  * 
- * 
+ *     property mode:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7mbedtls_6cipher_7_cipher__c_get_block_size((&__pyx_v_self->_enc_ctx)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 267; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(__pyx_v_key);
-  __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
-  __Pyx_INCREF(__pyx_v_buffer);
-  __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_md5) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":81
+  /* "mbedtls/cipher/_cipher.pyx":266
+ *     property block_size:
+ *         """Return the block size for the cipher."""
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return _c_get_block_size(&self._enc_ctx)
  * 
- * 
- * def md5(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """MD5 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md5")
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("mbedtls.hmac.md5", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher.block_size.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -2567,137 +3916,62 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_6md5(CYTHON_UNUSED PyObject *__pyx_self
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":86
+/* "mbedtls/cipher/_cipher.pyx":271
+ *     property mode:
+ *         """Return the mode of operation of the cipher."""
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return _c_get_cipher_mode(&self._enc_ctx)
  * 
- * 
- * def sha1(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 1 (SHA-1)."""
- *     return Hash(key, buffer, digestmod="sha1")
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7mbedtls_4hmac_9sha1(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_8sha1[] = "Secure Hash Algorithm 1 (SHA-1).";
-static PyMethodDef __pyx_mdef_7mbedtls_4hmac_9sha1 = {"sha1", (PyCFunction)__pyx_pw_7mbedtls_4hmac_9sha1, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_8sha1};
-static PyObject *__pyx_pw_7mbedtls_4hmac_9sha1(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_key = 0;
-  PyObject *__pyx_v_buffer = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_4mode_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_4mode_1__get__(PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("sha1 (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_key,&__pyx_n_s_buffer,0};
-    PyObject* values[2] = {0,0};
-    values[1] = ((PyObject *)Py_None);
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_key)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_buffer);
-          if (value) { values[1] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha1") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_key = values[0];
-    __pyx_v_buffer = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("sha1", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("mbedtls.hmac.sha1", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7mbedtls_4hmac_8sha1(__pyx_self, __pyx_v_key, __pyx_v_buffer);
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_4mode___get__(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7mbedtls_4hmac_8sha1(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer) {
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_4mode___get__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("sha1", 0);
+  __Pyx_RefNannySetupContext("__get__", 0);
 
-  /* "mbedtls/hmac.pyx":88
- * def sha1(key, buffer=None):
- *     """Secure Hash Algorithm 1 (SHA-1)."""
- *     return Hash(key, buffer, digestmod="sha1")             # <<<<<<<<<<<<<<
+  /* "mbedtls/cipher/_cipher.pyx":272
+ *         """Return the mode of operation of the cipher."""
+ *         def __get__(self):
+ *             return _c_get_cipher_mode(&self._enc_ctx)             # <<<<<<<<<<<<<<
  * 
- * 
+ *     property iv_size:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7mbedtls_6cipher_7_cipher__c_get_cipher_mode((&__pyx_v_self->_enc_ctx)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 272; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(__pyx_v_key);
-  __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
-  __Pyx_INCREF(__pyx_v_buffer);
-  __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_sha1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":86
+  /* "mbedtls/cipher/_cipher.pyx":271
+ *     property mode:
+ *         """Return the mode of operation of the cipher."""
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return _c_get_cipher_mode(&self._enc_ctx)
  * 
- * 
- * def sha1(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 1 (SHA-1)."""
- *     return Hash(key, buffer, digestmod="sha1")
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("mbedtls.hmac.sha1", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher.mode.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -2705,137 +3979,62 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_8sha1(CYTHON_UNUSED PyObject *__pyx_sel
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":91
+/* "mbedtls/cipher/_cipher.pyx":276
+ *     property iv_size:
+ *         """Return the size of the cipher's IV/NONCE in bytes."""
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return _c_get_iv_size(&self._enc_ctx)
  * 
- * 
- * def sha224(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha224")
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7mbedtls_4hmac_11sha224(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_10sha224[] = "Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value.";
-static PyMethodDef __pyx_mdef_7mbedtls_4hmac_11sha224 = {"sha224", (PyCFunction)__pyx_pw_7mbedtls_4hmac_11sha224, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_10sha224};
-static PyObject *__pyx_pw_7mbedtls_4hmac_11sha224(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_key = 0;
-  PyObject *__pyx_v_buffer = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_7iv_size_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_7iv_size_1__get__(PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("sha224 (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_key,&__pyx_n_s_buffer,0};
-    PyObject* values[2] = {0,0};
-    values[1] = ((PyObject *)Py_None);
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_key)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_buffer);
-          if (value) { values[1] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha224") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_key = values[0];
-    __pyx_v_buffer = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("sha224", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("mbedtls.hmac.sha224", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7mbedtls_4hmac_10sha224(__pyx_self, __pyx_v_key, __pyx_v_buffer);
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_7iv_size___get__(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7mbedtls_4hmac_10sha224(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer) {
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_7iv_size___get__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("sha224", 0);
+  __Pyx_RefNannySetupContext("__get__", 0);
 
-  /* "mbedtls/hmac.pyx":93
- * def sha224(key, buffer=None):
- *     """Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha224")             # <<<<<<<<<<<<<<
+  /* "mbedtls/cipher/_cipher.pyx":277
+ *         """Return the size of the cipher's IV/NONCE in bytes."""
+ *         def __get__(self):
+ *             return _c_get_iv_size(&self._enc_ctx)             # <<<<<<<<<<<<<<
  * 
- * 
+ *     property _type:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7mbedtls_6cipher_7_cipher__c_get_iv_size((&__pyx_v_self->_enc_ctx)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 277; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(__pyx_v_key);
-  __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
-  __Pyx_INCREF(__pyx_v_buffer);
-  __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_sha224) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":91
+  /* "mbedtls/cipher/_cipher.pyx":276
+ *     property iv_size:
+ *         """Return the size of the cipher's IV/NONCE in bytes."""
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return _c_get_iv_size(&self._enc_ctx)
  * 
- * 
- * def sha224(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha224")
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("mbedtls.hmac.sha224", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher.iv_size.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -2843,137 +4042,62 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_10sha224(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":96
+/* "mbedtls/cipher/_cipher.pyx":281
+ *     property _type:
+ *         """Return the type of the cipher."""
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return _c_get_type(&self._enc_ctx)
  * 
- * 
- * def sha256(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha256")
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7mbedtls_4hmac_13sha256(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_12sha256[] = "Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value.";
-static PyMethodDef __pyx_mdef_7mbedtls_4hmac_13sha256 = {"sha256", (PyCFunction)__pyx_pw_7mbedtls_4hmac_13sha256, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_12sha256};
-static PyObject *__pyx_pw_7mbedtls_4hmac_13sha256(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_key = 0;
-  PyObject *__pyx_v_buffer = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_5_type_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_5_type_1__get__(PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("sha256 (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_key,&__pyx_n_s_buffer,0};
-    PyObject* values[2] = {0,0};
-    values[1] = ((PyObject *)Py_None);
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_key)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_buffer);
-          if (value) { values[1] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha256") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_key = values[0];
-    __pyx_v_buffer = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("sha256", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("mbedtls.hmac.sha256", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7mbedtls_4hmac_12sha256(__pyx_self, __pyx_v_key, __pyx_v_buffer);
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_5_type___get__(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7mbedtls_4hmac_12sha256(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer) {
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_5_type___get__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("sha256", 0);
+  __Pyx_RefNannySetupContext("__get__", 0);
 
-  /* "mbedtls/hmac.pyx":98
- * def sha256(key, buffer=None):
- *     """Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha256")             # <<<<<<<<<<<<<<
+  /* "mbedtls/cipher/_cipher.pyx":282
+ *         """Return the type of the cipher."""
+ *         def __get__(self):
+ *             return _c_get_type(&self._enc_ctx)             # <<<<<<<<<<<<<<
  * 
- * 
+ *     property name:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7mbedtls_6cipher_7_cipher__c_get_type((&__pyx_v_self->_enc_ctx)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 282; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(__pyx_v_key);
-  __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
-  __Pyx_INCREF(__pyx_v_buffer);
-  __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_sha256) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":96
+  /* "mbedtls/cipher/_cipher.pyx":281
+ *     property _type:
+ *         """Return the type of the cipher."""
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return _c_get_type(&self._enc_ctx)
  * 
- * 
- * def sha256(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha256")
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("mbedtls.hmac.sha256", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher._type.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -2981,137 +4105,62 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_12sha256(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":101
+/* "mbedtls/cipher/_cipher.pyx":286
+ *     property name:
+ *         """Return the name of the cipher."""
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return _c_get_name(&self._enc_ctx)
  * 
- * 
- * def sha384(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha384")
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7mbedtls_4hmac_15sha384(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_14sha384[] = "Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value.";
-static PyMethodDef __pyx_mdef_7mbedtls_4hmac_15sha384 = {"sha384", (PyCFunction)__pyx_pw_7mbedtls_4hmac_15sha384, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_14sha384};
-static PyObject *__pyx_pw_7mbedtls_4hmac_15sha384(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_key = 0;
-  PyObject *__pyx_v_buffer = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_4name_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_4name_1__get__(PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("sha384 (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_key,&__pyx_n_s_buffer,0};
-    PyObject* values[2] = {0,0};
-    values[1] = ((PyObject *)Py_None);
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_key)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_buffer);
-          if (value) { values[1] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha384") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_key = values[0];
-    __pyx_v_buffer = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("sha384", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("mbedtls.hmac.sha384", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7mbedtls_4hmac_14sha384(__pyx_self, __pyx_v_key, __pyx_v_buffer);
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_4name___get__(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7mbedtls_4hmac_14sha384(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer) {
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_4name___get__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("sha384", 0);
+  __Pyx_RefNannySetupContext("__get__", 0);
 
-  /* "mbedtls/hmac.pyx":103
- * def sha384(key, buffer=None):
- *     """Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha384")             # <<<<<<<<<<<<<<
+  /* "mbedtls/cipher/_cipher.pyx":287
+ *         """Return the name of the cipher."""
+ *         def __get__(self):
+ *             return _c_get_name(&self._enc_ctx)             # <<<<<<<<<<<<<<
  * 
- * 
+ *     property key_size:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7mbedtls_6cipher_7_cipher__c_get_name((&__pyx_v_self->_enc_ctx)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 287; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(__pyx_v_key);
-  __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
-  __Pyx_INCREF(__pyx_v_buffer);
-  __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_sha384) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":101
+  /* "mbedtls/cipher/_cipher.pyx":286
+ *     property name:
+ *         """Return the name of the cipher."""
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return _c_get_name(&self._enc_ctx)
  * 
- * 
- * def sha384(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha384")
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("mbedtls.hmac.sha384", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher.name.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3119,137 +4168,62 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_14sha384(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":106
+/* "mbedtls/cipher/_cipher.pyx":291
+ *     property key_size:
+ *         """Return the size of the ciphers' key."""
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return _c_get_key_size(&self._enc_ctx)
  * 
- * 
- * def sha512(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha512")
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7mbedtls_4hmac_17sha512(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_16sha512[] = "Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value.";
-static PyMethodDef __pyx_mdef_7mbedtls_4hmac_17sha512 = {"sha512", (PyCFunction)__pyx_pw_7mbedtls_4hmac_17sha512, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_16sha512};
-static PyObject *__pyx_pw_7mbedtls_4hmac_17sha512(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_key = 0;
-  PyObject *__pyx_v_buffer = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_8key_size_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_8key_size_1__get__(PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("sha512 (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_key,&__pyx_n_s_buffer,0};
-    PyObject* values[2] = {0,0};
-    values[1] = ((PyObject *)Py_None);
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_key)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_buffer);
-          if (value) { values[1] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha512") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_key = values[0];
-    __pyx_v_buffer = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("sha512", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("mbedtls.hmac.sha512", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7mbedtls_4hmac_16sha512(__pyx_self, __pyx_v_key, __pyx_v_buffer);
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_8key_size___get__(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7mbedtls_4hmac_16sha512(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer) {
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_8key_size___get__(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("sha512", 0);
+  __Pyx_RefNannySetupContext("__get__", 0);
 
-  /* "mbedtls/hmac.pyx":108
- * def sha512(key, buffer=None):
- *     """Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha512")             # <<<<<<<<<<<<<<
+  /* "mbedtls/cipher/_cipher.pyx":292
+ *         """Return the size of the ciphers' key."""
+ *         def __get__(self):
+ *             return _c_get_key_size(&self._enc_ctx)             # <<<<<<<<<<<<<<
  * 
- * 
+ *     def encrypt(self, message):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7mbedtls_6cipher_7_cipher__c_get_key_size((&__pyx_v_self->_enc_ctx)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 292; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(__pyx_v_key);
-  __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
-  __Pyx_INCREF(__pyx_v_buffer);
-  __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_sha512) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":106
+  /* "mbedtls/cipher/_cipher.pyx":291
+ *     property key_size:
+ *         """Return the size of the ciphers' key."""
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return _c_get_key_size(&self._enc_ctx)
  * 
- * 
- * def sha512(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha512")
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("mbedtls.hmac.sha512", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher.key_size.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3257,135 +4231,131 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_16sha512(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":111
+/* "mbedtls/cipher/_cipher.pyx":294
+ *             return _c_get_key_size(&self._enc_ctx)
  * 
+ *     def encrypt(self, message):             # <<<<<<<<<<<<<<
+ *         return _c_crypt(&self._enc_ctx, self._iv, message)
  * 
- * def ripemd160(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
- *     160 bits hash value."""
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7mbedtls_4hmac_19ripemd160(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_18ripemd160[] = "RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with\n    160 bits hash value.";
-static PyMethodDef __pyx_mdef_7mbedtls_4hmac_19ripemd160 = {"ripemd160", (PyCFunction)__pyx_pw_7mbedtls_4hmac_19ripemd160, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_18ripemd160};
-static PyObject *__pyx_pw_7mbedtls_4hmac_19ripemd160(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_key = 0;
-  PyObject *__pyx_v_buffer = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_13encrypt(PyObject *__pyx_v_self, PyObject *__pyx_v_message); /*proto*/
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_13encrypt(PyObject *__pyx_v_self, PyObject *__pyx_v_message) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("ripemd160 (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_key,&__pyx_n_s_buffer,0};
-    PyObject* values[2] = {0,0};
-    values[1] = ((PyObject *)Py_None);
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_key)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_buffer);
-          if (value) { values[1] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "ripemd160") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_key = values[0];
-    __pyx_v_buffer = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("ripemd160", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("mbedtls.hmac.ripemd160", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7mbedtls_4hmac_18ripemd160(__pyx_self, __pyx_v_key, __pyx_v_buffer);
+  __Pyx_RefNannySetupContext("encrypt (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_12encrypt(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self), ((PyObject *)__pyx_v_message));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7mbedtls_4hmac_18ripemd160(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_key, PyObject *__pyx_v_buffer) {
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_12encrypt(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_message) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("ripemd160", 0);
+  __Pyx_RefNannySetupContext("encrypt", 0);
 
-  /* "mbedtls/hmac.pyx":114
- *     """RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
- *     160 bits hash value."""
- *     return Hash(key, buffer, digestmod="ripemd160")             # <<<<<<<<<<<<<<
+  /* "mbedtls/cipher/_cipher.pyx":295
+ * 
+ *     def encrypt(self, message):
+ *         return _c_crypt(&self._enc_ctx, self._iv, message)             # <<<<<<<<<<<<<<
+ * 
+ *     def decrypt(self, message):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_v_self->_iv;
+  __Pyx_INCREF(__pyx_t_1);
+  __pyx_t_2 = __pyx_f_7mbedtls_6cipher_7_cipher__c_crypt((&__pyx_v_self->_enc_ctx), __pyx_t_1, __pyx_v_message); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 295; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(__pyx_v_key);
-  __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
-  __Pyx_INCREF(__pyx_v_buffer);
-  __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_ripemd160) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":111
+  /* "mbedtls/cipher/_cipher.pyx":294
+ *             return _c_get_key_size(&self._enc_ctx)
  * 
+ *     def encrypt(self, message):             # <<<<<<<<<<<<<<
+ *         return _c_crypt(&self._enc_ctx, self._iv, message)
  * 
- * def ripemd160(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
- *     160 bits hash value."""
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("mbedtls.hmac.ripemd160", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher.encrypt", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mbedtls/cipher/_cipher.pyx":297
+ *         return _c_crypt(&self._enc_ctx, self._iv, message)
+ * 
+ *     def decrypt(self, message):             # <<<<<<<<<<<<<<
+ *         return _c_crypt(&self._dec_ctx, self._iv, message)
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_15decrypt(PyObject *__pyx_v_self, PyObject *__pyx_v_message); /*proto*/
+static PyObject *__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_15decrypt(PyObject *__pyx_v_self, PyObject *__pyx_v_message) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("decrypt (wrapper)", 0);
+  __pyx_r = __pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_14decrypt(((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)__pyx_v_self), ((PyObject *)__pyx_v_message));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7mbedtls_6cipher_7_cipher_6Cipher_14decrypt(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *__pyx_v_self, PyObject *__pyx_v_message) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("decrypt", 0);
+
+  /* "mbedtls/cipher/_cipher.pyx":298
+ * 
+ *     def decrypt(self, message):
+ *         return _c_crypt(&self._dec_ctx, self._iv, message)             # <<<<<<<<<<<<<<
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __pyx_v_self->_iv;
+  __Pyx_INCREF(__pyx_t_1);
+  __pyx_t_2 = __pyx_f_7mbedtls_6cipher_7_cipher__c_crypt((&__pyx_v_self->_dec_ctx), __pyx_t_1, __pyx_v_message); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 298; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
+  goto __pyx_L0;
+
+  /* "mbedtls/cipher/_cipher.pyx":297
+ *         return _c_crypt(&self._enc_ctx, self._iv, message)
+ * 
+ *     def decrypt(self, message):             # <<<<<<<<<<<<<<
+ *         return _c_crypt(&self._dec_ctx, self._iv, message)
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher.Cipher.decrypt", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3584,7 +4554,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *         if itemsize <= 0:
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -3616,7 +4586,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *         if not isinstance(format, bytes):
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 132; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 132; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -3651,7 +4621,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  */
     __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_format, __pyx_n_s_encode); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 135; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 135; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 135; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF_SET(__pyx_v_format, __pyx_t_5);
@@ -3727,7 +4697,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  * 
  */
-    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 144; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 144; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_Raise(__pyx_t_5, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -4011,7 +4981,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *             if self.dtype_is_object:
  */
-      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 172; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 172; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_Raise(__pyx_t_5, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -4252,7 +5222,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(stru
  *         info.buf = self.data
  *         info.len = self.len
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 188; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 188; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -7038,7 +8008,7 @@ static PyObject *__pyx_memoryview_convert_item_to_object(struct __pyx_memoryview
  *         else:
  *             if len(self.view.format) == 1:
  */
-      __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 447; __pyx_clineno = __LINE__; goto __pyx_L5_except_error;}
+      __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 447; __pyx_clineno = __LINE__; goto __pyx_L5_except_error;}
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_Raise(__pyx_t_6, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -7868,7 +8838,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_7strides___get__(st
  * 
  *             return tuple([stride for stride in self.view.strides[:self.view.ndim]])
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 523; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 523; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -7985,7 +8955,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_10suboffsets___get_
     __Pyx_XDECREF(__pyx_r);
     __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->view.ndim); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 531; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PyNumber_Multiply(__pyx_tuple__9, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 531; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyNumber_Multiply(__pyx_tuple__13, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 531; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_r = __pyx_t_3;
@@ -9325,9 +10295,9 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
         __Pyx_GOTREF(__pyx_t_7);
         { Py_ssize_t __pyx_temp;
           for (__pyx_temp=0; __pyx_temp < ((__pyx_v_ndim - __pyx_t_8) + 1); __pyx_temp++) {
-            __Pyx_INCREF(__pyx_slice__10);
-            __Pyx_GIVEREF(__pyx_slice__10);
-            PyList_SET_ITEM(__pyx_t_7, __pyx_temp, __pyx_slice__10);
+            __Pyx_INCREF(__pyx_slice__14);
+            __Pyx_GIVEREF(__pyx_slice__14);
+            PyList_SET_ITEM(__pyx_t_7, __pyx_temp, __pyx_slice__14);
           }
         }
         __pyx_t_9 = __Pyx_PyList_Extend(__pyx_v_result, __pyx_t_7); if (unlikely(__pyx_t_9 == -1)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 640; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -9360,7 +10330,7 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
  *         else:
  */
       /*else*/ {
-        __pyx_t_9 = __Pyx_PyList_Append(__pyx_v_result, __pyx_slice__11); if (unlikely(__pyx_t_9 == -1)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 643; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_9 = __Pyx_PyList_Append(__pyx_v_result, __pyx_slice__15); if (unlikely(__pyx_t_9 == -1)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 643; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_L7:;
 
@@ -9505,9 +10475,9 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
     __Pyx_GOTREF(__pyx_t_3);
     { Py_ssize_t __pyx_temp;
       for (__pyx_temp=0; __pyx_temp < __pyx_v_nslices; __pyx_temp++) {
-        __Pyx_INCREF(__pyx_slice__12);
-        __Pyx_GIVEREF(__pyx_slice__12);
-        PyList_SET_ITEM(__pyx_t_3, __pyx_temp, __pyx_slice__12);
+        __Pyx_INCREF(__pyx_slice__16);
+        __Pyx_GIVEREF(__pyx_slice__16);
+        PyList_SET_ITEM(__pyx_t_3, __pyx_temp, __pyx_slice__16);
       }
     }
     __pyx_t_9 = __Pyx_PyList_Extend(__pyx_v_result, __pyx_t_3); if (unlikely(__pyx_t_9 == -1)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 654; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -9634,7 +10604,7 @@ static PyObject *assert_direct_dimensions(Py_ssize_t *__pyx_v_suboffsets, int __
  * 
  * 
  */
-      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 661; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__17, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 661; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_Raise(__pyx_t_5, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -14913,37 +15883,112 @@ static void __pyx_memoryview__slice_assign_scalar(char *__pyx_v_data, Py_ssize_t
 
   /* function exit code */
 }
-static struct __pyx_vtabstruct_7mbedtls_4hmac_Hmac __pyx_vtable_7mbedtls_4hmac_Hmac;
+static struct __pyx_vtabstruct_7mbedtls_6cipher_7_cipher_Cipher __pyx_vtable_7mbedtls_6cipher_7_cipher_Cipher;
 
-static PyObject *__pyx_tp_new_7mbedtls_4hmac_Hmac(PyTypeObject *t, PyObject *a, PyObject *k) {
-  struct __pyx_obj_7mbedtls_4hmac_Hmac *p;
-  PyObject *o = __pyx_ptype_7mbedtls_3_md_MDBase->tp_new(t, a, k);
+static PyObject *__pyx_tp_new_7mbedtls_6cipher_7_cipher_Cipher(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+  struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *p;
+  PyObject *o;
+  if (likely((t->tp_flags & Py_TPFLAGS_IS_ABSTRACT) == 0)) {
+    o = (*t->tp_alloc)(t, 0);
+  } else {
+    o = (PyObject *) PyBaseObject_Type.tp_new(t, __pyx_empty_tuple, 0);
+  }
   if (unlikely(!o)) return 0;
-  p = ((struct __pyx_obj_7mbedtls_4hmac_Hmac *)o);
-  p->__pyx_base.__pyx_vtab = (struct __pyx_vtabstruct_7mbedtls_3_md_MDBase*)__pyx_vtabptr_7mbedtls_4hmac_Hmac;
+  p = ((struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)o);
+  p->__pyx_vtab = __pyx_vtabptr_7mbedtls_6cipher_7_cipher_Cipher;
+  p->_iv = Py_None; Py_INCREF(Py_None);
+  if (unlikely(__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_3__cinit__(o, __pyx_empty_tuple, NULL) < 0)) {
+    Py_DECREF(o); o = 0;
+  }
   return o;
 }
 
-static void __pyx_tp_dealloc_7mbedtls_4hmac_Hmac(PyObject *o) {
+static void __pyx_tp_dealloc_7mbedtls_6cipher_7_cipher_Cipher(PyObject *o) {
+  struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *p = (struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)o;
   #if PY_VERSION_HEX >= 0x030400a1
-  if (unlikely(Py_TYPE(o)->tp_finalize) && (!PyType_IS_GC(Py_TYPE(o)) || !_PyGC_FINALIZED(o))) {
+  if (unlikely(Py_TYPE(o)->tp_finalize) && !_PyGC_FINALIZED(o)) {
     if (PyObject_CallFinalizerFromDealloc(o)) return;
   }
   #endif
-  if (likely(__pyx_ptype_7mbedtls_3_md_MDBase)) __pyx_ptype_7mbedtls_3_md_MDBase->tp_dealloc(o); else __Pyx_call_next_tp_dealloc(o, __pyx_tp_dealloc_7mbedtls_4hmac_Hmac);
+  PyObject_GC_UnTrack(o);
+  {
+    PyObject *etype, *eval, *etb;
+    PyErr_Fetch(&etype, &eval, &etb);
+    ++Py_REFCNT(o);
+    __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_5__dealloc__(o);
+    --Py_REFCNT(o);
+    PyErr_Restore(etype, eval, etb);
+  }
+  Py_CLEAR(p->_iv);
+  (*Py_TYPE(o)->tp_free)(o);
 }
 
-static PyMethodDef __pyx_methods_7mbedtls_4hmac_Hmac[] = {
-  {"copy", (PyCFunction)__pyx_pw_7mbedtls_4hmac_4Hmac_3copy, METH_NOARGS, __pyx_doc_7mbedtls_4hmac_4Hmac_2copy},
+static int __pyx_tp_traverse_7mbedtls_6cipher_7_cipher_Cipher(PyObject *o, visitproc v, void *a) {
+  int e;
+  struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *p = (struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)o;
+  if (p->_iv) {
+    e = (*v)(p->_iv, a); if (e) return e;
+  }
+  return 0;
+}
+
+static int __pyx_tp_clear_7mbedtls_6cipher_7_cipher_Cipher(PyObject *o) {
+  PyObject* tmp;
+  struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *p = (struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *)o;
+  tmp = ((PyObject*)p->_iv);
+  p->_iv = Py_None; Py_INCREF(Py_None);
+  Py_XDECREF(tmp);
+  return 0;
+}
+
+static PyObject *__pyx_getprop_7mbedtls_6cipher_7_cipher_6Cipher_block_size(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_10block_size_1__get__(o);
+}
+
+static PyObject *__pyx_getprop_7mbedtls_6cipher_7_cipher_6Cipher_mode(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_4mode_1__get__(o);
+}
+
+static PyObject *__pyx_getprop_7mbedtls_6cipher_7_cipher_6Cipher_iv_size(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_7iv_size_1__get__(o);
+}
+
+static PyObject *__pyx_getprop_7mbedtls_6cipher_7_cipher_6Cipher__type(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_5_type_1__get__(o);
+}
+
+static PyObject *__pyx_getprop_7mbedtls_6cipher_7_cipher_6Cipher_name(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_4name_1__get__(o);
+}
+
+static PyObject *__pyx_getprop_7mbedtls_6cipher_7_cipher_6Cipher_key_size(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_8key_size_1__get__(o);
+}
+
+static PyMethodDef __pyx_methods_7mbedtls_6cipher_7_cipher_Cipher[] = {
+  {"_setup", (PyCFunction)__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_7_setup, METH_O, __pyx_doc_7mbedtls_6cipher_7_cipher_6Cipher_6_setup},
+  {"_setkey", (PyCFunction)__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_9_setkey, METH_O, __pyx_doc_7mbedtls_6cipher_7_cipher_6Cipher_8_setkey},
+  {"encrypt", (PyCFunction)__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_13encrypt, METH_O, 0},
+  {"decrypt", (PyCFunction)__pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_15decrypt, METH_O, 0},
   {0, 0, 0, 0}
 };
 
-static PyTypeObject __pyx_type_7mbedtls_4hmac_Hmac = {
+static struct PyGetSetDef __pyx_getsets_7mbedtls_6cipher_7_cipher_Cipher[] = {
+  {(char *)"block_size", __pyx_getprop_7mbedtls_6cipher_7_cipher_6Cipher_block_size, 0, __pyx_k_Return_the_block_size_for_the_ci, 0},
+  {(char *)"mode", __pyx_getprop_7mbedtls_6cipher_7_cipher_6Cipher_mode, 0, __pyx_k_Return_the_mode_of_operation_of, 0},
+  {(char *)"iv_size", __pyx_getprop_7mbedtls_6cipher_7_cipher_6Cipher_iv_size, 0, __pyx_k_Return_the_size_of_the_cipher_s, 0},
+  {(char *)"_type", __pyx_getprop_7mbedtls_6cipher_7_cipher_6Cipher__type, 0, __pyx_k_Return_the_type_of_the_cipher, 0},
+  {(char *)"name", __pyx_getprop_7mbedtls_6cipher_7_cipher_6Cipher_name, 0, __pyx_k_Return_the_name_of_the_cipher, 0},
+  {(char *)"key_size", __pyx_getprop_7mbedtls_6cipher_7_cipher_6Cipher_key_size, 0, __pyx_k_Return_the_size_of_the_ciphers_k, 0},
+  {0, 0, 0, 0, 0}
+};
+
+static PyTypeObject __pyx_type_7mbedtls_6cipher_7_cipher_Cipher = {
   PyVarObject_HEAD_INIT(0, 0)
-  "mbedtls.hmac.Hmac", /*tp_name*/
-  sizeof(struct __pyx_obj_7mbedtls_4hmac_Hmac), /*tp_basicsize*/
+  "mbedtls.cipher._cipher.Cipher", /*tp_name*/
+  sizeof(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_7mbedtls_4hmac_Hmac, /*tp_dealloc*/
+  __pyx_tp_dealloc_7mbedtls_6cipher_7_cipher_Cipher, /*tp_dealloc*/
   0, /*tp_print*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -14959,29 +16004,29 @@ static PyTypeObject __pyx_type_7mbedtls_4hmac_Hmac = {
   0, /*tp_as_mapping*/
   0, /*tp_hash*/
   0, /*tp_call*/
-  0, /*tp_str*/
+  __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_11__str__, /*tp_str*/
   0, /*tp_getattro*/
   0, /*tp_setattro*/
   0, /*tp_as_buffer*/
-  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE, /*tp_flags*/
-  "Wrap and encapsulate HMAC calculations.\n\n    This class is a wrapper for the HMAC calculations in the md module\n    of mbed TLS.  The interface follows the recommendation from PEP 452\n    for keyed hashes.\n\n    Parameters:\n        key (bytes): The key to use.\n        name (bytes): The MD name known to mbed TLS.\n\n    Attributes:\n        digest_size (int): The size of the message digest, in bytes.\n        block_size (int): Not implemented.\n        name (bytes): The name of the message digest.\n\n    ", /*tp_doc*/
-  0, /*tp_traverse*/
-  0, /*tp_clear*/
+  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
+  "Wrap and encapsulate the cipher library from mbed TLS.\n\n    Parameters:\n        name (bytes): The cipher name known to mbed TLS.\n        key (bytes or None): The key to encrypt decrypt.  If None,\n            encryption and decryption are unavailable.\n        mode (int): The mode of operation of the cipher.\n        iv (bytes or None): The initialization vector (IV).  The IV is\n            required for every mode but ECB and CTR where it is ignored.\n            If not set, the IV is initialized to all 0, which should not\n            be used for encryption.\n\n        Attributes:\n            block_size (int): The block size for the cipher in bytes.\n            mode (int): The mode of operation of the cipher.\n            iv_size (int): The size of the cipher's IV/NONCE in bytes.\n            key_size (int): The size of the cipher's key, in bytes.\n\n    ", /*tp_doc*/
+  __pyx_tp_traverse_7mbedtls_6cipher_7_cipher_Cipher, /*tp_traverse*/
+  __pyx_tp_clear_7mbedtls_6cipher_7_cipher_Cipher, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
   0, /*tp_iter*/
   0, /*tp_iternext*/
-  __pyx_methods_7mbedtls_4hmac_Hmac, /*tp_methods*/
+  __pyx_methods_7mbedtls_6cipher_7_cipher_Cipher, /*tp_methods*/
   0, /*tp_members*/
-  0, /*tp_getset*/
+  __pyx_getsets_7mbedtls_6cipher_7_cipher_Cipher, /*tp_getset*/
   0, /*tp_base*/
   0, /*tp_dict*/
   0, /*tp_descr_get*/
   0, /*tp_descr_set*/
   0, /*tp_dictoffset*/
-  __pyx_pw_7mbedtls_4hmac_4Hmac_1__init__, /*tp_init*/
+  __pyx_pw_7mbedtls_6cipher_7_cipher_6Cipher_1__init__, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_7mbedtls_4hmac_Hmac, /*tp_new*/
+  __pyx_tp_new_7mbedtls_6cipher_7_cipher_Cipher, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -15113,7 +16158,7 @@ static PyBufferProcs __pyx_tp_as_buffer_array = {
 
 static PyTypeObject __pyx_type___pyx_array = {
   PyVarObject_HEAD_INIT(0, 0)
-  "mbedtls.hmac.array", /*tp_name*/
+  "mbedtls.cipher._cipher.array", /*tp_name*/
   sizeof(struct __pyx_array_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_array, /*tp_dealloc*/
@@ -15219,7 +16264,7 @@ static PyMethodDef __pyx_methods_Enum[] = {
 
 static PyTypeObject __pyx_type___pyx_MemviewEnum = {
   PyVarObject_HEAD_INIT(0, 0)
-  "mbedtls.hmac.Enum", /*tp_name*/
+  "mbedtls.cipher._cipher.Enum", /*tp_name*/
   sizeof(struct __pyx_MemviewEnum_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_Enum, /*tp_dealloc*/
@@ -15466,7 +16511,7 @@ static PyBufferProcs __pyx_tp_as_buffer_memoryview = {
 
 static PyTypeObject __pyx_type___pyx_memoryview = {
   PyVarObject_HEAD_INIT(0, 0)
-  "mbedtls.hmac.memoryview", /*tp_name*/
+  "mbedtls.cipher._cipher.memoryview", /*tp_name*/
   sizeof(struct __pyx_memoryview_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_memoryview, /*tp_dealloc*/
@@ -15591,7 +16636,7 @@ static struct PyGetSetDef __pyx_getsets__memoryviewslice[] = {
 
 static PyTypeObject __pyx_type___pyx_memoryviewslice = {
   PyVarObject_HEAD_INIT(0, 0)
-  "mbedtls.hmac._memoryviewslice", /*tp_name*/
+  "mbedtls.cipher._cipher._memoryviewslice", /*tp_name*/
   sizeof(struct __pyx_memoryviewslice_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc__memoryviewslice, /*tp_dealloc*/
@@ -15656,14 +16701,16 @@ static PyTypeObject __pyx_type___pyx_memoryviewslice = {
 };
 
 static PyMethodDef __pyx_methods[] = {
+  {"_get_mode_name", (PyCFunction)__pyx_pw_7mbedtls_6cipher_7_cipher_1_get_mode_name, METH_O, 0},
+  {"get_supported_ciphers", (PyCFunction)__pyx_pw_7mbedtls_6cipher_7_cipher_3get_supported_ciphers, METH_NOARGS, __pyx_doc_7mbedtls_6cipher_7_cipher_2get_supported_ciphers},
   {0, 0, 0, 0}
 };
 
 static int __pyx_import_star_set(PyObject *o, PyObject* py_name, char *name) {
   static const char* internal_type_names[] = {
+    "Cipher",
     "Enum",
     "FILE",
-    "Hmac",
     "PyObject",
     "PyThread_type_lock",
     "Py_intptr_t",
@@ -15685,9 +16732,17 @@ static int __pyx_import_star_set(PyObject *o, PyObject* py_name, char *name) {
     "__pyx_ctuple_long__and_long__and_long",
     "__pyx_ctuple_long__and_long__and_long_struct",
     "__pyx_ctuple_long_struct",
+    "__pyx_ctuple_size_t",
+    "__pyx_ctuple_size_t_struct",
     "__pyx_memoryview",
     "_memoryviewslice",
     "array",
+    "mbedtls_cipher_base_t",
+    "mbedtls_cipher_context_t",
+    "mbedtls_cipher_info_t",
+    "mbedtls_cipher_mode_t",
+    "mbedtls_cipher_type_t",
+    "mbedtls_operation_t",
     "memoryview",
     0
   };
@@ -15709,32 +16764,32 @@ static int __pyx_import_star_set(PyObject *o, PyObject* py_name, char *name) {
     PyErr_Format(PyExc_TypeError, "Cannot convert Python object Py_None to PyObject *");
     {__pyx_filename = __pyx_f[1]; __pyx_lineno = 55; __pyx_clineno = __LINE__; goto __pyx_L2_error;}
   }
-  else if (__Pyx_StrEq(name, "strided")) {
-    Py_INCREF(o);
-    Py_DECREF(strided);
-    strided = o;
-  }
   else if (__Pyx_StrEq(name, "indirect_contiguous")) {
     Py_INCREF(o);
     Py_DECREF(indirect_contiguous);
     indirect_contiguous = o;
-  }
-  else if (__Pyx_StrEq(name, "generic")) {
-    Py_INCREF(o);
-    Py_DECREF(generic);
-    generic = o;
   }
   else if (__Pyx_StrEq(name, "indirect")) {
     Py_INCREF(o);
     Py_DECREF(indirect);
     indirect = o;
   }
+  else if (__Pyx_StrEq(name, "generic")) {
+    Py_INCREF(o);
+    Py_DECREF(generic);
+    generic = o;
+  }
+  else if (__Pyx_StrEq(name, "strided")) {
+    Py_INCREF(o);
+    Py_DECREF(strided);
+    strided = o;
+  }
   else {
     if (PyObject_SetAttr(__pyx_m, py_name, o) < 0) goto bad;
   }
   return 0;
   __pyx_L2_error:;
-  __Pyx_AddTraceback("mbedtls.hmac", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("mbedtls.cipher._cipher", __pyx_clineno, __pyx_lineno, __pyx_filename);
   bad:
   return -1;
 }
@@ -15980,8 +17035,8 @@ static struct PyModuleDef __pyx_moduledef = {
   #else
     PyModuleDef_HEAD_INIT,
   #endif
-    "hmac",
-    __pyx_k_Generic_message_digest_wrapper_h, /* m_doc */
+    "_cipher",
+    __pyx_k_Ciphers_for_symmetric_encryption, /* m_doc */
     -1, /* m_size */
     __pyx_methods /* m_methods */,
     NULL, /* m_reload */
@@ -15992,45 +17047,112 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
+  {&__pyx_kp_b_, __pyx_k_, sizeof(__pyx_k_), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_128_CBC, __pyx_k_AES_128_CBC, sizeof(__pyx_k_AES_128_CBC), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_128_CCM, __pyx_k_AES_128_CCM, sizeof(__pyx_k_AES_128_CCM), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_128_CFB128, __pyx_k_AES_128_CFB128, sizeof(__pyx_k_AES_128_CFB128), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_128_CTR, __pyx_k_AES_128_CTR, sizeof(__pyx_k_AES_128_CTR), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_128_ECB, __pyx_k_AES_128_ECB, sizeof(__pyx_k_AES_128_ECB), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_128_GCM, __pyx_k_AES_128_GCM, sizeof(__pyx_k_AES_128_GCM), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_192_CBC, __pyx_k_AES_192_CBC, sizeof(__pyx_k_AES_192_CBC), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_192_CCM, __pyx_k_AES_192_CCM, sizeof(__pyx_k_AES_192_CCM), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_192_CFB128, __pyx_k_AES_192_CFB128, sizeof(__pyx_k_AES_192_CFB128), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_192_CTR, __pyx_k_AES_192_CTR, sizeof(__pyx_k_AES_192_CTR), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_192_ECB, __pyx_k_AES_192_ECB, sizeof(__pyx_k_AES_192_ECB), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_192_GCM, __pyx_k_AES_192_GCM, sizeof(__pyx_k_AES_192_GCM), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_256_CBC, __pyx_k_AES_256_CBC, sizeof(__pyx_k_AES_256_CBC), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_256_CCM, __pyx_k_AES_256_CCM, sizeof(__pyx_k_AES_256_CCM), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_256_CFB128, __pyx_k_AES_256_CFB128, sizeof(__pyx_k_AES_256_CFB128), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_256_CTR, __pyx_k_AES_256_CTR, sizeof(__pyx_k_AES_256_CTR), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_256_ECB, __pyx_k_AES_256_ECB, sizeof(__pyx_k_AES_256_ECB), 0, 0, 0, 0},
+  {&__pyx_kp_b_AES_256_GCM, __pyx_k_AES_256_GCM, sizeof(__pyx_k_AES_256_GCM), 0, 0, 0, 0},
+  {&__pyx_kp_b_ARC4_128, __pyx_k_ARC4_128, sizeof(__pyx_k_ARC4_128), 0, 0, 0, 0},
   {&__pyx_n_s_ASCII, __pyx_k_ASCII, sizeof(__pyx_k_ASCII), 0, 0, 1, 1},
   {&__pyx_kp_s_Apache_License_2_0, __pyx_k_Apache_License_2_0, sizeof(__pyx_k_Apache_License_2_0), 0, 0, 1, 0},
+  {&__pyx_kp_b_BLOWFISH_CBC, __pyx_k_BLOWFISH_CBC, sizeof(__pyx_k_BLOWFISH_CBC), 0, 0, 0, 0},
+  {&__pyx_kp_b_BLOWFISH_CFB64, __pyx_k_BLOWFISH_CFB64, sizeof(__pyx_k_BLOWFISH_CFB64), 0, 0, 0, 0},
+  {&__pyx_kp_b_BLOWFISH_CTR, __pyx_k_BLOWFISH_CTR, sizeof(__pyx_k_BLOWFISH_CTR), 0, 0, 0, 0},
+  {&__pyx_kp_b_BLOWFISH_ECB, __pyx_k_BLOWFISH_ECB, sizeof(__pyx_k_BLOWFISH_ECB), 0, 0, 0, 0},
   {&__pyx_kp_s_Buffer_view_does_not_expose_stri, __pyx_k_Buffer_view_does_not_expose_stri, sizeof(__pyx_k_Buffer_view_does_not_expose_stri), 0, 0, 1, 0},
+  {&__pyx_kp_b_CAMELLIA_128_CBC, __pyx_k_CAMELLIA_128_CBC, sizeof(__pyx_k_CAMELLIA_128_CBC), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_128_CCM, __pyx_k_CAMELLIA_128_CCM, sizeof(__pyx_k_CAMELLIA_128_CCM), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_128_CFB128, __pyx_k_CAMELLIA_128_CFB128, sizeof(__pyx_k_CAMELLIA_128_CFB128), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_128_CTR, __pyx_k_CAMELLIA_128_CTR, sizeof(__pyx_k_CAMELLIA_128_CTR), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_128_ECB, __pyx_k_CAMELLIA_128_ECB, sizeof(__pyx_k_CAMELLIA_128_ECB), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_128_GCM, __pyx_k_CAMELLIA_128_GCM, sizeof(__pyx_k_CAMELLIA_128_GCM), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_192_CBC, __pyx_k_CAMELLIA_192_CBC, sizeof(__pyx_k_CAMELLIA_192_CBC), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_192_CCM, __pyx_k_CAMELLIA_192_CCM, sizeof(__pyx_k_CAMELLIA_192_CCM), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_192_CFB128, __pyx_k_CAMELLIA_192_CFB128, sizeof(__pyx_k_CAMELLIA_192_CFB128), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_192_CTR, __pyx_k_CAMELLIA_192_CTR, sizeof(__pyx_k_CAMELLIA_192_CTR), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_192_ECB, __pyx_k_CAMELLIA_192_ECB, sizeof(__pyx_k_CAMELLIA_192_ECB), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_192_GCM, __pyx_k_CAMELLIA_192_GCM, sizeof(__pyx_k_CAMELLIA_192_GCM), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_256_CBC, __pyx_k_CAMELLIA_256_CBC, sizeof(__pyx_k_CAMELLIA_256_CBC), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_256_CCM, __pyx_k_CAMELLIA_256_CCM, sizeof(__pyx_k_CAMELLIA_256_CCM), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_256_CFB128, __pyx_k_CAMELLIA_256_CFB128, sizeof(__pyx_k_CAMELLIA_256_CFB128), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_256_CTR, __pyx_k_CAMELLIA_256_CTR, sizeof(__pyx_k_CAMELLIA_256_CTR), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_256_ECB, __pyx_k_CAMELLIA_256_ECB, sizeof(__pyx_k_CAMELLIA_256_ECB), 0, 0, 0, 0},
+  {&__pyx_kp_b_CAMELLIA_256_GCM, __pyx_k_CAMELLIA_256_GCM, sizeof(__pyx_k_CAMELLIA_256_GCM), 0, 0, 0, 0},
+  {&__pyx_n_s_CBC, __pyx_k_CBC, sizeof(__pyx_k_CBC), 0, 0, 1, 1},
+  {&__pyx_n_s_CCM, __pyx_k_CCM, sizeof(__pyx_k_CCM), 0, 0, 1, 1},
+  {&__pyx_n_s_CFB, __pyx_k_CFB, sizeof(__pyx_k_CFB), 0, 0, 1, 1},
+  {&__pyx_n_s_CIPHER_NAME, __pyx_k_CIPHER_NAME, sizeof(__pyx_k_CIPHER_NAME), 0, 0, 1, 1},
+  {&__pyx_n_s_CTR, __pyx_k_CTR, sizeof(__pyx_k_CTR), 0, 0, 1, 1},
   {&__pyx_kp_s_Can_only_create_a_buffer_that_is, __pyx_k_Can_only_create_a_buffer_that_is, sizeof(__pyx_k_Can_only_create_a_buffer_that_is), 0, 0, 1, 0},
   {&__pyx_kp_s_Cannot_index_with_type_s, __pyx_k_Cannot_index_with_type_s, sizeof(__pyx_k_Cannot_index_with_type_s), 0, 0, 1, 0},
+  {&__pyx_n_s_Cipher, __pyx_k_Cipher, sizeof(__pyx_k_Cipher), 0, 0, 1, 1},
   {&__pyx_kp_s_Copyright_2015_Elaborated_Networ, __pyx_k_Copyright_2015_Elaborated_Networ, sizeof(__pyx_k_Copyright_2015_Elaborated_Networ), 0, 0, 1, 0},
+  {&__pyx_kp_b_DES_CBC, __pyx_k_DES_CBC, sizeof(__pyx_k_DES_CBC), 0, 0, 0, 0},
+  {&__pyx_kp_b_DES_ECB, __pyx_k_DES_ECB, sizeof(__pyx_k_DES_ECB), 0, 0, 0, 0},
+  {&__pyx_kp_b_DES_EDE3_CBC, __pyx_k_DES_EDE3_CBC, sizeof(__pyx_k_DES_EDE3_CBC), 0, 0, 0, 0},
+  {&__pyx_kp_b_DES_EDE3_ECB, __pyx_k_DES_EDE3_ECB, sizeof(__pyx_k_DES_EDE3_ECB), 0, 0, 0, 0},
+  {&__pyx_kp_b_DES_EDE_CBC, __pyx_k_DES_EDE_CBC, sizeof(__pyx_k_DES_EDE_CBC), 0, 0, 0, 0},
+  {&__pyx_kp_b_DES_EDE_ECB, __pyx_k_DES_EDE_ECB, sizeof(__pyx_k_DES_EDE_ECB), 0, 0, 0, 0},
+  {&__pyx_n_s_ECB, __pyx_k_ECB, sizeof(__pyx_k_ECB), 0, 0, 1, 1},
   {&__pyx_n_s_Ellipsis, __pyx_k_Ellipsis, sizeof(__pyx_k_Ellipsis), 0, 0, 1, 1},
   {&__pyx_kp_s_Empty_shape_tuple_for_cython_arr, __pyx_k_Empty_shape_tuple_for_cython_arr, sizeof(__pyx_k_Empty_shape_tuple_for_cython_arr), 0, 0, 1, 0},
-  {&__pyx_n_s_Hash, __pyx_k_Hash, sizeof(__pyx_k_Hash), 0, 0, 1, 1},
+  {&__pyx_n_s_FullBlockExpectedError, __pyx_k_FullBlockExpectedError, sizeof(__pyx_k_FullBlockExpectedError), 0, 0, 1, 1},
+  {&__pyx_n_s_GCM, __pyx_k_GCM, sizeof(__pyx_k_GCM), 0, 0, 1, 1},
   {&__pyx_n_s_IndexError, __pyx_k_IndexError, sizeof(__pyx_k_IndexError), 0, 0, 1, 1},
   {&__pyx_kp_s_Indirect_dimensions_not_supporte, __pyx_k_Indirect_dimensions_not_supporte, sizeof(__pyx_k_Indirect_dimensions_not_supporte), 0, 0, 1, 0},
   {&__pyx_kp_s_Invalid_mode_expected_c_or_fortr, __pyx_k_Invalid_mode_expected_c_or_fortr, sizeof(__pyx_k_Invalid_mode_expected_c_or_fortr), 0, 0, 1, 0},
   {&__pyx_kp_s_Invalid_shape_in_axis_d_d, __pyx_k_Invalid_shape_in_axis_d_d, sizeof(__pyx_k_Invalid_shape_in_axis_d_d), 0, 0, 1, 0},
+  {&__pyx_n_s_MODE_CBC, __pyx_k_MODE_CBC, sizeof(__pyx_k_MODE_CBC), 0, 0, 1, 1},
+  {&__pyx_n_s_MODE_CCM, __pyx_k_MODE_CCM, sizeof(__pyx_k_MODE_CCM), 0, 0, 1, 1},
+  {&__pyx_n_s_MODE_CFB, __pyx_k_MODE_CFB, sizeof(__pyx_k_MODE_CFB), 0, 0, 1, 1},
+  {&__pyx_n_s_MODE_CTR, __pyx_k_MODE_CTR, sizeof(__pyx_k_MODE_CTR), 0, 0, 1, 1},
+  {&__pyx_n_s_MODE_ECB, __pyx_k_MODE_ECB, sizeof(__pyx_k_MODE_ECB), 0, 0, 1, 1},
+  {&__pyx_n_s_MODE_GCM, __pyx_k_MODE_GCM, sizeof(__pyx_k_MODE_GCM), 0, 0, 1, 1},
+  {&__pyx_n_s_MODE_OFB, __pyx_k_MODE_OFB, sizeof(__pyx_k_MODE_OFB), 0, 0, 1, 1},
+  {&__pyx_n_s_MODE_STREAM, __pyx_k_MODE_STREAM, sizeof(__pyx_k_MODE_STREAM), 0, 0, 1, 1},
   {&__pyx_kp_s_Mathias_Laurin, __pyx_k_Mathias_Laurin, sizeof(__pyx_k_Mathias_Laurin), 0, 0, 1, 0},
   {&__pyx_n_s_MemoryError, __pyx_k_MemoryError, sizeof(__pyx_k_MemoryError), 0, 0, 1, 1},
   {&__pyx_kp_s_MemoryView_of_r_at_0x_x, __pyx_k_MemoryView_of_r_at_0x_x, sizeof(__pyx_k_MemoryView_of_r_at_0x_x), 0, 0, 1, 0},
   {&__pyx_kp_s_MemoryView_of_r_object, __pyx_k_MemoryView_of_r_object, sizeof(__pyx_k_MemoryView_of_r_object), 0, 0, 1, 0},
-  {&__pyx_n_s_NotImplementedError, __pyx_k_NotImplementedError, sizeof(__pyx_k_NotImplementedError), 0, 0, 1, 1},
+  {&__pyx_n_b_NONE, __pyx_k_NONE, sizeof(__pyx_k_NONE), 0, 0, 0, 1},
+  {&__pyx_n_b_NULL, __pyx_k_NULL, sizeof(__pyx_k_NULL), 0, 0, 0, 1},
   {&__pyx_n_b_O, __pyx_k_O, sizeof(__pyx_k_O), 0, 0, 0, 1},
+  {&__pyx_n_s_OFB, __pyx_k_OFB, sizeof(__pyx_k_OFB), 0, 0, 1, 1},
   {&__pyx_kp_s_Out_of_bounds_on_buffer_access_a, __pyx_k_Out_of_bounds_on_buffer_access_a, sizeof(__pyx_k_Out_of_bounds_on_buffer_access_a), 0, 0, 1, 0},
+  {&__pyx_n_s_STREAM, __pyx_k_STREAM, sizeof(__pyx_k_STREAM), 0, 0, 1, 1},
   {&__pyx_n_s_TypeError, __pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 0, 1, 1},
   {&__pyx_kp_s_Unable_to_convert_item_to_object, __pyx_k_Unable_to_convert_item_to_object, sizeof(__pyx_k_Unable_to_convert_item_to_object), 0, 0, 1, 0},
+  {&__pyx_n_s_UnsupportedCipherError, __pyx_k_UnsupportedCipherError, sizeof(__pyx_k_UnsupportedCipherError), 0, 0, 1, 1},
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
-  {&__pyx_n_s__14, __pyx_k__14, sizeof(__pyx_k__14), 0, 0, 1, 1},
-  {&__pyx_n_s_algorithms_available, __pyx_k_algorithms_available, sizeof(__pyx_k_algorithms_available), 0, 0, 1, 1},
-  {&__pyx_n_s_algorithms_guaranteed, __pyx_k_algorithms_guaranteed, sizeof(__pyx_k_algorithms_guaranteed), 0, 0, 1, 1},
+  {&__pyx_n_s__18, __pyx_k__18, sizeof(__pyx_k__18), 0, 0, 1, 1},
+  {&__pyx_n_s_all, __pyx_k_all, sizeof(__pyx_k_all), 0, 0, 1, 1},
   {&__pyx_n_s_allocate_buffer, __pyx_k_allocate_buffer, sizeof(__pyx_k_allocate_buffer), 0, 0, 1, 1},
+  {&__pyx_n_s_ascii, __pyx_k_ascii, sizeof(__pyx_k_ascii), 0, 0, 1, 1},
   {&__pyx_n_s_author, __pyx_k_author, sizeof(__pyx_k_author), 0, 0, 1, 1},
   {&__pyx_n_s_base, __pyx_k_base, sizeof(__pyx_k_base), 0, 0, 1, 1},
-  {&__pyx_n_s_buffer, __pyx_k_buffer, sizeof(__pyx_k_buffer), 0, 0, 1, 1},
   {&__pyx_n_s_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 0, 1, 1},
   {&__pyx_n_u_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 1, 0, 1},
   {&__pyx_n_s_check_error, __pyx_k_check_error, sizeof(__pyx_k_check_error), 0, 0, 1, 1},
+  {&__pyx_n_s_cipher_name, __pyx_k_cipher_name, sizeof(__pyx_k_cipher_name), 0, 0, 1, 1},
   {&__pyx_n_s_class, __pyx_k_class, sizeof(__pyx_k_class), 0, 0, 1, 1},
   {&__pyx_kp_s_contiguous_and_direct, __pyx_k_contiguous_and_direct, sizeof(__pyx_k_contiguous_and_direct), 0, 0, 1, 0},
   {&__pyx_kp_s_contiguous_and_indirect, __pyx_k_contiguous_and_indirect, sizeof(__pyx_k_contiguous_and_indirect), 0, 0, 1, 0},
-  {&__pyx_n_s_copy, __pyx_k_copy, sizeof(__pyx_k_copy), 0, 0, 1, 1},
   {&__pyx_n_s_copyright, __pyx_k_copyright, sizeof(__pyx_k_copyright), 0, 0, 1, 1},
-  {&__pyx_n_s_digestmod, __pyx_k_digestmod, sizeof(__pyx_k_digestmod), 0, 0, 1, 1},
+  {&__pyx_n_s_decode, __pyx_k_decode, sizeof(__pyx_k_decode), 0, 0, 1, 1},
   {&__pyx_n_s_dtype_is_object, __pyx_k_dtype_is_object, sizeof(__pyx_k_dtype_is_object), 0, 0, 1, 1},
   {&__pyx_n_s_encode, __pyx_k_encode, sizeof(__pyx_k_encode), 0, 0, 1, 1},
   {&__pyx_n_s_enumerate, __pyx_k_enumerate, sizeof(__pyx_k_enumerate), 0, 0, 1, 1},
@@ -16040,38 +17162,29 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_fortran, __pyx_k_fortran, sizeof(__pyx_k_fortran), 0, 0, 1, 1},
   {&__pyx_n_u_fortran, __pyx_k_fortran, sizeof(__pyx_k_fortran), 0, 1, 0, 1},
   {&__pyx_kp_s_got_differing_extents_in_dimensi, __pyx_k_got_differing_extents_in_dimensi, sizeof(__pyx_k_got_differing_extents_in_dimensi), 0, 0, 1, 0},
-  {&__pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_k_home_laurin_src_python_mbedtls, sizeof(__pyx_k_home_laurin_src_python_mbedtls), 0, 0, 1, 0},
   {&__pyx_n_s_id, __pyx_k_id, sizeof(__pyx_k_id), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
-  {&__pyx_n_s_init, __pyx_k_init, sizeof(__pyx_k_init), 0, 0, 1, 1},
   {&__pyx_n_s_itemsize, __pyx_k_itemsize, sizeof(__pyx_k_itemsize), 0, 0, 1, 1},
   {&__pyx_kp_s_itemsize_0_for_cython_array, __pyx_k_itemsize_0_for_cython_array, sizeof(__pyx_k_itemsize_0_for_cython_array), 0, 0, 1, 0},
+  {&__pyx_n_s_iv, __pyx_k_iv, sizeof(__pyx_k_iv), 0, 0, 1, 1},
+  {&__pyx_n_s_iv_size, __pyx_k_iv_size, sizeof(__pyx_k_iv_size), 0, 0, 1, 1},
   {&__pyx_n_s_key, __pyx_k_key, sizeof(__pyx_k_key), 0, 0, 1, 1},
   {&__pyx_n_s_license, __pyx_k_license, sizeof(__pyx_k_license), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_mbedtls_exceptions, __pyx_k_mbedtls_exceptions, sizeof(__pyx_k_mbedtls_exceptions), 0, 0, 1, 1},
-  {&__pyx_n_s_mbedtls_hmac, __pyx_k_mbedtls_hmac, sizeof(__pyx_k_mbedtls_hmac), 0, 0, 1, 1},
-  {&__pyx_n_s_md, __pyx_k_md, sizeof(__pyx_k_md), 0, 0, 1, 1},
-  {&__pyx_n_s_md2, __pyx_k_md2, sizeof(__pyx_k_md2), 0, 0, 1, 1},
-  {&__pyx_n_s_md4, __pyx_k_md4, sizeof(__pyx_k_md4), 0, 0, 1, 1},
-  {&__pyx_n_s_md5, __pyx_k_md5, sizeof(__pyx_k_md5), 0, 0, 1, 1},
   {&__pyx_n_s_memview, __pyx_k_memview, sizeof(__pyx_k_memview), 0, 0, 1, 1},
   {&__pyx_n_s_mode, __pyx_k_mode, sizeof(__pyx_k_mode), 0, 0, 1, 1},
+  {&__pyx_kp_s_mode_requires_an_IV, __pyx_k_mode_requires_an_IV, sizeof(__pyx_k_mode_requires_an_IV), 0, 0, 1, 0},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_n_s_name_2, __pyx_k_name_2, sizeof(__pyx_k_name_2), 0, 0, 1, 1},
   {&__pyx_n_s_ndim, __pyx_k_ndim, sizeof(__pyx_k_ndim), 0, 0, 1, 1},
-  {&__pyx_n_s_new, __pyx_k_new, sizeof(__pyx_k_new), 0, 0, 1, 1},
   {&__pyx_n_s_obj, __pyx_k_obj, sizeof(__pyx_k_obj), 0, 0, 1, 1},
   {&__pyx_n_s_pack, __pyx_k_pack, sizeof(__pyx_k_pack), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_getbuffer, __pyx_k_pyx_getbuffer, sizeof(__pyx_k_pyx_getbuffer), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
-  {&__pyx_n_s_ripemd160, __pyx_k_ripemd160, sizeof(__pyx_k_ripemd160), 0, 0, 1, 1},
-  {&__pyx_n_s_sha1, __pyx_k_sha1, sizeof(__pyx_k_sha1), 0, 0, 1, 1},
-  {&__pyx_n_s_sha224, __pyx_k_sha224, sizeof(__pyx_k_sha224), 0, 0, 1, 1},
-  {&__pyx_n_s_sha256, __pyx_k_sha256, sizeof(__pyx_k_sha256), 0, 0, 1, 1},
-  {&__pyx_n_s_sha384, __pyx_k_sha384, sizeof(__pyx_k_sha384), 0, 0, 1, 1},
-  {&__pyx_n_s_sha512, __pyx_k_sha512, sizeof(__pyx_k_sha512), 0, 0, 1, 1},
+  {&__pyx_n_s_setkey, __pyx_k_setkey, sizeof(__pyx_k_setkey), 0, 0, 1, 1},
+  {&__pyx_n_s_setup, __pyx_k_setup, sizeof(__pyx_k_setup), 0, 0, 1, 1},
   {&__pyx_n_s_shape, __pyx_k_shape, sizeof(__pyx_k_shape), 0, 0, 1, 1},
   {&__pyx_n_s_size, __pyx_k_size, sizeof(__pyx_k_size), 0, 0, 1, 1},
   {&__pyx_n_s_start, __pyx_k_start, sizeof(__pyx_k_start), 0, 0, 1, 1},
@@ -16081,20 +17194,19 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_strided_and_direct_or_indirect, __pyx_k_strided_and_direct_or_indirect, sizeof(__pyx_k_strided_and_direct_or_indirect), 0, 0, 1, 0},
   {&__pyx_kp_s_strided_and_indirect, __pyx_k_strided_and_indirect, sizeof(__pyx_k_strided_and_indirect), 0, 0, 1, 0},
   {&__pyx_n_s_struct, __pyx_k_struct, sizeof(__pyx_k_struct), 0, 0, 1, 1},
-  {&__pyx_n_s_super, __pyx_k_super, sizeof(__pyx_k_super), 0, 0, 1, 1},
+  {&__pyx_n_s_supported_modes, __pyx_k_supported_modes, sizeof(__pyx_k_supported_modes), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_kp_s_unable_to_allocate_array_data, __pyx_k_unable_to_allocate_array_data, sizeof(__pyx_k_unable_to_allocate_array_data), 0, 0, 1, 0},
   {&__pyx_kp_s_unable_to_allocate_shape_and_str, __pyx_k_unable_to_allocate_shape_and_str, sizeof(__pyx_k_unable_to_allocate_shape_and_str), 0, 0, 1, 0},
   {&__pyx_n_s_unpack, __pyx_k_unpack, sizeof(__pyx_k_unpack), 0, 0, 1, 1},
+  {&__pyx_kp_s_unsupported_cipher_r, __pyx_k_unsupported_cipher_r, sizeof(__pyx_k_unsupported_cipher_r), 0, 0, 1, 0},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_super = __Pyx_GetBuiltinName(__pyx_n_s_super); if (!__pyx_builtin_super) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_NotImplementedError = __Pyx_GetBuiltinName(__pyx_n_s_NotImplementedError); if (!__pyx_builtin_NotImplementedError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 58; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 144; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 147; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 158; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 168; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_Ellipsis = __Pyx_GetBuiltinName(__pyx_n_s_Ellipsis); if (!__pyx_builtin_Ellipsis) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 359; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 388; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_id = __Pyx_GetBuiltinName(__pyx_n_s_id); if (!__pyx_builtin_id) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -16108,6 +17220,39 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
+  /* "mbedtls/cipher/_cipher.pyx":151
+ *         raise FullBlockExpectedError()
+ *     cdef unsigned char[:] c_iv = (
+ *         bytearray(iv) if iv else bytearray(b"\x00"))             # <<<<<<<<<<<<<<
+ *     cdef unsigned char[:] c_input = bytearray(input)
+ *     cdef size_t olen
+ */
+  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_kp_b_); if (unlikely(!__pyx_tuple__2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 151; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__2);
+  __Pyx_GIVEREF(__pyx_tuple__2);
+
+  /* "mbedtls/cipher/_cipher.pyx":227
+ *     def __init__(self, cipher_name, key, mode, iv):
+ *         if mode in {MODE_CBC, MODE_CFB} and not iv:
+ *             raise ValueError("mode requires an IV")             # <<<<<<<<<<<<<<
+ *         self._setup(cipher_name)
+ *         self._setkey(key)
+ */
+  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_kp_s_mode_requires_an_IV); if (unlikely(!__pyx_tuple__3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__3);
+  __Pyx_GIVEREF(__pyx_tuple__3);
+
+  /* "mbedtls/cipher/_cipher.pyx":262
+ *     def __str__(self):
+ *         """Return the name of the cipher."""
+ *         return self.name.decode("ascii")             # <<<<<<<<<<<<<<
+ * 
+ *     property block_size:
+ */
+  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_n_s_ascii); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 262; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__4);
+  __Pyx_GIVEREF(__pyx_tuple__4);
+
   /* "View.MemoryView":129
  * 
  *         if not self.ndim:
@@ -16115,9 +17260,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *         if itemsize <= 0:
  */
-  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_Empty_shape_tuple_for_cython_arr); if (unlikely(!__pyx_tuple_)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple_);
-  __Pyx_GIVEREF(__pyx_tuple_);
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_Empty_shape_tuple_for_cython_arr); if (unlikely(!__pyx_tuple__5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__5);
+  __Pyx_GIVEREF(__pyx_tuple__5);
 
   /* "View.MemoryView":132
  * 
@@ -16126,9 +17271,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *         if not isinstance(format, bytes):
  */
-  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_kp_s_itemsize_0_for_cython_array); if (unlikely(!__pyx_tuple__2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 132; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__2);
-  __Pyx_GIVEREF(__pyx_tuple__2);
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_itemsize_0_for_cython_array); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 132; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__6);
+  __Pyx_GIVEREF(__pyx_tuple__6);
 
   /* "View.MemoryView":135
  * 
@@ -16137,9 +17282,9 @@ static int __Pyx_InitCachedConstants(void) {
  *         self._format = format  # keep a reference to the byte string
  *         self.format = self._format
  */
-  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_n_s_ASCII); if (unlikely(!__pyx_tuple__3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 135; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__3);
-  __Pyx_GIVEREF(__pyx_tuple__3);
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_n_s_ASCII); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 135; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
 
   /* "View.MemoryView":144
  * 
@@ -16148,9 +17293,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_shape_and_str); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 144; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__4);
-  __Pyx_GIVEREF(__pyx_tuple__4);
+  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_shape_and_str); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 144; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__8);
+  __Pyx_GIVEREF(__pyx_tuple__8);
 
   /* "View.MemoryView":172
  *             self.data = <char *>malloc(self.len)
@@ -16159,9 +17304,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *             if self.dtype_is_object:
  */
-  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_array_data); if (unlikely(!__pyx_tuple__5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 172; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__5);
-  __Pyx_GIVEREF(__pyx_tuple__5);
+  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_array_data); if (unlikely(!__pyx_tuple__9)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 172; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__9);
+  __Pyx_GIVEREF(__pyx_tuple__9);
 
   /* "View.MemoryView":188
  *             bufmode = PyBUF_F_CONTIGUOUS | PyBUF_ANY_CONTIGUOUS
@@ -16170,9 +17315,9 @@ static int __Pyx_InitCachedConstants(void) {
  *         info.buf = self.data
  *         info.len = self.len
  */
-  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_Can_only_create_a_buffer_that_is); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 188; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__6);
-  __Pyx_GIVEREF(__pyx_tuple__6);
+  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_s_Can_only_create_a_buffer_that_is); if (unlikely(!__pyx_tuple__10)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 188; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__10);
+  __Pyx_GIVEREF(__pyx_tuple__10);
 
   /* "View.MemoryView":447
  *             result = struct.unpack(self.view.format, bytesitem)
@@ -16181,9 +17326,9 @@ static int __Pyx_InitCachedConstants(void) {
  *         else:
  *             if len(self.view.format) == 1:
  */
-  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_s_Unable_to_convert_item_to_object); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 447; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__7);
-  __Pyx_GIVEREF(__pyx_tuple__7);
+  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_s_Unable_to_convert_item_to_object); if (unlikely(!__pyx_tuple__11)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 447; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__11);
+  __Pyx_GIVEREF(__pyx_tuple__11);
 
   /* "View.MemoryView":523
  *             if self.view.strides == NULL:
@@ -16192,9 +17337,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *             return tuple([stride for stride in self.view.strides[:self.view.ndim]])
  */
-  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_s_Buffer_view_does_not_expose_stri); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 523; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__8);
-  __Pyx_GIVEREF(__pyx_tuple__8);
+  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_s_Buffer_view_does_not_expose_stri); if (unlikely(!__pyx_tuple__12)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 523; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__12);
+  __Pyx_GIVEREF(__pyx_tuple__12);
 
   /* "View.MemoryView":531
  *         def __get__(self):
@@ -16203,12 +17348,12 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *             return tuple([suboffset for suboffset in self.view.suboffsets[:self.view.ndim]])
  */
-  __pyx_tuple__9 = PyTuple_New(1); if (unlikely(!__pyx_tuple__9)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 531; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__9);
+  __pyx_tuple__13 = PyTuple_New(1); if (unlikely(!__pyx_tuple__13)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 531; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__13);
   __Pyx_INCREF(__pyx_int_neg_1);
   __Pyx_GIVEREF(__pyx_int_neg_1);
-  PyTuple_SET_ITEM(__pyx_tuple__9, 0, __pyx_int_neg_1);
-  __Pyx_GIVEREF(__pyx_tuple__9);
+  PyTuple_SET_ITEM(__pyx_tuple__13, 0, __pyx_int_neg_1);
+  __Pyx_GIVEREF(__pyx_tuple__13);
 
   /* "View.MemoryView":640
  *         if item is Ellipsis:
@@ -16217,9 +17362,9 @@ static int __Pyx_InitCachedConstants(void) {
  *                 seen_ellipsis = True
  *             else:
  */
-  __pyx_slice__10 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__10)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 640; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_slice__10);
-  __Pyx_GIVEREF(__pyx_slice__10);
+  __pyx_slice__14 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__14)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 640; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_slice__14);
+  __Pyx_GIVEREF(__pyx_slice__14);
 
   /* "View.MemoryView":643
  *                 seen_ellipsis = True
@@ -16228,9 +17373,9 @@ static int __Pyx_InitCachedConstants(void) {
  *             have_slices = True
  *         else:
  */
-  __pyx_slice__11 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__11)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 643; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_slice__11);
-  __Pyx_GIVEREF(__pyx_slice__11);
+  __pyx_slice__15 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__15)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 643; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_slice__15);
+  __Pyx_GIVEREF(__pyx_slice__15);
 
   /* "View.MemoryView":654
  *     nslices = ndim - len(result)
@@ -16239,9 +17384,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *     return have_slices or nslices, tuple(result)
  */
-  __pyx_slice__12 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__12)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 654; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_slice__12);
-  __Pyx_GIVEREF(__pyx_slice__12);
+  __pyx_slice__16 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__16)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 654; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_slice__16);
+  __Pyx_GIVEREF(__pyx_slice__16);
 
   /* "View.MemoryView":661
  *     for suboffset in suboffsets[:ndim]:
@@ -16250,129 +17395,31 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_s_Indirect_dimensions_not_supporte); if (unlikely(!__pyx_tuple__13)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 661; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__13);
-  __Pyx_GIVEREF(__pyx_tuple__13);
-
-  /* "mbedtls/hmac.pyx":61
- * 
- * 
- * def new(key, buffer=None, digestmod=None):             # <<<<<<<<<<<<<<
- *     """A generic constructor that takes the key algorithm as its first
- *     parameter.
- */
-  __pyx_tuple__15 = PyTuple_Pack(3, __pyx_n_s_key, __pyx_n_s_buffer, __pyx_n_s_digestmod); if (unlikely(!__pyx_tuple__15)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__15);
-  __Pyx_GIVEREF(__pyx_tuple__15);
-  __pyx_codeobj__16 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__15, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_new, 61, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__16)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-
-  /* "mbedtls/hmac.pyx":71
- * 
- * 
- * def md2(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """MD2 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md2")
- */
-  __pyx_tuple__17 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__17)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__17 = PyTuple_Pack(1, __pyx_kp_s_Indirect_dimensions_not_supporte); if (unlikely(!__pyx_tuple__17)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 661; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__17);
   __Pyx_GIVEREF(__pyx_tuple__17);
-  __pyx_codeobj__18 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__17, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_md2, 71, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__18)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":76
- * 
- * 
- * def md4(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """MD4 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md4")
+  /* "mbedtls/cipher/_cipher.pyx":16
+ * CIPHER_NAME = (
+ *     # Define as bytes to map to `const char*` without conversion.
+ *     b"NONE",             # <<<<<<<<<<<<<<
+ *     b"NULL",
+ *     b"AES-128-ECB",
  */
-  __pyx_tuple__19 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__19)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__19 = PyTuple_Pack(49, __pyx_n_b_NONE, __pyx_n_b_NULL, __pyx_kp_b_AES_128_ECB, __pyx_kp_b_AES_192_ECB, __pyx_kp_b_AES_256_ECB, __pyx_kp_b_AES_128_CBC, __pyx_kp_b_AES_192_CBC, __pyx_kp_b_AES_256_CBC, __pyx_kp_b_AES_128_CFB128, __pyx_kp_b_AES_192_CFB128, __pyx_kp_b_AES_256_CFB128, __pyx_kp_b_AES_128_CTR, __pyx_kp_b_AES_192_CTR, __pyx_kp_b_AES_256_CTR, __pyx_kp_b_AES_128_GCM, __pyx_kp_b_AES_192_GCM, __pyx_kp_b_AES_256_GCM, __pyx_kp_b_CAMELLIA_128_ECB, __pyx_kp_b_CAMELLIA_192_ECB, __pyx_kp_b_CAMELLIA_256_ECB, __pyx_kp_b_CAMELLIA_128_CBC, __pyx_kp_b_CAMELLIA_192_CBC, __pyx_kp_b_CAMELLIA_256_CBC, __pyx_kp_b_CAMELLIA_128_CFB128, __pyx_kp_b_CAMELLIA_192_CFB128, __pyx_kp_b_CAMELLIA_256_CFB128, __pyx_kp_b_CAMELLIA_128_CTR, __pyx_kp_b_CAMELLIA_192_CTR, __pyx_kp_b_CAMELLIA_256_CTR, __pyx_kp_b_CAMELLIA_128_GCM, __pyx_kp_b_CAMELLIA_192_GCM, __pyx_kp_b_CAMELLIA_256_GCM, __pyx_kp_b_DES_ECB, __pyx_kp_b_DES_CBC, __pyx_kp_b_DES_EDE_ECB, __pyx_kp_b_DES_EDE_CBC, __pyx_kp_b_DES_EDE3_ECB, __pyx_kp_b_DES_EDE3_CBC, __pyx_kp_b_BLOWFISH_ECB, __pyx_kp_b_BLOWFISH_CBC, __pyx_kp_b_BLOWFISH_CFB64, __pyx_kp_b_BLOWFISH_CTR, __pyx_kp_b_ARC4_128, __pyx_kp_b_AES_128_CCM, __pyx_kp_b_AES_192_CCM, __pyx_kp_b_AES_256_CCM, __pyx_kp_b_CAMELLIA_128_CCM, __pyx_kp_b_CAMELLIA_192_CCM, __pyx_kp_b_CAMELLIA_256_CCM); if (unlikely(!__pyx_tuple__19)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__19);
   __Pyx_GIVEREF(__pyx_tuple__19);
-  __pyx_codeobj__20 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_md4, 76, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__20)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":81
+  /* "mbedtls/cipher/_cipher.pyx":102
  * 
- * 
- * def md5(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """MD5 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md5")
+ * __all__ = (
+ *     "MODE_ECB", "MODE_CBC", "MODE_CFB", "MODE_CTR", "MODE_GCM", "MODE_CCM",             # <<<<<<<<<<<<<<
+ *     "Cipher"
+ * )
  */
-  __pyx_tuple__21 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__21)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__21);
-  __Pyx_GIVEREF(__pyx_tuple__21);
-  __pyx_codeobj__22 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_md5, 81, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__22)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-
-  /* "mbedtls/hmac.pyx":86
- * 
- * 
- * def sha1(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 1 (SHA-1)."""
- *     return Hash(key, buffer, digestmod="sha1")
- */
-  __pyx_tuple__23 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__23)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__23);
-  __Pyx_GIVEREF(__pyx_tuple__23);
-  __pyx_codeobj__24 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__23, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha1, 86, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__24)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-
-  /* "mbedtls/hmac.pyx":91
- * 
- * 
- * def sha224(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha224")
- */
-  __pyx_tuple__25 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__25)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__25);
-  __Pyx_GIVEREF(__pyx_tuple__25);
-  __pyx_codeobj__26 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha224, 91, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__26)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-
-  /* "mbedtls/hmac.pyx":96
- * 
- * 
- * def sha256(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha256")
- */
-  __pyx_tuple__27 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__27)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__27);
-  __Pyx_GIVEREF(__pyx_tuple__27);
-  __pyx_codeobj__28 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__27, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha256, 96, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__28)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-
-  /* "mbedtls/hmac.pyx":101
- * 
- * 
- * def sha384(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha384")
- */
-  __pyx_tuple__29 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__29)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__29);
-  __Pyx_GIVEREF(__pyx_tuple__29);
-  __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha384, 101, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-
-  /* "mbedtls/hmac.pyx":106
- * 
- * 
- * def sha512(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha512")
- */
-  __pyx_tuple__31 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__31)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__31);
-  __Pyx_GIVEREF(__pyx_tuple__31);
-  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__31, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha512, 106, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-
-  /* "mbedtls/hmac.pyx":111
- * 
- * 
- * def ripemd160(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
- *     160 bits hash value."""
- */
-  __pyx_tuple__33 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__33)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__33);
-  __Pyx_GIVEREF(__pyx_tuple__33);
-  __pyx_codeobj__34 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__33, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_ripemd160, 111, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__34)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__20 = PyTuple_Pack(7, __pyx_n_s_MODE_ECB, __pyx_n_s_MODE_CBC, __pyx_n_s_MODE_CFB, __pyx_n_s_MODE_CTR, __pyx_n_s_MODE_GCM, __pyx_n_s_MODE_CCM, __pyx_n_s_Cipher); if (unlikely(!__pyx_tuple__20)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 102; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__20);
+  __Pyx_GIVEREF(__pyx_tuple__20);
 
   /* "View.MemoryView":278
  *         return self.name
@@ -16381,9 +17428,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_tuple__35 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__35)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__35);
-  __Pyx_GIVEREF(__pyx_tuple__35);
+  __pyx_tuple__21 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__21)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__21);
+  __Pyx_GIVEREF(__pyx_tuple__21);
 
   /* "View.MemoryView":279
  * 
@@ -16392,9 +17439,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_tuple__36 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__36)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 279; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__36);
-  __Pyx_GIVEREF(__pyx_tuple__36);
+  __pyx_tuple__22 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__22)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 279; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__22);
+  __Pyx_GIVEREF(__pyx_tuple__22);
 
   /* "View.MemoryView":280
  * cdef generic = Enum("<strided and direct or indirect>")
@@ -16403,9 +17450,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__37 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__37)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 280; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__37);
-  __Pyx_GIVEREF(__pyx_tuple__37);
+  __pyx_tuple__23 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__23)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 280; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__23);
+  __Pyx_GIVEREF(__pyx_tuple__23);
 
   /* "View.MemoryView":283
  * 
@@ -16414,9 +17461,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_tuple__38 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__38)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 283; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__38);
-  __Pyx_GIVEREF(__pyx_tuple__38);
+  __pyx_tuple__24 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__24)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 283; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__24);
+  __Pyx_GIVEREF(__pyx_tuple__24);
 
   /* "View.MemoryView":284
  * 
@@ -16425,9 +17472,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__39 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__39)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 284; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__39);
-  __Pyx_GIVEREF(__pyx_tuple__39);
+  __pyx_tuple__25 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__25)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 284; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__25);
+  __Pyx_GIVEREF(__pyx_tuple__25);
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -16439,6 +17486,13 @@ static int __Pyx_InitGlobals(void) {
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_int_2 = PyInt_FromLong(2); if (unlikely(!__pyx_int_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_int_3 = PyInt_FromLong(3); if (unlikely(!__pyx_int_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_int_4 = PyInt_FromLong(4); if (unlikely(!__pyx_int_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_int_5 = PyInt_FromLong(5); if (unlikely(!__pyx_int_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_int_6 = PyInt_FromLong(6); if (unlikely(!__pyx_int_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_int_7 = PyInt_FromLong(7); if (unlikely(!__pyx_int_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_int_8 = PyInt_FromLong(8); if (unlikely(!__pyx_int_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_int_neg_1 = PyInt_FromLong(-1); if (unlikely(!__pyx_int_neg_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
   __pyx_L1_error:;
@@ -16446,15 +17500,20 @@ static int __Pyx_InitGlobals(void) {
 }
 
 #if PY_MAJOR_VERSION < 3
-PyMODINIT_FUNC inithmac(void); /*proto*/
-PyMODINIT_FUNC inithmac(void)
+PyMODINIT_FUNC init_cipher(void); /*proto*/
+PyMODINIT_FUNC init_cipher(void)
 #else
-PyMODINIT_FUNC PyInit_hmac(void); /*proto*/
-PyMODINIT_FUNC PyInit_hmac(void)
+PyMODINIT_FUNC PyInit__cipher(void); /*proto*/
+PyMODINIT_FUNC PyInit__cipher(void)
 #endif
 {
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
+  PyObject *__pyx_t_7 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -16468,7 +17527,7 @@ PyMODINIT_FUNC PyInit_hmac(void)
           Py_FatalError("failed to import 'refnanny' module");
   }
   #endif
-  __Pyx_RefNannySetupContext("PyMODINIT_FUNC PyInit_hmac(void)", 0);
+  __Pyx_RefNannySetupContext("PyMODINIT_FUNC PyInit__cipher(void)", 0);
   if (__Pyx_check_binary_version() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_empty_tuple = PyTuple_New(0); if (unlikely(!__pyx_empty_tuple)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_empty_bytes = PyBytes_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_bytes)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -16496,7 +17555,7 @@ PyMODINIT_FUNC PyInit_hmac(void)
   #endif
   /*--- Module creation code ---*/
   #if PY_MAJOR_VERSION < 3
-  __pyx_m = Py_InitModule4("hmac", __pyx_methods, __pyx_k_Generic_message_digest_wrapper_h, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
+  __pyx_m = Py_InitModule4("_cipher", __pyx_methods, __pyx_k_Ciphers_for_symmetric_encryption, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
   #else
   __pyx_m = PyModule_Create(&__pyx_moduledef);
   #endif
@@ -16513,14 +17572,14 @@ PyMODINIT_FUNC PyInit_hmac(void)
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
-  if (__pyx_module_is_main_mbedtls__hmac) {
+  if (__pyx_module_is_main_mbedtls__cipher___cipher) {
     if (PyObject_SetAttrString(__pyx_m, "__name__", __pyx_n_s_main) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    if (!PyDict_GetItemString(modules, "mbedtls.hmac")) {
-      if (unlikely(PyDict_SetItemString(modules, "mbedtls.hmac", __pyx_m) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!PyDict_GetItemString(modules, "mbedtls.cipher._cipher")) {
+      if (unlikely(PyDict_SetItemString(modules, "mbedtls.cipher._cipher", __pyx_m) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
   }
   #endif
@@ -16537,19 +17596,24 @@ PyMODINIT_FUNC PyInit_hmac(void)
   /*--- Variable export code ---*/
   /*--- Function export code ---*/
   /*--- Type init code ---*/
-  __pyx_ptype_7mbedtls_3_md_MDBase = __Pyx_ImportType("mbedtls._md", "MDBase", sizeof(struct __pyx_obj_7mbedtls_3_md_MDBase), 1); if (unlikely(!__pyx_ptype_7mbedtls_3_md_MDBase)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_vtabptr_7mbedtls_3_md_MDBase = (struct __pyx_vtabstruct_7mbedtls_3_md_MDBase*)__Pyx_GetVtable(__pyx_ptype_7mbedtls_3_md_MDBase->tp_dict); if (unlikely(!__pyx_vtabptr_7mbedtls_3_md_MDBase)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_vtabptr_7mbedtls_4hmac_Hmac = &__pyx_vtable_7mbedtls_4hmac_Hmac;
-  __pyx_vtable_7mbedtls_4hmac_Hmac.__pyx_base = *__pyx_vtabptr_7mbedtls_3_md_MDBase;
-  __pyx_vtable_7mbedtls_4hmac_Hmac.__pyx_base._update = (PyObject *(*)(struct __pyx_obj_7mbedtls_3_md_MDBase *, unsigned char const *, size_t))__pyx_f_7mbedtls_4hmac_4Hmac__update;
-  __pyx_vtable_7mbedtls_4hmac_Hmac.__pyx_base._finish = (PyObject *(*)(struct __pyx_obj_7mbedtls_3_md_MDBase *, unsigned char const *))__pyx_f_7mbedtls_4hmac_4Hmac__finish;
-  __pyx_vtable_7mbedtls_4hmac_Hmac.copy = (PyObject *(*)(struct __pyx_obj_7mbedtls_4hmac_Hmac *, int __pyx_skip_dispatch))__pyx_f_7mbedtls_4hmac_4Hmac_copy;
-  __pyx_type_7mbedtls_4hmac_Hmac.tp_base = __pyx_ptype_7mbedtls_3_md_MDBase;
-  if (PyType_Ready(&__pyx_type_7mbedtls_4hmac_Hmac) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_type_7mbedtls_4hmac_Hmac.tp_print = 0;
-  if (__Pyx_SetVtable(__pyx_type_7mbedtls_4hmac_Hmac.tp_dict, __pyx_vtabptr_7mbedtls_4hmac_Hmac) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (PyObject_SetAttrString(__pyx_m, "Hmac", (PyObject *)&__pyx_type_7mbedtls_4hmac_Hmac) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_ptype_7mbedtls_4hmac_Hmac = &__pyx_type_7mbedtls_4hmac_Hmac;
+  __pyx_vtabptr_7mbedtls_6cipher_7_cipher_Cipher = &__pyx_vtable_7mbedtls_6cipher_7_cipher_Cipher;
+  __pyx_vtable_7mbedtls_6cipher_7_cipher_Cipher._setup = (PyObject *(*)(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *, PyObject *, int __pyx_skip_dispatch))__pyx_f_7mbedtls_6cipher_7_cipher_6Cipher__setup;
+  __pyx_vtable_7mbedtls_6cipher_7_cipher_Cipher._setkey = (PyObject *(*)(struct __pyx_obj_7mbedtls_6cipher_7_cipher_Cipher *, PyObject *, int __pyx_skip_dispatch))__pyx_f_7mbedtls_6cipher_7_cipher_6Cipher__setkey;
+  if (PyType_Ready(&__pyx_type_7mbedtls_6cipher_7_cipher_Cipher) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 204; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_type_7mbedtls_6cipher_7_cipher_Cipher.tp_print = 0;
+  #if CYTHON_COMPILING_IN_CPYTHON
+  {
+    PyObject *wrapper = PyObject_GetAttrString((PyObject *)&__pyx_type_7mbedtls_6cipher_7_cipher_Cipher, "__str__"); if (unlikely(!wrapper)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 204; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (Py_TYPE(wrapper) == &PyWrapperDescr_Type) {
+      __pyx_wrapperbase_7mbedtls_6cipher_7_cipher_6Cipher_10__str__ = *((PyWrapperDescrObject *)wrapper)->d_base;
+      __pyx_wrapperbase_7mbedtls_6cipher_7_cipher_6Cipher_10__str__.doc = __pyx_doc_7mbedtls_6cipher_7_cipher_6Cipher_10__str__;
+      ((PyWrapperDescrObject *)wrapper)->d_base = &__pyx_wrapperbase_7mbedtls_6cipher_7_cipher_6Cipher_10__str__;
+    }
+  }
+  #endif
+  if (__Pyx_SetVtable(__pyx_type_7mbedtls_6cipher_7_cipher_Cipher.tp_dict, __pyx_vtabptr_7mbedtls_6cipher_7_cipher_Cipher) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 204; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "Cipher", (PyObject *)&__pyx_type_7mbedtls_6cipher_7_cipher_Cipher) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 204; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_7mbedtls_6cipher_7_cipher_Cipher = &__pyx_type_7mbedtls_6cipher_7_cipher_Cipher;
   if (PyType_Ready(&__pyx_type___pyx_array) < 0) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type___pyx_array.tp_print = 0;
   __pyx_array_type = &__pyx_type___pyx_array;
@@ -16585,222 +17649,250 @@ PyMODINIT_FUNC PyInit_hmac(void)
   if (__Pyx_patch_abc() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
 
-  /* "mbedtls/hmac.pyx":3
- * """Generic message digest wrapper (hash algorithm)."""
+  /* "mbedtls/cipher/_cipher.pyx":4
+ * 
  * 
  * __author__ = "Mathias Laurin"             # <<<<<<<<<<<<<<
  * __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
  * __license__ = "Apache License 2.0"
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_author, __pyx_kp_s_Mathias_Laurin) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_author, __pyx_kp_s_Mathias_Laurin) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":4
+  /* "mbedtls/cipher/_cipher.pyx":5
  * 
  * __author__ = "Mathias Laurin"
  * __copyright__ = "Copyright 2015, Elaborated Networks GmbH"             # <<<<<<<<<<<<<<
  * __license__ = "Apache License 2.0"
  * 
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_copyright, __pyx_kp_s_Copyright_2015_Elaborated_Networ) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_copyright, __pyx_kp_s_Copyright_2015_Elaborated_Networ) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":5
+  /* "mbedtls/cipher/_cipher.pyx":6
  * __author__ = "Mathias Laurin"
  * __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
  * __license__ = "Apache License 2.0"             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_Apache_License_2_0) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_Apache_License_2_0) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 6; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":10
+  /* "mbedtls/cipher/_cipher.pyx":11
+ * cimport _cipher
  * from libc.stdlib cimport malloc, free
- * cimport _md
- * import _md             # <<<<<<<<<<<<<<
- * from mbedtls.exceptions import *
- * 
- */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_md, 0, -1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_md, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "mbedtls/hmac.pyx":11
- * cimport _md
- * import _md
  * from mbedtls.exceptions import *             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_INCREF(__pyx_n_s__14);
-  __Pyx_GIVEREF(__pyx_n_s__14);
-  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s__14);
+  __Pyx_INCREF(__pyx_n_s__18);
+  __Pyx_GIVEREF(__pyx_n_s__18);
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s__18);
   __pyx_t_2 = __Pyx_Import(__pyx_n_s_mbedtls_exceptions, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_import_star(__pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":14
+  /* "mbedtls/cipher/_cipher.pyx":16
+ * CIPHER_NAME = (
+ *     # Define as bytes to map to `const char*` without conversion.
+ *     b"NONE",             # <<<<<<<<<<<<<<
+ *     b"NULL",
+ *     b"AES-128-ECB",
+ */
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_CIPHER_NAME, __pyx_tuple__19) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "mbedtls/cipher/_cipher.pyx":68
  * 
  * 
- * algorithms_guaranteed = _md.algorithms_guaranteed             # <<<<<<<<<<<<<<
- * algorithms_available = _md.algorithms_available
+ * MODE_ECB = _cipher.MBEDTLS_MODE_ECB             # <<<<<<<<<<<<<<
+ * MODE_CBC = _cipher.MBEDTLS_MODE_CBC
+ * MODE_CFB = _cipher.MBEDTLS_MODE_CFB
+ */
+  __pyx_t_2 = __Pyx_PyInt_From_mbedtls_cipher_mode_t(MBEDTLS_MODE_ECB); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_MODE_ECB, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":69
+ * 
+ * MODE_ECB = _cipher.MBEDTLS_MODE_ECB
+ * MODE_CBC = _cipher.MBEDTLS_MODE_CBC             # <<<<<<<<<<<<<<
+ * MODE_CFB = _cipher.MBEDTLS_MODE_CFB
+ * MODE_OFB = _cipher.MBEDTLS_MODE_OFB
+ */
+  __pyx_t_2 = __Pyx_PyInt_From_mbedtls_cipher_mode_t(MBEDTLS_MODE_CBC); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_MODE_CBC, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":70
+ * MODE_ECB = _cipher.MBEDTLS_MODE_ECB
+ * MODE_CBC = _cipher.MBEDTLS_MODE_CBC
+ * MODE_CFB = _cipher.MBEDTLS_MODE_CFB             # <<<<<<<<<<<<<<
+ * MODE_OFB = _cipher.MBEDTLS_MODE_OFB
+ * MODE_CTR = _cipher.MBEDTLS_MODE_CTR
+ */
+  __pyx_t_2 = __Pyx_PyInt_From_mbedtls_cipher_mode_t(MBEDTLS_MODE_CFB); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 70; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_MODE_CFB, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 70; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":71
+ * MODE_CBC = _cipher.MBEDTLS_MODE_CBC
+ * MODE_CFB = _cipher.MBEDTLS_MODE_CFB
+ * MODE_OFB = _cipher.MBEDTLS_MODE_OFB             # <<<<<<<<<<<<<<
+ * MODE_CTR = _cipher.MBEDTLS_MODE_CTR
+ * MODE_GCM = _cipher.MBEDTLS_MODE_GCM
+ */
+  __pyx_t_2 = __Pyx_PyInt_From_mbedtls_cipher_mode_t(MBEDTLS_MODE_OFB); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_MODE_OFB, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":72
+ * MODE_CFB = _cipher.MBEDTLS_MODE_CFB
+ * MODE_OFB = _cipher.MBEDTLS_MODE_OFB
+ * MODE_CTR = _cipher.MBEDTLS_MODE_CTR             # <<<<<<<<<<<<<<
+ * MODE_GCM = _cipher.MBEDTLS_MODE_GCM
+ * MODE_STREAM = _cipher.MBEDTLS_MODE_STREAM
+ */
+  __pyx_t_2 = __Pyx_PyInt_From_mbedtls_cipher_mode_t(MBEDTLS_MODE_CTR); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_MODE_CTR, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":73
+ * MODE_OFB = _cipher.MBEDTLS_MODE_OFB
+ * MODE_CTR = _cipher.MBEDTLS_MODE_CTR
+ * MODE_GCM = _cipher.MBEDTLS_MODE_GCM             # <<<<<<<<<<<<<<
+ * MODE_STREAM = _cipher.MBEDTLS_MODE_STREAM
+ * MODE_CCM = _cipher.MBEDTLS_MODE_CCM
+ */
+  __pyx_t_2 = __Pyx_PyInt_From_mbedtls_cipher_mode_t(MBEDTLS_MODE_GCM); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_MODE_GCM, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":74
+ * MODE_CTR = _cipher.MBEDTLS_MODE_CTR
+ * MODE_GCM = _cipher.MBEDTLS_MODE_GCM
+ * MODE_STREAM = _cipher.MBEDTLS_MODE_STREAM             # <<<<<<<<<<<<<<
+ * MODE_CCM = _cipher.MBEDTLS_MODE_CCM
  * 
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_md); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyInt_From_mbedtls_cipher_mode_t(MBEDTLS_MODE_STREAM); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_algorithms_guaranteed); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_MODE_STREAM, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":75
+ * MODE_GCM = _cipher.MBEDTLS_MODE_GCM
+ * MODE_STREAM = _cipher.MBEDTLS_MODE_STREAM
+ * MODE_CCM = _cipher.MBEDTLS_MODE_CCM             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_t_2 = __Pyx_PyInt_From_mbedtls_cipher_mode_t(MBEDTLS_MODE_CCM); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_MODE_CCM, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/cipher/_cipher.pyx":79
+ * 
+ * __supported_modes = {
+ *     MODE_ECB,             # <<<<<<<<<<<<<<
+ *     MODE_CBC,
+ *     MODE_CFB,
+ */
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_MODE_ECB); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+
+  /* "mbedtls/cipher/_cipher.pyx":80
+ * __supported_modes = {
+ *     MODE_ECB,
+ *     MODE_CBC,             # <<<<<<<<<<<<<<
+ *     MODE_CFB,
+ *     MODE_CTR,
+ */
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_MODE_CBC); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 80; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
+
+  /* "mbedtls/cipher/_cipher.pyx":81
+ *     MODE_ECB,
+ *     MODE_CBC,
+ *     MODE_CFB,             # <<<<<<<<<<<<<<
+ *     MODE_CTR,
+ *     MODE_GCM,
+ */
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_MODE_CFB); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+
+  /* "mbedtls/cipher/_cipher.pyx":82
+ *     MODE_CBC,
+ *     MODE_CFB,
+ *     MODE_CTR,             # <<<<<<<<<<<<<<
+ *     MODE_GCM,
+ *     MODE_CCM
+ */
+  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_MODE_CTR); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+
+  /* "mbedtls/cipher/_cipher.pyx":83
+ *     MODE_CFB,
+ *     MODE_CTR,
+ *     MODE_GCM,             # <<<<<<<<<<<<<<
+ *     MODE_CCM
+ * }
+ */
+  __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_MODE_GCM); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+
+  /* "mbedtls/cipher/_cipher.pyx":85
+ *     MODE_GCM,
+ *     MODE_CCM
+ * }             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_MODE_CCM); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 85; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_6);
+  __pyx_t_7 = PySet_New(0); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_7);
+  if (PySet_Add(__pyx_t_7, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_algorithms_guaranteed, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PySet_Add(__pyx_t_7, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (PySet_Add(__pyx_t_7, __pyx_t_3) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (PySet_Add(__pyx_t_7, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  if (PySet_Add(__pyx_t_7, __pyx_t_5) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (PySet_Add(__pyx_t_7, __pyx_t_6) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_supported_modes, __pyx_t_7) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "mbedtls/hmac.pyx":15
+  /* "mbedtls/cipher/_cipher.pyx":102
  * 
- * algorithms_guaranteed = _md.algorithms_guaranteed
- * algorithms_available = _md.algorithms_available             # <<<<<<<<<<<<<<
+ * __all__ = (
+ *     "MODE_ECB", "MODE_CBC", "MODE_CFB", "MODE_CTR", "MODE_GCM", "MODE_CCM",             # <<<<<<<<<<<<<<
+ *     "Cipher"
+ * )
+ */
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_all, __pyx_tuple__20) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "mbedtls/cipher/_cipher.pyx":1
+ * """Ciphers for symmetric encryption and decryption."""             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_md); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_algorithms_available); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_algorithms_available, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "mbedtls/hmac.pyx":61
- * 
- * 
- * def new(key, buffer=None, digestmod=None):             # <<<<<<<<<<<<<<
- *     """A generic constructor that takes the key algorithm as its first
- *     parameter.
- */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_1new, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_new, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "mbedtls/hmac.pyx":71
- * 
- * 
- * def md2(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """MD2 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md2")
- */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_3md2, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_md2, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "mbedtls/hmac.pyx":76
- * 
- * 
- * def md4(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """MD4 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md4")
- */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_5md4, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_md4, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "mbedtls/hmac.pyx":81
- * 
- * 
- * def md5(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """MD5 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md5")
- */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_7md5, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_md5, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "mbedtls/hmac.pyx":86
- * 
- * 
- * def sha1(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 1 (SHA-1)."""
- *     return Hash(key, buffer, digestmod="sha1")
- */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_9sha1, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha1, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "mbedtls/hmac.pyx":91
- * 
- * 
- * def sha224(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha224")
- */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_11sha224, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha224, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "mbedtls/hmac.pyx":96
- * 
- * 
- * def sha256(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha256")
- */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_13sha256, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha256, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "mbedtls/hmac.pyx":101
- * 
- * 
- * def sha384(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha384")
- */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_15sha384, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha384, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "mbedtls/hmac.pyx":106
- * 
- * 
- * def sha512(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha512")
- */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_17sha512, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha512, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "mbedtls/hmac.pyx":111
- * 
- * 
- * def ripemd160(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
- *     160 bits hash value."""
- */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_19ripemd160, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ripemd160, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "mbedtls/hmac.pyx":1
- * """Generic message digest wrapper (hash algorithm)."""             # <<<<<<<<<<<<<<
- * 
- * __author__ = "Mathias Laurin"
- */
-  __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_7 = PyDict_New(); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_7);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_7) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
   /* "View.MemoryView":205
  *         info.obj = self
@@ -16809,10 +17901,10 @@ PyMODINIT_FUNC PyInit_hmac(void)
  * 
  *     def __dealloc__(array self):
  */
-  __pyx_t_2 = __pyx_capsule_create(((void *)(&__pyx_array_getbuffer)), __pyx_k_getbuffer_obj_view_flags); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 205; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_array_type->tp_dict, __pyx_n_s_pyx_getbuffer, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 205; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_7 = __pyx_capsule_create(((void *)(&__pyx_array_getbuffer)), __pyx_k_getbuffer_obj_view_flags); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 205; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_7);
+  if (PyDict_SetItem(__pyx_array_type->tp_dict, __pyx_n_s_pyx_getbuffer, __pyx_t_7) < 0) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 205; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   PyType_Modified(__pyx_array_type);
 
   /* "View.MemoryView":278
@@ -16822,12 +17914,12 @@ PyMODINIT_FUNC PyInit_hmac(void)
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__35, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__21, NULL); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_7);
   __Pyx_XGOTREF(generic);
-  __Pyx_DECREF_SET(generic, __pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  __Pyx_DECREF_SET(generic, __pyx_t_7);
+  __Pyx_GIVEREF(__pyx_t_7);
+  __pyx_t_7 = 0;
 
   /* "View.MemoryView":279
  * 
@@ -16836,12 +17928,12 @@ PyMODINIT_FUNC PyInit_hmac(void)
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__36, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 279; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 279; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_7);
   __Pyx_XGOTREF(strided);
-  __Pyx_DECREF_SET(strided, __pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  __Pyx_DECREF_SET(strided, __pyx_t_7);
+  __Pyx_GIVEREF(__pyx_t_7);
+  __pyx_t_7 = 0;
 
   /* "View.MemoryView":280
  * cdef generic = Enum("<strided and direct or indirect>")
@@ -16850,12 +17942,12 @@ PyMODINIT_FUNC PyInit_hmac(void)
  * 
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__37, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 280; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__23, NULL); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 280; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_7);
   __Pyx_XGOTREF(indirect);
-  __Pyx_DECREF_SET(indirect, __pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  __Pyx_DECREF_SET(indirect, __pyx_t_7);
+  __Pyx_GIVEREF(__pyx_t_7);
+  __pyx_t_7 = 0;
 
   /* "View.MemoryView":283
  * 
@@ -16864,12 +17956,12 @@ PyMODINIT_FUNC PyInit_hmac(void)
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__38, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 283; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__24, NULL); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 283; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_7);
   __Pyx_XGOTREF(contiguous);
-  __Pyx_DECREF_SET(contiguous, __pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  __Pyx_DECREF_SET(contiguous, __pyx_t_7);
+  __Pyx_GIVEREF(__pyx_t_7);
+  __pyx_t_7 = 0;
 
   /* "View.MemoryView":284
  * 
@@ -16878,12 +17970,12 @@ PyMODINIT_FUNC PyInit_hmac(void)
  * 
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__39, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 284; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__25, NULL); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 284; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_7);
   __Pyx_XGOTREF(indirect_contiguous);
-  __Pyx_DECREF_SET(indirect_contiguous, __pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  __Pyx_DECREF_SET(indirect_contiguous, __pyx_t_7);
+  __Pyx_GIVEREF(__pyx_t_7);
+  __pyx_t_7 = 0;
 
   /* "View.MemoryView":498
  *         info.obj = self
@@ -16892,10 +17984,10 @@ PyMODINIT_FUNC PyInit_hmac(void)
  * 
  * 
  */
-  __pyx_t_2 = __pyx_capsule_create(((void *)(&__pyx_memoryview_getbuffer)), __pyx_k_getbuffer_obj_view_flags); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 498; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_memoryview_type->tp_dict, __pyx_n_s_pyx_getbuffer, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 498; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_7 = __pyx_capsule_create(((void *)(&__pyx_memoryview_getbuffer)), __pyx_k_getbuffer_obj_view_flags); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 498; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_7);
+  if (PyDict_SetItem(__pyx_memoryview_type->tp_dict, __pyx_n_s_pyx_getbuffer, __pyx_t_7) < 0) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 498; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   PyType_Modified(__pyx_memoryview_type);
 
   /* "View.MemoryView":954
@@ -16905,10 +17997,10 @@ PyMODINIT_FUNC PyInit_hmac(void)
  * 
  * 
  */
-  __pyx_t_2 = __pyx_capsule_create(((void *)(&__pyx_memoryview_getbuffer)), __pyx_k_getbuffer_obj_view_flags); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 954; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_memoryviewslice_type->tp_dict, __pyx_n_s_pyx_getbuffer, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 954; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_7 = __pyx_capsule_create(((void *)(&__pyx_memoryview_getbuffer)), __pyx_k_getbuffer_obj_view_flags); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 954; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_7);
+  if (PyDict_SetItem(__pyx_memoryviewslice_type->tp_dict, __pyx_n_s_pyx_getbuffer, __pyx_t_7) < 0) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 954; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   PyType_Modified(__pyx_memoryviewslice_type);
 
   /* "View.MemoryView":1364
@@ -16925,13 +18017,18 @@ PyMODINIT_FUNC PyInit_hmac(void)
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_XDECREF(__pyx_t_7);
   if (__pyx_m) {
     if (__pyx_d) {
-      __Pyx_AddTraceback("init mbedtls.hmac", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init mbedtls.cipher._cipher", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     Py_DECREF(__pyx_m); __pyx_m = 0;
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init mbedtls.hmac");
+    PyErr_SetString(PyExc_ImportError, "init mbedtls.cipher._cipher");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -16972,164 +18069,6 @@ static PyObject *__Pyx_GetBuiltinName(PyObject *name) {
     return result;
 }
 
-static void __Pyx_RaiseArgtupleInvalid(
-    const char* func_name,
-    int exact,
-    Py_ssize_t num_min,
-    Py_ssize_t num_max,
-    Py_ssize_t num_found)
-{
-    Py_ssize_t num_expected;
-    const char *more_or_less;
-    if (num_found < num_min) {
-        num_expected = num_min;
-        more_or_less = "at least";
-    } else {
-        num_expected = num_max;
-        more_or_less = "at most";
-    }
-    if (exact) {
-        more_or_less = "exactly";
-    }
-    PyErr_Format(PyExc_TypeError,
-                 "%.200s() takes %.8s %" CYTHON_FORMAT_SSIZE_T "d positional argument%.1s (%" CYTHON_FORMAT_SSIZE_T "d given)",
-                 func_name, more_or_less, num_expected,
-                 (num_expected == 1) ? "" : "s", num_found);
-}
-
-static void __Pyx_RaiseDoubleKeywordsError(
-    const char* func_name,
-    PyObject* kw_name)
-{
-    PyErr_Format(PyExc_TypeError,
-        #if PY_MAJOR_VERSION >= 3
-        "%s() got multiple values for keyword argument '%U'", func_name, kw_name);
-        #else
-        "%s() got multiple values for keyword argument '%s'", func_name,
-        PyString_AsString(kw_name));
-        #endif
-}
-
-static int __Pyx_ParseOptionalKeywords(
-    PyObject *kwds,
-    PyObject **argnames[],
-    PyObject *kwds2,
-    PyObject *values[],
-    Py_ssize_t num_pos_args,
-    const char* function_name)
-{
-    PyObject *key = 0, *value = 0;
-    Py_ssize_t pos = 0;
-    PyObject*** name;
-    PyObject*** first_kw_arg = argnames + num_pos_args;
-    while (PyDict_Next(kwds, &pos, &key, &value)) {
-        name = first_kw_arg;
-        while (*name && (**name != key)) name++;
-        if (*name) {
-            values[name-argnames] = value;
-            continue;
-        }
-        name = first_kw_arg;
-        #if PY_MAJOR_VERSION < 3
-        if (likely(PyString_CheckExact(key)) || likely(PyString_Check(key))) {
-            while (*name) {
-                if ((CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**name) == PyString_GET_SIZE(key))
-                        && _PyString_Eq(**name, key)) {
-                    values[name-argnames] = value;
-                    break;
-                }
-                name++;
-            }
-            if (*name) continue;
-            else {
-                PyObject*** argname = argnames;
-                while (argname != first_kw_arg) {
-                    if ((**argname == key) || (
-                            (CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**argname) == PyString_GET_SIZE(key))
-                             && _PyString_Eq(**argname, key))) {
-                        goto arg_passed_twice;
-                    }
-                    argname++;
-                }
-            }
-        } else
-        #endif
-        if (likely(PyUnicode_Check(key))) {
-            while (*name) {
-                int cmp = (**name == key) ? 0 :
-                #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
-                    (PyUnicode_GET_SIZE(**name) != PyUnicode_GET_SIZE(key)) ? 1 :
-                #endif
-                    PyUnicode_Compare(**name, key);
-                if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
-                if (cmp == 0) {
-                    values[name-argnames] = value;
-                    break;
-                }
-                name++;
-            }
-            if (*name) continue;
-            else {
-                PyObject*** argname = argnames;
-                while (argname != first_kw_arg) {
-                    int cmp = (**argname == key) ? 0 :
-                    #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
-                        (PyUnicode_GET_SIZE(**argname) != PyUnicode_GET_SIZE(key)) ? 1 :
-                    #endif
-                        PyUnicode_Compare(**argname, key);
-                    if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
-                    if (cmp == 0) goto arg_passed_twice;
-                    argname++;
-                }
-            }
-        } else
-            goto invalid_keyword_type;
-        if (kwds2) {
-            if (unlikely(PyDict_SetItem(kwds2, key, value))) goto bad;
-        } else {
-            goto invalid_keyword;
-        }
-    }
-    return 0;
-arg_passed_twice:
-    __Pyx_RaiseDoubleKeywordsError(function_name, key);
-    goto bad;
-invalid_keyword_type:
-    PyErr_Format(PyExc_TypeError,
-        "%.200s() keywords must be strings", function_name);
-    goto bad;
-invalid_keyword:
-    PyErr_Format(PyExc_TypeError,
-    #if PY_MAJOR_VERSION < 3
-        "%.200s() got an unexpected keyword argument '%.200s'",
-        function_name, PyString_AsString(key));
-    #else
-        "%s() got an unexpected keyword argument '%U'",
-        function_name, key);
-    #endif
-bad:
-    return -1;
-}
-
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
-    PyObject *result;
-    ternaryfunc call = func->ob_type->tp_call;
-    if (unlikely(!call))
-        return PyObject_Call(func, arg, kw);
-    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
-        return NULL;
-    result = (*call)(func, arg, kw);
-    Py_LeaveRecursiveCall();
-    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
-        PyErr_SetString(
-            PyExc_SystemError,
-            "NULL result without error in PyObject_Call");
-    }
-    return result;
-}
-#endif
-
 static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name) {
     PyObject *result;
 #if CYTHON_COMPILING_IN_CPYTHON
@@ -17151,6 +18090,25 @@ static void __Pyx_RaiseBufferIndexError(int axis) {
   PyErr_Format(PyExc_IndexError,
      "Out of bounds on buffer access (axis %d)", axis);
 }
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
+    PyObject *result;
+    ternaryfunc call = func->ob_type->tp_call;
+    if (unlikely(!call))
+        return PyObject_Call(func, arg, kw);
+    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
+        return NULL;
+    result = (*call)(func, arg, kw);
+    Py_LeaveRecursiveCall();
+    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "NULL result without error in PyObject_Call");
+    }
+    return result;
+}
+#endif
 
 #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
@@ -17204,6 +18162,288 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObjec
     return result;
 }
 #endif
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
+#ifdef __Pyx_CyFunction_USED
+    if (likely(PyCFunction_Check(func) || PyObject_TypeCheck(func, __pyx_CyFunctionType))) {
+#else
+    if (likely(PyCFunction_Check(func))) {
+#endif
+        if (likely(PyCFunction_GET_FLAGS(func) & METH_NOARGS)) {
+            return __Pyx_PyObject_CallMethO(func, NULL);
+        }
+    }
+    return __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL);
+}
+#endif
+
+static CYTHON_INLINE void __Pyx_ErrRestore(PyObject *type, PyObject *value, PyObject *tb) {
+#if CYTHON_COMPILING_IN_CPYTHON
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    PyThreadState *tstate = PyThreadState_GET();
+    tmp_type = tstate->curexc_type;
+    tmp_value = tstate->curexc_value;
+    tmp_tb = tstate->curexc_traceback;
+    tstate->curexc_type = type;
+    tstate->curexc_value = value;
+    tstate->curexc_traceback = tb;
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+#else
+    PyErr_Restore(type, value, tb);
+#endif
+}
+static CYTHON_INLINE void __Pyx_ErrFetch(PyObject **type, PyObject **value, PyObject **tb) {
+#if CYTHON_COMPILING_IN_CPYTHON
+    PyThreadState *tstate = PyThreadState_GET();
+    *type = tstate->curexc_type;
+    *value = tstate->curexc_value;
+    *tb = tstate->curexc_traceback;
+    tstate->curexc_type = 0;
+    tstate->curexc_value = 0;
+    tstate->curexc_traceback = 0;
+#else
+    PyErr_Fetch(type, value, tb);
+#endif
+}
+
+#if PY_MAJOR_VERSION < 3
+static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb,
+                        CYTHON_UNUSED PyObject *cause) {
+    Py_XINCREF(type);
+    if (!value || value == Py_None)
+        value = NULL;
+    else
+        Py_INCREF(value);
+    if (!tb || tb == Py_None)
+        tb = NULL;
+    else {
+        Py_INCREF(tb);
+        if (!PyTraceBack_Check(tb)) {
+            PyErr_SetString(PyExc_TypeError,
+                "raise: arg 3 must be a traceback or None");
+            goto raise_error;
+        }
+    }
+    if (PyType_Check(type)) {
+#if CYTHON_COMPILING_IN_PYPY
+        if (!value) {
+            Py_INCREF(Py_None);
+            value = Py_None;
+        }
+#endif
+        PyErr_NormalizeException(&type, &value, &tb);
+    } else {
+        if (value) {
+            PyErr_SetString(PyExc_TypeError,
+                "instance exception may not have a separate value");
+            goto raise_error;
+        }
+        value = type;
+        type = (PyObject*) Py_TYPE(type);
+        Py_INCREF(type);
+        if (!PyType_IsSubtype((PyTypeObject *)type, (PyTypeObject *)PyExc_BaseException)) {
+            PyErr_SetString(PyExc_TypeError,
+                "raise: exception class must be a subclass of BaseException");
+            goto raise_error;
+        }
+    }
+    __Pyx_ErrRestore(type, value, tb);
+    return;
+raise_error:
+    Py_XDECREF(value);
+    Py_XDECREF(type);
+    Py_XDECREF(tb);
+    return;
+}
+#else
+static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause) {
+    PyObject* owned_instance = NULL;
+    if (tb == Py_None) {
+        tb = 0;
+    } else if (tb && !PyTraceBack_Check(tb)) {
+        PyErr_SetString(PyExc_TypeError,
+            "raise: arg 3 must be a traceback or None");
+        goto bad;
+    }
+    if (value == Py_None)
+        value = 0;
+    if (PyExceptionInstance_Check(type)) {
+        if (value) {
+            PyErr_SetString(PyExc_TypeError,
+                "instance exception may not have a separate value");
+            goto bad;
+        }
+        value = type;
+        type = (PyObject*) Py_TYPE(value);
+    } else if (PyExceptionClass_Check(type)) {
+        PyObject *instance_class = NULL;
+        if (value && PyExceptionInstance_Check(value)) {
+            instance_class = (PyObject*) Py_TYPE(value);
+            if (instance_class != type) {
+                int is_subclass = PyObject_IsSubclass(instance_class, type);
+                if (!is_subclass) {
+                    instance_class = NULL;
+                } else if (unlikely(is_subclass == -1)) {
+                    goto bad;
+                } else {
+                    type = instance_class;
+                }
+            }
+        }
+        if (!instance_class) {
+            PyObject *args;
+            if (!value)
+                args = PyTuple_New(0);
+            else if (PyTuple_Check(value)) {
+                Py_INCREF(value);
+                args = value;
+            } else
+                args = PyTuple_Pack(1, value);
+            if (!args)
+                goto bad;
+            owned_instance = PyObject_Call(type, args, NULL);
+            Py_DECREF(args);
+            if (!owned_instance)
+                goto bad;
+            value = owned_instance;
+            if (!PyExceptionInstance_Check(value)) {
+                PyErr_Format(PyExc_TypeError,
+                             "calling %R should have returned an instance of "
+                             "BaseException, not %R",
+                             type, Py_TYPE(value));
+                goto bad;
+            }
+        }
+    } else {
+        PyErr_SetString(PyExc_TypeError,
+            "raise: exception class must be a subclass of BaseException");
+        goto bad;
+    }
+#if PY_VERSION_HEX >= 0x03030000
+    if (cause) {
+#else
+    if (cause && cause != Py_None) {
+#endif
+        PyObject *fixed_cause;
+        if (cause == Py_None) {
+            fixed_cause = NULL;
+        } else if (PyExceptionClass_Check(cause)) {
+            fixed_cause = PyObject_CallObject(cause, NULL);
+            if (fixed_cause == NULL)
+                goto bad;
+        } else if (PyExceptionInstance_Check(cause)) {
+            fixed_cause = cause;
+            Py_INCREF(fixed_cause);
+        } else {
+            PyErr_SetString(PyExc_TypeError,
+                            "exception causes must derive from "
+                            "BaseException");
+            goto bad;
+        }
+        PyException_SetCause(value, fixed_cause);
+    }
+    PyErr_SetObject(type, value);
+    if (tb) {
+#if CYTHON_COMPILING_IN_PYPY
+        PyObject *tmp_type, *tmp_value, *tmp_tb;
+        PyErr_Fetch(&tmp_type, &tmp_value, &tmp_tb);
+        Py_INCREF(tb);
+        PyErr_Restore(tmp_type, tmp_value, tb);
+        Py_XDECREF(tmp_tb);
+#else
+        PyThreadState *tstate = PyThreadState_GET();
+        PyObject* tmp_tb = tstate->curexc_traceback;
+        if (tb != tmp_tb) {
+            Py_INCREF(tb);
+            tstate->curexc_traceback = tb;
+            Py_XDECREF(tmp_tb);
+        }
+#endif
+    }
+bad:
+    Py_XDECREF(owned_instance);
+    return;
+}
+#endif
+
+static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb) {
+    PyObject *local_type, *local_value, *local_tb;
+#if CYTHON_COMPILING_IN_CPYTHON
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    PyThreadState *tstate = PyThreadState_GET();
+    local_type = tstate->curexc_type;
+    local_value = tstate->curexc_value;
+    local_tb = tstate->curexc_traceback;
+    tstate->curexc_type = 0;
+    tstate->curexc_value = 0;
+    tstate->curexc_traceback = 0;
+#else
+    PyErr_Fetch(&local_type, &local_value, &local_tb);
+#endif
+    PyErr_NormalizeException(&local_type, &local_value, &local_tb);
+#if CYTHON_COMPILING_IN_CPYTHON
+    if (unlikely(tstate->curexc_type))
+#else
+    if (unlikely(PyErr_Occurred()))
+#endif
+        goto bad;
+    #if PY_MAJOR_VERSION >= 3
+    if (local_tb) {
+        if (unlikely(PyException_SetTraceback(local_value, local_tb) < 0))
+            goto bad;
+    }
+    #endif
+    Py_XINCREF(local_tb);
+    Py_XINCREF(local_type);
+    Py_XINCREF(local_value);
+    *type = local_type;
+    *value = local_value;
+    *tb = local_tb;
+#if CYTHON_COMPILING_IN_CPYTHON
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = local_type;
+    tstate->exc_value = local_value;
+    tstate->exc_traceback = local_tb;
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+#else
+    PyErr_SetExcInfo(local_type, local_value, local_tb);
+#endif
+    return 0;
+bad:
+    *type = 0;
+    *value = 0;
+    *tb = 0;
+    Py_XDECREF(local_type);
+    Py_XDECREF(local_value);
+    Py_XDECREF(local_tb);
+    return -1;
+}
+
+static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value, PyObject **tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+#if CYTHON_COMPILING_IN_CPYTHON
+    PyThreadState *tstate = PyThreadState_GET();
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = *type;
+    tstate->exc_value = *value;
+    tstate->exc_traceback = *tb;
+#else
+    PyErr_GetExcInfo(&tmp_type, &tmp_value, &tmp_tb);
+    PyErr_SetExcInfo(*type, *value, *tb);
+#endif
+    *type = tmp_type;
+    *value = tmp_value;
+    *tb = tmp_tb;
+}
 
 static CYTHON_INLINE int __Pyx_IsLittleEndian(void) {
   unsigned int n = 1;
@@ -17888,211 +19128,221 @@ static CYTHON_INLINE void __Pyx_XDEC_MEMVIEW(__Pyx_memviewslice *memslice,
     }
 }
 
+static CYTHON_INLINE void __Pyx_ExceptionSave(PyObject **type, PyObject **value, PyObject **tb) {
 #if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
-#ifdef __Pyx_CyFunction_USED
-    if (likely(PyCFunction_Check(func) || PyObject_TypeCheck(func, __pyx_CyFunctionType))) {
+    PyThreadState *tstate = PyThreadState_GET();
+    *type = tstate->exc_type;
+    *value = tstate->exc_value;
+    *tb = tstate->exc_traceback;
+    Py_XINCREF(*type);
+    Py_XINCREF(*value);
+    Py_XINCREF(*tb);
 #else
-    if (likely(PyCFunction_Check(func))) {
+    PyErr_GetExcInfo(type, value, tb);
 #endif
-        if (likely(PyCFunction_GET_FLAGS(func) & METH_NOARGS)) {
-            return __Pyx_PyObject_CallMethO(func, NULL);
-        }
-    }
-    return __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL);
 }
-#endif
-
-static CYTHON_INLINE void __Pyx_ErrRestore(PyObject *type, PyObject *value, PyObject *tb) {
+static void __Pyx_ExceptionReset(PyObject *type, PyObject *value, PyObject *tb) {
 #if CYTHON_COMPILING_IN_CPYTHON
     PyObject *tmp_type, *tmp_value, *tmp_tb;
     PyThreadState *tstate = PyThreadState_GET();
-    tmp_type = tstate->curexc_type;
-    tmp_value = tstate->curexc_value;
-    tmp_tb = tstate->curexc_traceback;
-    tstate->curexc_type = type;
-    tstate->curexc_value = value;
-    tstate->curexc_traceback = tb;
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = type;
+    tstate->exc_value = value;
+    tstate->exc_traceback = tb;
     Py_XDECREF(tmp_type);
     Py_XDECREF(tmp_value);
     Py_XDECREF(tmp_tb);
 #else
-    PyErr_Restore(type, value, tb);
-#endif
-}
-static CYTHON_INLINE void __Pyx_ErrFetch(PyObject **type, PyObject **value, PyObject **tb) {
-#if CYTHON_COMPILING_IN_CPYTHON
-    PyThreadState *tstate = PyThreadState_GET();
-    *type = tstate->curexc_type;
-    *value = tstate->curexc_value;
-    *tb = tstate->curexc_traceback;
-    tstate->curexc_type = 0;
-    tstate->curexc_value = 0;
-    tstate->curexc_traceback = 0;
-#else
-    PyErr_Fetch(type, value, tb);
+    PyErr_SetExcInfo(type, value, tb);
 #endif
 }
 
-#if PY_MAJOR_VERSION < 3
-static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb,
-                        CYTHON_UNUSED PyObject *cause) {
-    Py_XINCREF(type);
-    if (!value || value == Py_None)
-        value = NULL;
-    else
-        Py_INCREF(value);
-    if (!tb || tb == Py_None)
-        tb = NULL;
-    else {
-        Py_INCREF(tb);
-        if (!PyTraceBack_Check(tb)) {
-            PyErr_SetString(PyExc_TypeError,
-                "raise: arg 3 must be a traceback or None");
-            goto raise_error;
-        }
-    }
-    if (PyType_Check(type)) {
-#if CYTHON_COMPILING_IN_PYPY
-        if (!value) {
-            Py_INCREF(Py_None);
-            value = Py_None;
-        }
-#endif
-        PyErr_NormalizeException(&type, &value, &tb);
-    } else {
-        if (value) {
-            PyErr_SetString(PyExc_TypeError,
-                "instance exception may not have a separate value");
-            goto raise_error;
-        }
-        value = type;
-        type = (PyObject*) Py_TYPE(type);
-        Py_INCREF(type);
-        if (!PyType_IsSubtype((PyTypeObject *)type, (PyTypeObject *)PyExc_BaseException)) {
-            PyErr_SetString(PyExc_TypeError,
-                "raise: exception class must be a subclass of BaseException");
-            goto raise_error;
-        }
-    }
-    __Pyx_ErrRestore(type, value, tb);
-    return;
-raise_error:
-    Py_XDECREF(value);
-    Py_XDECREF(type);
-    Py_XDECREF(tb);
-    return;
+static CYTHON_INLINE long __Pyx_div_long(long a, long b) {
+    long q = a / b;
+    long r = a - q*b;
+    q -= ((r != 0) & ((r ^ b) < 0));
+    return q;
 }
-#else
-static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause) {
-    PyObject* owned_instance = NULL;
-    if (tb == Py_None) {
-        tb = 0;
-    } else if (tb && !PyTraceBack_Check(tb)) {
-        PyErr_SetString(PyExc_TypeError,
-            "raise: arg 3 must be a traceback or None");
-        goto bad;
+
+static void __Pyx_RaiseArgtupleInvalid(
+    const char* func_name,
+    int exact,
+    Py_ssize_t num_min,
+    Py_ssize_t num_max,
+    Py_ssize_t num_found)
+{
+    Py_ssize_t num_expected;
+    const char *more_or_less;
+    if (num_found < num_min) {
+        num_expected = num_min;
+        more_or_less = "at least";
+    } else {
+        num_expected = num_max;
+        more_or_less = "at most";
     }
-    if (value == Py_None)
-        value = 0;
-    if (PyExceptionInstance_Check(type)) {
-        if (value) {
-            PyErr_SetString(PyExc_TypeError,
-                "instance exception may not have a separate value");
-            goto bad;
+    if (exact) {
+        more_or_less = "exactly";
+    }
+    PyErr_Format(PyExc_TypeError,
+                 "%.200s() takes %.8s %" CYTHON_FORMAT_SSIZE_T "d positional argument%.1s (%" CYTHON_FORMAT_SSIZE_T "d given)",
+                 func_name, more_or_less, num_expected,
+                 (num_expected == 1) ? "" : "s", num_found);
+}
+
+static void __Pyx_RaiseDoubleKeywordsError(
+    const char* func_name,
+    PyObject* kw_name)
+{
+    PyErr_Format(PyExc_TypeError,
+        #if PY_MAJOR_VERSION >= 3
+        "%s() got multiple values for keyword argument '%U'", func_name, kw_name);
+        #else
+        "%s() got multiple values for keyword argument '%s'", func_name,
+        PyString_AsString(kw_name));
+        #endif
+}
+
+static int __Pyx_ParseOptionalKeywords(
+    PyObject *kwds,
+    PyObject **argnames[],
+    PyObject *kwds2,
+    PyObject *values[],
+    Py_ssize_t num_pos_args,
+    const char* function_name)
+{
+    PyObject *key = 0, *value = 0;
+    Py_ssize_t pos = 0;
+    PyObject*** name;
+    PyObject*** first_kw_arg = argnames + num_pos_args;
+    while (PyDict_Next(kwds, &pos, &key, &value)) {
+        name = first_kw_arg;
+        while (*name && (**name != key)) name++;
+        if (*name) {
+            values[name-argnames] = value;
+            continue;
         }
-        value = type;
-        type = (PyObject*) Py_TYPE(value);
-    } else if (PyExceptionClass_Check(type)) {
-        PyObject *instance_class = NULL;
-        if (value && PyExceptionInstance_Check(value)) {
-            instance_class = (PyObject*) Py_TYPE(value);
-            if (instance_class != type) {
-                int is_subclass = PyObject_IsSubclass(instance_class, type);
-                if (!is_subclass) {
-                    instance_class = NULL;
-                } else if (unlikely(is_subclass == -1)) {
-                    goto bad;
-                } else {
-                    type = instance_class;
+        name = first_kw_arg;
+        #if PY_MAJOR_VERSION < 3
+        if (likely(PyString_CheckExact(key)) || likely(PyString_Check(key))) {
+            while (*name) {
+                if ((CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**name) == PyString_GET_SIZE(key))
+                        && _PyString_Eq(**name, key)) {
+                    values[name-argnames] = value;
+                    break;
+                }
+                name++;
+            }
+            if (*name) continue;
+            else {
+                PyObject*** argname = argnames;
+                while (argname != first_kw_arg) {
+                    if ((**argname == key) || (
+                            (CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**argname) == PyString_GET_SIZE(key))
+                             && _PyString_Eq(**argname, key))) {
+                        goto arg_passed_twice;
+                    }
+                    argname++;
                 }
             }
-        }
-        if (!instance_class) {
-            PyObject *args;
-            if (!value)
-                args = PyTuple_New(0);
-            else if (PyTuple_Check(value)) {
-                Py_INCREF(value);
-                args = value;
-            } else
-                args = PyTuple_Pack(1, value);
-            if (!args)
-                goto bad;
-            owned_instance = PyObject_Call(type, args, NULL);
-            Py_DECREF(args);
-            if (!owned_instance)
-                goto bad;
-            value = owned_instance;
-            if (!PyExceptionInstance_Check(value)) {
-                PyErr_Format(PyExc_TypeError,
-                             "calling %R should have returned an instance of "
-                             "BaseException, not %R",
-                             type, Py_TYPE(value));
-                goto bad;
+        } else
+        #endif
+        if (likely(PyUnicode_Check(key))) {
+            while (*name) {
+                int cmp = (**name == key) ? 0 :
+                #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
+                    (PyUnicode_GET_SIZE(**name) != PyUnicode_GET_SIZE(key)) ? 1 :
+                #endif
+                    PyUnicode_Compare(**name, key);
+                if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
+                if (cmp == 0) {
+                    values[name-argnames] = value;
+                    break;
+                }
+                name++;
             }
-        }
-    } else {
-        PyErr_SetString(PyExc_TypeError,
-            "raise: exception class must be a subclass of BaseException");
-        goto bad;
-    }
-#if PY_VERSION_HEX >= 0x03030000
-    if (cause) {
-#else
-    if (cause && cause != Py_None) {
-#endif
-        PyObject *fixed_cause;
-        if (cause == Py_None) {
-            fixed_cause = NULL;
-        } else if (PyExceptionClass_Check(cause)) {
-            fixed_cause = PyObject_CallObject(cause, NULL);
-            if (fixed_cause == NULL)
-                goto bad;
-        } else if (PyExceptionInstance_Check(cause)) {
-            fixed_cause = cause;
-            Py_INCREF(fixed_cause);
+            if (*name) continue;
+            else {
+                PyObject*** argname = argnames;
+                while (argname != first_kw_arg) {
+                    int cmp = (**argname == key) ? 0 :
+                    #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
+                        (PyUnicode_GET_SIZE(**argname) != PyUnicode_GET_SIZE(key)) ? 1 :
+                    #endif
+                        PyUnicode_Compare(**argname, key);
+                    if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
+                    if (cmp == 0) goto arg_passed_twice;
+                    argname++;
+                }
+            }
+        } else
+            goto invalid_keyword_type;
+        if (kwds2) {
+            if (unlikely(PyDict_SetItem(kwds2, key, value))) goto bad;
         } else {
-            PyErr_SetString(PyExc_TypeError,
-                            "exception causes must derive from "
-                            "BaseException");
-            goto bad;
+            goto invalid_keyword;
         }
-        PyException_SetCause(value, fixed_cause);
     }
-    PyErr_SetObject(type, value);
-    if (tb) {
-#if CYTHON_COMPILING_IN_PYPY
-        PyObject *tmp_type, *tmp_value, *tmp_tb;
-        PyErr_Fetch(&tmp_type, &tmp_value, &tmp_tb);
-        Py_INCREF(tb);
-        PyErr_Restore(tmp_type, tmp_value, tb);
-        Py_XDECREF(tmp_tb);
-#else
-        PyThreadState *tstate = PyThreadState_GET();
-        PyObject* tmp_tb = tstate->curexc_traceback;
-        if (tb != tmp_tb) {
-            Py_INCREF(tb);
-            tstate->curexc_traceback = tb;
-            Py_XDECREF(tmp_tb);
-        }
-#endif
-    }
+    return 0;
+arg_passed_twice:
+    __Pyx_RaiseDoubleKeywordsError(function_name, key);
+    goto bad;
+invalid_keyword_type:
+    PyErr_Format(PyExc_TypeError,
+        "%.200s() keywords must be strings", function_name);
+    goto bad;
+invalid_keyword:
+    PyErr_Format(PyExc_TypeError,
+    #if PY_MAJOR_VERSION < 3
+        "%.200s() got an unexpected keyword argument '%.200s'",
+        function_name, PyString_AsString(key));
+    #else
+        "%s() got an unexpected keyword argument '%U'",
+        function_name, key);
+    #endif
 bad:
-    Py_XDECREF(owned_instance);
-    return;
+    return -1;
 }
+
+static CYTHON_INLINE int __Pyx_CheckKeywordStrings(
+    PyObject *kwdict,
+    const char* function_name,
+    int kw_allowed)
+{
+    PyObject* key = 0;
+    Py_ssize_t pos = 0;
+#if CYTHON_COMPILING_IN_PYPY
+    if (!kw_allowed && PyDict_Next(kwdict, &pos, &key, 0))
+        goto invalid_keyword;
+    return 1;
+#else
+    while (PyDict_Next(kwdict, &pos, &key, 0)) {
+        #if PY_MAJOR_VERSION < 3
+        if (unlikely(!PyString_CheckExact(key)) && unlikely(!PyString_Check(key)))
+        #endif
+            if (unlikely(!PyUnicode_Check(key)))
+                goto invalid_keyword_type;
+    }
+    if ((!kw_allowed) && unlikely(key))
+        goto invalid_keyword;
+    return 1;
+invalid_keyword_type:
+    PyErr_Format(PyExc_TypeError,
+        "%.200s() keywords must be strings", function_name);
+    return 0;
 #endif
+invalid_keyword:
+    PyErr_Format(PyExc_TypeError,
+    #if PY_MAJOR_VERSION < 3
+        "%.200s() got an unexpected keyword argument '%.200s'",
+        function_name, PyString_AsString(key));
+    #else
+        "%s() got an unexpected keyword argument '%U'",
+        function_name, key);
+    #endif
+    return 0;
+}
 
 static void __Pyx_RaiseArgumentTypeInvalid(const char* name, PyObject *obj, PyTypeObject *type) {
     PyErr_Format(PyExc_TypeError,
@@ -18316,113 +19566,6 @@ static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type) {
     PyErr_Format(PyExc_TypeError, "Cannot convert %.200s to %.200s",
                  Py_TYPE(obj)->tp_name, type->tp_name);
     return 0;
-}
-
-static CYTHON_INLINE void __Pyx_ExceptionSave(PyObject **type, PyObject **value, PyObject **tb) {
-#if CYTHON_COMPILING_IN_CPYTHON
-    PyThreadState *tstate = PyThreadState_GET();
-    *type = tstate->exc_type;
-    *value = tstate->exc_value;
-    *tb = tstate->exc_traceback;
-    Py_XINCREF(*type);
-    Py_XINCREF(*value);
-    Py_XINCREF(*tb);
-#else
-    PyErr_GetExcInfo(type, value, tb);
-#endif
-}
-static void __Pyx_ExceptionReset(PyObject *type, PyObject *value, PyObject *tb) {
-#if CYTHON_COMPILING_IN_CPYTHON
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    PyThreadState *tstate = PyThreadState_GET();
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = type;
-    tstate->exc_value = value;
-    tstate->exc_traceback = tb;
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-#else
-    PyErr_SetExcInfo(type, value, tb);
-#endif
-}
-
-static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb) {
-    PyObject *local_type, *local_value, *local_tb;
-#if CYTHON_COMPILING_IN_CPYTHON
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    PyThreadState *tstate = PyThreadState_GET();
-    local_type = tstate->curexc_type;
-    local_value = tstate->curexc_value;
-    local_tb = tstate->curexc_traceback;
-    tstate->curexc_type = 0;
-    tstate->curexc_value = 0;
-    tstate->curexc_traceback = 0;
-#else
-    PyErr_Fetch(&local_type, &local_value, &local_tb);
-#endif
-    PyErr_NormalizeException(&local_type, &local_value, &local_tb);
-#if CYTHON_COMPILING_IN_CPYTHON
-    if (unlikely(tstate->curexc_type))
-#else
-    if (unlikely(PyErr_Occurred()))
-#endif
-        goto bad;
-    #if PY_MAJOR_VERSION >= 3
-    if (local_tb) {
-        if (unlikely(PyException_SetTraceback(local_value, local_tb) < 0))
-            goto bad;
-    }
-    #endif
-    Py_XINCREF(local_tb);
-    Py_XINCREF(local_type);
-    Py_XINCREF(local_value);
-    *type = local_type;
-    *value = local_value;
-    *tb = local_tb;
-#if CYTHON_COMPILING_IN_CPYTHON
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = local_type;
-    tstate->exc_value = local_value;
-    tstate->exc_traceback = local_tb;
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-#else
-    PyErr_SetExcInfo(local_type, local_value, local_tb);
-#endif
-    return 0;
-bad:
-    *type = 0;
-    *value = 0;
-    *tb = 0;
-    Py_XDECREF(local_type);
-    Py_XDECREF(local_value);
-    Py_XDECREF(local_tb);
-    return -1;
-}
-
-static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value, PyObject **tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-#if CYTHON_COMPILING_IN_CPYTHON
-    PyThreadState *tstate = PyThreadState_GET();
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = *type;
-    tstate->exc_value = *value;
-    tstate->exc_traceback = *tb;
-#else
-    PyErr_GetExcInfo(&tmp_type, &tmp_value, &tmp_tb);
-    PyErr_SetExcInfo(*type, *value, *tb);
-#endif
-    *type = tmp_type;
-    *value = tmp_value;
-    *tb = tmp_tb;
 }
 
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
@@ -18684,13 +19827,6 @@ static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname) {
     PyErr_Format(PyExc_UnboundLocalError, "local variable '%s' referenced before assignment", varname);
 }
 
-static CYTHON_INLINE long __Pyx_div_long(long a, long b) {
-    long q = a / b;
-    long r = a - q*b;
-    q -= ((r != 0) & ((r ^ b) < 0));
-    return q;
-}
-
 static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
                                   CYTHON_UNUSED int lineno, CYTHON_UNUSED const char *filename,
                                   int full_traceback, CYTHON_UNUSED int nogil) {
@@ -18725,35 +19861,6 @@ static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
     if (nogil)
         PyGILState_Release(state);
 #endif
-}
-
-static void __Pyx_call_next_tp_dealloc(PyObject* obj, destructor current_tp_dealloc) {
-    PyTypeObject* type = Py_TYPE(obj);
-    while (type && type->tp_dealloc != current_tp_dealloc)
-        type = type->tp_base;
-    while (type && type->tp_dealloc == current_tp_dealloc)
-        type = type->tp_base;
-    if (type)
-        type->tp_dealloc(obj);
-}
-
-static void* __Pyx_GetVtable(PyObject *dict) {
-    void* ptr;
-    PyObject *ob = PyObject_GetItem(dict, __pyx_n_s_pyx_vtable);
-    if (!ob)
-        goto bad;
-#if PY_VERSION_HEX >= 0x02070000
-    ptr = PyCapsule_GetPointer(ob, 0);
-#else
-    ptr = PyCObject_AsVoidPtr(ob);
-#endif
-    if (!ptr && !PyErr_Occurred())
-        PyErr_SetString(PyExc_RuntimeError, "invalid vtable found for imported type");
-    Py_DECREF(ob);
-    return ptr;
-bad:
-    Py_XDECREF(ob);
-    return NULL;
 }
 
 static int __Pyx_SetVtable(PyObject *dict, void *vtable) {
@@ -18953,7 +20060,33 @@ static void __Pyx_ReleaseBuffer(Py_buffer *view) {
 #endif
 
 
-          static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
+          static CYTHON_INLINE PyObject* __Pyx_PyInt_From_mbedtls_cipher_mode_t(mbedtls_cipher_mode_t value) {
+    const mbedtls_cipher_mode_t neg_one = (mbedtls_cipher_mode_t) -1, const_zero = (mbedtls_cipher_mode_t) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(mbedtls_cipher_mode_t) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(mbedtls_cipher_mode_t) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+        } else if (sizeof(mbedtls_cipher_mode_t) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+        }
+    } else {
+        if (sizeof(mbedtls_cipher_mode_t) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(mbedtls_cipher_mode_t) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(mbedtls_cipher_mode_t),
+                                     little, !is_unsigned);
+    }
+}
+
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
     const int neg_one = (int) -1, const_zero = (int) 0;
     const int is_unsigned = neg_one > const_zero;
     if (is_unsigned) {
@@ -18975,6 +20108,315 @@ static void __Pyx_ReleaseBuffer(Py_buffer *view) {
         int one = 1; int little = (int)*(unsigned char *)&one;
         unsigned char *bytes = (unsigned char *)&value;
         return _PyLong_FromByteArray(bytes, sizeof(int),
+                                     little, !is_unsigned);
+    }
+}
+
+#define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
+    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
+#define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
+    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
+#define __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, exc)\
+    {\
+        func_type value = func_value;\
+        if (sizeof(target_type) < sizeof(func_type)) {\
+            if (unlikely(value != (func_type) (target_type) value)) {\
+                func_type zero = 0;\
+                if (exc && unlikely(value == (func_type)-1 && PyErr_Occurred()))\
+                    return (target_type) -1;\
+                if (is_unsigned && unlikely(value < zero))\
+                    goto raise_neg_overflow;\
+                else\
+                    goto raise_overflow;\
+            }\
+        }\
+        return (target_type) value;\
+    }
+
+static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *x) {
+    const size_t neg_one = (size_t) -1, const_zero = (size_t) 0;
+    const int is_unsigned = neg_one > const_zero;
+#if PY_MAJOR_VERSION < 3
+    if (likely(PyInt_Check(x))) {
+        if (sizeof(size_t) < sizeof(long)) {
+            __PYX_VERIFY_RETURN_INT(size_t, long, PyInt_AS_LONG(x))
+        } else {
+            long val = PyInt_AS_LONG(x);
+            if (is_unsigned && unlikely(val < 0)) {
+                goto raise_neg_overflow;
+            }
+            return (size_t) val;
+        }
+    } else
+#endif
+    if (likely(PyLong_Check(x))) {
+        if (is_unsigned) {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (size_t) 0;
+                case  1: __PYX_VERIFY_RETURN_INT(size_t, digit, digits[0])
+                case 2:
+                    if (8 * sizeof(size_t) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) >= 2 * PyLong_SHIFT) {
+                            return (size_t) (((((size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0]));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(size_t) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) >= 3 * PyLong_SHIFT) {
+                            return (size_t) (((((((size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0]));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(size_t) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) >= 4 * PyLong_SHIFT) {
+                            return (size_t) (((((((((size_t)digits[3]) << PyLong_SHIFT) | (size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0]));
+                        }
+                    }
+                    break;
+            }
+#endif
+#if CYTHON_COMPILING_IN_CPYTHON
+            if (unlikely(Py_SIZE(x) < 0)) {
+                goto raise_neg_overflow;
+            }
+#else
+            {
+                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
+                if (unlikely(result < 0))
+                    return (size_t) -1;
+                if (unlikely(result == 1))
+                    goto raise_neg_overflow;
+            }
+#endif
+            if (sizeof(size_t) <= sizeof(unsigned long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(size_t, unsigned long, PyLong_AsUnsignedLong(x))
+            } else if (sizeof(size_t) <= sizeof(unsigned PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(size_t, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
+            }
+        } else {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (size_t) 0;
+                case -1: __PYX_VERIFY_RETURN_INT(size_t, sdigit, -(sdigit) digits[0])
+                case  1: __PYX_VERIFY_RETURN_INT(size_t,  digit, +digits[0])
+                case -2:
+                    if (8 * sizeof(size_t) - 1 > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) - 1 > 2 * PyLong_SHIFT) {
+                            return (size_t) (((size_t)-1)*(((((size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (8 * sizeof(size_t) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) - 1 > 2 * PyLong_SHIFT) {
+                            return (size_t) ((((((size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
+                        }
+                    }
+                    break;
+                case -3:
+                    if (8 * sizeof(size_t) - 1 > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) - 1 > 3 * PyLong_SHIFT) {
+                            return (size_t) (((size_t)-1)*(((((((size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(size_t) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) - 1 > 3 * PyLong_SHIFT) {
+                            return (size_t) ((((((((size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
+                        }
+                    }
+                    break;
+                case -4:
+                    if (8 * sizeof(size_t) - 1 > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) - 1 > 4 * PyLong_SHIFT) {
+                            return (size_t) (((size_t)-1)*(((((((((size_t)digits[3]) << PyLong_SHIFT) | (size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(size_t) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) - 1 > 4 * PyLong_SHIFT) {
+                            return (size_t) ((((((((((size_t)digits[3]) << PyLong_SHIFT) | (size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
+                        }
+                    }
+                    break;
+            }
+#endif
+            if (sizeof(size_t) <= sizeof(long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(size_t, long, PyLong_AsLong(x))
+            } else if (sizeof(size_t) <= sizeof(PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(size_t, PY_LONG_LONG, PyLong_AsLongLong(x))
+            }
+        }
+        {
+#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
+            PyErr_SetString(PyExc_RuntimeError,
+                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
+#else
+            size_t val;
+            PyObject *v = __Pyx_PyNumber_Int(x);
+ #if PY_MAJOR_VERSION < 3
+            if (likely(v) && !PyLong_Check(v)) {
+                PyObject *tmp = v;
+                v = PyNumber_Long(tmp);
+                Py_DECREF(tmp);
+            }
+ #endif
+            if (likely(v)) {
+                int one = 1; int is_little = (int)*(unsigned char *)&one;
+                unsigned char *bytes = (unsigned char *)&val;
+                int ret = _PyLong_AsByteArray((PyLongObject *)v,
+                                              bytes, sizeof(val),
+                                              is_little, !is_unsigned);
+                Py_DECREF(v);
+                if (likely(!ret))
+                    return val;
+            }
+#endif
+            return (size_t) -1;
+        }
+    } else {
+        size_t val;
+        PyObject *tmp = __Pyx_PyNumber_Int(x);
+        if (!tmp) return (size_t) -1;
+        val = __Pyx_PyInt_As_size_t(tmp);
+        Py_DECREF(tmp);
+        return val;
+    }
+raise_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "value too large to convert to size_t");
+    return (size_t) -1;
+raise_neg_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "can't convert negative value to size_t");
+    return (size_t) -1;
+}
+
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_char(unsigned char value) {
+    const unsigned char neg_one = (unsigned char) -1, const_zero = (unsigned char) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(unsigned char) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(unsigned char) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+        } else if (sizeof(unsigned char) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+        }
+    } else {
+        if (sizeof(unsigned char) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(unsigned char) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(unsigned char),
+                                     little, !is_unsigned);
+    }
+}
+
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_int(unsigned int value) {
+    const unsigned int neg_one = (unsigned int) -1, const_zero = (unsigned int) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(unsigned int) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(unsigned int) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+        } else if (sizeof(unsigned int) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+        }
+    } else {
+        if (sizeof(unsigned int) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(unsigned int) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(unsigned int),
+                                     little, !is_unsigned);
+    }
+}
+
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_mbedtls_cipher_type_t(mbedtls_cipher_type_t value) {
+    const mbedtls_cipher_type_t neg_one = (mbedtls_cipher_type_t) -1, const_zero = (mbedtls_cipher_type_t) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(mbedtls_cipher_type_t) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(mbedtls_cipher_type_t) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+        } else if (sizeof(mbedtls_cipher_type_t) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+        }
+    } else {
+        if (sizeof(mbedtls_cipher_type_t) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(mbedtls_cipher_type_t) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(mbedtls_cipher_type_t),
+                                     little, !is_unsigned);
+    }
+}
+
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
+    const long neg_one = (long) -1, const_zero = (long) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(long) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(long) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+        } else if (sizeof(long) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+        }
+    } else {
+        if (sizeof(long) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(long) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(long),
                                      little, !is_unsigned);
     }
 }
@@ -19113,27 +20555,6 @@ __pyx_capsule_create(void *p, CYTHON_UNUSED const char *sig)
 #endif
     return cobj;
 }
-
-#define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
-    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
-#define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
-    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
-#define __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, exc)\
-    {\
-        func_type value = func_value;\
-        if (sizeof(target_type) < sizeof(func_type)) {\
-            if (unlikely(value != (func_type) (target_type) value)) {\
-                func_type zero = 0;\
-                if (exc && unlikely(value == (func_type)-1 && PyErr_Occurred()))\
-                    return (target_type) -1;\
-                if (is_unsigned && unlikely(value < zero))\
-                    goto raise_neg_overflow;\
-                else\
-                    goto raise_overflow;\
-            }\
-        }\
-        return (target_type) value;\
-    }
 
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
     const int neg_one = (int) -1, const_zero = (int) 0;
@@ -19317,32 +20738,6 @@ raise_neg_overflow:
     PyErr_SetString(PyExc_OverflowError,
         "can't convert negative value to int");
     return (int) -1;
-}
-
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
-    const long neg_one = (long) -1, const_zero = (long) 0;
-    const int is_unsigned = neg_one > const_zero;
-    if (is_unsigned) {
-        if (sizeof(long) < sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(long) <= sizeof(unsigned long)) {
-            return PyLong_FromUnsignedLong((unsigned long) value);
-        } else if (sizeof(long) <= sizeof(unsigned PY_LONG_LONG)) {
-            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
-        }
-    } else {
-        if (sizeof(long) <= sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(long) <= sizeof(PY_LONG_LONG)) {
-            return PyLong_FromLongLong((PY_LONG_LONG) value);
-        }
-    }
-    {
-        int one = 1; int little = (int)*(unsigned char *)&one;
-        unsigned char *bytes = (unsigned char *)&value;
-        return _PyLong_FromByteArray(bytes, sizeof(long),
-                                     little, !is_unsigned);
-    }
 }
 
 static CYTHON_INLINE char __Pyx_PyInt_As_char(PyObject *x) {
@@ -19956,6 +21351,28 @@ __pyx_fail:
     return result;
 }
 
+static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_char(PyObject *obj) {
+    __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
+    __Pyx_BufFmt_StackElem stack[1];
+    int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED) };
+    int retcode;
+    if (obj == Py_None) {
+        result.memview = (struct __pyx_memoryview_obj *) Py_None;
+        return result;
+    }
+    retcode = __Pyx_ValidateAndInit_memviewslice(axes_specs, 0,
+                                                 PyBUF_RECORDS, 1,
+                                                 &__Pyx_TypeInfo_char, stack,
+                                                 &result, obj);
+    if (unlikely(retcode == -1))
+        goto __pyx_fail;
+    return result;
+__pyx_fail:
+    result.memview = NULL;
+    result.data = NULL;
+    return result;
+}
+
 static CYTHON_INLINE int __Pyx_StrEq(const char *s1, const char *s2) {
     while (*s1 != '\0' && *s1 == *s2) { s1++; s2++; }
     return *s1 == *s2;
@@ -19975,87 +21392,6 @@ static int __Pyx_check_binary_version(void) {
     }
     return 0;
 }
-
-#ifndef __PYX_HAVE_RT_ImportModule
-#define __PYX_HAVE_RT_ImportModule
-static PyObject *__Pyx_ImportModule(const char *name) {
-    PyObject *py_name = 0;
-    PyObject *py_module = 0;
-    py_name = __Pyx_PyIdentifier_FromString(name);
-    if (!py_name)
-        goto bad;
-    py_module = PyImport_Import(py_name);
-    Py_DECREF(py_name);
-    return py_module;
-bad:
-    Py_XDECREF(py_name);
-    return 0;
-}
-#endif
-
-#ifndef __PYX_HAVE_RT_ImportType
-#define __PYX_HAVE_RT_ImportType
-static PyTypeObject *__Pyx_ImportType(const char *module_name, const char *class_name,
-    size_t size, int strict)
-{
-    PyObject *py_module = 0;
-    PyObject *result = 0;
-    PyObject *py_name = 0;
-    char warning[200];
-    Py_ssize_t basicsize;
-#ifdef Py_LIMITED_API
-    PyObject *py_basicsize;
-#endif
-    py_module = __Pyx_ImportModule(module_name);
-    if (!py_module)
-        goto bad;
-    py_name = __Pyx_PyIdentifier_FromString(class_name);
-    if (!py_name)
-        goto bad;
-    result = PyObject_GetAttr(py_module, py_name);
-    Py_DECREF(py_name);
-    py_name = 0;
-    Py_DECREF(py_module);
-    py_module = 0;
-    if (!result)
-        goto bad;
-    if (!PyType_Check(result)) {
-        PyErr_Format(PyExc_TypeError,
-            "%.200s.%.200s is not a type object",
-            module_name, class_name);
-        goto bad;
-    }
-#ifndef Py_LIMITED_API
-    basicsize = ((PyTypeObject *)result)->tp_basicsize;
-#else
-    py_basicsize = PyObject_GetAttrString(result, "__basicsize__");
-    if (!py_basicsize)
-        goto bad;
-    basicsize = PyLong_AsSsize_t(py_basicsize);
-    Py_DECREF(py_basicsize);
-    py_basicsize = 0;
-    if (basicsize == (Py_ssize_t)-1 && PyErr_Occurred())
-        goto bad;
-#endif
-    if (!strict && (size_t)basicsize > size) {
-        PyOS_snprintf(warning, sizeof(warning),
-            "%s.%s size changed, may indicate binary incompatibility",
-            module_name, class_name);
-        if (PyErr_WarnEx(NULL, warning, 0) < 0) goto bad;
-    }
-    else if ((size_t)basicsize != size) {
-        PyErr_Format(PyExc_ValueError,
-            "%.200s.%.200s has the wrong size, try recompiling",
-            module_name, class_name);
-        goto bad;
-    }
-    return (PyTypeObject *)result;
-bad:
-    Py_XDECREF(py_module);
-    Py_XDECREF(result);
-    return NULL;
-}
-#endif
 
 static int __Pyx_InitStrings(__Pyx_StringTabEntry *t) {
     while (t->p) {

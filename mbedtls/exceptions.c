@@ -686,6 +686,7 @@ static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_pf_7mbedtls_10exceptions_check_error(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_err); /* proto */
 static PyObject *__pyx_int_neg_22;
 static PyObject *__pyx_int_neg_24;
+static PyObject *__pyx_int_neg_50;
 static PyObject *__pyx_int_neg_20608;
 static PyObject *__pyx_int_neg_20736;
 static PyObject *__pyx_int_neg_20864;
@@ -765,7 +766,7 @@ static PyObject *__pyx_f_7mbedtls_10exceptions_check_error(int const __pyx_v_err
  *             # Blowfish-specific
  *             -0x0016: InvalidKeyLengthError,             # <<<<<<<<<<<<<<
  *             -0x0018: InvalidInputLengthError,
- *             # MD errors
+ *             # DES
  */
     __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
@@ -778,8 +779,8 @@ static PyObject *__pyx_f_7mbedtls_10exceptions_check_error(int const __pyx_v_err
  *             # Blowfish-specific
  *             -0x0016: InvalidKeyLengthError,
  *             -0x0018: InvalidInputLengthError,             # <<<<<<<<<<<<<<
- *             # MD errors
- *             -0x5080: FeatureUnavailableError,
+ *             # DES
+ *             -0x0032: InvalidInputLengthError,
  */
     __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_InvalidInputLengthError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
@@ -788,41 +789,53 @@ static PyObject *__pyx_f_7mbedtls_10exceptions_check_error(int const __pyx_v_err
 
     /* "mbedtls/exceptions.pyx":71
  *             -0x0018: InvalidInputLengthError,
+ *             # DES
+ *             -0x0032: InvalidInputLengthError,             # <<<<<<<<<<<<<<
+ *             # MD errors
+ *             -0x5080: FeatureUnavailableError,
+ */
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_InvalidInputLengthError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    if (PyDict_SetItem(__pyx_t_3, __pyx_int_neg_50, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+    /* "mbedtls/exceptions.pyx":73
+ *             -0x0032: InvalidInputLengthError,
  *             # MD errors
  *             -0x5080: FeatureUnavailableError,             # <<<<<<<<<<<<<<
  *             -0x5100: BadInputDataError,
  *             -0x5180: AllocFailedError,
  */
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_FeatureUnavailableError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_FeatureUnavailableError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     if (PyDict_SetItem(__pyx_t_3, __pyx_int_neg_20608, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "mbedtls/exceptions.pyx":72
+    /* "mbedtls/exceptions.pyx":74
  *             # MD errors
  *             -0x5080: FeatureUnavailableError,
  *             -0x5100: BadInputDataError,             # <<<<<<<<<<<<<<
  *             -0x5180: AllocFailedError,
  *             -0x5200: IOError,
  */
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_BadInputDataError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_BadInputDataError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     if (PyDict_SetItem(__pyx_t_3, __pyx_int_neg_20736, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "mbedtls/exceptions.pyx":73
+    /* "mbedtls/exceptions.pyx":75
  *             -0x5080: FeatureUnavailableError,
  *             -0x5100: BadInputDataError,
  *             -0x5180: AllocFailedError,             # <<<<<<<<<<<<<<
  *             -0x5200: IOError,
  *             # Cipher errors
  */
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_AllocFailedError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_AllocFailedError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     if (PyDict_SetItem(__pyx_t_3, __pyx_int_neg_20864, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "mbedtls/exceptions.pyx":74
+    /* "mbedtls/exceptions.pyx":76
  *             -0x5100: BadInputDataError,
  *             -0x5180: AllocFailedError,
  *             -0x5200: IOError,             # <<<<<<<<<<<<<<
@@ -831,87 +844,87 @@ static PyObject *__pyx_f_7mbedtls_10exceptions_check_error(int const __pyx_v_err
  */
     if (PyDict_SetItem(__pyx_t_3, __pyx_int_neg_20992, __pyx_builtin_IOError) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "mbedtls/exceptions.pyx":76
+    /* "mbedtls/exceptions.pyx":78
  *             -0x5200: IOError,
  *             # Cipher errors
  *             -0x6080: FeatureUnavailableError,             # <<<<<<<<<<<<<<
  *             -0x6100: BadInputDataError,
  *             -0x6180: AllocFailedError,
  */
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_FeatureUnavailableError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_FeatureUnavailableError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     if (PyDict_SetItem(__pyx_t_3, __pyx_int_neg_24704, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "mbedtls/exceptions.pyx":77
+    /* "mbedtls/exceptions.pyx":79
  *             # Cipher errors
  *             -0x6080: FeatureUnavailableError,
  *             -0x6100: BadInputDataError,             # <<<<<<<<<<<<<<
  *             -0x6180: AllocFailedError,
  *             -0x6200: InvalidPaddingError,
  */
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_BadInputDataError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_BadInputDataError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     if (PyDict_SetItem(__pyx_t_3, __pyx_int_neg_24832, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "mbedtls/exceptions.pyx":78
+    /* "mbedtls/exceptions.pyx":80
  *             -0x6080: FeatureUnavailableError,
  *             -0x6100: BadInputDataError,
  *             -0x6180: AllocFailedError,             # <<<<<<<<<<<<<<
  *             -0x6200: InvalidPaddingError,
  *             -0x6280: FullBlockExpectedError,
  */
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_AllocFailedError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_AllocFailedError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 80; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     if (PyDict_SetItem(__pyx_t_3, __pyx_int_neg_24960, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "mbedtls/exceptions.pyx":79
+    /* "mbedtls/exceptions.pyx":81
  *             -0x6100: BadInputDataError,
  *             -0x6180: AllocFailedError,
  *             -0x6200: InvalidPaddingError,             # <<<<<<<<<<<<<<
  *             -0x6280: FullBlockExpectedError,
  *             -0x6300: AuthFailedError,
  */
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_InvalidPaddingError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_InvalidPaddingError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     if (PyDict_SetItem(__pyx_t_3, __pyx_int_neg_25088, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "mbedtls/exceptions.pyx":80
+    /* "mbedtls/exceptions.pyx":82
  *             -0x6180: AllocFailedError,
  *             -0x6200: InvalidPaddingError,
  *             -0x6280: FullBlockExpectedError,             # <<<<<<<<<<<<<<
  *             -0x6300: AuthFailedError,
  *         }.get(err, _ErrorBase)()
  */
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_FullBlockExpectedError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 80; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_FullBlockExpectedError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     if (PyDict_SetItem(__pyx_t_3, __pyx_int_neg_25216, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "mbedtls/exceptions.pyx":81
+    /* "mbedtls/exceptions.pyx":83
  *             -0x6200: InvalidPaddingError,
  *             -0x6280: FullBlockExpectedError,
  *             -0x6300: AuthFailedError,             # <<<<<<<<<<<<<<
  *         }.get(err, _ErrorBase)()
  */
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_AuthFailedError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_AuthFailedError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     if (PyDict_SetItem(__pyx_t_3, __pyx_int_neg_25344, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "mbedtls/exceptions.pyx":82
+    /* "mbedtls/exceptions.pyx":84
  *             -0x6280: FullBlockExpectedError,
  *             -0x6300: AuthFailedError,
  *         }.get(err, _ErrorBase)()             # <<<<<<<<<<<<<<
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_err); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_err); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_ErrorBase); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_ErrorBase); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = __Pyx_PyDict_GetItemDefault(__pyx_t_3, __pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyDict_GetItemDefault(__pyx_t_3, __pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -927,10 +940,10 @@ static PyObject *__pyx_f_7mbedtls_10exceptions_check_error(int const __pyx_v_err
       }
     }
     if (__pyx_t_5) {
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     } else {
-      __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_6); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_6); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -1083,7 +1096,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
 static int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 22; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_Exception = __Pyx_GetBuiltinName(__pyx_n_s_Exception); if (!__pyx_builtin_Exception) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 26; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_IOError = __Pyx_GetBuiltinName(__pyx_n_s_IOError); if (!__pyx_builtin_IOError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_IOError = __Pyx_GetBuiltinName(__pyx_n_s_IOError); if (!__pyx_builtin_IOError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -1114,6 +1127,7 @@ static int __Pyx_InitGlobals(void) {
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __pyx_int_neg_22 = PyInt_FromLong(-22); if (unlikely(!__pyx_int_neg_22)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_int_neg_24 = PyInt_FromLong(-24); if (unlikely(!__pyx_int_neg_24)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_int_neg_50 = PyInt_FromLong(-50); if (unlikely(!__pyx_int_neg_50)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_int_neg_20608 = PyInt_FromLong(-20608L); if (unlikely(!__pyx_int_neg_20608)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_int_neg_20736 = PyInt_FromLong(-20736L); if (unlikely(!__pyx_int_neg_20736)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_int_neg_20864 = PyInt_FromLong(-20864L); if (unlikely(!__pyx_int_neg_20864)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
