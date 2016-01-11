@@ -66,6 +66,22 @@ class UnsupportedCipherError(_ErrorBase):
     """Raised upon trying to instantiate an unsupported cipher."""
 
 
+class EntropySourceError(_ErrorBase):
+    """Critical entropy source failure."""
+
+
+class EntropyNoStrongSource(_ErrorBase):
+    """No strong sources have been added to poll."""
+
+
+class EntropyMaxSourcesError(_ErrorBase):
+    """No more source can be added."""
+
+
+class EntropyNoSourcesDefinedError(_ErrorBase):
+    """No sources have been added to poll."""
+
+
 cpdef check_error(const int err):
     if not err:
         return
@@ -76,6 +92,12 @@ cpdef check_error(const int err):
             -0x0018: InvalidInputLengthError,
             # DES
             -0x0032: InvalidInputLengthError,
+            # Entropy
+            -0x003C: EntropySourceError,
+            -0x003D: EntropyNoStrongSource,
+            -0x003E: EntropyMaxSourcesError,
+            -0x003F: IOError,
+            -0x0040: EntropyNoSourcesDefinedError,
             # MD errors
             -0x5080: FeatureUnavailableError,
             -0x5100: BadInputDataError,
