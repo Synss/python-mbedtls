@@ -5,12 +5,47 @@
 # pylint: disable=import-error
 import mbedtls.random as _drbg
 # pylint: enable=import-error
-from nose.tools import assert_equal, assert_not_equal
+from nose.tools import assert_equal, assert_not_equal, raises
+from mbedtls.exceptions import EntropySourceError
+from . import _rnd
 
 
 def assert_length(collection, length):
     assert_equal(len(collection), length)
 assert_length.__test__ = False
+
+
+class TestEntropy:
+
+    def setup(self):
+        # pylint: disable=attribute-defined-outside-init
+        # pylint: disable=invalid-name
+        self.s = _drbg.Entropy()
+
+    def test_gather(self):
+        # Only test that this does not raise.
+        self.s.gather()
+
+    def test_retrieve(self):
+        for length in range(64):
+            assert_length(self.s.retrieve(length), length)
+
+    @raises(EntropySourceError)
+    def test_retrieve_long_block_raises(self):
+        self.s.retrieve(100)
+
+    def test_update(self):
+        # Only test that this does not raise.
+        buf = _rnd(64)
+        self.s.update(buf)
+
+    def test_not_reproducible(self):
+        assert_not_equal(self.s.retrieve(8), self.s.retrieve(8))
+
+    def test_random_initial_values(self):
+        # pylint: disable=invalid-name
+        s = _drbg.Entropy()
+        assert_not_equal(self.s.retrieve(8), s.retrieve(8))
 
 
 class TestRandom:

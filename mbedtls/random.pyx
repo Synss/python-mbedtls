@@ -6,24 +6,59 @@ __license__ = "Apache License 2.0"
 
 
 from libc.stdlib cimport malloc, free
-cimport entropy
 cimport random
 import binascii
 from mbedtls.exceptions import check_error
 
 
+cdef class Entropy:
+
+    cdef mbedtls_entropy_context _ctx
+
+    def __cinit__(self):
+        """Initialize the context."""
+        random.mbedtls_entropy_init(&self._ctx)
+
+    def __dealloc__(self):
+        """Free and clear the context."""
+        random.mbedtls_entropy_free(&self._ctx)
+
+    cpdef gather(self):
+        """Trigger an extra gather poll for the accumulator."""
+        random.mbedtls_entropy_gather(&self._ctx)
+
+    cpdef retrieve(self, size_t length):
+        """Retrieve entropy from the accumulator."""
+        cdef unsigned char* output = <unsigned char*>malloc(
+            length * sizeof(unsigned char))
+        if not output:
+            raise MemoryError()
+        try:
+            check_error(random.mbedtls_entropy_func(
+                &self._ctx, output, length))
+            return bytes([output[n] for n in range(length)])
+        finally:
+            free(output)
+
+    cpdef update(self, data):
+        """Add data to the accumulator manually."""
+        cdef unsigned char[:] c_data = bytearray(data)
+        check_error(random.mbedtls_entropy_update_manual(
+            &self._ctx, &c_data[0], c_data.shape[0]))
+
+
 cdef class Random:
 
     cdef mbedtls_ctr_drbg_context _ctx
-    cdef entropy.Entropy _entropy
+    cdef Entropy _entropy
 
     def __cinit__(self):
         """Initialize the context."""
         random.mbedtls_ctr_drbg_init(&self._ctx)
-        self._entropy = entropy.Entropy()
+        self._entropy = Entropy()
         check_error(random.mbedtls_ctr_drbg_seed(
             &self._ctx,
-            &entropy.mbedtls_entropy_func, &self._entropy._ctx,
+            &random.mbedtls_entropy_func, &self._entropy._ctx,
             NULL, 0))
 
     def __dealloc__(self):
