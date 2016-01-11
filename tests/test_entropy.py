@@ -6,7 +6,7 @@ import mbedtls.entropy as _entropy
 # pylint: enable=import-error
 from mbedtls.exceptions import EntropySourceError
 
-from nose.tools import assert_equal, raises
+from nose.tools import assert_equal, assert_not_equal, raises
 from . import _rnd
 
 
@@ -41,3 +41,14 @@ def test_entropy_update():
     entropy = _entropy.Entropy()
     buf = _rnd(64)
     entropy.update(buf)
+
+
+def test_not_reproducible():
+    entropy = _entropy.Entropy()
+    assert_not_equal(entropy.retrieve(8), entropy.retrieve(8))
+
+
+def test_random_initial_values():
+    s1 = _entropy.Entropy()
+    s2 = _entropy.Entropy()
+    assert_not_equal(s1.retrieve(8), s2.retrieve(8))
