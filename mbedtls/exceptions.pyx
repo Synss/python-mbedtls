@@ -26,6 +26,13 @@ class AllocFailedError(MemoryError):
 class _ErrorBase(Exception):
     """Base class for cipher exceptions."""
 
+    def __init__(self, err=None, *args):
+        super().__init__(*args)
+        self.err = err
+
+    def __str__(self):
+        return "%s(-0x%04X)" % (self.__class__.__name__, abs(self.err))
+
 
 class InvalidKeyLengthError(_ErrorBase):
     """Raised for invalid key length."""
@@ -81,4 +88,4 @@ cpdef check_error(const int err):
             -0x6200: InvalidPaddingError,
             -0x6280: FullBlockExpectedError,
             -0x6300: AuthFailedError,
-        }.get(err, _ErrorBase)()
+        }.get(err, _ErrorBase)(err)
