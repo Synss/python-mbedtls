@@ -6,7 +6,7 @@
 import mbedtls.random as _drbg
 # pylint: enable=import-error
 from nose.tools import assert_equal, assert_not_equal, raises
-from mbedtls.exceptions import EntropySourceError
+from mbedtls.exceptions import EntropyError
 from . import _rnd
 
 
@@ -30,7 +30,7 @@ class TestEntropy:
         for length in range(64):
             assert_length(self.s.retrieve(length), length)
 
-    @raises(EntropySourceError)
+    @raises(EntropyError)
     def test_retrieve_long_block_raises(self):
         self.s.retrieve(100)
 
