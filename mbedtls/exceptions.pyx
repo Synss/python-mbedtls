@@ -49,6 +49,10 @@ class PrivateKeyError(_ErrorBase):
     """Errors defined in the pk module."""
 
 
+class RsaError(PrivateKeyError):
+    """Errors defined in the rsa module."""
+
+
 __lookup = {
     # Blowfish-specific
     -0x0016: (InvalidKeyLengthError, "invalid key length"),
@@ -86,6 +90,17 @@ __lookup = {
     -0x3900: (PrivateKeyError,
               "the signature is valid but its length" +
               "is less than expected"),
+    # RSA errors
+    -0x4080: (RsaError, "bad input parameters to function"),
+    -0x4100: (RsaError, "input data contains invalid padding and is rejected"),
+    -0x4180: (RsaError, "something failed during generation of a key"),
+    -0x4200: (RsaError, "key failed to pass the library's validity check"),
+    -0x4280: (RsaError, "the public key operation failed"),
+    -0x4300: (RsaError, "the private key operation failed"),
+    -0x4380: (RsaError, "the PKCS#1 verification failed"),
+    -0x4400: (RsaError,
+              "the output buffer for decryption is not large enough"),
+    -0x4480: (RsaError, "the random generator failed to generate non-zeros"),
     # MD errors
     -0x5080: (MessageDigestError, "feature unavailable"),
     -0x5100: (MessageDigestError, "bad input data"),
