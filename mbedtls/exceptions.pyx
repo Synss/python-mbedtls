@@ -49,6 +49,10 @@ class PrivateKeyError(_ErrorBase):
     """Errors defined in the pk module."""
 
 
+class PemError(PrivateKeyError):
+    """Errors defined in the pem module."""
+
+
 class RsaError(PrivateKeyError):
     """Errors defined in the rsa module."""
 
@@ -69,6 +73,19 @@ __lookup = {
     -0x003E: (EntropyError, "no more source can be added"),
     -0x003F: (IOError, ""),
     -0x0040: (EntropyError, "no sources have been added to poll"),
+    # PEM errors
+    -0x1080: (PemError, "no PEM header or footer found"),
+    -0x1100: (PemError, "PEM string is not as expected"),
+    -0x1180: (MemoryError, "failed to allocate memory"),
+    -0x1200: (PemError, "RSA IV is not in hex-format"),
+    -0x1280: (PemError, "unsupported key encryption algorithm"),
+    -0x1300: (PemError, "private key password can't be empty"),
+    -0x1380: (PemError,
+              "given private key password does not allow for" +
+              "correct decryption"),
+    -0x1400: (PemError,
+              "unavailable feature, e.g. hashing/decryption combination"),
+    -0x1480: (PemError, "bad input parameters to function"),
     # PK errors
     -0x3f80: (MemoryError, "allocation failed"),
     -0x3f00: (PrivateKeyError, "type mismatch"),
