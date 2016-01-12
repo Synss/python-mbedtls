@@ -45,6 +45,10 @@ class MessageDigestError(_ErrorBase):
     """Errors defined in the md module."""
 
 
+class PrivateKeyError(_ErrorBase):
+    """Errors defined in the pk module."""
+
+
 __lookup = {
     # Blowfish-specific
     -0x0016: (InvalidKeyLengthError, "invalid key length"),
@@ -57,6 +61,31 @@ __lookup = {
     -0x003E: (EntropyError, "no more source can be added"),
     -0x003F: (IOError, ""),
     -0x0040: (EntropyError, "no sources have been added to poll"),
+    # PK errors
+    -0x3f80: (MemoryError, "allocation failed"),
+    -0x3f00: (PrivateKeyError, "type mismatch"),
+    -0x3e80: (PrivateKeyError, "bad input data"),
+    -0x3e00: (IOError, ""),
+    -0x3d80: (PrivateKeyError, "unsupported key version"),
+    -0x3d00: (PrivateKeyError, "invalid key tag or value"),
+    -0x3c80: (PrivateKeyError,
+              "key algorithm is unsupported" +
+              "(only RSA and EC are supported)"),
+    -0x3c00: (PrivateKeyError, "private key password can't be empty"),
+    -0x3b80: (PrivateKeyError,
+              "given private key password does not allow" +
+              "for correct decryption"),
+    -0x3b00: (PrivateKeyError,
+              "the pubkey tag or value is invalid" +
+              "(only RSA and EC are supported)"),
+    -0x3a80: (PrivateKeyError, "the algorithm tag or value is invalid"),
+    -0x3a00: (PrivateKeyError,
+              "elliptic curve is unsupported" +
+              "(only NIST curves are supported)"),
+    -0x3980: (PrivateKeyError, "feature unavailable"),
+    -0x3900: (PrivateKeyError,
+              "the signature is valid but its length" +
+              "is less than expected"),
     # MD errors
     -0x5080: (MessageDigestError, "feature unavailable"),
     -0x5100: (MessageDigestError, "bad input data"),
