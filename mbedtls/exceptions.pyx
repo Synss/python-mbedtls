@@ -53,6 +53,10 @@ class RsaError(PrivateKeyError):
     """Errors defined in the rsa module."""
 
 
+class EcError(PrivateKeyError):
+    """Errors defined in the ecp module."""
+
+
 __lookup = {
     # Blowfish-specific
     -0x0016: (InvalidKeyLengthError, "invalid key length"),
@@ -101,6 +105,17 @@ __lookup = {
     -0x4400: (RsaError,
               "the output buffer for decryption is not large enough"),
     -0x4480: (RsaError, "the random generator failed to generate non-zeros"),
+    # ECP errors
+    -0x4f80: (EcError, "bad input parameters to function"),
+    -0x4f00: (EcError, "the buffer is too small to write to"),
+    -0x4e80: (EcError, "requested curve not available"),
+    -0x4e00: (EcError, "the signature is not valid"),
+    -0x4d80: (MemoryError, "memory allocation failed"),
+    -0x4d00: (EcError,
+              "generation of random value, such as (ephemeral) key, failed"),
+    -0x4c80: (EcError, "invalid private or public key"),
+    -0x4c00: (EcError,
+              "signature is valid but shorter than the user-specified length"),
     # MD errors
     -0x5080: (MessageDigestError, "feature unavailable"),
     -0x5100: (MessageDigestError, "bad input data"),
