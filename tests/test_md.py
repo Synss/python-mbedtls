@@ -8,7 +8,7 @@ from functools import partial
 import hashlib
 import hmac
 
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_greater_equal, assert_less
 
 # pylint: disable=import-error
 from mbedtls._md import MD_NAME
@@ -37,6 +37,19 @@ def test_md_list():
 def test_algorithms():
     assert set(md_hash.algorithms_guaranteed).issubset(
         md_hash.algorithms_available)
+
+
+def test_type_accessor():
+    def assert_in_bounds(value, lower, higher):
+        assert_greater_equal(value, lower)
+        assert_less(value, higher)
+
+    for name in md_hash.algorithms_available:
+        alg = md_hash.new(name)
+        # pylint: disable=protected-access
+        test = partial(assert_in_bounds, alg._type, 0, len(MD_NAME))
+        test.description = "test_type_accessor(%s)" % name
+        yield test
 
 
 def test_copy_hash():
