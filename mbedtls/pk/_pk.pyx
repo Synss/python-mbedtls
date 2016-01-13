@@ -9,7 +9,7 @@ from libc.stdlib cimport malloc, free
 cimport _pk
 cimport mbedtls.random as _random
 import mbedtls.random as _random
-from mbedtls.exceptions import check_error, RsaError
+from mbedtls.exceptions import check_error
 import mbedtls.hash as _hash
 
 
@@ -156,15 +156,14 @@ cdef class CipherBase:
 
     cdef bytes _write(self, int (*fun)(_pk.mbedtls_pk_context *,
                                        unsigned char *, size_t)):
-        cdef unsigned char[:] buf = bytearray(self.key_size * b"\0")
+        cdef unsigned char[:] buf = bytearray(self._bitlen * b"\0")
         cdef int ret = fun(&self._ctx, &buf[0], buf.shape[0])
         check_error(ret)
         if ret:
             # DER format: `ret` is the size of the buffer, offset from the end.
             key = bytes([buf[n] for n
                          in range(buf.shape[0] - ret, buf.shape[0])])
-            if len(key) != ret:
-                raise RsaError(-1, "the generated key length is wrong")
+            assert len(key) == ret
         else:
             # PEM format: `ret` is zero.
             key = bytes(buf[n] for n
@@ -186,13 +185,14 @@ cdef class CipherBase:
     cpdef _parse_private_key(self, key, password=None):
         cdef unsigned char[:] c_key = bytearray(key + b"\0")
         cdef unsigned char[:] c_pwd = bytearray(password if password else b"")
+        mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
         check_error(_pk.mbedtls_pk_parse_key(
-            &self._ctx,
-            &c_key[0], c_key.shape[0],
+            &self._ctx, &c_key[0], c_key.shape[0],
             &c_pwd[0] if c_pwd.shape[0] else NULL, c_pwd.shape[0]))
 
     cpdef _parse_public_key(self, key):
         cdef unsigned char[:] c_key = bytearray(key + b"\0")
+        mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
         check_error(_pk.mbedtls_pk_parse_public_key(
             &self._ctx, &c_key[0], c_key.shape[0]))
 
