@@ -7,7 +7,7 @@ from nose.plugins.skip import SkipTest
 from nose.tools import assert_equal
 
 import mbedtls.hash as hash
-from mbedtls.pk import _type_from_name
+from mbedtls.pk._pk import _type_from_name
 from mbedtls.pk import *
 
 from . import _rnd

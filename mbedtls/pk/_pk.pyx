@@ -6,11 +6,14 @@ __license__ = "Apache License 2.0"
 
 
 from libc.stdlib cimport malloc, free
-cimport pk
-cimport random as _random
+cimport _pk
+cimport mbedtls.random as _random
 import mbedtls.random as _random
 from mbedtls.exceptions import check_error, RsaError
 import mbedtls.hash as _hash
+
+
+__all__ = "Cipher", "CIPHER_NAME", "get_supported_ciphers"
 
 
 CIPHER_NAME = (
@@ -43,14 +46,14 @@ cdef class Cipher:
             `mbedtls.hash.new()`.
 
     """
-    cdef pk.mbedtls_pk_context _ctx
-    cdef pk.mbedtls_md_type_t _md_alg
+    cdef _pk.mbedtls_pk_context _ctx
+    cdef _pk.mbedtls_md_type_t _md_alg
     cdef _random.Random _rng
 
     def __init__(self, name, *, digestmod):
-        check_error(pk.mbedtls_pk_setup(
+        check_error(_pk.mbedtls_pk_setup(
             &self._ctx,
-            pk.mbedtls_pk_info_from_type(
+            _pk.mbedtls_pk_info_from_type(
                 _type_from_name(name)
             )
         ))
@@ -66,12 +69,12 @@ cdef class Cipher:
 
     def __cinit__(self):
         """Initialize the context."""
-        pk.mbedtls_pk_init(&self._ctx)
+        _pk.mbedtls_pk_init(&self._ctx)
         self._rng = _random.Random()
 
     def __dealloc__(self):
         """Free and clear the context."""
-        pk.mbedtls_pk_free(&self._ctx)
+        _pk.mbedtls_pk_free(&self._ctx)
 
     property _md_type:
         """Return the type of the digestmod."""
@@ -81,28 +84,28 @@ cdef class Cipher:
     property _type:
         """Return the type of the cipher."""
         def __get__(self):
-            return pk.mbedtls_pk_get_type(&self._ctx)
+            return _pk.mbedtls_pk_get_type(&self._ctx)
     
     property name:
         """Return the name of the cipher."""
         def __get__(self):
-            return pk.mbedtls_pk_get_name(&self._ctx)
+            return _pk.mbedtls_pk_get_name(&self._ctx)
 
     property _bitlen:
         """Return the size of the key, in bits."""
         def __get__(self):
-            return pk.mbedtls_pk_get_bitlen(&self._ctx)
+            return _pk.mbedtls_pk_get_bitlen(&self._ctx)
 
     property key_size:
         """Return the size of the key, in bytes."""
         def __get__(self):
-            return pk.mbedtls_pk_get_len(&self._ctx)
+            return _pk.mbedtls_pk_get_len(&self._ctx)
 
     # cpdef verify(self, hash_name, hash, sig):
-    #     cdef pk.mbedtls_md_type_t md_alg = 0  # TODO
+    #     cdef _pk.mbedtls_md_type_t md_alg = 0  # TODO
     #     cdef unsigned char[:] c_hash = bytearray(hash)
     #     cdef unsigned char[:] c_sig = bytearray(sig)
-    #     return pk.mbedtls_pk_verify(
+    #     return _pk.mbedtls_pk_verify(
     #         &self._ctx, md_alg,
     #         &c_hash[0], c_hash.shape[0],
     #         &c_sig[0], c_sig.shape[0])
@@ -118,7 +121,7 @@ cdef class Cipher:
         if not output:
             raise MemoryError()
         try:
-            check_error(pk.mbedtls_pk_encrypt(
+            check_error(_pk.mbedtls_pk_encrypt(
                 &self._ctx, &buf[0], buf.shape[0],
                 output, &sz, self.key_size,
                 &_random.mbedtls_ctr_drbg_random, &self._rng._ctx))
@@ -134,7 +137,7 @@ cdef class Cipher:
         if not output:
             raise MemoryError()
         try:
-            check_error(pk.mbedtls_pk_decrypt(
+            check_error(_pk.mbedtls_pk_decrypt(
                 &self._ctx, &buf[0], buf.shape[0],
                 output, &sz, sz,  # FIXME
                 &_random.mbedtls_ctr_drbg_random, &self._rng._ctx))
@@ -152,8 +155,8 @@ cdef class Cipher:
             exponent (int): public RSA exponent.
 
         """
-        check_error(pk.mbedtls_rsa_gen_key(
-            pk.mbedtls_pk_rsa(self._ctx),  # RSA context
+        check_error(_pk.mbedtls_rsa_gen_key(
+            _pk.mbedtls_pk_rsa(self._ctx),  # RSA context
             &_random.mbedtls_ctr_drbg_random, &self._rng._ctx,
             key_size, exponent))
 
@@ -161,7 +164,7 @@ cdef class Cipher:
     cpdef _generate_ec_keypair(self):
         raise NotImplementedError  # TODO via inheritance.
 
-    cdef bytes _write(self, int (*fun)(pk.mbedtls_pk_context *,
+    cdef bytes _write(self, int (*fun)(_pk.mbedtls_pk_context *,
                                        unsigned char *, size_t)):
         cdef unsigned char[:] buf = bytearray(1024 * b"\0")
         cdef int ret = fun(&self._ctx, &buf[0], buf.shape[0])
@@ -181,23 +184,23 @@ cdef class Cipher:
         return key
 
     cpdef bytes _write_private_key_der(self):
-        return self._write(&pk.mbedtls_pk_write_key_der)
+        return self._write(&_pk.mbedtls_pk_write_key_der)
 
     cpdef bytes _write_public_key_der(self):
-        return self._write(&pk.mbedtls_pk_write_pubkey_der)
+        return self._write(&_pk.mbedtls_pk_write_pubkey_der)
 
     cpdef bytes _write_private_key_pem(self):
-        return self._write(&pk.mbedtls_pk_write_key_pem)
+        return self._write(&_pk.mbedtls_pk_write_key_pem)
 
     cpdef bytes _write_public_key_pem(self):
-        return self._write(&pk.mbedtls_pk_write_pubkey_pem)
+        return self._write(&_pk.mbedtls_pk_write_pubkey_pem)
 
     cpdef _parse_private_key(self, key, password=None):
         if b"PRIVATE KEY" in key and not key.endswith(b"\0"):
             key += b"\0"
         cdef unsigned char[:] c_key = bytearray(key)
         cdef unsigned char[:] c_pwd = bytearray(password if password else b"")
-        check_error(pk.mbedtls_pk_parse_key(
+        check_error(_pk.mbedtls_pk_parse_key(
             &self._ctx,
             &c_key[0], c_key.shape[0],
             &c_pwd[0] if c_pwd.shape[0] else NULL, c_pwd.shape[0]))
@@ -206,10 +209,10 @@ cdef class Cipher:
         if b"PUBLIC KEY" in key and not key.endswith(b"\0"):
             key += b"\0"
         cdef unsigned char[:] c_key = bytearray(key)
-        check_error(pk.mbedtls_pk_parse_public_key(
+        check_error(_pk.mbedtls_pk_parse_public_key(
             &self._ctx, &c_key[0], c_key.shape[0]))
 
 
 cpdef check_pair(Cipher pub, Cipher pri):
     """Check if a public-private pair of keys matches."""
-    return pk.mbedtls_pk_check_pair(&pub._ctx, &pri._ctx) == 0
+    return _pk.mbedtls_pk_check_pair(&pub._ctx, &pri._ctx) == 0
