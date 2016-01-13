@@ -184,9 +184,7 @@ cdef class CipherBase:
         return self._write(&_pk.mbedtls_pk_write_pubkey_pem)
 
     cpdef _parse_private_key(self, key, password=None):
-        if b"PRIVATE KEY" in key and not key.endswith(b"\0"):
-            key += b"\0"
-        cdef unsigned char[:] c_key = bytearray(key)
+        cdef unsigned char[:] c_key = bytearray(key + b"\0")
         cdef unsigned char[:] c_pwd = bytearray(password if password else b"")
         check_error(_pk.mbedtls_pk_parse_key(
             &self._ctx,
@@ -194,9 +192,7 @@ cdef class CipherBase:
             &c_pwd[0] if c_pwd.shape[0] else NULL, c_pwd.shape[0]))
 
     cpdef _parse_public_key(self, key):
-        if b"PUBLIC KEY" in key and not key.endswith(b"\0"):
-            key += b"\0"
-        cdef unsigned char[:] c_key = bytearray(key)
+        cdef unsigned char[:] c_key = bytearray(key + b"\0")
         check_error(_pk.mbedtls_pk_parse_public_key(
             &self._ctx, &c_key[0], c_key.shape[0]))
 
