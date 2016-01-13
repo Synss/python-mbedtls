@@ -156,21 +156,19 @@ cdef class CipherBase:
 
     cdef bytes _write(self, int (*fun)(_pk.mbedtls_pk_context *,
                                        unsigned char *, size_t)):
-        cdef unsigned char[:] buf = bytearray(1024 * b"\0")
+        cdef unsigned char[:] buf = bytearray(self.key_size * b"\0")
         cdef int ret = fun(&self._ctx, &buf[0], buf.shape[0])
-        if ret > 0:
+        check_error(ret)
+        if ret:
             # DER format: `ret` is the size of the buffer, offset from the end.
             key = bytes([buf[n] for n
                          in range(buf.shape[0] - ret, buf.shape[0])])
             if len(key) != ret:
                 raise RsaError(-1, "the generated key length is wrong")
-        elif ret == 0:
+        else:
             # PEM format: `ret` is zero.
             key = bytes(buf[n] for n
                         in range(buf.shape[0])).split(b"\0", 1)[0]
-        else:  # ret < 0
-            # The return value is an error.
-            check_error(ret)
         return key
 
     cpdef bytes _write_private_key_der(self):
