@@ -113,3 +113,22 @@ cdef extern from "mbedtls/pk.h":
     int mbedtls_pk_write_key_pem(
         mbedtls_pk_context *ctx,
         unsigned char *buf, size_t size)
+
+
+cdef class CipherBase:
+    cdef mbedtls_pk_context _ctx
+    cdef mbedtls_md_type_t _md_alg
+
+    cpdef sign(self)
+    cpdef encrypt(self, message)
+    cpdef decrypt(self, message)
+
+    cpdef generate(self)
+    cdef bytes _write(self,
+                      int (*fun)(mbedtls_pk_context*, unsigned char*, size_t))
+    cpdef bytes _write_private_key_der(self)
+    cpdef bytes _write_public_key_der(self)
+    cpdef bytes _write_private_key_pem(self)
+    cpdef bytes _write_public_key_pem(self)
+    cpdef _parse_private_key(self, key, password=*)
+    cpdef _parse_public_key(self, key)

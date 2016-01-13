@@ -41,7 +41,7 @@ def get_ciphers():
 def test_type_accessor():
     for name in get_ciphers():
         description = "test_type_accessor(%s)" % name
-        cipher = Cipher(name, digestmod=hash.md5)
+        cipher = CipherBase(name, digestmod=hash.md5)
         test = partial(assert_equal, cipher._type, _type_from_name(name))
         test.description = description
         yield test
@@ -50,7 +50,7 @@ def test_type_accessor():
 def test_name_accessor():
     for name in get_ciphers():
         description = "test_name_accessor(%s)" % name
-        cipher = Cipher(name, digestmod=hash.md5)
+        cipher = CipherBase(name, digestmod=hash.md5)
         test = partial(assert_equal, cipher.name, name)
         test.description = description
         yield test
@@ -59,7 +59,7 @@ def test_name_accessor():
 def test_key_size_accessor():
     for name in get_ciphers():
         description = "test_key_size_accessor(%s)" % name
-        cipher = Cipher(name, digestmod=hash.md5)
+        cipher = CipherBase(name, digestmod=hash.md5)
         test = partial(assert_equal, cipher.key_size, 0)
         test.description = description
         yield test
@@ -70,7 +70,7 @@ def test_digestmod():
         for md in hash.algorithms_available:
             md_alg = vars(hash)[md]
             assert isinstance(md, str)
-            cipher = Cipher(name, digestmod=md)
+            cipher = CipherBase(name, digestmod=md)
             test = partial(assert_equal, cipher._md_type, md_alg()._type)
             test.description = ("test_digestmod_from_string(%s:%s)" %
                                 (name, md_alg.__name__))
@@ -82,7 +82,7 @@ def test_digestmod_from_ctor():
         for md in hash.algorithms_available:
             md_alg = vars(hash)[md]
             assert callable(md_alg)
-            cipher = Cipher(name, digestmod=md_alg)
+            cipher = CipherBase(name, digestmod=md_alg)
             test = partial(assert_equal, cipher._md_type, md_alg()._type)
             test.description = ("test_digestmod_from_ctor(%s:%s)" %
                                 (name, md_alg.__name__))
@@ -91,16 +91,16 @@ def test_digestmod_from_ctor():
 
 def test_check_rsa_keypair():
     key_size = 1024
-    cipher = Cipher(b"RSA", digestmod=hash.md5)
-    cipher._generate_rsa_keypair(key_size)
+    cipher = RSA(digestmod=hash.md5)
+    cipher.generate(key_size)
     check_pair(cipher, cipher)
 
 
 def test_write_parse_private_key_der():
     key_size = 1024
-    cipher = Cipher(b"RSA", digestmod=hash.md5)
-    cipher._generate_rsa_keypair(key_size)
-    prv = Cipher(b"RSA", digestmod=hash.md5)
+    cipher = RSA(digestmod=hash.md5)
+    cipher.generate(key_size)
+    prv = RSA(digestmod=hash.md5)
     key = cipher._write_private_key_der()
     prv._parse_private_key(key)
     check_pair(cipher, prv)
@@ -108,9 +108,9 @@ def test_write_parse_private_key_der():
 
 def test_write_parse_private_key_pem():
     key_size = 1024
-    cipher = Cipher(b"RSA", digestmod=hash.md5)
-    cipher._generate_rsa_keypair(key_size)
-    prv = Cipher(b"RSA", digestmod=hash.md5)
+    cipher = RSA(digestmod=hash.md5)
+    cipher.generate(key_size)
+    prv = RSA(digestmod=hash.md5)
     key = cipher._write_private_key_pem()
     prv._parse_private_key(key)
     check_pair(cipher, prv)
@@ -119,9 +119,9 @@ def test_write_parse_private_key_pem():
 def test_write_parse_private_key_pem_raise():
     raise SkipTest()
     key_size = 1024
-    cipher = Cipher(b"RSA", digestmod=hash.md5)
-    cipher._generate_rsa_keypair(key_size)
-    prv = Cipher(b"RSA", digestmod=hash.md5)
+    cipher = RSA(digestmod=hash.md5)
+    cipher.generate(key_size)
+    prv = RSA(digestmod=hash.md5)
     key = b"".join(cipher._write_private_key_pem().split(b"\n")[1:-1])
     prv._parse_private_key(key)
     check_pair(cipher, prv)
@@ -129,9 +129,9 @@ def test_write_parse_private_key_pem_raise():
 
 def test_write_parse_public_key_der():
     key_size = 1024
-    cipher = Cipher(b"RSA", digestmod=hash.md5)
-    cipher._generate_rsa_keypair(key_size)
-    pub = Cipher(b"RSA", digestmod=hash.md5)
+    cipher = RSA(digestmod=hash.md5)
+    cipher.generate(key_size)
+    pub = RSA(digestmod=hash.md5)
     key = cipher._write_public_key_der()
     pub._parse_public_key(key)
     check_pair(pub, cipher)
@@ -139,9 +139,9 @@ def test_write_parse_public_key_der():
 
 def test_write_parse_public_key_pem():
     key_size = 1024
-    cipher = Cipher(b"RSA", digestmod=hash.md5)
-    cipher._generate_rsa_keypair(key_size)
-    pub = Cipher(b"RSA", digestmod=hash.md5)
+    cipher = RSA(digestmod=hash.md5)
+    cipher.generate(key_size)
+    pub = RSA(digestmod=hash.md5)
     key = cipher._write_public_key_pem()
     pub._parse_public_key(key)
     check_pair(pub, cipher)
@@ -149,8 +149,8 @@ def test_write_parse_public_key_pem():
 
 def test_encrypt_decrypt_rsa():
     raise SkipTest()
-    cipher = Cipher(b"RSA", digestmod=hash.md5)
-    cipher._generate_rsa_keypair(1024)
+    cipher = RSA(digestmod=hash.md5)
+    cipher.generate(1024)
     block = _rnd(1024)
     test = partial(assert_equal(cipher.decrypt(cipher.encrypt(block)),
                                 block))

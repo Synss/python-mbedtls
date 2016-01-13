@@ -13,7 +13,8 @@ from mbedtls.exceptions import check_error, RsaError
 import mbedtls.hash as _hash
 
 
-__all__ = "Cipher", "CIPHER_NAME", "get_supported_ciphers"
+__all__ = ("CipherBase", "CIPHER_NAME", "check_pair",
+           "get_supported_ciphers", "get_rng")
 
 
 CIPHER_NAME = (
@@ -35,7 +36,14 @@ cpdef get_supported_ciphers():
     return CIPHER_NAME
 
 
-cdef class Cipher:
+cdef _random.Random __rng = _random.Random()
+
+
+cpdef _random.Random get_rng():
+    return __rng
+
+
+cdef class CipherBase:
 
     """Wrap and encapsulate the pk library from mbed TLS.
 
@@ -46,10 +54,6 @@ cdef class Cipher:
             `mbedtls.hash.new()`.
 
     """
-    cdef _pk.mbedtls_pk_context _ctx
-    cdef _pk.mbedtls_md_type_t _md_alg
-    cdef _random.Random _rng
-
     def __init__(self, name, *, digestmod):
         check_error(_pk.mbedtls_pk_setup(
             &self._ctx,
@@ -70,7 +74,6 @@ cdef class Cipher:
     def __cinit__(self):
         """Initialize the context."""
         _pk.mbedtls_pk_init(&self._ctx)
-        self._rng = _random.Random()
 
     def __dealloc__(self):
         """Free and clear the context."""
@@ -124,7 +127,7 @@ cdef class Cipher:
             check_error(_pk.mbedtls_pk_encrypt(
                 &self._ctx, &buf[0], buf.shape[0],
                 output, &sz, self.key_size,
-                &_random.mbedtls_ctr_drbg_random, &self._rng._ctx))
+                &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
             return bytes([output[n] for n in range(self.digest_size)])
         finally:
             free(output)
@@ -140,29 +143,14 @@ cdef class Cipher:
             check_error(_pk.mbedtls_pk_decrypt(
                 &self._ctx, &buf[0], buf.shape[0],
                 output, &sz, sz,  # FIXME
-                &_random.mbedtls_ctr_drbg_random, &self._rng._ctx))
+                &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
             return bytes([output[n] for n in range(self.digest_size)])
         finally:
             free(output)
 
-    # Should not be make a cdef so that exceptions may be raised.
-    cpdef _generate_rsa_keypair(self, unsigned int key_size,
-                                int exponent=65537):
-        """Generate an RSA keypair.
-
-        Arguments:
-            key_size (unsigned int): size in bits.
-            exponent (int): public RSA exponent.
-
-        """
-        check_error(_pk.mbedtls_rsa_gen_key(
-            _pk.mbedtls_pk_rsa(self._ctx),  # RSA context
-            &_random.mbedtls_ctr_drbg_random, &self._rng._ctx,
-            key_size, exponent))
-
-    # Should not be make a cdef so that exceptions may be raised.
-    cpdef _generate_ec_keypair(self):
-        raise NotImplementedError  # TODO via inheritance.
+    cpdef generate(self):
+        """Generate a keypair."""
+        raise NotImplementedError
 
     cdef bytes _write(self, int (*fun)(_pk.mbedtls_pk_context *,
                                        unsigned char *, size_t)):
@@ -213,6 +201,6 @@ cdef class Cipher:
             &self._ctx, &c_key[0], c_key.shape[0]))
 
 
-cpdef check_pair(Cipher pub, Cipher pri):
+cpdef check_pair(CipherBase pub, CipherBase pri):
     """Check if a public-private pair of keys matches."""
     return _pk.mbedtls_pk_check_pair(&pub._ctx, &pri._ctx) == 0
