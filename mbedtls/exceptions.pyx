@@ -25,6 +25,10 @@ class _ErrorBase(ValueError):
                                     self.err, self.msg)
 
 
+class Asn1Error(_ErrorBase):
+    """Errors defined in `asn1.h`."""
+
+
 class CipherError(_ErrorBase):
     """Errors defined in the cipher module."""
 
@@ -73,6 +77,16 @@ __lookup = {
     0x003E: (EntropyError, "no more source can be added"),
     0x003F: (IOError, ""),
     0x0040: (EntropyError, "no sources have been added to poll"),
+    # ASN1
+    0x0060: (Asn1Error, "out of data when parsing and ASN1 data structure"),
+    0x0062: (Asn1Error, "ASN.1 tag was of an unexpected value"),
+    0x0064: (Asn1Error,
+             "error when trying to determine the length" +
+             "or invalid length"),
+    0x0066: (Asn1Error, "actual length differs from expected length"),
+    0x0068: (Asn1Error, "data is invalid"),
+    0x006A: (MemoryError, "memory allocation failed"),
+    0x006c: (Asn1Error, "buffer too small when writing ASN.1 data structure"),
     # PEM errors
     0x1080: (PemError, "no PEM header or footer found"),
     0x1100: (PemError, "PEM string is not as expected"),
