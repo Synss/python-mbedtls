@@ -118,33 +118,35 @@ cdef class CipherBase:
 
     cpdef encrypt(self, message):
         cdef unsigned char[:] buf = bytearray(message)
-        cdef size_t sz = self.key_size
+        cdef size_t osize = self.key_size
+        cdef size_t olen = 0
         cdef unsigned char* output = <unsigned char*>malloc(
-            sz * sizeof(unsigned char))
+            osize * sizeof(unsigned char))
         if not output:
             raise MemoryError()
         try:
             check_error(_pk.mbedtls_pk_encrypt(
                 &self._ctx, &buf[0], buf.shape[0],
-                output, &sz, self.key_size,
+                output, &olen, osize,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
-            return bytes([output[n] for n in range(self.digest_size)])
+            return bytes([output[n] for n in range(olen)])
         finally:
             free(output)
 
     cpdef decrypt(self, message):
         cdef unsigned char[:] buf = bytearray(message)
-        cdef size_t sz = self.key_size
+        cdef size_t osize = self.key_size
+        cdef size_t olen = 0
         cdef unsigned char* output = <unsigned char*>malloc(
-            sz * sizeof(unsigned char))
+            osize * sizeof(unsigned char))
         if not output:
             raise MemoryError()
         try:
             check_error(_pk.mbedtls_pk_decrypt(
                 &self._ctx, &buf[0], buf.shape[0],
-                output, &sz, sz,  # FIXME
+                output, &olen, osize,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
-            return bytes([output[n] for n in range(self.digest_size)])
+            return bytes([output[n] for n in range(olen)])
         finally:
             free(output)
 

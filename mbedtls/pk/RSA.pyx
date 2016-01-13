@@ -23,7 +23,7 @@ cdef class RSA(_pk.CipherBase):
     def __init__(self, *, digestmod):
         super().__init__(b"RSA", digestmod=digestmod)
 
-    cpdef generate(self, unsigned int key_size=1024, int exponent=65537):
+    cpdef generate(self, unsigned int key_size=2048, int exponent=65537):
         """Generate an RSA keypair.
 
         Arguments:

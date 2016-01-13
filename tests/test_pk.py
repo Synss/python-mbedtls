@@ -89,6 +89,18 @@ def test_digestmod_from_ctor():
             yield test
 
 
+def test_rsa_encrypt_decrypt():
+    for key_size in (1024, 2048, 4096):
+        cipher = RSA(digestmod=hash.md5)
+        cipher.generate(key_size)
+        msg = _rnd(cipher.key_size - 11)
+        enc = cipher.encrypt(msg)
+        dec = cipher.decrypt(enc)
+        test = partial(assert_equal, dec, msg)
+        test.description = "test_encrypt_decrypt(%s:%s)" % ("RSA", key_size)
+        yield test
+
+
 class TestRsa:
 
     def setup(self):
