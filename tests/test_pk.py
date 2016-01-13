@@ -89,70 +89,36 @@ def test_digestmod_from_ctor():
             yield test
 
 
-def test_check_rsa_keypair():
-    key_size = 1024
-    cipher = RSA(digestmod=hash.md5)
-    cipher.generate(key_size)
-    check_pair(cipher, cipher)
+class TestRsa:
 
+    def setup(self):
+        key_size = 2048
+        self.cipher = RSA(digestmod=hash.md5)
+        self.cipher.generate(key_size)
 
-def test_write_parse_private_key_der():
-    key_size = 1024
-    cipher = RSA(digestmod=hash.md5)
-    cipher.generate(key_size)
-    prv = RSA(digestmod=hash.md5)
-    key = cipher._write_private_key_der()
-    prv._parse_private_key(key)
-    check_pair(cipher, prv)
+    def test_keypair(self):
+        check_pair(self.cipher, self.cipher)
 
+    def test_write_parse_private_key_der(self):
+        key = self.cipher._write_private_key_der()
+        prv = RSA(digestmod=hash.md5)
+        prv._parse_private_key(key)
+        check_pair(self.cipher, prv)
 
-def test_write_parse_private_key_pem():
-    key_size = 1024
-    cipher = RSA(digestmod=hash.md5)
-    cipher.generate(key_size)
-    prv = RSA(digestmod=hash.md5)
-    key = cipher._write_private_key_pem()
-    prv._parse_private_key(key)
-    check_pair(cipher, prv)
+    def test_write_parse_private_key_pem(self):
+        key = self.cipher._write_private_key_pem()
+        prv = RSA(digestmod=hash.md5)
+        prv._parse_private_key(key)
+        check_pair(self.cipher, prv)
 
+    def test_write_parse_public_key_der(self):
+        key = self.cipher._write_public_key_der()
+        pub = RSA(digestmod=hash.md5)
+        pub._parse_public_key(key)
+        check_pair(pub, self.cipher)
 
-def test_write_parse_private_key_pem_raise():
-    raise SkipTest()
-    key_size = 1024
-    cipher = RSA(digestmod=hash.md5)
-    cipher.generate(key_size)
-    prv = RSA(digestmod=hash.md5)
-    key = b"".join(cipher._write_private_key_pem().split(b"\n")[1:-1])
-    prv._parse_private_key(key)
-    check_pair(cipher, prv)
-
-
-def test_write_parse_public_key_der():
-    key_size = 1024
-    cipher = RSA(digestmod=hash.md5)
-    cipher.generate(key_size)
-    pub = RSA(digestmod=hash.md5)
-    key = cipher._write_public_key_der()
-    pub._parse_public_key(key)
-    check_pair(pub, cipher)
-
-
-def test_write_parse_public_key_pem():
-    key_size = 1024
-    cipher = RSA(digestmod=hash.md5)
-    cipher.generate(key_size)
-    pub = RSA(digestmod=hash.md5)
-    key = cipher._write_public_key_pem()
-    pub._parse_public_key(key)
-    check_pair(pub, cipher)
-
-
-def test_encrypt_decrypt_rsa():
-    raise SkipTest()
-    cipher = RSA(digestmod=hash.md5)
-    cipher.generate(1024)
-    block = _rnd(1024)
-    test = partial(assert_equal(cipher.decrypt(cipher.encrypt(block)),
-                                block))
-    test.description = "check_encrypt_decrypt(%s)" % name.decode()
-    yield test
+    def test_write_parse_public_key_pem(self):
+        key = self.cipher._write_public_key_pem()
+        pub = RSA(digestmod=hash.md5)
+        pub._parse_public_key(key)
+        check_pair(pub, self.cipher)
