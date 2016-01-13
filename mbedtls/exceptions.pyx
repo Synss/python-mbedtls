@@ -29,6 +29,10 @@ class Asn1Error(_ErrorBase):
     """Errors defined in `asn1.h`."""
 
 
+class Base64Error(_ErrorBase):
+    """Errors defined in `base64.h`."""
+
+
 class CipherError(_ErrorBase):
     """Errors defined in the cipher module."""
 
@@ -69,6 +73,9 @@ __lookup = {
     # Blowfish-specific
     0x0016: (InvalidKeyLengthError, "invalid key length"),
     0x0018: (InvalidInputLengthError, "invalid input length"),
+    # Base64
+    0x002a: (Base64Error, "output buffer too small"),
+    0x002c: (Base64Error, "invalid character in input"),
     # DES
     0x0032: (InvalidInputLengthError, "invalid input length"),
     # Entropy
