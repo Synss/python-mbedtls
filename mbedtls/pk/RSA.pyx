@@ -20,8 +20,11 @@ cdef _random.Random __rng = _pk.get_rng()
 
 cdef class RSA(_pk.CipherBase):
 
+    cdef _pk.mbedtls_rsa_context* _rsa
+
     def __init__(self, *, digestmod):
         super().__init__(b"RSA", digestmod=digestmod)
+        self._rsa = _pk.mbedtls_pk_rsa(self._ctx)
 
     cpdef generate(self, unsigned int key_size=2048, int exponent=65537):
         """Generate an RSA keypair.
@@ -32,6 +35,13 @@ cdef class RSA(_pk.CipherBase):
 
         """
         check_error(_pk.mbedtls_rsa_gen_key(
-            _pk.mbedtls_pk_rsa(self._ctx),  # Access RSA context.
-            &_random.mbedtls_ctr_drbg_random, &__rng._ctx,
+            self._rsa, &_random.mbedtls_ctr_drbg_random, &__rng._ctx,
             key_size, exponent))
+
+    cpdef _check_public_key(self):
+        """Check a public RSA key."""
+        return _pk.mbedtls_rsa_check_pubkey(self._rsa) == 0
+
+    cpdef _check_private_key(self):
+        """Check a private RSA key."""
+        return _pk.mbedtls_rsa_check_privkey(self._rsa) == 0

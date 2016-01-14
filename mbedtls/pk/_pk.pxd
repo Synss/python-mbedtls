@@ -23,6 +23,8 @@ cdef extern from "mbedtls/rsa.h":
         mbedtls_rsa_context *ctx,
         int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
         unsigned int nbits, int exponent)
+    int mbedtls_rsa_check_pubkey(const mbedtls_rsa_context *ctx)
+    int mbedtls_rsa_check_privkey(const mbedtls_rsa_context *ctx)
 
 
 cdef extern from "mbedtls/pk.h":
