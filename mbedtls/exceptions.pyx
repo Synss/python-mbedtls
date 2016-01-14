@@ -72,17 +72,17 @@ class EcError(PrivateKeyError):
 __lookup = {
     # Blowfish-specific
     0x0016: (InvalidKeyLengthError, "invalid key length"),
-    0x0018: (InvalidInputLengthError, "invalid input length"),
+    0x0018: (InvalidInputLengthError, "invalid data input length"),
     # Base64
     0x002a: (Base64Error, "output buffer too small"),
     0x002c: (Base64Error, "invalid character in input"),
     # DES
-    0x0032: (InvalidInputLengthError, "invalid input length"),
+    0x0032: (InvalidInputLengthError, "the data input has an invalid length"),
     # Entropy
     0x003C: (EntropyError, "critical entropy source failure"),
     0x003D: (EntropyError, "no strong source have been added to poll"),
     0x003E: (EntropyError, "no more source can be added"),
-    0x003F: (IOError, ""),
+    0x003F: (EntropyError, "read/write error in file"),
     0x0040: (EntropyError, "no sources have been added to poll"),
     # ASN1
     0x0060: (Asn1Error, "out of data when parsing and ASN1 data structure"),
@@ -92,12 +92,12 @@ __lookup = {
              "or invalid length"),
     0x0066: (Asn1Error, "actual length differs from expected length"),
     0x0068: (Asn1Error, "data is invalid"),
-    0x006A: (MemoryError, "memory allocation failed"),
+    0x006A: (Asn1Error, "memory allocation failed"),
     0x006c: (Asn1Error, "buffer too small when writing ASN.1 data structure"),
     # PEM errors
     0x1080: (PemError, "no PEM header or footer found"),
     0x1100: (PemError, "PEM string is not as expected"),
-    0x1180: (MemoryError, "failed to allocate memory"),
+    0x1180: (PemError, "failed to allocate memory"),
     0x1200: (PemError, "RSA IV is not in hex-format"),
     0x1280: (PemError, "unsupported key encryption algorithm"),
     0x1300: (PemError, "private key password can't be empty"),
@@ -108,10 +108,11 @@ __lookup = {
              "unavailable feature, e.g. hashing/decryption combination"),
     0x1480: (PemError, "bad input parameters to function"),
     # PK errors
-    0x3f80: (MemoryError, "allocation failed"),
-    0x3f00: (PrivateKeyError, "type mismatch"),
-    0x3e80: (PrivateKeyError, "bad input data"),
-    0x3e00: (IOError, ""),
+    0x3f80: (PrivateKeyError, "memory allocation failed"),
+    0x3f00: (PrivateKeyError,
+             "type mismatch, eg attempt to encrypt with an ECDSA key"),
+    0x3e80: (PrivateKeyError, "bad input parameters to function"),
+    0x3e00: (PrivateKeyError, "read/write of file failed"),
     0x3d80: (PrivateKeyError, "unsupported key version"),
     0x3d00: (PrivateKeyError, "invalid key tag or value"),
     0x3c80: (PrivateKeyError,
@@ -128,7 +129,8 @@ __lookup = {
     0x3a00: (PrivateKeyError,
              "elliptic curve is unsupported" +
              "(only NIST curves are supported)"),
-    0x3980: (PrivateKeyError, "feature unavailable"),
+    0x3980: (PrivateKeyError,
+             "unavailable feature, eg RSA disabled for RSA key"),
     0x3900: (PrivateKeyError,
              "the signature is valid but its length" +
              "is less than expected"),
@@ -148,24 +150,24 @@ __lookup = {
     0x4f00: (EcError, "the buffer is too small to write to"),
     0x4e80: (EcError, "requested curve not available"),
     0x4e00: (EcError, "the signature is not valid"),
-    0x4d80: (MemoryError, "memory allocation failed"),
+    0x4d80: (EcError, "memory allocation failed"),
     0x4d00: (EcError,
              "generation of random value, such as (ephemeral) key, failed"),
     0x4c80: (EcError, "invalid private or public key"),
     0x4c00: (EcError,
              "signature is valid but shorter than the user-specified length"),
     # MD errors
-    0x5080: (MessageDigestError, "feature unavailable"),
-    0x5100: (MessageDigestError, "bad input data"),
-    0x5180: (MemoryError, "allocation failed"),
-    0x5200: (IOError, ""),
+    0x5080: (MessageDigestError, "the selected feature is not available"),
+    0x5100: (MessageDigestError, "bad input parameter to function"),
+    0x5180: (MessageDigestError, "failed to allocate memory"),
+    0x5200: (MessageDigestError, "opening or reading of file failed"),
     # Cipher errors
-    0x6080: (CipherError, "feature unavailable"),
-    0x6100: (CipherError, "bad input data"),
-    0x6180: (MemoryError, "allocation failed"),
-    0x6200: (CipherError, "invalid padding"),
-    0x6280: (CipherError, "full block expected"),
-    0x6300: (CipherError, "authentication failed"),
+    0x6080: (CipherError, "the selected feature is not available"),
+    0x6100: (CipherError, "bad input parameter to function"),
+    0x6180: (CipherError, "failed to allocate memory"),
+    0x6200: (CipherError, "input contains invalid padding and is rejected"),
+    0x6280: (CipherError, "decryption of block requires a full block"),
+    0x6300: (CipherError, "authentication failed (for AEAD modes)"),
 }
 
 
