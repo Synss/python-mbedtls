@@ -119,7 +119,6 @@ cdef extern from "mbedtls/pk.h":
 
 cdef class CipherBase:
     cdef mbedtls_pk_context _ctx
-    cdef mbedtls_md_type_t _md_alg
 
     cpdef sign(self)
     cpdef encrypt(self, message)

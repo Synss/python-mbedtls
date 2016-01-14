@@ -22,8 +22,8 @@ cdef class RSA(_pk.CipherBase):
 
     cdef _pk.mbedtls_rsa_context* _rsa
 
-    def __init__(self, *, digestmod):
-        super().__init__(b"RSA", digestmod=digestmod)
+    def __init__(self):
+        super().__init__(b"RSA")
         self._rsa = _pk.mbedtls_pk_rsa(self._ctx)
 
     cpdef generate(self, unsigned int key_size=2048, int exponent=65537):

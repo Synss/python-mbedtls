@@ -8,6 +8,7 @@ __license__ = "Apache License 2.0"
 from libc.stdlib cimport malloc, free
 cimport _pk
 cimport mbedtls.random as _random
+from functools import partial
 import mbedtls.random as _random
 from mbedtls.exceptions import check_error
 import mbedtls.hash as _hash
@@ -43,33 +44,40 @@ cpdef _random.Random get_rng():
     return __rng
 
 
+def _get_md_alg(digestmod):
+    """Return the hash object.
+
+    Arguments:
+        digestmod: The digest name or digest constructor for the
+            Cipher object to use.  It supports any name suitable to
+            `mbedtls.hash.new()`.
+
+    """
+    # `digestmod` handling below is adapted from CPython's
+    # `hmac.py`.
+    if callable(digestmod):
+        return digestmod
+    elif isinstance(digestmod, str):
+        return partial(_hash.new, digestmod)
+    else:
+        raise ValueError("a valid digestmod is required")
+
+
 cdef class CipherBase:
 
     """Wrap and encapsulate the pk library from mbed TLS.
 
     Parameters:
         name (bytes): The cipher name known to mbed TLS.
-        digestmod: The digest name or digest constructor for the
-            Cipher object to use.  It supports any name suitable to
-            `mbedtls.hash.new()`.
 
     """
-    def __init__(self, name, *, digestmod):
+    def __init__(self, name):
         check_error(_pk.mbedtls_pk_setup(
             &self._ctx,
             _pk.mbedtls_pk_info_from_type(
                 _type_from_name(name)
             )
         ))
-
-        # `digestmod` handling below is adapted from CPython's
-        # `hmac.py`.
-        if callable(digestmod):
-            self._md_alg = digestmod()._type
-        elif isinstance(digestmod, str):
-            self._md_alg = _hash.new(digestmod)._type
-        else:
-            raise ValueError("a valid digestmod is required")
 
     def __cinit__(self):
         """Initialize the context."""
@@ -78,11 +86,6 @@ cdef class CipherBase:
     def __dealloc__(self):
         """Free and clear the context."""
         _pk.mbedtls_pk_free(&self._ctx)
-
-    property _md_type:
-        """Return the type of the digestmod."""
-        def __get__(self):
-            return self._md_alg
 
     property _type:
         """Return the type of the cipher."""
