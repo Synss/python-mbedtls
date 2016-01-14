@@ -107,17 +107,34 @@ cdef class CipherBase:
         def __get__(self):
             return _pk.mbedtls_pk_get_len(&self._ctx)
 
-    # cpdef verify(self, hash_name, hash, sig):
-    #     cdef _pk.mbedtls_md_type_t md_alg = 0  # TODO
-    #     cdef unsigned char[:] c_hash = bytearray(hash)
-    #     cdef unsigned char[:] c_sig = bytearray(sig)
-    #     return _pk.mbedtls_pk_verify(
-    #         &self._ctx, md_alg,
-    #         &c_hash[0], c_hash.shape[0],
-    #         &c_sig[0], c_sig.shape[0])
+    cpdef verify(self, message, signature, digestmod):
+        md_alg = _get_md_alg(digestmod)(message)
+        cdef unsigned char[:] c_hash = bytearray(md_alg.digest())
+        cdef unsigned char[:] c_sig = bytearray(signature)
+        ret = _pk.mbedtls_pk_verify(
+            &self._ctx, md_alg._type,
+            &c_hash[0], c_hash.shape[0],
+            &c_sig[0], c_sig.shape[0])
+        return ret == 0
 
-    cpdef sign(self):
-        pass
+    cpdef sign(self, message, digestmod):
+        md_alg = _get_md_alg(digestmod)(message)
+        cdef unsigned char[:] c_hash = bytearray(md_alg.digest())
+        cdef size_t osize = self.key_size
+        cdef size_t sig_len = 0
+        cdef unsigned char* output = <unsigned char*>malloc(
+            osize * sizeof(unsigned char))
+        if not output:
+            raise MemoryError()
+        try:
+            _pk.mbedtls_pk_sign(
+                &self._ctx, md_alg._type,
+                &c_hash[0], c_hash.shape[0],
+                &output[0], &sig_len,
+                &_random.mbedtls_ctr_drbg_random, &__rng._ctx)
+            return bytes([output[n] for n in range(sig_len)])
+        finally:
+            free(output)
 
     cpdef encrypt(self, message):
         cdef unsigned char[:] buf = bytearray(message)

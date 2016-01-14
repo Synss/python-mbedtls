@@ -4,7 +4,8 @@
 from functools import partial
 
 from nose.plugins.skip import SkipTest
-from nose.tools import assert_equal, assert_is_instance, assert_true
+from nose.tools import (assert_equal, assert_is_instance,
+                        assert_true, assert_false)
 
 import mbedtls.hash as hash
 from mbedtls.pk._pk import _type_from_name, _get_md_alg
@@ -128,3 +129,9 @@ class TestRsa:
         pub = RSA()
         pub._parse_public_key(key)
         check_pair(pub, self.cipher)
+
+    def test_sign_verify(self):
+        message = _rnd(4096)
+        sig = self.cipher.sign(message, hash.md5)
+        assert_true(self.cipher.verify(message, sig, hash.md5))
+        assert_false(self.cipher.verify(message + b"\0", sig, hash.md5))
