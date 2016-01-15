@@ -10,9 +10,15 @@ cdef extern from "mbedtls/md.h":
         pass
 
 
+cdef extern from "mbedtls/bignum.h":
+    int MBEDTLS_MPI_MAX_SIZE
+
+
 cdef extern from "mbedtls/ecp.h":
     ctypedef struct mbedtls_ecp_keypair:
         pass
+
+    int MBEDTLS_ECP_MAX_BYTES
 
 
 cdef extern from "mbedtls/rsa.h":
@@ -127,8 +133,10 @@ cdef class CipherBase:
     cpdef decrypt(self, message)
 
     cpdef generate(self)
-    cdef bytes _write(self,
-                      int (*fun)(mbedtls_pk_context*, unsigned char*, size_t))
+    cdef bytes _write(
+        self,
+        int (*fun)(mbedtls_pk_context*, unsigned char*, size_t),
+        size_t)
     cpdef bytes _write_private_key_der(self)
     cpdef bytes _write_public_key_der(self)
     cpdef bytes _write_private_key_pem(self)

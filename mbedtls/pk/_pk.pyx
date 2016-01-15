@@ -29,6 +29,22 @@ CIPHER_NAME = (
 )
 
 
+# The following calculations come from mbedtls/library/pkwrite.c.
+RSA_PUB_DER_MAX_BYTES = 38 + 2 * _pk.MBEDTLS_MPI_MAX_SIZE
+MPI_MAX_SIZE_2 = MBEDTLS_MPI_MAX_SIZE / 2 + MBEDTLS_MPI_MAX_SIZE % 2
+RSA_PRV_DER_MAX_BYTES = 47 + 3 * _pk.MBEDTLS_MPI_MAX_SIZE + 5 * MPI_MAX_SIZE_2
+
+ECP_PUB_DER_MAX_BYTES = 30 + 2 * _pk.MBEDTLS_ECP_MAX_BYTES
+ECP_PRV_DER_MAX_BYTES = 29 + 3 * _pk.MBEDTLS_ECP_MAX_BYTES
+
+cdef int PUB_DER_MAX_BYTES = max(RSA_PUB_DER_MAX_BYTES, ECP_PUB_DER_MAX_BYTES)
+cdef int PRV_DER_MAX_BYTES = max(RSA_PRV_DER_MAX_BYTES, ECP_PRV_DER_MAX_BYTES)
+
+del RSA_PUB_DER_MAX_BYTES, MPI_MAX_SIZE_2, RSA_PRV_DER_MAX_BYTES
+del ECP_PUB_DER_MAX_BYTES, ECP_PRV_DER_MAX_BYTES
+
+
+
 def _type_from_name(name):
     return {name: n for n, name in enumerate(CIPHER_NAME)}.get(name, 0)
 
@@ -216,8 +232,9 @@ cdef class CipherBase:
         raise NotImplementedError
 
     cdef bytes _write(self, int (*fun)(_pk.mbedtls_pk_context *,
-                                       unsigned char *, size_t)):
-        cdef unsigned char[:] buf = bytearray(self._bitlen * b"\0")
+                                       unsigned char *, size_t),
+                      size_t olen):
+        cdef unsigned char[:] buf = bytearray(olen * b"\0")
         cdef int ret = fun(&self._ctx, &buf[0], buf.shape[0])
         check_error(ret)
         if ret:
@@ -232,16 +249,20 @@ cdef class CipherBase:
         return key
 
     cpdef bytes _write_private_key_der(self):
-        return self._write(&_pk.mbedtls_pk_write_key_der)
+        return self._write(&_pk.mbedtls_pk_write_key_der,
+                           PRV_DER_MAX_BYTES)
 
     cpdef bytes _write_public_key_der(self):
-        return self._write(&_pk.mbedtls_pk_write_pubkey_der)
+        return self._write(&_pk.mbedtls_pk_write_pubkey_der,
+                           PUB_DER_MAX_BYTES)
 
     cpdef bytes _write_private_key_pem(self):
-        return self._write(&_pk.mbedtls_pk_write_key_pem)
+        return self._write(&_pk.mbedtls_pk_write_key_pem,
+                           PRV_DER_MAX_BYTES * 4 // 3 + 100)
 
     cpdef bytes _write_public_key_pem(self):
-        return self._write(&_pk.mbedtls_pk_write_pubkey_pem)
+        return self._write(&_pk.mbedtls_pk_write_pubkey_pem,
+                           PUB_DER_MAX_BYTES * 4 // 3 + 100)
 
     cpdef _parse_private_key(self, key, password=None):
         cdef unsigned char[:] c_key = bytearray(key + b"\0")

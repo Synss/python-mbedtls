@@ -26,6 +26,9 @@ cdef class RSA(_pk.CipherBase):
         super().__init__(b"RSA")
         self._rsa = _pk.mbedtls_pk_rsa(self._ctx)
 
+    cpdef int get_mpi_max_size(self):
+        return _pk.MBEDTLS_MPI_MAX_SIZE
+
     cpdef generate(self, unsigned int key_size=2048, int exponent=65537):
         """Generate an RSA keypair.
 
