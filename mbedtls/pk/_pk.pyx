@@ -115,6 +115,9 @@ cdef class CipherBase:
             signature (bytes): The signature to verify.
             digestmod: The digest name or digest constructor.
 
+        Returns:
+            bool: True if the verification passed, False otherwise.
+
         """
         md_alg = _get_md_alg(digestmod)(message)
         cdef unsigned char[:] c_hash = bytearray(md_alg.digest())
@@ -132,6 +135,10 @@ cdef class CipherBase:
             message (bytes): The message to sign.
             digestmod: The digest name or digest constructor.
 
+        Returns:
+            bytes or None: The signature or None if the cipher does not
+                contain a private key.
+
         """
         md_alg = _get_md_alg(digestmod)(message)
         cdef unsigned char[:] c_hash = bytearray(md_alg.digest())
@@ -147,7 +154,10 @@ cdef class CipherBase:
                 &c_hash[0], c_hash.shape[0],
                 &output[0], &sig_len,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx)
-            return bytes([output[n] for n in range(sig_len)])
+            if sig_len == 0:
+                return None
+            else:
+                return bytes([output[n] for n in range(sig_len)])
         finally:
             free(output)
 

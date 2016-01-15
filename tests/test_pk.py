@@ -5,7 +5,9 @@ from functools import partial
 
 from nose.plugins.skip import SkipTest
 from nose.tools import (assert_equal, assert_is_instance,
-                        assert_true, assert_false)
+                        assert_true, assert_false,
+                        assert_is_none, assert_is_not_none,
+                        )
 
 import mbedtls.hash as hash
 from mbedtls.pk._pk import _type_from_name, _get_md_alg
@@ -96,6 +98,12 @@ def test_rsa_encrypt_decrypt():
         yield test
 
 
+def test_rsa_sign_without_key_returns_none():
+    cipher = RSA()
+    message = _rnd(4096)
+    assert_is_none(cipher.sign(message, hash.md5))
+
+
 class TestRsa:
 
     def setup(self):
@@ -133,5 +141,6 @@ class TestRsa:
     def test_sign_verify(self):
         message = _rnd(4096)
         sig = self.cipher.sign(message, hash.md5)
+        assert_is_not_none(sig)
         assert_true(self.cipher.verify(message, sig, hash.md5))
         assert_false(self.cipher.verify(message + b"\0", sig, hash.md5))
