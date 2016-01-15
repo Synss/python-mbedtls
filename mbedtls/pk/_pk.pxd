@@ -120,8 +120,8 @@ cdef extern from "mbedtls/pk.h":
 cdef class CipherBase:
     cdef mbedtls_pk_context _ctx
 
-    cpdef sign(self, message, digestmod)
-    cpdef verify(self, message, signature, digestmod)
+    cpdef sign(self, message, digestmod=*)
+    cpdef verify(self, message, signature, digestmod=*)
 
     cpdef encrypt(self, message)
     cpdef decrypt(self, message)

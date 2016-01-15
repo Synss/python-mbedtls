@@ -107,18 +107,20 @@ cdef class CipherBase:
         def __get__(self):
             return _pk.mbedtls_pk_get_len(&self._ctx)
 
-    cpdef verify(self, message, signature, digestmod):
+    cpdef verify(self, message, signature, digestmod=None):
         """Verify signature, including padding if relevant.
 
         Arguments:
             message (bytes): The message to sign.
             signature (bytes): The signature to verify.
-            digestmod: The digest name or digest constructor.
+            digestmod (optional): The digest name or digest constructor.
 
         Returns:
             bool: True if the verification passed, False otherwise.
 
         """
+        if digestmod is None:
+            digestmod = 'sha256'
         md_alg = _get_md_alg(digestmod)(message)
         cdef unsigned char[:] c_hash = bytearray(md_alg.digest())
         cdef unsigned char[:] c_sig = bytearray(signature)
@@ -128,18 +130,20 @@ cdef class CipherBase:
             &c_sig[0], c_sig.shape[0])
         return ret == 0
 
-    cpdef sign(self, message, digestmod):
+    cpdef sign(self, message, digestmod=None):
         """Make signature, including padding if relevant.
 
         Arguments:
             message (bytes): The message to sign.
-            digestmod: The digest name or digest constructor.
+            digestmod (optional): The digest name or digest constructor.
 
         Returns:
             bytes or None: The signature or None if the cipher does not
                 contain a private key.
 
         """
+        if digestmod is None:
+            digestmod = 'sha256'
         md_alg = _get_md_alg(digestmod)(message)
         cdef unsigned char[:] c_hash = bytearray(md_alg.digest())
         cdef size_t osize = self.key_size

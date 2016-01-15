@@ -144,3 +144,10 @@ class TestRsa:
         assert_is_not_none(sig)
         assert_true(self.cipher.verify(message, sig, hash.md5))
         assert_false(self.cipher.verify(message + b"\0", sig, hash.md5))
+
+    def test_sign_verify_default_digestmod(self):
+        message = _rnd(4096)
+        sig = self.cipher.sign(message)
+        assert_is_not_none(sig)
+        assert_true(self.cipher.verify(message, sig))
+        assert_false(self.cipher.verify(message + b"\0", sig))
