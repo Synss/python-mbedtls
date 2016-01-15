@@ -108,6 +108,14 @@ cdef class CipherBase:
             return _pk.mbedtls_pk_get_len(&self._ctx)
 
     cpdef verify(self, message, signature, digestmod):
+        """Verify signature, including padding if relevant.
+
+        Arguments:
+            message (bytes): The message to sign.
+            signature (bytes): The signature to verify.
+            digestmod: The digest name or digest constructor.
+
+        """
         md_alg = _get_md_alg(digestmod)(message)
         cdef unsigned char[:] c_hash = bytearray(md_alg.digest())
         cdef unsigned char[:] c_sig = bytearray(signature)
@@ -118,6 +126,13 @@ cdef class CipherBase:
         return ret == 0
 
     cpdef sign(self, message, digestmod):
+        """Make signature, including padding if relevant.
+
+        Arguments:
+            message (bytes): The message to sign.
+            digestmod: The digest name or digest constructor.
+
+        """
         md_alg = _get_md_alg(digestmod)(message)
         cdef unsigned char[:] c_hash = bytearray(md_alg.digest())
         cdef size_t osize = self.key_size
@@ -137,6 +152,12 @@ cdef class CipherBase:
             free(output)
 
     cpdef encrypt(self, message):
+        """Encrypt message (including padding if relevant).
+
+        Arguments:
+            message (bytes): Message to encrypt.
+
+        """
         cdef unsigned char[:] buf = bytearray(message)
         cdef size_t osize = self.key_size
         cdef size_t olen = 0
@@ -154,6 +175,12 @@ cdef class CipherBase:
             free(output)
 
     cpdef decrypt(self, message):
+        """Decrypt message (including padding if relevant).
+
+        Arguments:
+            message (bytes): Message to decrypt.
+
+        """
         cdef unsigned char[:] buf = bytearray(message)
         cdef size_t osize = self.key_size
         cdef size_t olen = 0
