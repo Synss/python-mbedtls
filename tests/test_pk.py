@@ -149,7 +149,7 @@ class TestRsa:
         assert_true(check_pair(cipher, self.cipher))   # Test public half.
         assert_false(check_pair(cipher, cipher))
 
-    @raises(PrivateKeyError)
+    @raises(PkError)
     def test_write_public_der_in_private_raises(self):
         pub = self.cipher._write_public_key_der()
         cipher = RSA()

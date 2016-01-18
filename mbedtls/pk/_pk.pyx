@@ -10,7 +10,7 @@ cimport _pk
 cimport mbedtls.random as _random
 from functools import partial
 import mbedtls.random as _random
-from mbedtls.exceptions import check_error, PrivateKeyError
+from mbedtls.exceptions import check_error, PkError
 import mbedtls.hash as _hash
 
 
@@ -300,7 +300,7 @@ cdef class CipherBase:
         """
         try:
             self._parse_private_key(key, password)
-        except PrivateKeyError:
+        except PkError:
             self._parse_public_key(key)
 
     def export(self, format="PEM"):

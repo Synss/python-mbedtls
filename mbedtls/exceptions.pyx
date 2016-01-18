@@ -7,7 +7,7 @@ __license__ = "Apache License 2.0"
 
 
 __all__ = ("CipherError", "InvalidInputLengthError", "InvalidKeyLengthError",
-           "EntropyError", "MessageDigestError", "PrivateKeyError",
+           "EntropyError", "MessageDigestError", "PkError",
            "check_error",
            )
 
@@ -53,19 +53,19 @@ class MessageDigestError(_ErrorBase):
     """Errors defined in the md module."""
 
 
-class PrivateKeyError(_ErrorBase):
+class PkError(_ErrorBase):
     """Errors defined in the pk module."""
 
 
-class PemError(PrivateKeyError):
+class PemError(PkError):
     """Errors defined in the pem module."""
 
 
-class RsaError(PrivateKeyError):
+class RsaError(PkError):
     """Errors defined in the rsa module."""
 
 
-class EcError(PrivateKeyError):
+class EcError(PkError):
     """Errors defined in the ecp module."""
 
 
@@ -108,30 +108,30 @@ __lookup = {
              "unavailable feature, e.g. hashing/decryption combination"),
     0x1480: (PemError, "bad input parameters to function"),
     # PK errors
-    0x3f80: (PrivateKeyError, "memory allocation failed"),
-    0x3f00: (PrivateKeyError,
+    0x3f80: (PkError, "memory allocation failed"),
+    0x3f00: (PkError,
              "type mismatch, eg attempt to encrypt with an ECDSA key"),
-    0x3e80: (PrivateKeyError, "bad input parameters to function"),
-    0x3e00: (PrivateKeyError, "read/write of file failed"),
-    0x3d80: (PrivateKeyError, "unsupported key version"),
-    0x3d00: (PrivateKeyError, "invalid key tag or value"),
-    0x3c80: (PrivateKeyError,
+    0x3e80: (PkError, "bad input parameters to function"),
+    0x3e00: (PkError, "read/write of file failed"),
+    0x3d80: (PkError, "unsupported key version"),
+    0x3d00: (PkError, "invalid key tag or value"),
+    0x3c80: (PkError,
              "key algorithm is unsupported" +
              "(only RSA and EC are supported)"),
-    0x3c00: (PrivateKeyError, "private key password can't be empty"),
-    0x3b80: (PrivateKeyError,
+    0x3c00: (PkError, "private key password can't be empty"),
+    0x3b80: (PkError,
              "given private key password does not allow" +
              "for correct decryption"),
-    0x3b00: (PrivateKeyError,
+    0x3b00: (PkError,
              "the pubkey tag or value is invalid" +
              "(only RSA and EC are supported)"),
-    0x3a80: (PrivateKeyError, "the algorithm tag or value is invalid"),
-    0x3a00: (PrivateKeyError,
+    0x3a80: (PkError, "the algorithm tag or value is invalid"),
+    0x3a00: (PkError,
              "elliptic curve is unsupported" +
              "(only NIST curves are supported)"),
-    0x3980: (PrivateKeyError,
+    0x3980: (PkError,
              "unavailable feature, eg RSA disabled for RSA key"),
-    0x3900: (PrivateKeyError,
+    0x3900: (PkError,
              "the signature is valid but its length" +
              "is less than expected"),
     # RSA errors
