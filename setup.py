@@ -39,7 +39,7 @@ setup(
     description="mbed TLS (PolarSSL) wrapper",
     author="Mathias Laurin",
     author_email="Mathias.Laurin@users.sf.net",
-    license="Apache 2.0 License",
+    license="MIT License",
     url="https://synss.github.io/python-mbedtls",
     download_url=download_url,
     ext_modules=cythonize(extensions),
@@ -47,7 +47,7 @@ setup(
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Programming Language :: Cython",
-        "License :: OSI Approved :: Apache Software License",
+        "License :: OSI Approved :: MIT License",
         "Topic :: Security :: Cryptography",
     ]
 )

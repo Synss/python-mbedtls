@@ -18,9 +18,10 @@ According to the `official mbed TLS website`_
 License
 =======
 
-`python-mbedtls` is licensed under the Apache 2.0 license in order to be fully
-compatible with mbed TLS.  The Apache 2.0 license enables the use of
-`python-mbedtls` in both open source and closed source projects.
+`python-mbedtls` is licensed under the MIT License (see LICENSE.txt).  This
+enables the use of `python-mbedtls` in both open source and closed source
+projects.  The MIT License is compatible with both GPL and Apache 2.0 license
+under which mbed TLS is distributed.
 
 
 Installation
