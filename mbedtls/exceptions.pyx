@@ -3,7 +3,7 @@
 
 __author__ = "Mathias Laurin"
 __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
-__license__ = "Apache License 2.0"
+__license__ = "MIT License"
 
 
 __all__ = ("CipherError", "InvalidInputLengthError", "InvalidKeyLengthError",

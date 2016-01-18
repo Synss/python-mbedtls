@@ -5,7 +5,7 @@ NIST in 2001.
 
 __author__ = "Mathias Laurin"
 __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
-__license__ = "Apache License 2.0"
+__license__ = "MIT License"
 
 
 cimport _cipher
