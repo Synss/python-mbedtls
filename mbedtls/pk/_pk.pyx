@@ -303,6 +303,30 @@ cdef class CipherBase:
         except PrivateKeyError:
             self._parse_public_key(key)
 
+    def export(self, format="PEM"):
+        """Export the keys.
+
+        Arguments:
+            format (string): One of {"PEM", "DER"}, defaults to PEM.
+
+        Returns:
+            tuple(bytes, bytes): The private key and the public key.
+
+        """
+        prv = b""
+        if self.has_private():
+            if format == "DER":
+                prv = self._write_private_key_der()
+            else:
+                prv = self._write_private_key_pem()
+        pub = b""
+        if self.has_public():
+            if format == "DER":
+                pub = self._write_public_key_der()
+            else:
+                pub = self._write_public_key_pem()
+        return prv, pub
+
 
 cpdef check_pair(CipherBase pub, CipherBase pri):
     """Check if a public-private pair of keys matches."""
