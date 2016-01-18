@@ -26,8 +26,13 @@ cdef class RSA(_pk.CipherBase):
         super().__init__(b"RSA")
         self._rsa = _pk.mbedtls_pk_rsa(self._ctx)
 
-    cpdef int get_mpi_max_size(self):
-        return _pk.MBEDTLS_MPI_MAX_SIZE
+    cpdef bint has_private(self):
+        """Return `True` if the key contains a valid private half."""
+        return _pk.mbedtls_rsa_check_privkey(self._rsa) == 0
+
+    cpdef bint has_public(self):
+        """Return `True` if the key contains a valid public half."""
+        return _pk.mbedtls_rsa_check_pubkey(self._rsa) == 0
 
     cpdef generate(self, unsigned int key_size=2048, int exponent=65537):
         """Generate an RSA keypair.
@@ -40,11 +45,3 @@ cdef class RSA(_pk.CipherBase):
         check_error(_pk.mbedtls_rsa_gen_key(
             self._rsa, &_random.mbedtls_ctr_drbg_random, &__rng._ctx,
             key_size, exponent))
-
-    cpdef _check_public_key(self):
-        """Check a public RSA key."""
-        return _pk.mbedtls_rsa_check_pubkey(self._rsa) == 0
-
-    cpdef _check_private_key(self):
-        """Check a private RSA key."""
-        return _pk.mbedtls_rsa_check_privkey(self._rsa) == 0

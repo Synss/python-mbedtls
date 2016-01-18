@@ -126,6 +126,9 @@ cdef extern from "mbedtls/pk.h":
 cdef class CipherBase:
     cdef mbedtls_pk_context _ctx
 
+    cpdef bint has_private(self)
+    cpdef bint has_public(self)
+
     cpdef sign(self, message, digestmod=*)
     cpdef verify(self, message, signature, digestmod=*)
 

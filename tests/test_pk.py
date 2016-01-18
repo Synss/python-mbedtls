@@ -175,6 +175,24 @@ class TestRsa:
         assert_true(check_pair(cipher, self.cipher))  # Test public half.
         assert_true(check_pair(cipher, cipher))
 
+    def test_has_private_and_has_public_with_private_key(self):
+        cipher = RSA()
+        assert_false(cipher.has_private())
+        assert_false(cipher.has_public())
+
+        cipher.import_(self.cipher._write_private_key_der())
+        assert_true(cipher.has_private())
+        assert_true(cipher.has_public())
+
+    def test_has_private_and_has_public_with_public_key(self):
+        cipher = RSA()
+        assert_false(cipher.has_private())
+        assert_false(cipher.has_public())
+
+        cipher.import_(self.cipher._write_public_key_der())
+        assert_false(cipher.has_private())
+        assert_true(cipher.has_public())
+
     def test_sign_verify(self):
         message = _rnd(4096)
         sig = self.cipher.sign(message, hash.md5)

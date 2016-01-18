@@ -123,6 +123,14 @@ cdef class CipherBase:
         def __get__(self):
             return _pk.mbedtls_pk_get_len(&self._ctx)
 
+    cpdef bint has_private(self):
+        """Return `True` if the key contains a valid private half."""
+        raise NotImplementedError
+
+    cpdef bint has_public(self):
+        """Return `True` if the key contains a valid public half."""
+        raise NotImplementedError
+
     cpdef verify(self, message, signature, digestmod=None):
         """Verify signature, including padding if relevant.
 
