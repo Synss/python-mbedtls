@@ -1,4 +1,4 @@
-"""RSA cryptosystem."""
+"""RSA public-key cryptosystem."""
 
 __author__ = "Mathias Laurin"
 __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
@@ -19,6 +19,8 @@ cdef _random.Random __rng = _pk.get_rng()
 
 
 cdef class RSA(_pk.CipherBase):
+
+    """RSA public-key cryptosystem."""
 
     cdef _pk.mbedtls_rsa_context* _rsa
 

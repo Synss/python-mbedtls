@@ -70,6 +70,8 @@ Hashing module (`md.h`)
 The hashing module is wrapped, which provides message, file, and HMAC
 with the following algorithms: MD5, SHA-1, SHA-2, and RIPEMD-160.
 
+The API follows the recommendations from PEP 452.
+
 
 Symmetric cipher module (`cipher.h`)
 ------------------------------------
@@ -84,8 +86,22 @@ The symmetric cipher module is wrapped, which provides:
   CFB128, CTR, GCM, or CCM mode;
 - DES encryption/decryption in ECB, or CBC mode;
 
+The API follows the recommendations from PEP 272.
+
 Notes:
-   Tagging and padding are not wrapped.
+   - Tagging and padding are not wrapped.
+   - The counter in CTR mode cannot be explicitly provided.
+
+
+Public key module (`pk.h`)
+--------------------------
+
+The RSA cryptosystem is wrapped, which provides:
+
+- Public-private key generation and key import/export in PEM and DER
+  formats;
+- Asymmetric encryption and decryption;
+- Message signature and verification.
 
 
 Contribution
