@@ -13,8 +13,6 @@ from mbedtls.exceptions import check_error
 
 cdef class Entropy:
 
-    cdef mbedtls_entropy_context _ctx
-
     def __cinit__(self):
         """Initialize the context."""
         random.mbedtls_entropy_init(&self._ctx)
@@ -48,9 +46,6 @@ cdef class Entropy:
 
 
 cdef class Random:
-
-    cdef mbedtls_ctr_drbg_context _ctx
-    cdef Entropy _entropy
 
     def __cinit__(self):
         """Initialize the context."""

@@ -14,4 +14,6 @@ html:
 
 clean:
 	$(RM) mbedtls/*.c mbedtls/*.so
+	$(RM) mbedtls/cipher/*.c mbedtls/cipher/*.so
+	$(RM) mbedtls/pk/*.c mbedtls/pk/*.so
 	$(RM) -r build

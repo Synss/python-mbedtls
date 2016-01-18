@@ -32,18 +32,18 @@ def test_get_supported_ciphers():
     assert cl and set(cl).issubset(set(CIPHER_NAME))
 
 
-@raises(UnsupportedCipherError)
-def test_wrong_size_raises_unsupported_cipher():
+@raises(CipherError)
+def test_wrong_size_raises_cipher_error():
     Cipher(b"AES-512-ECB", b"", 0, b"")
 
 
-@raises(UnsupportedCipherError)
-def test_random_name_raises_unsupported_cipher():
+@raises(CipherError)
+def test_random_name_raises_cipher_error():
     Cipher(b"RANDOM TEXT IS NOT A CIPHER", b"", 0, b"")
 
 
-@raises(UnsupportedCipherError)
-def test_zero_length_raises_unsupported_cipher():
+@raises(CipherError)
+def test_zero_length_raises_cipher_error():
     Cipher(b"", b"", 0, b"")
 
 
@@ -294,12 +294,12 @@ def test_fixed_block_size_ciphers():
         if not is_streaming(cipher):
             description = "long_block_raises(%s)" % name.decode()
             test = partial(check_encrypt_raises, cipher, block + _rnd(1),
-                           FullBlockExpectedError)
+                           CipherError)
             test.description = description
             yield test
 
             description = "short_block_raises(%s)" % name.decode()
             test = partial(check_encrypt_raises, cipher, block[1:],
-                           FullBlockExpectedError)
+                           CipherError)
             test.description = description
             yield test

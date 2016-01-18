@@ -19,6 +19,11 @@ extensions = [
     "_cipher __init__".split() +
     "AES ARC4 Blowfish Camellia DES DES3 DES3dbl".split()
 ] + [
+    Extension("mbedtls.pk.%s" % name, ["mbedtls/pk/%s.pyx" % name],
+              libraries=["mbedtls"],
+              include_dirs=["."],) for name in
+    "_pk __init__ RSA".split()
+] + [
     Extension("mbedtls.%s" % name, ["mbedtls/%s.pyx" % name],
               libraries=["mbedtls"],
               include_dirs=["."],)
