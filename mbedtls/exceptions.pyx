@@ -7,7 +7,7 @@ __license__ = "Apache License 2.0"
 
 
 __all__ = ("CipherError", "InvalidInputLengthError", "InvalidKeyLengthError",
-           "EntropyError", "MessageDigestError",
+           "EntropyError", "MessageDigestError", "PrivateKeyError",
            "check_error",
            )
 

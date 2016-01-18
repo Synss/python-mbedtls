@@ -10,7 +10,7 @@ cimport _pk
 cimport mbedtls.random as _random
 from functools import partial
 import mbedtls.random as _random
-from mbedtls.exceptions import check_error
+from mbedtls.exceptions import check_error, PrivateKeyError
 import mbedtls.hash as _hash
 
 
@@ -277,6 +277,23 @@ cdef class CipherBase:
         mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
         check_error(_pk.mbedtls_pk_parse_public_key(
             &self._ctx, &c_key[0], c_key.shape[0]))
+
+    def import_(self, key, password=None):
+        """Import a key (public or private half).
+
+        The public half is automatically generated upon importing a
+        private key.
+
+        Arguments:
+            key (bytes): The key in PEM or DER format.
+            password (bytes, optional): The password for
+                password-protected private keys.
+
+        """
+        try:
+            self._parse_private_key(key, password)
+        except PrivateKeyError:
+            self._parse_public_key(key)
 
 
 cpdef check_pair(CipherBase pub, CipherBase pri):

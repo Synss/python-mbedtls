@@ -7,9 +7,12 @@ from nose.plugins.skip import SkipTest
 from nose.tools import (assert_equal, assert_is_instance,
                         assert_true, assert_false,
                         assert_is_none, assert_is_not_none,
+                        raises,
                         )
 
 import mbedtls.hash as hash
+from mbedtls.exceptions import *
+from mbedtls.exceptions import _ErrorBase
 from mbedtls.pk._pk import _type_from_name, _get_md_alg
 from mbedtls.pk import *
 
@@ -112,31 +115,65 @@ class TestRsa:
         self.cipher.generate(key_size)
 
     def test_keypair(self):
-        check_pair(self.cipher, self.cipher)
+        assert_true(check_pair(self.cipher, self.cipher))
 
-    def test_write_parse_private_key_der(self):
-        key = self.cipher._write_private_key_der()
-        prv = RSA()
-        prv._parse_private_key(key)
-        check_pair(self.cipher, prv)
+    def test_write_and_parse_private_key_der(self):
+        prv = self.cipher._write_private_key_der()
+        cipher = RSA()
+        cipher._parse_private_key(prv)
+        assert_true(check_pair(self.cipher, cipher))  # Test private half.
+        assert_true(check_pair(cipher, self.cipher))  # Test public half.
+        assert_true(check_pair(cipher, cipher))
 
-    def test_write_parse_private_key_pem(self):
-        key = self.cipher._write_private_key_pem()
-        prv = RSA()
-        prv._parse_private_key(key)
-        check_pair(self.cipher, prv)
+    def test_write_and_parse_private_key_pem(self):
+        prv = self.cipher._write_private_key_pem()
+        cipher = RSA()
+        cipher._parse_private_key(prv)
+        assert_true(check_pair(self.cipher, cipher))  # Test private half.
+        assert_true(check_pair(cipher, self.cipher))  # Test public half.
+        assert_true(check_pair(cipher, cipher))
 
-    def test_write_parse_public_key_der(self):
-        key = self.cipher._write_public_key_der()
-        pub = RSA()
-        pub._parse_public_key(key)
-        check_pair(pub, self.cipher)
+    def test_write_and_parse_public_key_der(self):
+        pub = self.cipher._write_public_key_der()
+        cipher = RSA()
+        cipher._parse_public_key(pub)
+        assert_false(check_pair(self.cipher, cipher))  # Test private half.
+        assert_true(check_pair(cipher, self.cipher))   # Test public half.
+        assert_false(check_pair(cipher, cipher))
 
-    def test_write_parse_public_key_pem(self):
-        key = self.cipher._write_public_key_pem()
-        pub = RSA()
-        pub._parse_public_key(key)
-        check_pair(pub, self.cipher)
+    def test_write_and_parse_public_key_pem(self):
+        pub = self.cipher._write_public_key_pem()
+        cipher = RSA()
+        cipher._parse_public_key(pub)
+        assert_false(check_pair(self.cipher, cipher))  # Test private half.
+        assert_true(check_pair(cipher, self.cipher))   # Test public half.
+        assert_false(check_pair(cipher, cipher))
+
+    @raises(PrivateKeyError)
+    def test_write_public_der_in_private_raises(self):
+        pub = self.cipher._write_public_key_der()
+        cipher = RSA()
+        cipher._parse_private_key(pub)
+
+    @raises(_ErrorBase)
+    def test_write_private_der_in_public_raises(self):
+        prv = self.cipher._write_private_key_der()
+        cipher = RSA()
+        cipher._parse_public_key(prv)
+
+    def test_import_public_key(self):
+        cipher = RSA()
+        cipher.import_(self.cipher._write_public_key_der())
+        assert_false(check_pair(self.cipher, cipher))  # Test private half.
+        assert_true(check_pair(cipher, self.cipher))   # Test public half.
+        assert_false(check_pair(cipher, cipher))
+
+    def test_import_private_key(self):
+        cipher = RSA()
+        cipher.import_(self.cipher._write_private_key_der())
+        assert_true(check_pair(self.cipher, cipher))  # Test private half.
+        assert_true(check_pair(cipher, self.cipher))  # Test public half.
+        assert_true(check_pair(cipher, cipher))
 
     def test_sign_verify(self):
         message = _rnd(4096)
