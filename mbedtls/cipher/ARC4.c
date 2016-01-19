@@ -678,8 +678,8 @@ static char __pyx_k_key_size[] = "key_size";
 static char __pyx_k_copyright[] = "__copyright__";
 static char __pyx_k_block_size[] = "block_size";
 static char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
+static char __pyx_k_MIT_License[] = "MIT License";
 static char __pyx_k_Mathias_Laurin[] = "Mathias Laurin";
-static char __pyx_k_Apache_License_2_0[] = "Apache License 2.0";
 static char __pyx_k_mbedtls_exceptions[] = "mbedtls.exceptions";
 static char __pyx_k_mbedtls_cipher_ARC4[] = "mbedtls.cipher.ARC4";
 static char __pyx_k_InvalidKeyLengthError[] = "InvalidKeyLengthError";
@@ -688,9 +688,9 @@ static char __pyx_k_key_size_must_be_i_bytes_got_i[] = "key size must be %i byte
 static char __pyx_k_Alleged_River_Cipher_4_cipher_AR[] = "Alleged River Cipher 4 cipher (ARC4 or ARCFOUR) designed in 1987\nat RSA Security.";
 static char __pyx_k_Copyright_2016_Elaborated_Networ[] = "Copyright 2016, Elaborated Networks GmbH";
 static PyObject *__pyx_kp_s_ARC4_i;
-static PyObject *__pyx_kp_s_Apache_License_2_0;
 static PyObject *__pyx_kp_s_Copyright_2016_Elaborated_Networ;
 static PyObject *__pyx_n_s_InvalidKeyLengthError;
+static PyObject *__pyx_kp_s_MIT_License;
 static PyObject *__pyx_kp_s_Mathias_Laurin;
 static PyObject *__pyx_n_s__2;
 static PyObject *__pyx_n_s_ascii;
@@ -1263,9 +1263,9 @@ static struct PyModuleDef __pyx_moduledef = {
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_ARC4_i, __pyx_k_ARC4_i, sizeof(__pyx_k_ARC4_i), 0, 0, 1, 0},
-  {&__pyx_kp_s_Apache_License_2_0, __pyx_k_Apache_License_2_0, sizeof(__pyx_k_Apache_License_2_0), 0, 0, 1, 0},
   {&__pyx_kp_s_Copyright_2016_Elaborated_Networ, __pyx_k_Copyright_2016_Elaborated_Networ, sizeof(__pyx_k_Copyright_2016_Elaborated_Networ), 0, 0, 1, 0},
   {&__pyx_n_s_InvalidKeyLengthError, __pyx_k_InvalidKeyLengthError, sizeof(__pyx_k_InvalidKeyLengthError), 0, 0, 1, 1},
+  {&__pyx_kp_s_MIT_License, __pyx_k_MIT_License, sizeof(__pyx_k_MIT_License), 0, 0, 1, 0},
   {&__pyx_kp_s_Mathias_Laurin, __pyx_k_Mathias_Laurin, sizeof(__pyx_k_Mathias_Laurin), 0, 0, 1, 0},
   {&__pyx_n_s__2, __pyx_k__2, sizeof(__pyx_k__2), 0, 0, 1, 1},
   {&__pyx_n_s_ascii, __pyx_k_ascii, sizeof(__pyx_k_ascii), 0, 0, 1, 1},
@@ -1438,7 +1438,7 @@ PyMODINIT_FUNC PyInit_ARC4(void)
  * 
  * __author__ = "Mathias Laurin"             # <<<<<<<<<<<<<<
  * __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
- * __license__ = "Apache License 2.0"
+ * __license__ = "MIT License"
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_author, __pyx_kp_s_Mathias_Laurin) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
@@ -1446,7 +1446,7 @@ PyMODINIT_FUNC PyInit_ARC4(void)
  * 
  * __author__ = "Mathias Laurin"
  * __copyright__ = "Copyright 2016, Elaborated Networks GmbH"             # <<<<<<<<<<<<<<
- * __license__ = "Apache License 2.0"
+ * __license__ = "MIT License"
  * 
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_copyright, __pyx_kp_s_Copyright_2016_Elaborated_Networ) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 6; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -1454,11 +1454,11 @@ PyMODINIT_FUNC PyInit_ARC4(void)
   /* "mbedtls/cipher/ARC4.pyx":7
  * __author__ = "Mathias Laurin"
  * __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
- * __license__ = "Apache License 2.0"             # <<<<<<<<<<<<<<
+ * __license__ = "MIT License"             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_Apache_License_2_0) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_MIT_License) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "mbedtls/cipher/ARC4.pyx":11
  * 

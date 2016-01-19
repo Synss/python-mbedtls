@@ -1203,7 +1203,6 @@ static char __pyx_k_md4[] = "md4";
 static char __pyx_k_md5[] = "md5";
 static char __pyx_k_new[] = "new";
 static char __pyx_k_obj[] = "obj";
-static char __pyx_k_Hash[] = "Hash";
 static char __pyx_k_base[] = "base";
 static char __pyx_k_copy[] = "copy";
 static char __pyx_k_init[] = "__init__";
@@ -1250,6 +1249,7 @@ static char __pyx_k_ripemd160[] = "ripemd160";
 static char __pyx_k_IndexError[] = "IndexError";
 static char __pyx_k_ValueError[] = "ValueError";
 static char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
+static char __pyx_k_MIT_License[] = "MIT License";
 static char __pyx_k_MemoryError[] = "MemoryError";
 static char __pyx_k_check_error[] = "check_error";
 static char __pyx_k_mbedtls_hmac[] = "mbedtls.hmac";
@@ -1257,7 +1257,6 @@ static char __pyx_k_pyx_getbuffer[] = "__pyx_getbuffer";
 static char __pyx_k_Mathias_Laurin[] = "Mathias Laurin";
 static char __pyx_k_allocate_buffer[] = "allocate_buffer";
 static char __pyx_k_dtype_is_object[] = "dtype_is_object";
-static char __pyx_k_Apache_License_2_0[] = "Apache License 2.0";
 static char __pyx_k_mbedtls_exceptions[] = "mbedtls.exceptions";
 static char __pyx_k_strided_and_direct[] = "<strided and direct>";
 static char __pyx_k_NotImplementedError[] = "NotImplementedError";
@@ -1292,18 +1291,17 @@ static char __pyx_k_Unable_to_convert_item_to_object[] = "Unable to convert item
 static char __pyx_k_got_differing_extents_in_dimensi[] = "got differing extents in dimension %d (got %d and %d)";
 static char __pyx_k_unable_to_allocate_shape_and_str[] = "unable to allocate shape and strides.";
 static PyObject *__pyx_n_s_ASCII;
-static PyObject *__pyx_kp_s_Apache_License_2_0;
 static PyObject *__pyx_kp_s_Buffer_view_does_not_expose_stri;
 static PyObject *__pyx_kp_s_Can_only_create_a_buffer_that_is;
 static PyObject *__pyx_kp_s_Cannot_index_with_type_s;
 static PyObject *__pyx_kp_s_Copyright_2015_Elaborated_Networ;
 static PyObject *__pyx_n_s_Ellipsis;
 static PyObject *__pyx_kp_s_Empty_shape_tuple_for_cython_arr;
-static PyObject *__pyx_n_s_Hash;
 static PyObject *__pyx_n_s_IndexError;
 static PyObject *__pyx_kp_s_Indirect_dimensions_not_supporte;
 static PyObject *__pyx_kp_s_Invalid_mode_expected_c_or_fortr;
 static PyObject *__pyx_kp_s_Invalid_shape_in_axis_d_d;
+static PyObject *__pyx_kp_s_MIT_License;
 static PyObject *__pyx_kp_s_Mathias_Laurin;
 static PyObject *__pyx_n_s_MemoryError;
 static PyObject *__pyx_kp_s_MemoryView_of_r_at_0x_x;
@@ -1476,7 +1474,7 @@ static PyObject *__pyx_codeobj__30;
 static PyObject *__pyx_codeobj__32;
 static PyObject *__pyx_codeobj__34;
 
-/* "mbedtls/hmac.pyx":36
+/* "mbedtls/hmac.pyx":40
  * 
  *     """
  *     def __init__(self, key, name, buffer=None):             # <<<<<<<<<<<<<<
@@ -1518,7 +1516,7 @@ static int __pyx_pw_7mbedtls_4hmac_4Hmac_1__init__(PyObject *__pyx_v_self, PyObj
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_name)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 36; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  2:
         if (kw_args > 0) {
@@ -1527,7 +1525,7 @@ static int __pyx_pw_7mbedtls_4hmac_4Hmac_1__init__(PyObject *__pyx_v_self, PyObj
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 36; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -1544,7 +1542,7 @@ static int __pyx_pw_7mbedtls_4hmac_4Hmac_1__init__(PyObject *__pyx_v_self, PyObj
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 36; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("mbedtls.hmac.Hmac.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -1575,14 +1573,14 @@ static int __pyx_pf_7mbedtls_4hmac_4Hmac___init__(struct __pyx_obj_7mbedtls_4hma
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "mbedtls/hmac.pyx":37
+  /* "mbedtls/hmac.pyx":41
  *     """
  *     def __init__(self, key, name, buffer=None):
  *         super().__init__(name, buffer, 1)             # <<<<<<<<<<<<<<
  *         cdef unsigned char[:] c_key = bytearray(key)
  *         check_error(_md.mbedtls_md_hmac_starts(
  */
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac));
   __Pyx_GIVEREF(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac));
@@ -1590,10 +1588,10 @@ static int __pyx_pf_7mbedtls_4hmac_4Hmac___init__(struct __pyx_obj_7mbedtls_4hma
   __Pyx_INCREF(((PyObject *)__pyx_v_self));
   __Pyx_GIVEREF(((PyObject *)__pyx_v_self));
   PyTuple_SET_ITEM(__pyx_t_2, 1, ((PyObject *)__pyx_v_self));
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_init); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_init); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -1608,7 +1606,7 @@ static int __pyx_pf_7mbedtls_4hmac_4Hmac___init__(struct __pyx_obj_7mbedtls_4hma
       __pyx_t_4 = 1;
     }
   }
-  __pyx_t_5 = PyTuple_New(3+__pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = PyTuple_New(3+__pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   if (__pyx_t_3) {
     __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3); __pyx_t_3 = NULL;
@@ -1622,45 +1620,45 @@ static int __pyx_pf_7mbedtls_4hmac_4Hmac___init__(struct __pyx_obj_7mbedtls_4hma
   __Pyx_INCREF(__pyx_int_1);
   __Pyx_GIVEREF(__pyx_int_1);
   PyTuple_SET_ITEM(__pyx_t_5, 2+__pyx_t_4, __pyx_int_1);
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "mbedtls/hmac.pyx":38
+  /* "mbedtls/hmac.pyx":42
  *     def __init__(self, key, name, buffer=None):
  *         super().__init__(name, buffer, 1)
  *         cdef unsigned char[:] c_key = bytearray(key)             # <<<<<<<<<<<<<<
  *         check_error(_md.mbedtls_md_hmac_starts(
  *             &self._ctx, &c_key[0], c_key.shape[0]))
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_v_key);
   __Pyx_GIVEREF(__pyx_v_key);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_key);
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyByteArray_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyByteArray_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_char(__pyx_t_2);
-  if (unlikely(!__pyx_t_6.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__pyx_t_6.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_c_key = __pyx_t_6;
   __pyx_t_6.memview = NULL;
   __pyx_t_6.data = NULL;
 
-  /* "mbedtls/hmac.pyx":39
+  /* "mbedtls/hmac.pyx":43
  *         super().__init__(name, buffer, 1)
  *         cdef unsigned char[:] c_key = bytearray(key)
  *         check_error(_md.mbedtls_md_hmac_starts(             # <<<<<<<<<<<<<<
  *             &self._ctx, &c_key[0], c_key.shape[0]))
  *         self.update(buffer)
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_check_error); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_check_error); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
 
-  /* "mbedtls/hmac.pyx":40
+  /* "mbedtls/hmac.pyx":44
  *         cdef unsigned char[:] c_key = bytearray(key)
  *         check_error(_md.mbedtls_md_hmac_starts(
  *             &self._ctx, &c_key[0], c_key.shape[0]))             # <<<<<<<<<<<<<<
@@ -1675,17 +1673,17 @@ static int __pyx_pf_7mbedtls_4hmac_4Hmac___init__(struct __pyx_obj_7mbedtls_4hma
   } else if (unlikely(__pyx_t_7 >= __pyx_v_c_key.shape[0])) __pyx_t_8 = 0;
   if (unlikely(__pyx_t_8 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_8);
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "mbedtls/hmac.pyx":39
+  /* "mbedtls/hmac.pyx":43
  *         super().__init__(name, buffer, 1)
  *         cdef unsigned char[:] c_key = bytearray(key)
  *         check_error(_md.mbedtls_md_hmac_starts(             # <<<<<<<<<<<<<<
  *             &self._ctx, &c_key[0], c_key.shape[0]))
  *         self.update(buffer)
  */
-  __pyx_t_5 = __Pyx_PyInt_From_int(mbedtls_md_hmac_starts((&__pyx_v_self->__pyx_base._ctx), (&(*((unsigned char *) ( /* dim=0 */ (__pyx_v_c_key.data + __pyx_t_7 * __pyx_v_c_key.strides[0]) )))), (__pyx_v_c_key.shape[0]))); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyInt_From_int(mbedtls_md_hmac_starts((&__pyx_v_self->__pyx_base._ctx), (&(*((unsigned char *) ( /* dim=0 */ (__pyx_v_c_key.data + __pyx_t_7 * __pyx_v_c_key.strides[0]) )))), (__pyx_v_c_key.shape[0]))); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_1))) {
@@ -1698,35 +1696,35 @@ static int __pyx_pf_7mbedtls_4hmac_4Hmac___init__(struct __pyx_obj_7mbedtls_4hma
     }
   }
   if (!__pyx_t_3) {
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_5); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_5); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_GOTREF(__pyx_t_2);
   } else {
-    __pyx_t_9 = PyTuple_New(1+1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_9 = PyTuple_New(1+1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_3); __pyx_t_3 = NULL;
     __Pyx_GIVEREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_9, 0+1, __pyx_t_5);
     __pyx_t_5 = 0;
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_9, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_9, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":41
+  /* "mbedtls/hmac.pyx":45
  *         check_error(_md.mbedtls_md_hmac_starts(
  *             &self._ctx, &c_key[0], c_key.shape[0]))
  *         self.update(buffer)             # <<<<<<<<<<<<<<
  * 
  *     cdef _update(self, const unsigned char *input, size_t ilen):
  */
-  __pyx_t_2 = ((struct __pyx_vtabstruct_7mbedtls_4hmac_Hmac *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.update(((struct __pyx_obj_7mbedtls_3_md_MDBase *)__pyx_v_self), __pyx_v_buffer, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = ((struct __pyx_vtabstruct_7mbedtls_4hmac_Hmac *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.update(((struct __pyx_obj_7mbedtls_3_md_MDBase *)__pyx_v_self), __pyx_v_buffer, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":36
+  /* "mbedtls/hmac.pyx":40
  * 
  *     """
  *     def __init__(self, key, name, buffer=None):             # <<<<<<<<<<<<<<
@@ -1752,7 +1750,7 @@ static int __pyx_pf_7mbedtls_4hmac_4Hmac___init__(struct __pyx_obj_7mbedtls_4hma
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":43
+/* "mbedtls/hmac.pyx":47
  *         self.update(buffer)
  * 
  *     cdef _update(self, const unsigned char *input, size_t ilen):             # <<<<<<<<<<<<<<
@@ -1769,7 +1767,7 @@ static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac__update(struct __pyx_obj_7mbedtls_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_update", 0);
 
-  /* "mbedtls/hmac.pyx":45
+  /* "mbedtls/hmac.pyx":49
  *     cdef _update(self, const unsigned char *input, size_t ilen):
  *         """Update the HMAC object with `buffer`."""
  *         return _md.mbedtls_md_hmac_update(&self._ctx, input, ilen)             # <<<<<<<<<<<<<<
@@ -1777,13 +1775,13 @@ static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac__update(struct __pyx_obj_7mbedtls_
  *     cdef _finish(self, unsigned char *output):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(mbedtls_md_hmac_update((&__pyx_v_self->__pyx_base._ctx), __pyx_v_input, __pyx_v_ilen)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(mbedtls_md_hmac_update((&__pyx_v_self->__pyx_base._ctx), __pyx_v_input, __pyx_v_ilen)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":43
+  /* "mbedtls/hmac.pyx":47
  *         self.update(buffer)
  * 
  *     cdef _update(self, const unsigned char *input, size_t ilen):             # <<<<<<<<<<<<<<
@@ -1802,48 +1800,92 @@ static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac__update(struct __pyx_obj_7mbedtls_
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":47
+/* "mbedtls/hmac.pyx":51
  *         return _md.mbedtls_md_hmac_update(&self._ctx, input, ilen)
  * 
  *     cdef _finish(self, unsigned char *output):             # <<<<<<<<<<<<<<
  *         """Return the HMAC of key and message."""
- *         return _md.mbedtls_md_hmac_finish(&self._ctx, output)
+ *         ret = _md.mbedtls_md_hmac_finish(&self._ctx, output)
  */
 
 static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac__finish(struct __pyx_obj_7mbedtls_4hmac_Hmac *__pyx_v_self, unsigned char *__pyx_v_output) {
+  int __pyx_v_ret;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
+  int __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_finish", 0);
 
-  /* "mbedtls/hmac.pyx":49
+  /* "mbedtls/hmac.pyx":53
  *     cdef _finish(self, unsigned char *output):
  *         """Return the HMAC of key and message."""
- *         return _md.mbedtls_md_hmac_finish(&self._ctx, output)             # <<<<<<<<<<<<<<
+ *         ret = _md.mbedtls_md_hmac_finish(&self._ctx, output)             # <<<<<<<<<<<<<<
+ *         if ret != 0:
+ *             return ret
+ */
+  __pyx_v_ret = mbedtls_md_hmac_finish((&__pyx_v_self->__pyx_base._ctx), __pyx_v_output);
+
+  /* "mbedtls/hmac.pyx":54
+ *         """Return the HMAC of key and message."""
+ *         ret = _md.mbedtls_md_hmac_finish(&self._ctx, output)
+ *         if ret != 0:             # <<<<<<<<<<<<<<
+ *             return ret
+ *         return _md.mbedtls_md_hmac_reset(&self._ctx)
+ */
+  __pyx_t_1 = ((__pyx_v_ret != 0) != 0);
+  if (__pyx_t_1) {
+
+    /* "mbedtls/hmac.pyx":55
+ *         ret = _md.mbedtls_md_hmac_finish(&self._ctx, output)
+ *         if ret != 0:
+ *             return ret             # <<<<<<<<<<<<<<
+ *         return _md.mbedtls_md_hmac_reset(&self._ctx)
+ * 
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_ret); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 55; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_r = __pyx_t_2;
+    __pyx_t_2 = 0;
+    goto __pyx_L0;
+
+    /* "mbedtls/hmac.pyx":54
+ *         """Return the HMAC of key and message."""
+ *         ret = _md.mbedtls_md_hmac_finish(&self._ctx, output)
+ *         if ret != 0:             # <<<<<<<<<<<<<<
+ *             return ret
+ *         return _md.mbedtls_md_hmac_reset(&self._ctx)
+ */
+  }
+
+  /* "mbedtls/hmac.pyx":56
+ *         if ret != 0:
+ *             return ret
+ *         return _md.mbedtls_md_hmac_reset(&self._ctx)             # <<<<<<<<<<<<<<
  * 
  *     cpdef copy(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(mbedtls_md_hmac_finish((&__pyx_v_self->__pyx_base._ctx), __pyx_v_output)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
+  __pyx_t_2 = __Pyx_PyInt_From_int(mbedtls_md_hmac_reset((&__pyx_v_self->__pyx_base._ctx))); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 56; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":47
+  /* "mbedtls/hmac.pyx":51
  *         return _md.mbedtls_md_hmac_update(&self._ctx, input, ilen)
  * 
  *     cdef _finish(self, unsigned char *output):             # <<<<<<<<<<<<<<
  *         """Return the HMAC of key and message."""
- *         return _md.mbedtls_md_hmac_finish(&self._ctx, output)
+ *         ret = _md.mbedtls_md_hmac_finish(&self._ctx, output)
  */
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_AddTraceback("mbedtls.hmac.Hmac._finish", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
@@ -1852,8 +1894,8 @@ static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac__finish(struct __pyx_obj_7mbedtls_
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":51
- *         return _md.mbedtls_md_hmac_finish(&self._ctx, output)
+/* "mbedtls/hmac.pyx":58
+ *         return _md.mbedtls_md_hmac_reset(&self._ctx)
  * 
  *     cpdef copy(self):             # <<<<<<<<<<<<<<
  *         """Return a copy ("clone") of the HMAC object.
@@ -1876,7 +1918,7 @@ static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac_copy(CYTHON_UNUSED struct __pyx_ob
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 58; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7mbedtls_4hmac_4Hmac_3copy)) {
       __Pyx_XDECREF(__pyx_r);
@@ -1892,10 +1934,10 @@ static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac_copy(CYTHON_UNUSED struct __pyx_ob
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 58; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 58; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -1907,7 +1949,7 @@ static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac_copy(CYTHON_UNUSED struct __pyx_ob
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "mbedtls/hmac.pyx":58
+  /* "mbedtls/hmac.pyx":65
  * 
  *         """
  *         raise NotImplementedError             # <<<<<<<<<<<<<<
@@ -1915,10 +1957,10 @@ static PyObject *__pyx_f_7mbedtls_4hmac_4Hmac_copy(CYTHON_UNUSED struct __pyx_ob
  * 
  */
   __Pyx_Raise(__pyx_builtin_NotImplementedError, 0, 0, 0);
-  {__pyx_filename = __pyx_f[0]; __pyx_lineno = 58; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":51
- *         return _md.mbedtls_md_hmac_finish(&self._ctx, output)
+  /* "mbedtls/hmac.pyx":58
+ *         return _md.mbedtls_md_hmac_reset(&self._ctx)
  * 
  *     cpdef copy(self):             # <<<<<<<<<<<<<<
  *         """Return a copy ("clone") of the HMAC object.
@@ -1962,7 +2004,7 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_4Hmac_2copy(struct __pyx_obj_7mbedtls_4
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("copy", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7mbedtls_4hmac_4Hmac_copy(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7mbedtls_4hmac_4Hmac_copy(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 58; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -1979,7 +2021,7 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_4Hmac_2copy(struct __pyx_obj_7mbedtls_4
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":61
+/* "mbedtls/hmac.pyx":68
  * 
  * 
  * def new(key, buffer=None, digestmod=None):             # <<<<<<<<<<<<<<
@@ -2033,7 +2075,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_1new(PyObject *__pyx_self, PyObject *__
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "new") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "new") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -2050,7 +2092,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_1new(PyObject *__pyx_self, PyObject *__
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("new", 0, 1, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("new", 0, 1, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("mbedtls.hmac.new", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -2076,7 +2118,7 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_new(CYTHON_UNUSED PyObject *__pyx_self,
   __Pyx_RefNannySetupContext("new", 0);
   __Pyx_INCREF(__pyx_v_digestmod);
 
-  /* "mbedtls/hmac.pyx":66
+  /* "mbedtls/hmac.pyx":73
  * 
  *     """
  *     if digestmod is None:             # <<<<<<<<<<<<<<
@@ -2087,7 +2129,7 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_new(CYTHON_UNUSED PyObject *__pyx_self,
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "mbedtls/hmac.pyx":67
+    /* "mbedtls/hmac.pyx":74
  *     """
  *     if digestmod is None:
  *         digestmod = "md5"             # <<<<<<<<<<<<<<
@@ -2097,7 +2139,7 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_new(CYTHON_UNUSED PyObject *__pyx_self,
     __Pyx_INCREF(__pyx_n_s_md5);
     __Pyx_DECREF_SET(__pyx_v_digestmod, __pyx_n_s_md5);
 
-    /* "mbedtls/hmac.pyx":66
+    /* "mbedtls/hmac.pyx":73
  * 
  *     """
  *     if digestmod is None:             # <<<<<<<<<<<<<<
@@ -2106,7 +2148,7 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_new(CYTHON_UNUSED PyObject *__pyx_self,
  */
   }
 
-  /* "mbedtls/hmac.pyx":68
+  /* "mbedtls/hmac.pyx":75
  *     if digestmod is None:
  *         digestmod = "md5"
  *     return Hmac(key, digestmod, buffer)             # <<<<<<<<<<<<<<
@@ -2114,7 +2156,7 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_new(CYTHON_UNUSED PyObject *__pyx_self,
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_3 = PyTuple_New(3); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyTuple_New(3); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_INCREF(__pyx_v_key);
   __Pyx_GIVEREF(__pyx_v_key);
@@ -2125,14 +2167,14 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_new(CYTHON_UNUSED PyObject *__pyx_self,
   __Pyx_INCREF(__pyx_v_buffer);
   __Pyx_GIVEREF(__pyx_v_buffer);
   PyTuple_SET_ITEM(__pyx_t_3, 2, __pyx_v_buffer);
-  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac), __pyx_t_3, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac), __pyx_t_3, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_r = __pyx_t_4;
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":61
+  /* "mbedtls/hmac.pyx":68
  * 
  * 
  * def new(key, buffer=None, digestmod=None):             # <<<<<<<<<<<<<<
@@ -2153,12 +2195,12 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_new(CYTHON_UNUSED PyObject *__pyx_self,
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":71
+/* "mbedtls/hmac.pyx":78
  * 
  * 
  * def md2(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """MD2 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md2")
+ *     return Hmac(key, "md2", buffer)
  */
 
 /* Python wrapper */
@@ -2199,7 +2241,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_3md2(PyObject *__pyx_self, PyObject *__
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "md2") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "md2") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -2214,7 +2256,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_3md2(PyObject *__pyx_self, PyObject *__
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("md2", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("md2", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("mbedtls.hmac.md2", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -2232,57 +2274,49 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_2md2(CYTHON_UNUSED PyObject *__pyx_self
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("md2", 0);
 
-  /* "mbedtls/hmac.pyx":73
+  /* "mbedtls/hmac.pyx":80
  * def md2(key, buffer=None):
  *     """MD2 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md2")             # <<<<<<<<<<<<<<
+ *     return Hmac(key, "md2", buffer)             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 80; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_key);
   __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
+  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_key);
+  __Pyx_INCREF(__pyx_n_s_md2);
+  __Pyx_GIVEREF(__pyx_n_s_md2);
+  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_md2);
   __Pyx_INCREF(__pyx_v_buffer);
   __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_md2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_v_buffer);
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 80; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":71
+  /* "mbedtls/hmac.pyx":78
  * 
  * 
  * def md2(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """MD2 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md2")
+ *     return Hmac(key, "md2", buffer)
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_AddTraceback("mbedtls.hmac.md2", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -2291,12 +2325,12 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_2md2(CYTHON_UNUSED PyObject *__pyx_self
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":76
+/* "mbedtls/hmac.pyx":83
  * 
  * 
  * def md4(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """MD4 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md4")
+ *     return Hmac(key, "md4", buffer)
  */
 
 /* Python wrapper */
@@ -2337,7 +2371,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_5md4(PyObject *__pyx_self, PyObject *__
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "md4") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "md4") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -2352,7 +2386,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_5md4(PyObject *__pyx_self, PyObject *__
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("md4", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("md4", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("mbedtls.hmac.md4", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -2370,57 +2404,49 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_4md4(CYTHON_UNUSED PyObject *__pyx_self
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("md4", 0);
 
-  /* "mbedtls/hmac.pyx":78
+  /* "mbedtls/hmac.pyx":85
  * def md4(key, buffer=None):
  *     """MD4 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md4")             # <<<<<<<<<<<<<<
+ *     return Hmac(key, "md4", buffer)             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 85; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_key);
   __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
+  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_key);
+  __Pyx_INCREF(__pyx_n_s_md4);
+  __Pyx_GIVEREF(__pyx_n_s_md4);
+  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_md4);
   __Pyx_INCREF(__pyx_v_buffer);
   __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_md4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_v_buffer);
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 85; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":76
+  /* "mbedtls/hmac.pyx":83
  * 
  * 
  * def md4(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """MD4 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md4")
+ *     return Hmac(key, "md4", buffer)
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_AddTraceback("mbedtls.hmac.md4", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -2429,12 +2455,12 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_4md4(CYTHON_UNUSED PyObject *__pyx_self
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":81
+/* "mbedtls/hmac.pyx":88
  * 
  * 
  * def md5(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """MD5 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md5")
+ *     return Hmac(key, "md5", buffer)
  */
 
 /* Python wrapper */
@@ -2475,7 +2501,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_7md5(PyObject *__pyx_self, PyObject *__
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "md5") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "md5") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -2490,7 +2516,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_7md5(PyObject *__pyx_self, PyObject *__
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("md5", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("md5", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("mbedtls.hmac.md5", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -2508,57 +2534,49 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_6md5(CYTHON_UNUSED PyObject *__pyx_self
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("md5", 0);
 
-  /* "mbedtls/hmac.pyx":83
+  /* "mbedtls/hmac.pyx":90
  * def md5(key, buffer=None):
  *     """MD5 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md5")             # <<<<<<<<<<<<<<
+ *     return Hmac(key, "md5", buffer)             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_key);
   __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
+  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_key);
+  __Pyx_INCREF(__pyx_n_s_md5);
+  __Pyx_GIVEREF(__pyx_n_s_md5);
+  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_md5);
   __Pyx_INCREF(__pyx_v_buffer);
   __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_md5) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_v_buffer);
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":81
+  /* "mbedtls/hmac.pyx":88
  * 
  * 
  * def md5(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """MD5 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md5")
+ *     return Hmac(key, "md5", buffer)
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_AddTraceback("mbedtls.hmac.md5", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -2567,17 +2585,17 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_6md5(CYTHON_UNUSED PyObject *__pyx_self
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":86
+/* "mbedtls/hmac.pyx":93
  * 
  * 
  * def sha1(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 1 (SHA-1)."""
- *     return Hash(key, buffer, digestmod="sha1")
+ *     """Secure Hmac Algorithm 1 (SHA-1)."""
+ *     return Hmac(key, "sha1", buffer)
  */
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7mbedtls_4hmac_9sha1(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_8sha1[] = "Secure Hash Algorithm 1 (SHA-1).";
+static char __pyx_doc_7mbedtls_4hmac_8sha1[] = "Secure Hmac Algorithm 1 (SHA-1).";
 static PyMethodDef __pyx_mdef_7mbedtls_4hmac_9sha1 = {"sha1", (PyCFunction)__pyx_pw_7mbedtls_4hmac_9sha1, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_8sha1};
 static PyObject *__pyx_pw_7mbedtls_4hmac_9sha1(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_key = 0;
@@ -2613,7 +2631,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_9sha1(PyObject *__pyx_self, PyObject *_
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha1") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha1") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -2628,7 +2646,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_9sha1(PyObject *__pyx_self, PyObject *_
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("sha1", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("sha1", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("mbedtls.hmac.sha1", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -2646,57 +2664,49 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_8sha1(CYTHON_UNUSED PyObject *__pyx_sel
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("sha1", 0);
 
-  /* "mbedtls/hmac.pyx":88
+  /* "mbedtls/hmac.pyx":95
  * def sha1(key, buffer=None):
- *     """Secure Hash Algorithm 1 (SHA-1)."""
- *     return Hash(key, buffer, digestmod="sha1")             # <<<<<<<<<<<<<<
+ *     """Secure Hmac Algorithm 1 (SHA-1)."""
+ *     return Hmac(key, "sha1", buffer)             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_key);
   __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
+  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_key);
+  __Pyx_INCREF(__pyx_n_s_sha1);
+  __Pyx_GIVEREF(__pyx_n_s_sha1);
+  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_sha1);
   __Pyx_INCREF(__pyx_v_buffer);
   __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_sha1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_v_buffer);
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":86
+  /* "mbedtls/hmac.pyx":93
  * 
  * 
  * def sha1(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 1 (SHA-1)."""
- *     return Hash(key, buffer, digestmod="sha1")
+ *     """Secure Hmac Algorithm 1 (SHA-1)."""
+ *     return Hmac(key, "sha1", buffer)
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_AddTraceback("mbedtls.hmac.sha1", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -2705,17 +2715,17 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_8sha1(CYTHON_UNUSED PyObject *__pyx_sel
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":91
+/* "mbedtls/hmac.pyx":98
  * 
  * 
  * def sha224(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha224")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 224 bits hash value."""
+ *     return Hmac(key, "sha224", buffer)
  */
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7mbedtls_4hmac_11sha224(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_10sha224[] = "Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value.";
+static char __pyx_doc_7mbedtls_4hmac_10sha224[] = "Secure Hmac Algorithm 2 (SHA-2) with 224 bits hash value.";
 static PyMethodDef __pyx_mdef_7mbedtls_4hmac_11sha224 = {"sha224", (PyCFunction)__pyx_pw_7mbedtls_4hmac_11sha224, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_10sha224};
 static PyObject *__pyx_pw_7mbedtls_4hmac_11sha224(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_key = 0;
@@ -2751,7 +2761,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_11sha224(PyObject *__pyx_self, PyObject
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha224") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha224") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -2766,7 +2776,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_11sha224(PyObject *__pyx_self, PyObject
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("sha224", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("sha224", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("mbedtls.hmac.sha224", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -2784,57 +2794,49 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_10sha224(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("sha224", 0);
 
-  /* "mbedtls/hmac.pyx":93
+  /* "mbedtls/hmac.pyx":100
  * def sha224(key, buffer=None):
- *     """Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha224")             # <<<<<<<<<<<<<<
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 224 bits hash value."""
+ *     return Hmac(key, "sha224", buffer)             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 100; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_key);
   __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
+  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_key);
+  __Pyx_INCREF(__pyx_n_s_sha224);
+  __Pyx_GIVEREF(__pyx_n_s_sha224);
+  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_sha224);
   __Pyx_INCREF(__pyx_v_buffer);
   __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_sha224) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_v_buffer);
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 100; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":91
+  /* "mbedtls/hmac.pyx":98
  * 
  * 
  * def sha224(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha224")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 224 bits hash value."""
+ *     return Hmac(key, "sha224", buffer)
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_AddTraceback("mbedtls.hmac.sha224", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -2843,17 +2845,17 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_10sha224(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":96
+/* "mbedtls/hmac.pyx":103
  * 
  * 
  * def sha256(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha256")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 256 bits hash value."""
+ *     return Hmac(key, "sha256", buffer)
  */
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7mbedtls_4hmac_13sha256(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_12sha256[] = "Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value.";
+static char __pyx_doc_7mbedtls_4hmac_12sha256[] = "Secure Hmac Algorithm 2 (SHA-2) with 256 bits hash value.";
 static PyMethodDef __pyx_mdef_7mbedtls_4hmac_13sha256 = {"sha256", (PyCFunction)__pyx_pw_7mbedtls_4hmac_13sha256, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_12sha256};
 static PyObject *__pyx_pw_7mbedtls_4hmac_13sha256(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_key = 0;
@@ -2889,7 +2891,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_13sha256(PyObject *__pyx_self, PyObject
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha256") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha256") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -2904,7 +2906,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_13sha256(PyObject *__pyx_self, PyObject
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("sha256", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("sha256", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("mbedtls.hmac.sha256", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -2922,57 +2924,49 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_12sha256(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("sha256", 0);
 
-  /* "mbedtls/hmac.pyx":98
+  /* "mbedtls/hmac.pyx":105
  * def sha256(key, buffer=None):
- *     """Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha256")             # <<<<<<<<<<<<<<
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 256 bits hash value."""
+ *     return Hmac(key, "sha256", buffer)             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_key);
   __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
+  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_key);
+  __Pyx_INCREF(__pyx_n_s_sha256);
+  __Pyx_GIVEREF(__pyx_n_s_sha256);
+  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_sha256);
   __Pyx_INCREF(__pyx_v_buffer);
   __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_sha256) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_v_buffer);
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":96
+  /* "mbedtls/hmac.pyx":103
  * 
  * 
  * def sha256(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha256")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 256 bits hash value."""
+ *     return Hmac(key, "sha256", buffer)
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_AddTraceback("mbedtls.hmac.sha256", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -2981,17 +2975,17 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_12sha256(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":101
+/* "mbedtls/hmac.pyx":108
  * 
  * 
  * def sha384(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha384")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 384 bits hash value."""
+ *     return Hmac(key, "sha384", buffer)
  */
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7mbedtls_4hmac_15sha384(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_14sha384[] = "Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value.";
+static char __pyx_doc_7mbedtls_4hmac_14sha384[] = "Secure Hmac Algorithm 2 (SHA-2) with 384 bits hash value.";
 static PyMethodDef __pyx_mdef_7mbedtls_4hmac_15sha384 = {"sha384", (PyCFunction)__pyx_pw_7mbedtls_4hmac_15sha384, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_14sha384};
 static PyObject *__pyx_pw_7mbedtls_4hmac_15sha384(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_key = 0;
@@ -3027,7 +3021,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_15sha384(PyObject *__pyx_self, PyObject
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha384") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha384") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -3042,7 +3036,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_15sha384(PyObject *__pyx_self, PyObject
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("sha384", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("sha384", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("mbedtls.hmac.sha384", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3060,57 +3054,49 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_14sha384(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("sha384", 0);
 
-  /* "mbedtls/hmac.pyx":103
+  /* "mbedtls/hmac.pyx":110
  * def sha384(key, buffer=None):
- *     """Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha384")             # <<<<<<<<<<<<<<
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 384 bits hash value."""
+ *     return Hmac(key, "sha384", buffer)             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 110; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_key);
   __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
+  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_key);
+  __Pyx_INCREF(__pyx_n_s_sha384);
+  __Pyx_GIVEREF(__pyx_n_s_sha384);
+  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_sha384);
   __Pyx_INCREF(__pyx_v_buffer);
   __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_sha384) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_v_buffer);
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 110; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":101
+  /* "mbedtls/hmac.pyx":108
  * 
  * 
  * def sha384(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha384")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 384 bits hash value."""
+ *     return Hmac(key, "sha384", buffer)
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_AddTraceback("mbedtls.hmac.sha384", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -3119,17 +3105,17 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_14sha384(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":106
+/* "mbedtls/hmac.pyx":113
  * 
  * 
  * def sha512(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha512")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 512 bits hash value."""
+ *     return Hmac(key, "sha512", buffer)
  */
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7mbedtls_4hmac_17sha512(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7mbedtls_4hmac_16sha512[] = "Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value.";
+static char __pyx_doc_7mbedtls_4hmac_16sha512[] = "Secure Hmac Algorithm 2 (SHA-2) with 512 bits hash value.";
 static PyMethodDef __pyx_mdef_7mbedtls_4hmac_17sha512 = {"sha512", (PyCFunction)__pyx_pw_7mbedtls_4hmac_17sha512, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7mbedtls_4hmac_16sha512};
 static PyObject *__pyx_pw_7mbedtls_4hmac_17sha512(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_key = 0;
@@ -3165,7 +3151,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_17sha512(PyObject *__pyx_self, PyObject
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha512") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "sha512") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -3180,7 +3166,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_17sha512(PyObject *__pyx_self, PyObject
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("sha512", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("sha512", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("mbedtls.hmac.sha512", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3198,57 +3184,49 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_16sha512(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("sha512", 0);
 
-  /* "mbedtls/hmac.pyx":108
+  /* "mbedtls/hmac.pyx":115
  * def sha512(key, buffer=None):
- *     """Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha512")             # <<<<<<<<<<<<<<
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 512 bits hash value."""
+ *     return Hmac(key, "sha512", buffer)             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_key);
   __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
+  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_key);
+  __Pyx_INCREF(__pyx_n_s_sha512);
+  __Pyx_GIVEREF(__pyx_n_s_sha512);
+  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_sha512);
   __Pyx_INCREF(__pyx_v_buffer);
   __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_sha512) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_v_buffer);
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":106
+  /* "mbedtls/hmac.pyx":113
  * 
  * 
  * def sha512(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha512")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 512 bits hash value."""
+ *     return Hmac(key, "sha512", buffer)
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_AddTraceback("mbedtls.hmac.sha512", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -3257,7 +3235,7 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_16sha512(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "mbedtls/hmac.pyx":111
+/* "mbedtls/hmac.pyx":118
  * 
  * 
  * def ripemd160(key, buffer=None):             # <<<<<<<<<<<<<<
@@ -3303,7 +3281,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_19ripemd160(PyObject *__pyx_self, PyObj
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "ripemd160") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "ripemd160") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -3318,7 +3296,7 @@ static PyObject *__pyx_pw_7mbedtls_4hmac_19ripemd160(PyObject *__pyx_self, PyObj
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("ripemd160", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("ripemd160", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("mbedtls.hmac.ripemd160", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3336,42 +3314,36 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_18ripemd160(CYTHON_UNUSED PyObject *__p
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("ripemd160", 0);
 
-  /* "mbedtls/hmac.pyx":114
+  /* "mbedtls/hmac.pyx":121
  *     """RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
  *     160 bits hash value."""
- *     return Hash(key, buffer, digestmod="ripemd160")             # <<<<<<<<<<<<<<
+ *     return Hmac(key, "ripemd160", buffer)             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Hash); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 121; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_key);
   __Pyx_GIVEREF(__pyx_v_key);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_key);
+  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_key);
+  __Pyx_INCREF(__pyx_n_s_ripemd160);
+  __Pyx_GIVEREF(__pyx_n_s_ripemd160);
+  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_ripemd160);
   __Pyx_INCREF(__pyx_v_buffer);
   __Pyx_GIVEREF(__pyx_v_buffer);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_buffer);
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_digestmod, __pyx_n_s_ripemd160) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_v_buffer);
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7mbedtls_4hmac_Hmac), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 121; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "mbedtls/hmac.pyx":111
+  /* "mbedtls/hmac.pyx":118
  * 
  * 
  * def ripemd160(key, buffer=None):             # <<<<<<<<<<<<<<
@@ -3383,8 +3355,6 @@ static PyObject *__pyx_pf_7mbedtls_4hmac_18ripemd160(CYTHON_UNUSED PyObject *__p
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_AddTraceback("mbedtls.hmac.ripemd160", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -14964,7 +14934,7 @@ static PyTypeObject __pyx_type_7mbedtls_4hmac_Hmac = {
   0, /*tp_setattro*/
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE, /*tp_flags*/
-  "Wrap and encapsulate HMAC calculations.\n\n    This class is a wrapper for the HMAC calculations in the md module\n    of mbed TLS.  The interface follows the recommendation from PEP 452\n    for keyed hashes.\n\n    Parameters:\n        key (bytes): The key to use.\n        name (bytes): The MD name known to mbed TLS.\n\n    Attributes:\n        digest_size (int): The size of the message digest, in bytes.\n        block_size (int): Not implemented.\n        name (bytes): The name of the message digest.\n\n    ", /*tp_doc*/
+  "Wrap and encapsulate HMAC calculations.\n\n    This class is a wrapper for the HMAC calculations in the md module\n    of mbed TLS.  The interface follows the recommendation from PEP 452\n    for keyed hashes.\n\n    Parameters:\n        key (bytes): The key to use.\n        name (bytes): The MD name known to mbed TLS.\n\n    Warning:\n        The message is cleared after calculation of the digest.  Only\n        call :meth:`digest` or :meth:`hexdigest` once per message.\n\n    Attributes:\n        digest_size (int): The size of the message digest, in bytes.\n        block_size (int): Not implemented.\n        name (bytes): The name of the message digest.\n\n    ", /*tp_doc*/
   0, /*tp_traverse*/
   0, /*tp_clear*/
   0, /*tp_richcompare*/
@@ -15700,34 +15670,34 @@ static int __pyx_import_star_set(PyObject *o, PyObject* py_name, char *name) {
     type_name++;
   }
   if (0);
-  else if (__Pyx_StrEq(name, "contiguous")) {
-    Py_INCREF(o);
-    Py_DECREF(contiguous);
-    contiguous = o;
-  }
   else if (__Pyx_StrEq(name, "Py_None")) {
     PyErr_Format(PyExc_TypeError, "Cannot convert Python object Py_None to PyObject *");
     {__pyx_filename = __pyx_f[1]; __pyx_lineno = 55; __pyx_clineno = __LINE__; goto __pyx_L2_error;}
   }
-  else if (__Pyx_StrEq(name, "strided")) {
+  else if (__Pyx_StrEq(name, "contiguous")) {
     Py_INCREF(o);
-    Py_DECREF(strided);
-    strided = o;
+    Py_DECREF(contiguous);
+    contiguous = o;
   }
   else if (__Pyx_StrEq(name, "indirect_contiguous")) {
     Py_INCREF(o);
     Py_DECREF(indirect_contiguous);
     indirect_contiguous = o;
   }
+  else if (__Pyx_StrEq(name, "indirect")) {
+    Py_INCREF(o);
+    Py_DECREF(indirect);
+    indirect = o;
+  }
   else if (__Pyx_StrEq(name, "generic")) {
     Py_INCREF(o);
     Py_DECREF(generic);
     generic = o;
   }
-  else if (__Pyx_StrEq(name, "indirect")) {
+  else if (__Pyx_StrEq(name, "strided")) {
     Py_INCREF(o);
-    Py_DECREF(indirect);
-    indirect = o;
+    Py_DECREF(strided);
+    strided = o;
   }
   else {
     if (PyObject_SetAttr(__pyx_m, py_name, o) < 0) goto bad;
@@ -15993,18 +15963,17 @@ static struct PyModuleDef __pyx_moduledef = {
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_ASCII, __pyx_k_ASCII, sizeof(__pyx_k_ASCII), 0, 0, 1, 1},
-  {&__pyx_kp_s_Apache_License_2_0, __pyx_k_Apache_License_2_0, sizeof(__pyx_k_Apache_License_2_0), 0, 0, 1, 0},
   {&__pyx_kp_s_Buffer_view_does_not_expose_stri, __pyx_k_Buffer_view_does_not_expose_stri, sizeof(__pyx_k_Buffer_view_does_not_expose_stri), 0, 0, 1, 0},
   {&__pyx_kp_s_Can_only_create_a_buffer_that_is, __pyx_k_Can_only_create_a_buffer_that_is, sizeof(__pyx_k_Can_only_create_a_buffer_that_is), 0, 0, 1, 0},
   {&__pyx_kp_s_Cannot_index_with_type_s, __pyx_k_Cannot_index_with_type_s, sizeof(__pyx_k_Cannot_index_with_type_s), 0, 0, 1, 0},
   {&__pyx_kp_s_Copyright_2015_Elaborated_Networ, __pyx_k_Copyright_2015_Elaborated_Networ, sizeof(__pyx_k_Copyright_2015_Elaborated_Networ), 0, 0, 1, 0},
   {&__pyx_n_s_Ellipsis, __pyx_k_Ellipsis, sizeof(__pyx_k_Ellipsis), 0, 0, 1, 1},
   {&__pyx_kp_s_Empty_shape_tuple_for_cython_arr, __pyx_k_Empty_shape_tuple_for_cython_arr, sizeof(__pyx_k_Empty_shape_tuple_for_cython_arr), 0, 0, 1, 0},
-  {&__pyx_n_s_Hash, __pyx_k_Hash, sizeof(__pyx_k_Hash), 0, 0, 1, 1},
   {&__pyx_n_s_IndexError, __pyx_k_IndexError, sizeof(__pyx_k_IndexError), 0, 0, 1, 1},
   {&__pyx_kp_s_Indirect_dimensions_not_supporte, __pyx_k_Indirect_dimensions_not_supporte, sizeof(__pyx_k_Indirect_dimensions_not_supporte), 0, 0, 1, 0},
   {&__pyx_kp_s_Invalid_mode_expected_c_or_fortr, __pyx_k_Invalid_mode_expected_c_or_fortr, sizeof(__pyx_k_Invalid_mode_expected_c_or_fortr), 0, 0, 1, 0},
   {&__pyx_kp_s_Invalid_shape_in_axis_d_d, __pyx_k_Invalid_shape_in_axis_d_d, sizeof(__pyx_k_Invalid_shape_in_axis_d_d), 0, 0, 1, 0},
+  {&__pyx_kp_s_MIT_License, __pyx_k_MIT_License, sizeof(__pyx_k_MIT_License), 0, 0, 1, 0},
   {&__pyx_kp_s_Mathias_Laurin, __pyx_k_Mathias_Laurin, sizeof(__pyx_k_Mathias_Laurin), 0, 0, 1, 0},
   {&__pyx_n_s_MemoryError, __pyx_k_MemoryError, sizeof(__pyx_k_MemoryError), 0, 0, 1, 1},
   {&__pyx_kp_s_MemoryView_of_r_at_0x_x, __pyx_k_MemoryView_of_r_at_0x_x, sizeof(__pyx_k_MemoryView_of_r_at_0x_x), 0, 0, 1, 0},
@@ -16089,8 +16058,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_super = __Pyx_GetBuiltinName(__pyx_n_s_super); if (!__pyx_builtin_super) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_NotImplementedError = __Pyx_GetBuiltinName(__pyx_n_s_NotImplementedError); if (!__pyx_builtin_NotImplementedError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 58; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_super = __Pyx_GetBuiltinName(__pyx_n_s_super); if (!__pyx_builtin_super) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_NotImplementedError = __Pyx_GetBuiltinName(__pyx_n_s_NotImplementedError); if (!__pyx_builtin_NotImplementedError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 144; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 147; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -16254,125 +16223,125 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__13);
   __Pyx_GIVEREF(__pyx_tuple__13);
 
-  /* "mbedtls/hmac.pyx":61
+  /* "mbedtls/hmac.pyx":68
  * 
  * 
  * def new(key, buffer=None, digestmod=None):             # <<<<<<<<<<<<<<
  *     """A generic constructor that takes the key algorithm as its first
  *     parameter.
  */
-  __pyx_tuple__15 = PyTuple_Pack(3, __pyx_n_s_key, __pyx_n_s_buffer, __pyx_n_s_digestmod); if (unlikely(!__pyx_tuple__15)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__15 = PyTuple_Pack(3, __pyx_n_s_key, __pyx_n_s_buffer, __pyx_n_s_digestmod); if (unlikely(!__pyx_tuple__15)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__15);
   __Pyx_GIVEREF(__pyx_tuple__15);
-  __pyx_codeobj__16 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__15, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_new, 61, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__16)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__16 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__15, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_new, 68, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__16)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":71
+  /* "mbedtls/hmac.pyx":78
  * 
  * 
  * def md2(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """MD2 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md2")
+ *     return Hmac(key, "md2", buffer)
  */
-  __pyx_tuple__17 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__17)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__17 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__17)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__17);
   __Pyx_GIVEREF(__pyx_tuple__17);
-  __pyx_codeobj__18 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__17, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_md2, 71, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__18)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__18 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__17, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_md2, 78, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__18)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":76
+  /* "mbedtls/hmac.pyx":83
  * 
  * 
  * def md4(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """MD4 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md4")
+ *     return Hmac(key, "md4", buffer)
  */
-  __pyx_tuple__19 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__19)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__19 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__19)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__19);
   __Pyx_GIVEREF(__pyx_tuple__19);
-  __pyx_codeobj__20 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_md4, 76, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__20)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__20 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_md4, 83, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__20)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":81
+  /* "mbedtls/hmac.pyx":88
  * 
  * 
  * def md5(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """MD5 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md5")
+ *     return Hmac(key, "md5", buffer)
  */
-  __pyx_tuple__21 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__21)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__21 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__21)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__21);
   __Pyx_GIVEREF(__pyx_tuple__21);
-  __pyx_codeobj__22 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_md5, 81, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__22)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__22 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_md5, 88, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__22)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":86
+  /* "mbedtls/hmac.pyx":93
  * 
  * 
  * def sha1(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 1 (SHA-1)."""
- *     return Hash(key, buffer, digestmod="sha1")
+ *     """Secure Hmac Algorithm 1 (SHA-1)."""
+ *     return Hmac(key, "sha1", buffer)
  */
-  __pyx_tuple__23 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__23)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__23 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__23)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__23);
   __Pyx_GIVEREF(__pyx_tuple__23);
-  __pyx_codeobj__24 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__23, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha1, 86, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__24)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__24 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__23, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha1, 93, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__24)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":91
+  /* "mbedtls/hmac.pyx":98
  * 
  * 
  * def sha224(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha224")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 224 bits hash value."""
+ *     return Hmac(key, "sha224", buffer)
  */
-  __pyx_tuple__25 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__25)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__25 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__25)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__25);
   __Pyx_GIVEREF(__pyx_tuple__25);
-  __pyx_codeobj__26 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha224, 91, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__26)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__26 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha224, 98, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__26)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":96
+  /* "mbedtls/hmac.pyx":103
  * 
  * 
  * def sha256(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha256")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 256 bits hash value."""
+ *     return Hmac(key, "sha256", buffer)
  */
-  __pyx_tuple__27 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__27)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__27 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__27)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__27);
   __Pyx_GIVEREF(__pyx_tuple__27);
-  __pyx_codeobj__28 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__27, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha256, 96, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__28)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__28 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__27, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha256, 103, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__28)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":101
+  /* "mbedtls/hmac.pyx":108
  * 
  * 
  * def sha384(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha384")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 384 bits hash value."""
+ *     return Hmac(key, "sha384", buffer)
  */
-  __pyx_tuple__29 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__29)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__29 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__29)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__29);
   __Pyx_GIVEREF(__pyx_tuple__29);
-  __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha384, 101, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha384, 108, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":106
+  /* "mbedtls/hmac.pyx":113
  * 
  * 
  * def sha512(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha512")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 512 bits hash value."""
+ *     return Hmac(key, "sha512", buffer)
  */
-  __pyx_tuple__31 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__31)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__31 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__31)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__31);
   __Pyx_GIVEREF(__pyx_tuple__31);
-  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__31, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha512, 106, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__31, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_sha512, 113, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "mbedtls/hmac.pyx":111
+  /* "mbedtls/hmac.pyx":118
  * 
  * 
  * def ripemd160(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
  *     160 bits hash value."""
  */
-  __pyx_tuple__33 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__33)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__33 = PyTuple_Pack(2, __pyx_n_s_key, __pyx_n_s_buffer); if (unlikely(!__pyx_tuple__33)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__33);
   __Pyx_GIVEREF(__pyx_tuple__33);
-  __pyx_codeobj__34 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__33, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_ripemd160, 111, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__34)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__34 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__33, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_laurin_src_python_mbedtls, __pyx_n_s_ripemd160, 118, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__34)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "View.MemoryView":278
  *         return self.name
@@ -16590,7 +16559,7 @@ PyMODINIT_FUNC PyInit_hmac(void)
  * 
  * __author__ = "Mathias Laurin"             # <<<<<<<<<<<<<<
  * __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
- * __license__ = "Apache License 2.0"
+ * __license__ = "MIT License"
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_author, __pyx_kp_s_Mathias_Laurin) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
@@ -16598,7 +16567,7 @@ PyMODINIT_FUNC PyInit_hmac(void)
  * 
  * __author__ = "Mathias Laurin"
  * __copyright__ = "Copyright 2015, Elaborated Networks GmbH"             # <<<<<<<<<<<<<<
- * __license__ = "Apache License 2.0"
+ * __license__ = "MIT License"
  * 
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_copyright, __pyx_kp_s_Copyright_2015_Elaborated_Networ) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -16606,11 +16575,11 @@ PyMODINIT_FUNC PyInit_hmac(void)
   /* "mbedtls/hmac.pyx":5
  * __author__ = "Mathias Laurin"
  * __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
- * __license__ = "Apache License 2.0"             # <<<<<<<<<<<<<<
+ * __license__ = "MIT License"             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_Apache_License_2_0) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_MIT_License) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "mbedtls/hmac.pyx":10
  * from libc.stdlib cimport malloc, free
@@ -16672,124 +16641,124 @@ PyMODINIT_FUNC PyInit_hmac(void)
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_algorithms_available, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":61
+  /* "mbedtls/hmac.pyx":68
  * 
  * 
  * def new(key, buffer=None, digestmod=None):             # <<<<<<<<<<<<<<
  *     """A generic constructor that takes the key algorithm as its first
  *     parameter.
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_1new, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_1new, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_new, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_new, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":71
+  /* "mbedtls/hmac.pyx":78
  * 
  * 
  * def md2(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """MD2 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md2")
+ *     return Hmac(key, "md2", buffer)
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_3md2, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_3md2, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_md2, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_md2, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":76
+  /* "mbedtls/hmac.pyx":83
  * 
  * 
  * def md4(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """MD4 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md4")
+ *     return Hmac(key, "md4", buffer)
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_5md4, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_5md4, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_md4, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_md4, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":81
+  /* "mbedtls/hmac.pyx":88
  * 
  * 
  * def md5(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """MD5 message-digest algorithm."""
- *     return Hash(key, buffer, digestmod="md5")
+ *     return Hmac(key, "md5", buffer)
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_7md5, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_7md5, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_md5, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_md5, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":86
+  /* "mbedtls/hmac.pyx":93
  * 
  * 
  * def sha1(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 1 (SHA-1)."""
- *     return Hash(key, buffer, digestmod="sha1")
+ *     """Secure Hmac Algorithm 1 (SHA-1)."""
+ *     return Hmac(key, "sha1", buffer)
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_9sha1, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_9sha1, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha1, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha1, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":91
+  /* "mbedtls/hmac.pyx":98
  * 
  * 
  * def sha224(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha224")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 224 bits hash value."""
+ *     return Hmac(key, "sha224", buffer)
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_11sha224, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_11sha224, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha224, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha224, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":96
+  /* "mbedtls/hmac.pyx":103
  * 
  * 
  * def sha256(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha256")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 256 bits hash value."""
+ *     return Hmac(key, "sha256", buffer)
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_13sha256, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_13sha256, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha256, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha256, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":101
+  /* "mbedtls/hmac.pyx":108
  * 
  * 
  * def sha384(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha384")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 384 bits hash value."""
+ *     return Hmac(key, "sha384", buffer)
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_15sha384, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_15sha384, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha384, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha384, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":106
+  /* "mbedtls/hmac.pyx":113
  * 
  * 
  * def sha512(key, buffer=None):             # <<<<<<<<<<<<<<
- *     """Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value."""
- *     return Hash(key, buffer, digestmod="sha512")
+ *     """Secure Hmac Algorithm 2 (SHA-2) with 512 bits hash value."""
+ *     return Hmac(key, "sha512", buffer)
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_17sha512, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_17sha512, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha512, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sha512, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "mbedtls/hmac.pyx":111
+  /* "mbedtls/hmac.pyx":118
  * 
  * 
  * def ripemd160(key, buffer=None):             # <<<<<<<<<<<<<<
  *     """RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
  *     160 bits hash value."""
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_19ripemd160, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7mbedtls_4hmac_19ripemd160, NULL, __pyx_n_s_mbedtls_hmac); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ripemd160, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ripemd160, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "mbedtls/hmac.pyx":1

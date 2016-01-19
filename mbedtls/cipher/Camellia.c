@@ -685,10 +685,10 @@ static char __pyx_k_copyright[] = "__copyright__";
 static char __pyx_k_mode_name[] = "mode_name";
 static char __pyx_k_block_size[] = "block_size";
 static char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
+static char __pyx_k_MIT_License[] = "MIT License";
 static char __pyx_k_CAMELLIA_i_s[] = "CAMELLIA-%i-%s";
 static char __pyx_k_get_mode_name[] = "_get_mode_name";
 static char __pyx_k_Mathias_Laurin[] = "Mathias Laurin";
-static char __pyx_k_Apache_License_2_0[] = "Apache License 2.0";
 static char __pyx_k_mbedtls_exceptions[] = "mbedtls.exceptions";
 static char __pyx_k_unsupported_mode_r[] = "unsupported mode %r";
 static char __pyx_k_InvalidKeyLengthError[] = "InvalidKeyLengthError";
@@ -699,11 +699,11 @@ static char __pyx_k_key_size_must_16_24_or_32_bytes[] = "key size must 16, 24, o
 static char __pyx_k_Camellia_cipher_developed_by_Jap[] = "Camellia cipher developed by Japan's Mitsubishi an NTT in 2000.";
 static char __pyx_k_Copyright_2016_Elaborated_Networ[] = "Copyright 2016, Elaborated Networks GmbH";
 static PyObject *__pyx_kp_s_128;
-static PyObject *__pyx_kp_s_Apache_License_2_0;
 static PyObject *__pyx_kp_s_CAMELLIA_i_s;
 static PyObject *__pyx_kp_s_Copyright_2016_Elaborated_Networ;
 static PyObject *__pyx_n_s_FeatureUnavailableError;
 static PyObject *__pyx_n_s_InvalidKeyLengthError;
+static PyObject *__pyx_kp_s_MIT_License;
 static PyObject *__pyx_n_s_MODE_CBC;
 static PyObject *__pyx_n_s_MODE_CCM;
 static PyObject *__pyx_n_s_MODE_CFB;
@@ -1609,11 +1609,11 @@ static struct PyModuleDef __pyx_moduledef = {
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_128, __pyx_k_128, sizeof(__pyx_k_128), 0, 0, 1, 0},
-  {&__pyx_kp_s_Apache_License_2_0, __pyx_k_Apache_License_2_0, sizeof(__pyx_k_Apache_License_2_0), 0, 0, 1, 0},
   {&__pyx_kp_s_CAMELLIA_i_s, __pyx_k_CAMELLIA_i_s, sizeof(__pyx_k_CAMELLIA_i_s), 0, 0, 1, 0},
   {&__pyx_kp_s_Copyright_2016_Elaborated_Networ, __pyx_k_Copyright_2016_Elaborated_Networ, sizeof(__pyx_k_Copyright_2016_Elaborated_Networ), 0, 0, 1, 0},
   {&__pyx_n_s_FeatureUnavailableError, __pyx_k_FeatureUnavailableError, sizeof(__pyx_k_FeatureUnavailableError), 0, 0, 1, 1},
   {&__pyx_n_s_InvalidKeyLengthError, __pyx_k_InvalidKeyLengthError, sizeof(__pyx_k_InvalidKeyLengthError), 0, 0, 1, 1},
+  {&__pyx_kp_s_MIT_License, __pyx_k_MIT_License, sizeof(__pyx_k_MIT_License), 0, 0, 1, 0},
   {&__pyx_n_s_MODE_CBC, __pyx_k_MODE_CBC, sizeof(__pyx_k_MODE_CBC), 0, 0, 1, 1},
   {&__pyx_n_s_MODE_CCM, __pyx_k_MODE_CCM, sizeof(__pyx_k_MODE_CCM), 0, 0, 1, 1},
   {&__pyx_n_s_MODE_CFB, __pyx_k_MODE_CFB, sizeof(__pyx_k_MODE_CFB), 0, 0, 1, 1},
@@ -1794,7 +1794,7 @@ PyMODINIT_FUNC PyInit_Camellia(void)
  * 
  * __author__ = "Mathias Laurin"             # <<<<<<<<<<<<<<
  * __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
- * __license__ = "Apache License 2.0"
+ * __license__ = "MIT License"
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_author, __pyx_kp_s_Mathias_Laurin) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
@@ -1802,7 +1802,7 @@ PyMODINIT_FUNC PyInit_Camellia(void)
  * 
  * __author__ = "Mathias Laurin"
  * __copyright__ = "Copyright 2016, Elaborated Networks GmbH"             # <<<<<<<<<<<<<<
- * __license__ = "Apache License 2.0"
+ * __license__ = "MIT License"
  * 
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_copyright, __pyx_kp_s_Copyright_2016_Elaborated_Networ) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -1810,11 +1810,11 @@ PyMODINIT_FUNC PyInit_Camellia(void)
   /* "mbedtls/cipher/Camellia.pyx":5
  * __author__ = "Mathias Laurin"
  * __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
- * __license__ = "Apache License 2.0"             # <<<<<<<<<<<<<<
+ * __license__ = "MIT License"             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_Apache_License_2_0) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_MIT_License) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "mbedtls/cipher/Camellia.pyx":9
  * 

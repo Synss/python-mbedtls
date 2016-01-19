@@ -715,10 +715,10 @@ static char __pyx_k_license[] = "__license__";
 static char __pyx_k_copyright[] = "__copyright__";
 static char __pyx_k_ripemd160[] = "ripemd160";
 static char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
+static char __pyx_k_MIT_License[] = "MIT License";
 static char __pyx_k_check_error[] = "check_error";
 static char __pyx_k_mbedtls_hash[] = "mbedtls.hash";
 static char __pyx_k_Mathias_Laurin[] = "Mathias Laurin";
-static char __pyx_k_Apache_License_2_0[] = "Apache License 2.0";
 static char __pyx_k_mbedtls_exceptions[] = "mbedtls.exceptions";
 static char __pyx_k_algorithms_available[] = "algorithms_available";
 static char __pyx_k_algorithms_guaranteed[] = "algorithms_guaranteed";
@@ -726,8 +726,8 @@ static char __pyx_k_home_laurin_src_python_mbedtls[] = "/home/laurin/src/python-
 static char __pyx_k_Copyright_2015_Elaborated_Networ[] = "Copyright 2015, Elaborated Networks GmbH";
 static char __pyx_k_Generic_message_digest_wrapper_h[] = "Generic message digest wrapper (hash algorithm).";
 static PyObject *__pyx_n_s_;
-static PyObject *__pyx_kp_s_Apache_License_2_0;
 static PyObject *__pyx_kp_s_Copyright_2015_Elaborated_Networ;
+static PyObject *__pyx_kp_s_MIT_License;
 static PyObject *__pyx_kp_s_Mathias_Laurin;
 static PyObject *__pyx_n_s_algorithms_available;
 static PyObject *__pyx_n_s_algorithms_guaranteed;
@@ -2867,8 +2867,8 @@ static struct PyModuleDef __pyx_moduledef = {
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_, __pyx_k_, sizeof(__pyx_k_), 0, 0, 1, 1},
-  {&__pyx_kp_s_Apache_License_2_0, __pyx_k_Apache_License_2_0, sizeof(__pyx_k_Apache_License_2_0), 0, 0, 1, 0},
   {&__pyx_kp_s_Copyright_2015_Elaborated_Networ, __pyx_k_Copyright_2015_Elaborated_Networ, sizeof(__pyx_k_Copyright_2015_Elaborated_Networ), 0, 0, 1, 0},
+  {&__pyx_kp_s_MIT_License, __pyx_k_MIT_License, sizeof(__pyx_k_MIT_License), 0, 0, 1, 0},
   {&__pyx_kp_s_Mathias_Laurin, __pyx_k_Mathias_Laurin, sizeof(__pyx_k_Mathias_Laurin), 0, 0, 1, 0},
   {&__pyx_n_s_algorithms_available, __pyx_k_algorithms_available, sizeof(__pyx_k_algorithms_available), 0, 0, 1, 1},
   {&__pyx_n_s_algorithms_guaranteed, __pyx_k_algorithms_guaranteed, sizeof(__pyx_k_algorithms_guaranteed), 0, 0, 1, 1},
@@ -3159,7 +3159,7 @@ PyMODINIT_FUNC PyInit_hash(void)
  * 
  * __author__ = "Mathias Laurin"             # <<<<<<<<<<<<<<
  * __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
- * __license__ = "Apache License 2.0"
+ * __license__ = "MIT License"
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_author, __pyx_kp_s_Mathias_Laurin) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
@@ -3167,7 +3167,7 @@ PyMODINIT_FUNC PyInit_hash(void)
  * 
  * __author__ = "Mathias Laurin"
  * __copyright__ = "Copyright 2015, Elaborated Networks GmbH"             # <<<<<<<<<<<<<<
- * __license__ = "Apache License 2.0"
+ * __license__ = "MIT License"
  * 
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_copyright, __pyx_kp_s_Copyright_2015_Elaborated_Networ) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -3175,11 +3175,11 @@ PyMODINIT_FUNC PyInit_hash(void)
   /* "mbedtls/hash.pyx":5
  * __author__ = "Mathias Laurin"
  * __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
- * __license__ = "Apache License 2.0"             # <<<<<<<<<<<<<<
+ * __license__ = "MIT License"             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_Apache_License_2_0) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_MIT_License) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "mbedtls/hash.pyx":10
  * from libc.stdlib cimport malloc, free

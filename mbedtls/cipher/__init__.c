@@ -591,20 +591,20 @@ static char __pyx_k_Blowfish[] = "Blowfish";
 static char __pyx_k_Camellia[] = "Camellia";
 static char __pyx_k_cipher_2[] = "_cipher";
 static char __pyx_k_copyright[] = "__copyright__";
+static char __pyx_k_MIT_License[] = "MIT License";
 static char __pyx_k_Mathias_Laurin[] = "Mathias Laurin";
-static char __pyx_k_Apache_License_2_0[] = "Apache License 2.0";
 static char __pyx_k_Copyright_2016_Elaborated_Networ[] = "Copyright 2016, Elaborated Networks GmbH";
 static char __pyx_k_The_cipher_package_provide_symme[] = "The cipher package provide symmetric encryption and decryption.\n\nThe API follows the recommendations from PEP 272 \"API for Block\nEncryption Algorithms\"\n\n";
 static PyObject *__pyx_n_s_;
 static PyObject *__pyx_n_s_AES;
 static PyObject *__pyx_n_s_ARC4;
-static PyObject *__pyx_kp_s_Apache_License_2_0;
 static PyObject *__pyx_n_s_Blowfish;
 static PyObject *__pyx_n_s_Camellia;
 static PyObject *__pyx_kp_s_Copyright_2016_Elaborated_Networ;
 static PyObject *__pyx_n_s_DES;
 static PyObject *__pyx_n_s_DES3;
 static PyObject *__pyx_n_s_DES3dbl;
+static PyObject *__pyx_kp_s_MIT_License;
 static PyObject *__pyx_kp_s_Mathias_Laurin;
 static PyObject *__pyx_n_s_all;
 static PyObject *__pyx_n_s_author;
@@ -897,13 +897,13 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_, __pyx_k_, sizeof(__pyx_k_), 0, 0, 1, 1},
   {&__pyx_n_s_AES, __pyx_k_AES, sizeof(__pyx_k_AES), 0, 0, 1, 1},
   {&__pyx_n_s_ARC4, __pyx_k_ARC4, sizeof(__pyx_k_ARC4), 0, 0, 1, 1},
-  {&__pyx_kp_s_Apache_License_2_0, __pyx_k_Apache_License_2_0, sizeof(__pyx_k_Apache_License_2_0), 0, 0, 1, 0},
   {&__pyx_n_s_Blowfish, __pyx_k_Blowfish, sizeof(__pyx_k_Blowfish), 0, 0, 1, 1},
   {&__pyx_n_s_Camellia, __pyx_k_Camellia, sizeof(__pyx_k_Camellia), 0, 0, 1, 1},
   {&__pyx_kp_s_Copyright_2016_Elaborated_Networ, __pyx_k_Copyright_2016_Elaborated_Networ, sizeof(__pyx_k_Copyright_2016_Elaborated_Networ), 0, 0, 1, 0},
   {&__pyx_n_s_DES, __pyx_k_DES, sizeof(__pyx_k_DES), 0, 0, 1, 1},
   {&__pyx_n_s_DES3, __pyx_k_DES3, sizeof(__pyx_k_DES3), 0, 0, 1, 1},
   {&__pyx_n_s_DES3dbl, __pyx_k_DES3dbl, sizeof(__pyx_k_DES3dbl), 0, 0, 1, 1},
+  {&__pyx_kp_s_MIT_License, __pyx_k_MIT_License, sizeof(__pyx_k_MIT_License), 0, 0, 1, 0},
   {&__pyx_kp_s_Mathias_Laurin, __pyx_k_Mathias_Laurin, sizeof(__pyx_k_Mathias_Laurin), 0, 0, 1, 0},
   {&__pyx_n_s_all, __pyx_k_all, sizeof(__pyx_k_all), 0, 0, 1, 1},
   {&__pyx_n_s_author, __pyx_k_author, sizeof(__pyx_k_author), 0, 0, 1, 1},
@@ -1035,7 +1035,7 @@ PyMODINIT_FUNC PyInit_cipher(void)
  * """
  * __author__ = "Mathias Laurin"             # <<<<<<<<<<<<<<
  * __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
- * __license__ = "Apache License 2.0"
+ * __license__ = "MIT License"
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_author, __pyx_kp_s_Mathias_Laurin) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
@@ -1043,7 +1043,7 @@ PyMODINIT_FUNC PyInit_cipher(void)
  * """
  * __author__ = "Mathias Laurin"
  * __copyright__ = "Copyright 2016, Elaborated Networks GmbH"             # <<<<<<<<<<<<<<
- * __license__ = "Apache License 2.0"
+ * __license__ = "MIT License"
  * 
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_copyright, __pyx_kp_s_Copyright_2016_Elaborated_Networ) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -1051,14 +1051,14 @@ PyMODINIT_FUNC PyInit_cipher(void)
   /* "mbedtls/cipher/__init__.pyx":9
  * __author__ = "Mathias Laurin"
  * __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
- * __license__ = "Apache License 2.0"             # <<<<<<<<<<<<<<
+ * __license__ = "MIT License"             # <<<<<<<<<<<<<<
  * 
  * from _cipher import *
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_Apache_License_2_0) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_MIT_License) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "mbedtls/cipher/__init__.pyx":11
- * __license__ = "Apache License 2.0"
+ * __license__ = "MIT License"
  * 
  * from _cipher import *             # <<<<<<<<<<<<<<
  * import AES
