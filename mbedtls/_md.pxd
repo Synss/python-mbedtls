@@ -56,7 +56,7 @@ cdef extern from "mbedtls/md.h":
     int mbedtls_md_hmac_finish(
         mbedtls_md_context_t *ctx,
         unsigned char *output)
-    # mbedtls_md_hmac_reset
+    int mbedtls_md_hmac_reset(mbedtls_md_context_t *ctx)
     # mbedtls_md_hmac
 
 

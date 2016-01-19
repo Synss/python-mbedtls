@@ -27,6 +27,10 @@ cdef class Hmac(_md.MDBase):
         key (bytes): The key to use.
         name (bytes): The MD name known to mbed TLS.
 
+    Warning:
+        The message is cleared after calculation of the digest.  Only
+        call :meth:`digest` or :meth:`hexdigest` once per message.
+
     Attributes:
         digest_size (int): The size of the message digest, in bytes.
         block_size (int): Not implemented.
@@ -46,7 +50,10 @@ cdef class Hmac(_md.MDBase):
 
     cdef _finish(self, unsigned char *output):
         """Return the HMAC of key and message."""
-        return _md.mbedtls_md_hmac_finish(&self._ctx, output)
+        ret = _md.mbedtls_md_hmac_finish(&self._ctx, output)
+        if ret != 0:
+            return ret
+        return _md.mbedtls_md_hmac_reset(&self._ctx)
 
     cpdef copy(self):
         """Return a copy ("clone") of the HMAC object.
