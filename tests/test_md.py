@@ -8,7 +8,7 @@ from functools import partial
 import hashlib
 import hmac
 
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_greater_equal, assert_less
 
 # pylint: disable=import-error
 from mbedtls._md import MD_NAME
@@ -37,6 +37,19 @@ def test_md_list():
 def test_algorithms():
     assert set(md_hash.algorithms_guaranteed).issubset(
         md_hash.algorithms_available)
+
+
+def test_type_accessor():
+    def assert_in_bounds(value, lower, higher):
+        assert_greater_equal(value, lower)
+        assert_less(value, higher)
+
+    for name in md_hash.algorithms_available:
+        alg = md_hash.new(name)
+        # pylint: disable=protected-access
+        test = partial(assert_in_bounds, alg._type, 0, len(MD_NAME))
+        test.description = "test_type_accessor(%s)" % name
+        yield test
 
 
 def test_copy_hash():
@@ -114,7 +127,7 @@ def test_check_against_hmac_buf():
         yield test
 
 
-def test_instantiation():
+def test_hash_instantiation():
     import inspect
 
     def check_instantiation(fun, name):
@@ -126,5 +139,22 @@ def test_instantiation():
     for name, member in inspect.getmembers(md_hash):
         if name in md_hash.algorithms_available:
             test = partial(check_instantiation, member, name)
-            test.description = "check_instantiation(%s)" % name
+            test.description = "check_hash_instantiation(%s)" % name
+            yield test
+
+
+def test_hmac_instantiation():
+    import inspect
+
+    def check_instantiation(fun, name):
+        key = _rnd(16)
+        alg1 = fun(key)
+        alg2 = md_hmac.new(key, digestmod=name)
+        assert_equal(type(alg1), type(alg2))
+        assert_equal(alg1.name, alg2.name)
+
+    for name, member in inspect.getmembers(md_hmac):
+        if name in md_hmac.algorithms_available:
+            test = partial(check_instantiation, member, name)
+            test.description = "check_hmac_instantiation(%s)" % name
             yield test

@@ -2,7 +2,7 @@
 
 __author__ = "Mathias Laurin"
 __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
-__license__ = "Apache License 2.0"
+__license__ = "MIT License"
 
 
 cdef extern from "mbedtls/md.h":
@@ -31,7 +31,7 @@ cdef extern from "mbedtls/md.h":
     int mbedtls_md_clone(mbedtls_md_context_t *dst,
                          const mbedtls_md_context_t *src)
     unsigned char mbedtls_md_get_size(const mbedtls_md_info_t *md_info)
-    # mbedtls_md_get_type
+    mbedtls_md_type_t mbedtls_md_get_type(const mbedtls_md_info_t *md_info)
     const char *mbedtls_md_get_name(const mbedtls_md_info_t *md_info)
 
     int mbedtls_md_starts(mbedtls_md_context_t *ctx)
@@ -56,7 +56,7 @@ cdef extern from "mbedtls/md.h":
     int mbedtls_md_hmac_finish(
         mbedtls_md_context_t *ctx,
         unsigned char *output)
-    # mbedtls_md_hmac_reset
+    int mbedtls_md_hmac_reset(mbedtls_md_context_t *ctx)
     # mbedtls_md_hmac
 
 

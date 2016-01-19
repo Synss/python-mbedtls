@@ -6,7 +6,7 @@ Encryption Algorithms"
 """
 __author__ = "Mathias Laurin"
 __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
-__license__ = "Apache License 2.0"
+__license__ = "MIT License"
 
 from _cipher import *
 import AES

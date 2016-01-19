@@ -3,7 +3,7 @@
 
 __author__ = "Mathias Laurin"
 __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
-__license__ = "Apache License 2.0"
+__license__ = "MIT License"
 
 
 cimport _cipher
@@ -146,7 +146,7 @@ cdef _c_crypt(_cipher.mbedtls_cipher_context_t* ctx,
     """Generic all-in-one encryption/decryption."""
     # Make sure that `c_iv` has at least size 1 before dereferencing.
     if not input:
-        raise FullBlockExpectedError()
+        check_error(-0x6280)  # Raise full block expected error.
     cdef unsigned char[:] c_iv = (
         bytearray(iv) if iv else bytearray(b"\x00"))
     cdef unsigned char[:] c_input = bytearray(input)
@@ -242,7 +242,7 @@ cdef class Cipher:
     cpdef _setup(self, cipher_name):
         """Initialize the context with `cipher_info_from_string`."""
         if cipher_name not in get_supported_ciphers():
-            raise UnsupportedCipherError("unsupported cipher: %r" % cipher_name)
+            raise CipherError(-1, "unsupported cipher: %r" % cipher_name)
         cdef char[:] c_cipher_name = bytearray(cipher_name)
         check_error(_c_setup(&self._enc_ctx, c_cipher_name))
         check_error(_c_setup(&self._dec_ctx, c_cipher_name))

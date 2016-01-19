@@ -2,7 +2,7 @@
 
 __author__ = "Mathias Laurin"
 __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
-__license__ = "Apache License 2.0"
+__license__ = "MIT License"
 
 
 cimport _md
@@ -80,6 +80,11 @@ cdef class MDBase:
     def __str__(self):
         """Return the name of the message digest output."""
         return self.name
+
+    property _type:
+        """The type of the message digest output."""
+        def __get__(self):
+            return _md.mbedtls_md_get_type(self._info)
 
     property digest_size:
         """The size of the resulting hash in bytes."""
