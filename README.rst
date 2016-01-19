@@ -55,6 +55,12 @@ then,
 
 ::
 
+   python3 -m pip install python-mbedtls
+
+or
+
+::
+
 	git clone https://github.com/Synss/python-mbedtls.git python-mbedtls.git
 	cd python-mbedtls.git
 	python3 setup.py build_ext
@@ -68,16 +74,70 @@ The unit tests further require `nose` and `pyCrypto`::
 Hashing module (`md.h`)
 -----------------------
 
-The hashing module is wrapped, which provides message, file, and HMAC
-with the following algorithms: MD5, SHA-1, SHA-2, and RIPEMD-160.
+Message digest algorithms
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The API follows the recommendations from PEP 452.
+The `mbedtls.hash` module provides MD5, SHA-1, SHA-2, and RIPEMD-160 secure
+hashes and message digests.  The API follows the recommendations from PEP 452
+so that it can be used as a drop-in replacement to e.g. `hashlib` or
+`PyCrypto`.
+
+Here are the examples from `hashlib` executed with `python-mbedtls`::
+
+    >>> from mbedtls import hash as hashlib
+    >>> m = hashlib.md5()
+    >>> m.update(b"Nobody inspects")
+    >>> m.update(b" the spammish repetition")
+    >>> m.digest()
+    b'\xbbd\x9c\x83\xdd\x1e\xa5\xc9\xd9\xde\xc9\xa1\x8d\xf0\xff\xe9'
+    >>> m.digest_size
+    16
+    >>> m.block_size
+    64
+
+More condensed::
+
+   >>> hashlib.sha224(b"Nobody inspects the spammish repetition").hexdigest()
+   'a4337bc45a8fc544c03f52dc550cd6e1e87021bc896588bd79e901e2'
+
+Using `new()`::
+
+   >>> h = hashlib.new('ripemd160')
+   >>> h.update(b"Nobody inspects the spammish repetition")
+   >>> h.hexdigest()
+   'cc4a5ce1b3df48aec5d22d1f16b894a0b894eccc'
+
+
+HMAC algorithm
+~~~~~~~~~~~~~~
+
+The `mbedtls.hmac` module computes HMAC.  The API follows the recommendations
+from PEP 452 as well.
+
+Example::
+
+   >>> from mbedtls import hmac
+   >>> m = hmac.new(b"This is my secret key", digestmod="md5")
+   >>> m.update(b"Nobody inspects")
+   >>> m.update(b" the spammish repetition")
+   >>> m.digest()
+   b'\x9d-/rj\\\x98\x80\xb1rG\x87\x0f\xe9\xe4\xeb'
+
+.. warning::
+
+   The message is cleared after calculation of the digest.  Only call
+   :meth:`mbedtls.hmac.Hmac.digest` or :meth:`mbedtls.hmac.Hmac.hexdigest` once
+   per message.
 
 
 Symmetric cipher module (`cipher.h`)
 ------------------------------------
 
-The symmetric cipher module is wrapped, which provides:
+The `mbedtls.cipher` module provides symmetric encryption.  The API follows the
+recommendations from PEP 272 so that it can be used as a drop-in replacement to
+e.g. `PyCrypto`.
+
+mbedtls provides the following algorithms:
 
 - Aes encryption/decryption (128, 192, and 256 bits) in ECB, CBC, CFB128,
   CTR, GCM, or CCM mode;
@@ -87,27 +147,60 @@ The symmetric cipher module is wrapped, which provides:
   CFB128, CTR, GCM, or CCM mode;
 - DES encryption/decryption in ECB, or CBC mode;
 
-The API follows the recommendations from PEP 272.
-
 Notes:
    - Tagging and padding are not wrapped.
    - The counter in CTR mode cannot be explicitly provided.
+
+Example::
+
+   >>> from mbedtls import cipher
+   >>> c = cipher.AES.new(b"My 16-bytes key.", cipher.MODE_CBC, b"CBC needs an IV.")
+   >>> enc = c.encrypt(b"This is a super-secret message!")
+   >>> enc
+   b'*`k6\x98\x97=[\xdf\x7f\x88\x96\xf5\t\x19J7\x93\xb5\xe0~\t\x9e\x968m\xcd\x
+   >>> c.decrypt(enc)
+   b'This is a super-secret message!'
 
 
 Public key module (`pk.h`)
 --------------------------
 
-The RSA cryptosystem is wrapped, which provides:
+The `mbedtls.pk` module provides the RSA cryptosystem.  This includes:
 
 - Public-private key generation and key import/export in PEM and DER
   formats;
 - Asymmetric encryption and decryption;
 - Message signature and verification.
 
+Key generation, the default size is 2048 bits::
 
-Contribution
-============
+   >>> from mbedtls import pk
+   >>> rsa = pk.RSA()
+   >>> rsa.has_private()
+   False
+   >>> rsa.generate()
+   >>> rsa.key_size
+   256
+   >>> rsa.has_private() and rsa.has_public()
+   True
 
-`python-mbedtls` is in an early stage of development and contributions
-in any form is welcome.  Note, however, that bugs against mbed TLS
-should be reported upstream directly.
+Message encryption and decryption::
+
+   >>> enc = rsa.encrypt(b"secret message")
+   >>> rsa.decrypt(enc)
+   b"secret message"
+
+Message signature and verification::
+
+   >>> sig = rsa.sign(b"Please sign here.")
+   >>> rsa.verify(b"Please sign here.", sig)
+   True
+   >>> rsa.verify(b"Sorry, wrong message.", sig)
+   False
+   >>> prv, pub = rsa.export(format="DER")
+   >>> other = pk.RSA()
+   >>> other.import_(pub)
+   >>> other.has_private()
+   False
+   >>> other.verify(b"Please sign here.", sig)
+   True
