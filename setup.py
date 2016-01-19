@@ -2,7 +2,7 @@ from setuptools import setup, Extension
 from Cython.Build import cythonize
 
 
-version = "0.3"
+version = "0.4"
 download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
 
 
@@ -45,7 +45,7 @@ setup(
     ext_modules=cythonize(extensions),
     setup_requires=setup_requires,
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Programming Language :: Cython",
         "License :: OSI Approved :: MIT License",
         "Topic :: Security :: Cryptography",
