@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Python wrapper to mbed TLS &mdash; python-mbedtls 0.3 documentation</title>
+    <title>Python wrapper to mbed TLS &mdash; python-mbedtls 0.5 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3',
+        VERSION:     '0.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-mbedtls 0.3 documentation" href="#" />
+    <link rel="top" title="python-mbedtls 0.5 documentation" href="#" />
     <link rel="next" title="mbedtls.cipher Package API" href="apicipher.html" />
    
   
@@ -48,9 +48,10 @@ developers to include cryptographic and SSL/TLS capabilities in their
 coding footprint.</div></blockquote>
 <div class="section" id="license">
 <h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
-<p><cite>python-mbedtls</cite> is licensed under the Apache 2.0 license in order to be fully
-compatible with mbed TLS.  The Apache 2.0 license enables the use of
-<cite>python-mbedtls</cite> in both open source and closed source projects.</p>
+<p><cite>python-mbedtls</cite> is licensed under the MIT License (see LICENSE.txt).  This
+enables the use of <cite>python-mbedtls</cite> in both open source and closed source
+projects.  The MIT License is compatible with both GPL and Apache 2.0 license
+under which mbed TLS is distributed.</p>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
@@ -75,6 +76,10 @@ sudo make install
 </pre></div>
 </div>
 <p>then,</p>
+<div class="highlight-python"><div class="highlight"><pre>python3 -m pip install python-mbedtls
+</pre></div>
+</div>
+<p>or</p>
 <div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/Synss/python-mbedtls.git python-mbedtls.git
 cd python-mbedtls.git
 python3 setup.py build_ext
@@ -88,12 +93,65 @@ nosetests -v tests
 </div>
 <div class="section" id="hashing-module-md-h">
 <h3>Hashing module (<cite>md.h</cite>)<a class="headerlink" href="#hashing-module-md-h" title="Permalink to this headline">¶</a></h3>
-<p>The hashing module is wrapped, which provides message, file, and HMAC
-with the following algorithms: MD5, SHA-1, SHA-2, and RIPEMD-160.</p>
+<div class="section" id="message-digest-algorithms">
+<h4>Message digest algorithms<a class="headerlink" href="#message-digest-algorithms" title="Permalink to this headline">¶</a></h4>
+<p>The <cite>mbedtls.hash</cite> module provides MD5, SHA-1, SHA-2, and RIPEMD-160 secure
+hashes and message digests.  The API follows the recommendations from PEP 452
+so that it can be used as a drop-in replacement to e.g. <cite>hashlib</cite> or
+<cite>PyCrypto</cite>.</p>
+<p>Here are the examples from <cite>hashlib</cite> executed with <cite>python-mbedtls</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="nb">hash</span> <span class="k">as</span> <span class="n">hashlib</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;Nobody inspects&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">b</span><span class="s">&quot; the spammish repetition&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+<span class="go">b&#39;\xbbd\x9c\x83\xdd\x1e\xa5\xc9\xd9\xde\xc9\xa1\x8d\xf0\xff\xe9&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">digest_size</span>
+<span class="go">16</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">block_size</span>
+<span class="go">64</span>
+</pre></div>
+</div>
+<p>More condensed:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha224</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;Nobody inspects the spammish repetition&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+<span class="go">&#39;a4337bc45a8fc544c03f52dc550cd6e1e87021bc896588bd79e901e2&#39;</span>
+</pre></div>
+</div>
+<p>Using <cite>new()</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s">&#39;ripemd160&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;Nobody inspects the spammish repetition&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+<span class="go">&#39;cc4a5ce1b3df48aec5d22d1f16b894a0b894eccc&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="hmac-algorithm">
+<h4>HMAC algorithm<a class="headerlink" href="#hmac-algorithm" title="Permalink to this headline">¶</a></h4>
+<p>The <cite>mbedtls.hmac</cite> module computes HMAC.  The API follows the recommendations
+from PEP 452 as well.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">hmac</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;This is my secret key&quot;</span><span class="p">,</span> <span class="n">digestmod</span><span class="o">=</span><span class="s">&quot;md5&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;Nobody inspects&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">b</span><span class="s">&quot; the spammish repetition&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+<span class="go">b&#39;\x9d-/rj\\\x98\x80\xb1rG\x87\x0f\xe9\xe4\xeb&#39;</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The message is cleared after calculation of the digest.  Only call
+<a class="reference internal" href="apimd.html#mbedtls.hmac.Hmac.digest" title="mbedtls.hmac.Hmac.digest"><code class="xref py py-meth docutils literal"><span class="pre">mbedtls.hmac.Hmac.digest()</span></code></a> or <a class="reference internal" href="apimd.html#mbedtls.hmac.Hmac.hexdigest" title="mbedtls.hmac.Hmac.hexdigest"><code class="xref py py-meth docutils literal"><span class="pre">mbedtls.hmac.Hmac.hexdigest()</span></code></a> once
+per message.</p>
+</div>
+</div>
 </div>
 <div class="section" id="symmetric-cipher-module-cipher-h">
 <h3>Symmetric cipher module (<cite>cipher.h</cite>)<a class="headerlink" href="#symmetric-cipher-module-cipher-h" title="Permalink to this headline">¶</a></h3>
-<p>The symmetric cipher module is wrapped, which provides:</p>
+<p>The <cite>mbedtls.cipher</cite> module provides symmetric encryption.  The API follows the
+recommendations from PEP 272 so that it can be used as a drop-in replacement to
+e.g. <cite>PyCrypto</cite>.</p>
+<p>mbedtls provides the following algorithms:</p>
 <ul class="simple">
 <li>Aes encryption/decryption (128, 192, and 256 bits) in ECB, CBC, CFB128,
 CTR, GCM, or CCM mode;</li>
@@ -105,15 +163,66 @@ CFB128, CTR, GCM, or CCM mode;</li>
 </ul>
 <dl class="docutils">
 <dt>Notes:</dt>
-<dd>Tagging and padding are not wrapped.</dd>
+<dd><ul class="first last simple">
+<li>Tagging and padding are not wrapped.</li>
+<li>The counter in CTR mode cannot be explicitly provided.</li>
+</ul>
+</dd>
 </dl>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">cipher</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;My 16-bytes key.&quot;</span><span class="p">,</span> <span class="n">cipher</span><span class="o">.</span><span class="n">MODE_CBC</span><span class="p">,</span> <span class="n">b</span><span class="s">&quot;CBC needs an IV.&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enc</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;This is a super-secret message!&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enc</span>
+<span class="go">b&#39;*`k6\x98\x97=[\xdf\x7f\x88\x96\xf5\t\x19J7\x93\xb5\xe0~\t\x9e\x968m\xcd\x</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">enc</span><span class="p">)</span>
+<span class="go">b&#39;This is a super-secret message!&#39;</span>
+</pre></div>
 </div>
 </div>
-<div class="section" id="contribution">
-<h2>Contribution<a class="headerlink" href="#contribution" title="Permalink to this headline">¶</a></h2>
-<p><cite>python-mbedtls</cite> is in an early stage of development and contributions
-in any form is welcome.  Note, however, that bugs against mbed TLS
-should be reported upstream directly.</p>
+<div class="section" id="public-key-module-pk-h">
+<h3>Public key module (<cite>pk.h</cite>)<a class="headerlink" href="#public-key-module-pk-h" title="Permalink to this headline">¶</a></h3>
+<p>The <cite>mbedtls.pk</cite> module provides the RSA cryptosystem.  This includes:</p>
+<ul class="simple">
+<li>Public-private key generation and key import/export in PEM and DER
+formats;</li>
+<li>Asymmetric encryption and decryption;</li>
+<li>Message signature and verification.</li>
+</ul>
+<p>Key generation, the default size is 2048 bits:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">pk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">RSA</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span><span class="o">.</span><span class="n">has_private</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span><span class="o">.</span><span class="n">key_size</span>
+<span class="go">256</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span><span class="o">.</span><span class="n">has_private</span><span class="p">()</span> <span class="ow">and</span> <span class="n">rsa</span><span class="o">.</span><span class="n">has_public</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Message encryption and decryption:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">enc</span> <span class="o">=</span> <span class="n">rsa</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;secret message&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">enc</span><span class="p">)</span>
+<span class="go">b&quot;secret message&quot;</span>
+</pre></div>
+</div>
+<p>Message signature and verification:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">rsa</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;Please sign here.&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;Please sign here.&quot;</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;Sorry, wrong message.&quot;</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prv</span><span class="p">,</span> <span class="n">pub</span> <span class="o">=</span> <span class="n">rsa</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">format</span><span class="o">=</span><span class="s">&quot;DER&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">other</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">RSA</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">other</span><span class="o">.</span><span class="n">import_</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">other</span><span class="o">.</span><span class="n">has_private</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">other</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;Please sign here.&quot;</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="api-documentation">
 <h2>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
@@ -129,6 +238,8 @@ should be reported upstream directly.</p>
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="docutils literal"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="docutils literal"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hmac"><code class="docutils literal"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="docutils literal"><span class="pre">mbedtls.pk</span></code> Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apipk.html#module-mbedtls.pk.RSA"><code class="docutils literal"><span class="pre">mbedtls.pk.RSA</span></code> Module</a></li>
 </ul>
 </div>
 </div>
@@ -155,11 +266,15 @@ should be reported upstream directly.</p>
 <li><a class="reference internal" href="#installation">Installation</a><ul>
 <li><a class="reference internal" href="#mbed-tls">mbed TLS</a></li>
 <li><a class="reference internal" href="#id1">python-mbedtls</a></li>
-<li><a class="reference internal" href="#hashing-module-md-h">Hashing module (<cite>md.h</cite>)</a></li>
-<li><a class="reference internal" href="#symmetric-cipher-module-cipher-h">Symmetric cipher module (<cite>cipher.h</cite>)</a></li>
+<li><a class="reference internal" href="#hashing-module-md-h">Hashing module (<cite>md.h</cite>)</a><ul>
+<li><a class="reference internal" href="#message-digest-algorithms">Message digest algorithms</a></li>
+<li><a class="reference internal" href="#hmac-algorithm">HMAC algorithm</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#contribution">Contribution</a></li>
+<li><a class="reference internal" href="#symmetric-cipher-module-cipher-h">Symmetric cipher module (<cite>cipher.h</cite>)</a></li>
+<li><a class="reference internal" href="#public-key-module-pk-h">Public key module (<cite>pk.h</cite>)</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#api-documentation">API documentation</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>

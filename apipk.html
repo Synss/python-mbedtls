@@ -1,0 +1,608 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mbedtls.pk Package API &mdash; python-mbedtls 0.5 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="python-mbedtls 0.5 documentation" href="index.html" />
+    <link rel="prev" title="mbedtls.hash Module API" href="apimd.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-mbedtls.pk">
+<span id="mbedtls-pk-package-api"></span><h1><a class="reference internal" href="#module-mbedtls.pk" title="mbedtls.pk"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.pk</span></code></a> Package API<a class="headerlink" href="#module-mbedtls.pk" title="Permalink to this headline">¶</a></h1>
+<p>The pk package provides asymmetric encryption and decryption.</p>
+<dl class="class">
+<dt id="mbedtls.pk.CipherBase">
+<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">CipherBase</code><a class="headerlink" href="#mbedtls.pk.CipherBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Wrap and encapsulate the pk library from mbed TLS.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>bytes</em>) &#8211; The cipher name known to mbed TLS.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="mbedtls.pk.CipherBase.decrypt">
+<code class="descname">decrypt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.CipherBase.decrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypt message (including padding if relevant).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> (<em>bytes</em>) &#8211; Message to decrypt.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.CipherBase.encrypt">
+<code class="descname">encrypt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.CipherBase.encrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypt message (including padding if relevant).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> (<em>bytes</em>) &#8211; Message to encrypt.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.CipherBase.export">
+<code class="descname">export</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.CipherBase.export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export the keys.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>format</strong> (<em>string</em>) &#8211; One of {&#8220;PEM&#8221;, &#8220;DER&#8221;}, defaults to PEM.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>tuple</strong> &#8211; The private key and the public key.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bytes, bytes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.CipherBase.generate">
+<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.CipherBase.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a keypair.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.CipherBase.has_private">
+<code class="descname">has_private</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.CipherBase.has_private" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <cite>True</cite> if the key contains a valid private half.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.CipherBase.has_public">
+<code class="descname">has_public</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.CipherBase.has_public" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <cite>True</cite> if the key contains a valid public half.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.CipherBase.import_">
+<code class="descname">import_</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.CipherBase.import_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import a key (public or private half).</p>
+<p>The public half is automatically generated upon importing a
+private key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>bytes</em>) &#8211; The key in PEM or DER format.</li>
+<li><strong>password</strong> (<em>bytes, optional</em>) &#8211; The password for
+password-protected private keys.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.CipherBase.key_size">
+<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.pk.CipherBase.key_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the size of the key, in bytes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.CipherBase.name">
+<code class="descname">name</code><a class="headerlink" href="#mbedtls.pk.CipherBase.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the cipher.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.CipherBase.sign">
+<code class="descname">sign</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.CipherBase.sign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make signature, including padding if relevant.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>message</strong> (<em>bytes</em>) &#8211; The message to sign.</li>
+<li><strong>digestmod</strong> (<em>optional</em>) &#8211; The digest name or digest constructor.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The signature or None if the cipher does not
+contain a private key.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bytes or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.CipherBase.verify">
+<code class="descname">verify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.CipherBase.verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify signature, including padding if relevant.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>message</strong> (<em>bytes</em>) &#8211; The message to sign.</li>
+<li><strong>signature</strong> (<em>bytes</em>) &#8211; The signature to verify.</li>
+<li><strong>digestmod</strong> (<em>optional</em>) &#8211; The digest name or digest constructor.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if the verification passed, False otherwise.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.pk.check_pair">
+<code class="descclassname">mbedtls.pk.</code><code class="descname">check_pair</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.check_pair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a public-private pair of keys matches.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="mbedtls.pk.RSA">
+<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">RSA</code><a class="headerlink" href="#mbedtls.pk.RSA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">mbedtls.pk._pk.CipherBase</span></code></p>
+<p>RSA public-key cryptosystem.</p>
+<dl class="method">
+<dt id="mbedtls.pk.RSA.decrypt">
+<code class="descname">decrypt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.decrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypt message (including padding if relevant).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> (<em>bytes</em>) &#8211; Message to decrypt.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.encrypt">
+<code class="descname">encrypt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.encrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypt message (including padding if relevant).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> (<em>bytes</em>) &#8211; Message to encrypt.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.export">
+<code class="descname">export</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export the keys.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>format</strong> (<em>string</em>) &#8211; One of {&#8220;PEM&#8221;, &#8220;DER&#8221;}, defaults to PEM.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>tuple</strong> &#8211; The private key and the public key.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bytes, bytes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.generate">
+<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an RSA keypair.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key_size</strong> (<em>unsigned int</em>) &#8211; size in bits.</li>
+<li><strong>exponent</strong> (<em>int</em>) &#8211; public RSA exponent.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.has_private">
+<code class="descname">has_private</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.has_private" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <cite>True</cite> if the key contains a valid private half.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.has_public">
+<code class="descname">has_public</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.has_public" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <cite>True</cite> if the key contains a valid public half.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.import_">
+<code class="descname">import_</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.import_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import a key (public or private half).</p>
+<p>The public half is automatically generated upon importing a
+private key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>bytes</em>) &#8211; The key in PEM or DER format.</li>
+<li><strong>password</strong> (<em>bytes, optional</em>) &#8211; The password for
+password-protected private keys.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.RSA.key_size">
+<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.pk.RSA.key_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the size of the key, in bytes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.RSA.name">
+<code class="descname">name</code><a class="headerlink" href="#mbedtls.pk.RSA.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the cipher.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.sign">
+<code class="descname">sign</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.sign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make signature, including padding if relevant.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>message</strong> (<em>bytes</em>) &#8211; The message to sign.</li>
+<li><strong>digestmod</strong> (<em>optional</em>) &#8211; The digest name or digest constructor.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The signature or None if the cipher does not
+contain a private key.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bytes or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.verify">
+<code class="descname">verify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify signature, including padding if relevant.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>message</strong> (<em>bytes</em>) &#8211; The message to sign.</li>
+<li><strong>signature</strong> (<em>bytes</em>) &#8211; The signature to verify.</li>
+<li><strong>digestmod</strong> (<em>optional</em>) &#8211; The digest name or digest constructor.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if the verification passed, False otherwise.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-mbedtls.pk.RSA">
+<span id="mbedtls-pk-rsa-module"></span><h1><a class="reference internal" href="#module-mbedtls.pk.RSA" title="mbedtls.pk.RSA"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.pk.RSA</span></code></a> Module<a class="headerlink" href="#module-mbedtls.pk.RSA" title="Permalink to this headline">¶</a></h1>
+<p>RSA public-key cryptosystem.</p>
+<dl class="class">
+<dt id="mbedtls.pk.RSA.RSA">
+<em class="property">class </em><code class="descclassname">mbedtls.pk.RSA.</code><code class="descname">RSA</code><a class="headerlink" href="#mbedtls.pk.RSA.RSA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">mbedtls.pk._pk.CipherBase</span></code></p>
+<p>RSA public-key cryptosystem.</p>
+<dl class="method">
+<dt id="mbedtls.pk.RSA.RSA.decrypt">
+<code class="descname">decrypt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.RSA.decrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypt message (including padding if relevant).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> (<em>bytes</em>) &#8211; Message to decrypt.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.RSA.encrypt">
+<code class="descname">encrypt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.RSA.encrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypt message (including padding if relevant).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> (<em>bytes</em>) &#8211; Message to encrypt.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.RSA.export">
+<code class="descname">export</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.RSA.export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export the keys.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>format</strong> (<em>string</em>) &#8211; One of {&#8220;PEM&#8221;, &#8220;DER&#8221;}, defaults to PEM.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>tuple</strong> &#8211; The private key and the public key.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bytes, bytes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.RSA.generate">
+<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.RSA.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an RSA keypair.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key_size</strong> (<em>unsigned int</em>) &#8211; size in bits.</li>
+<li><strong>exponent</strong> (<em>int</em>) &#8211; public RSA exponent.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.RSA.has_private">
+<code class="descname">has_private</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.RSA.has_private" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <cite>True</cite> if the key contains a valid private half.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.RSA.has_public">
+<code class="descname">has_public</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.RSA.has_public" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <cite>True</cite> if the key contains a valid public half.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.RSA.import_">
+<code class="descname">import_</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.RSA.import_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import a key (public or private half).</p>
+<p>The public half is automatically generated upon importing a
+private key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>bytes</em>) &#8211; The key in PEM or DER format.</li>
+<li><strong>password</strong> (<em>bytes, optional</em>) &#8211; The password for
+password-protected private keys.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.RSA.RSA.key_size">
+<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.pk.RSA.RSA.key_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the size of the key, in bytes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.RSA.RSA.name">
+<code class="descname">name</code><a class="headerlink" href="#mbedtls.pk.RSA.RSA.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the cipher.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.RSA.sign">
+<code class="descname">sign</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.RSA.sign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make signature, including padding if relevant.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>message</strong> (<em>bytes</em>) &#8211; The message to sign.</li>
+<li><strong>digestmod</strong> (<em>optional</em>) &#8211; The digest name or digest constructor.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The signature or None if the cipher does not
+contain a private key.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bytes or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.RSA.RSA.verify">
+<code class="descname">verify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.RSA.verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify signature, including padding if relevant.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>message</strong> (<em>bytes</em>) &#8211; The message to sign.</li>
+<li><strong>signature</strong> (<em>bytes</em>) &#8211; The signature to verify.</li>
+<li><strong>digestmod</strong> (<em>optional</em>) &#8211; The digest name or digest constructor.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if the verification passed, False otherwise.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">mbedtls.pk</span></code> Package API</a></li>
+<li><a class="reference internal" href="#module-mbedtls.pk.RSA"><code class="docutils literal"><span class="pre">mbedtls.pk.RSA</span></code> Module</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="apimd.html" title="previous chapter"><code class="docutils literal"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/apipk.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Mathias Laurin.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/apipk.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

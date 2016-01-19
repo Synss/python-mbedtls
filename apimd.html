@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>mbedtls.hash Module API &mdash; python-mbedtls 0.3 documentation</title>
+    <title>mbedtls.hash Module API &mdash; python-mbedtls 0.5 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3',
+        VERSION:     '0.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-mbedtls 0.3 documentation" href="index.html" />
+    <link rel="top" title="python-mbedtls 0.5 documentation" href="index.html" />
+    <link rel="next" title="mbedtls.pk Package API" href="apipk.html" />
     <link rel="prev" title="mbedtls.cipher Package API" href="apicipher.html" />
    
   
@@ -43,7 +44,8 @@
 <dl class="class">
 <dt id="mbedtls.hash.Hash">
 <em class="property">class </em><code class="descclassname">mbedtls.hash.</code><code class="descname">Hash</code><a class="headerlink" href="#mbedtls.hash.Hash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrap and encapsulate hash calculations.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">mbedtls._md.MDBase</span></code></p>
+<p>Wrap and encapsulate hash calculations.</p>
 <p>This class is a wrapper for the hash calculations in the md module
 of mbed TLS.  The interface follows the recommendation from PEP 452
 for unkeyed hashes.</p>
@@ -73,10 +75,41 @@ for unkeyed hashes.</p>
 <dd><p><em>bytes</em> &#8211; The name of the message digest.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt>
+<code class="descname">block_size</code></dt>
+<dd><p>The internal block size of the hash algorithm in bytes.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="mbedtls.hash.Hash.copy">
 <code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.Hash.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy (&#8220;clone&#8221;) of the hash object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.hash.Hash.digest">
+<code class="descname">digest</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.Hash.digest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the digest output of <cite>message</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">digest_size</code></dt>
+<dd><p>The size of the resulting hash in bytes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.hash.Hash.hexdigest">
+<code class="descname">hexdigest</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.Hash.hexdigest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like digest except the digest is returned as a string object
+of double length.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">name</code></dt>
+<dd><p>The canonical name of the hashing algorithm.</p>
 </dd></dl>
 
 </dd></dl>
@@ -150,7 +183,8 @@ algorithm as its first parameter.</p>
 <dl class="class">
 <dt id="mbedtls.hmac.Hmac">
 <em class="property">class </em><code class="descclassname">mbedtls.hmac.</code><code class="descname">Hmac</code><a class="headerlink" href="#mbedtls.hmac.Hmac" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrap and encapsulate HMAC calculations.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">mbedtls._md.MDBase</span></code></p>
+<p>Wrap and encapsulate HMAC calculations.</p>
 <p>This class is a wrapper for the HMAC calculations in the md module
 of mbed TLS.  The interface follows the recommendation from PEP 452
 for keyed hashes.</p>
@@ -166,6 +200,11 @@ for keyed hashes.</p>
 </tr>
 </tbody>
 </table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The message is cleared after calculation of the digest.  Only
+call <a class="reference internal" href="#mbedtls.hmac.Hmac.digest" title="mbedtls.hmac.Hmac.digest"><code class="xref py py-meth docutils literal"><span class="pre">digest()</span></code></a> or <a class="reference internal" href="#mbedtls.hmac.Hmac.hexdigest" title="mbedtls.hmac.Hmac.hexdigest"><code class="xref py py-meth docutils literal"><span class="pre">hexdigest()</span></code></a> once per message.</p>
+</div>
 <dl class="attribute">
 <dt id="mbedtls.hmac.Hmac.digest_size">
 <code class="descname">digest_size</code><a class="headerlink" href="#mbedtls.hmac.Hmac.digest_size" title="Permalink to this definition">¶</a></dt>
@@ -184,6 +223,12 @@ for keyed hashes.</p>
 <dd><p><em>bytes</em> &#8211; The name of the message digest.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt>
+<code class="descname">block_size</code></dt>
+<dd><p>The internal block size of the hash algorithm in bytes.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="mbedtls.hmac.Hmac.copy">
 <code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.Hmac.copy" title="Permalink to this definition">¶</a></dt>
@@ -192,6 +237,31 @@ for keyed hashes.</p>
 <p class="first admonition-title">Warning</p>
 <p class="last">Not implemented in mbed TLS, raises NotImplementedError.</p>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.hmac.Hmac.digest">
+<code class="descname">digest</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.Hmac.digest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the digest output of <cite>message</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">digest_size</code></dt>
+<dd><p>The size of the resulting hash in bytes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.hmac.Hmac.hexdigest">
+<code class="descname">hexdigest</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.Hmac.hexdigest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like digest except the digest is returned as a string object
+of double length.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">name</code></dt>
+<dd><p>The canonical name of the hashing algorithm.</p>
 </dd></dl>
 
 </dd></dl>
@@ -231,31 +301,31 @@ parameter.</p>
 <dl class="function">
 <dt id="mbedtls.hmac.sha1">
 <code class="descclassname">mbedtls.hmac.</code><code class="descname">sha1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.sha1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 1 (SHA-1).</p>
+<dd><p>Secure Hmac Algorithm 1 (SHA-1).</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="mbedtls.hmac.sha224">
 <code class="descclassname">mbedtls.hmac.</code><code class="descname">sha224</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.sha224" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value.</p>
+<dd><p>Secure Hmac Algorithm 2 (SHA-2) with 224 bits hash value.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="mbedtls.hmac.sha256">
 <code class="descclassname">mbedtls.hmac.</code><code class="descname">sha256</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.sha256" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value.</p>
+<dd><p>Secure Hmac Algorithm 2 (SHA-2) with 256 bits hash value.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="mbedtls.hmac.sha384">
 <code class="descclassname">mbedtls.hmac.</code><code class="descname">sha384</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.sha384" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value.</p>
+<dd><p>Secure Hmac Algorithm 2 (SHA-2) with 384 bits hash value.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="mbedtls.hmac.sha512">
 <code class="descclassname">mbedtls.hmac.</code><code class="descname">sha512</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.sha512" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value.</p>
+<dd><p>Secure Hmac Algorithm 2 (SHA-2) with 512 bits hash value.</p>
 </dd></dl>
 
 </div>
@@ -276,6 +346,7 @@ parameter.</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="apicipher.html" title="previous chapter"><code class="docutils literal"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
+      <li>Next: <a href="apipk.html" title="next chapter"><code class="docutils literal"><span class="pre">mbedtls.pk</span></code> Package API</a></li>
   </ul></li>
 </ul>
 </div>
