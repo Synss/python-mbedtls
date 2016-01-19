@@ -127,7 +127,7 @@ def test_check_against_hmac_buf():
         yield test
 
 
-def test_instantiation():
+def test_hash_instantiation():
     import inspect
 
     def check_instantiation(fun, name):
@@ -139,5 +139,22 @@ def test_instantiation():
     for name, member in inspect.getmembers(md_hash):
         if name in md_hash.algorithms_available:
             test = partial(check_instantiation, member, name)
-            test.description = "check_instantiation(%s)" % name
+            test.description = "check_hash_instantiation(%s)" % name
+            yield test
+
+
+def test_hmac_instantiation():
+    import inspect
+
+    def check_instantiation(fun, name):
+        key = _rnd(16)
+        alg1 = fun(key)
+        alg2 = md_hmac.new(key, digestmod=name)
+        assert_equal(type(alg1), type(alg2))
+        assert_equal(alg1.name, alg2.name)
+
+    for name, member in inspect.getmembers(md_hmac):
+        if name in md_hmac.algorithms_available:
+            test = partial(check_instantiation, member, name)
+            test.description = "check_hmac_instantiation(%s)" % name
             yield test
