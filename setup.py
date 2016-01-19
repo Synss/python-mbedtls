@@ -1,33 +1,22 @@
+import os
 from setuptools import setup, Extension
 
 
-version = "0.4"
+version = "0.5"
 download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
 
 
-extensions = [
-    Extension("mbedtls.exceptions", ["mbedtls/exceptions.c"]),
-] + [
-    Extension("mbedtls.random", ["mbedtls/random.c"],
-              libraries=["mbedtls"],
-              include_dirs=["."],)
-] + [
-    Extension("mbedtls.cipher.%s" % name, ["mbedtls/cipher/%s.c" % name],
-              libraries=["mbedtls"],
-              include_dirs=["."],) for name in
-    "_cipher __init__".split() +
-    "AES ARC4 Blowfish Camellia DES DES3 DES3dbl".split()
-] + [
-    Extension("mbedtls.pk.%s" % name, ["mbedtls/pk/%s.c" % name],
-              libraries=["mbedtls"],
-              include_dirs=["."],) for name in
-    "_pk __init__ RSA".split()
-] + [
-    Extension("mbedtls.%s" % name, ["mbedtls/%s.c" % name],
-              libraries=["mbedtls"],
-              include_dirs=["."],)
-    for name in "_md __init__ hash hmac".split()
-]
+extensions = []
+for dirpath, dirnames, filenames in os.walk("mbedtls"):
+    for fn in filenames:
+        root, ext = os.path.splitext(fn)
+        if ext != ".c":
+            continue
+        mod = ".".join(dirpath.split(os.sep) + [root])
+        extensions.append(Extension(
+            mod, [os.path.join(dirpath, fn)],
+            libraries=["mbedtls"], include_dirs=["."]))
+
 
 setup(
     name="python-mbedtls",
