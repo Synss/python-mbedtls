@@ -533,6 +533,8 @@ static int __Pyx_SetPackagePathFromImportLib(const char* parent_package_name, Py
 #define __Pyx_SetPackagePathFromImportLib(a, b) 0
 #endif
 
+static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
+
 typedef struct {
     int code_line;
     PyCodeObject* code_object;
@@ -566,12 +568,56 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 int __pyx_module_is_main_mbedtls____init__ = 0;
 
 /* Implementation of 'mbedtls.__init__' */
+static char __pyx_k_[] = "*";
+static char __pyx_k_pk[] = "pk";
+static char __pyx_k_all[] = "__all__";
+static char __pyx_k_hash[] = "hash";
+static char __pyx_k_hmac[] = "hmac";
 static char __pyx_k_main[] = "__main__";
 static char __pyx_k_test[] = "__test__";
+static char __pyx_k_author[] = "__author__";
+static char __pyx_k_cipher[] = "cipher";
+static char __pyx_k_import[] = "__import__";
+static char __pyx_k_random[] = "random";
+static char __pyx_k_license[] = "__license__";
 static char __pyx_k_mbedtls[] = "mbedtls";
+static char __pyx_k_copyright[] = "__copyright__";
+static char __pyx_k_exceptions[] = "exceptions";
+static char __pyx_k_mbedtls_pk[] = "mbedtls.pk";
+static char __pyx_k_MIT_License[] = "MIT License";
+static char __pyx_k_mbedtls_hash[] = "mbedtls.hash";
+static char __pyx_k_mbedtls_hmac[] = "mbedtls.hmac";
+static char __pyx_k_Mathias_Laurin[] = "Mathias Laurin";
+static char __pyx_k_mbedtls_cipher[] = "mbedtls.cipher";
+static char __pyx_k_mbedtls_random[] = "mbedtls.random";
+static char __pyx_k_mbedtls_exceptions[] = "mbedtls.exceptions";
+static char __pyx_k_Copyright_2015_Elaborated_Networ[] = "Copyright 2015, Elaborated Networks GmbH";
+static char __pyx_k_python_mbedtls_is_a_this_wrapper[] = "python-mbedtls is a this wrapper to ARM's mbed TLS library.";
+static PyObject *__pyx_n_s_;
+static PyObject *__pyx_kp_s_Copyright_2015_Elaborated_Networ;
+static PyObject *__pyx_kp_s_MIT_License;
+static PyObject *__pyx_kp_s_Mathias_Laurin;
+static PyObject *__pyx_n_s_all;
+static PyObject *__pyx_n_s_author;
+static PyObject *__pyx_n_s_cipher;
+static PyObject *__pyx_n_s_copyright;
+static PyObject *__pyx_n_s_exceptions;
+static PyObject *__pyx_n_s_hash;
+static PyObject *__pyx_n_s_hmac;
+static PyObject *__pyx_n_s_import;
+static PyObject *__pyx_n_s_license;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_u_mbedtls;
+static PyObject *__pyx_n_s_mbedtls_cipher;
+static PyObject *__pyx_n_s_mbedtls_exceptions;
+static PyObject *__pyx_n_s_mbedtls_hash;
+static PyObject *__pyx_n_s_mbedtls_hmac;
+static PyObject *__pyx_n_s_mbedtls_pk;
+static PyObject *__pyx_n_s_mbedtls_random;
+static PyObject *__pyx_n_s_pk;
+static PyObject *__pyx_n_s_random;
 static PyObject *__pyx_n_s_test;
+static PyObject *__pyx_tuple__2;
 
 static PyMethodDef __pyx_methods[] = {
   {0, 0, 0, 0}
@@ -585,7 +631,7 @@ static struct PyModuleDef __pyx_moduledef = {
     PyModuleDef_HEAD_INIT,
   #endif
     "mbedtls",
-    0, /* m_doc */
+    __pyx_k_python_mbedtls_is_a_this_wrapper, /* m_doc */
     -1, /* m_size */
     __pyx_methods /* m_methods */,
     NULL, /* m_reload */
@@ -596,8 +642,29 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
+  {&__pyx_n_s_, __pyx_k_, sizeof(__pyx_k_), 0, 0, 1, 1},
+  {&__pyx_kp_s_Copyright_2015_Elaborated_Networ, __pyx_k_Copyright_2015_Elaborated_Networ, sizeof(__pyx_k_Copyright_2015_Elaborated_Networ), 0, 0, 1, 0},
+  {&__pyx_kp_s_MIT_License, __pyx_k_MIT_License, sizeof(__pyx_k_MIT_License), 0, 0, 1, 0},
+  {&__pyx_kp_s_Mathias_Laurin, __pyx_k_Mathias_Laurin, sizeof(__pyx_k_Mathias_Laurin), 0, 0, 1, 0},
+  {&__pyx_n_s_all, __pyx_k_all, sizeof(__pyx_k_all), 0, 0, 1, 1},
+  {&__pyx_n_s_author, __pyx_k_author, sizeof(__pyx_k_author), 0, 0, 1, 1},
+  {&__pyx_n_s_cipher, __pyx_k_cipher, sizeof(__pyx_k_cipher), 0, 0, 1, 1},
+  {&__pyx_n_s_copyright, __pyx_k_copyright, sizeof(__pyx_k_copyright), 0, 0, 1, 1},
+  {&__pyx_n_s_exceptions, __pyx_k_exceptions, sizeof(__pyx_k_exceptions), 0, 0, 1, 1},
+  {&__pyx_n_s_hash, __pyx_k_hash, sizeof(__pyx_k_hash), 0, 0, 1, 1},
+  {&__pyx_n_s_hmac, __pyx_k_hmac, sizeof(__pyx_k_hmac), 0, 0, 1, 1},
+  {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
+  {&__pyx_n_s_license, __pyx_k_license, sizeof(__pyx_k_license), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_u_mbedtls, __pyx_k_mbedtls, sizeof(__pyx_k_mbedtls), 0, 1, 0, 1},
+  {&__pyx_n_s_mbedtls_cipher, __pyx_k_mbedtls_cipher, sizeof(__pyx_k_mbedtls_cipher), 0, 0, 1, 1},
+  {&__pyx_n_s_mbedtls_exceptions, __pyx_k_mbedtls_exceptions, sizeof(__pyx_k_mbedtls_exceptions), 0, 0, 1, 1},
+  {&__pyx_n_s_mbedtls_hash, __pyx_k_mbedtls_hash, sizeof(__pyx_k_mbedtls_hash), 0, 0, 1, 1},
+  {&__pyx_n_s_mbedtls_hmac, __pyx_k_mbedtls_hmac, sizeof(__pyx_k_mbedtls_hmac), 0, 0, 1, 1},
+  {&__pyx_n_s_mbedtls_pk, __pyx_k_mbedtls_pk, sizeof(__pyx_k_mbedtls_pk), 0, 0, 1, 1},
+  {&__pyx_n_s_mbedtls_random, __pyx_k_mbedtls_random, sizeof(__pyx_k_mbedtls_random), 0, 0, 1, 1},
+  {&__pyx_n_s_pk, __pyx_k_pk, sizeof(__pyx_k_pk), 0, 0, 1, 1},
+  {&__pyx_n_s_random, __pyx_k_random, sizeof(__pyx_k_random), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
@@ -608,8 +675,20 @@ static int __Pyx_InitCachedBuiltins(void) {
 static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
+
+  /* "mbedtls/__init__.pyx":16
+ * 
+ * 
+ * __all__ = "cipher", "exceptions", "hash", "hmac", "pk", "random"             # <<<<<<<<<<<<<<
+ */
+  __pyx_tuple__2 = PyTuple_Pack(6, __pyx_n_s_cipher, __pyx_n_s_exceptions, __pyx_n_s_hash, __pyx_n_s_hmac, __pyx_n_s_pk, __pyx_n_s_random); if (unlikely(!__pyx_tuple__2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__2);
+  __Pyx_GIVEREF(__pyx_tuple__2);
   __Pyx_RefNannyFinishContext();
   return 0;
+  __pyx_L1_error:;
+  __Pyx_RefNannyFinishContext();
+  return -1;
 }
 
 static int __Pyx_InitGlobals(void) {
@@ -628,6 +707,7 @@ PyMODINIT_FUNC PyInit_mbedtls(void)
 #endif
 {
   PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -669,7 +749,7 @@ PyMODINIT_FUNC PyInit_mbedtls(void)
   #endif
   /*--- Module creation code ---*/
   #if PY_MAJOR_VERSION < 3
-  __pyx_m = Py_InitModule4("mbedtls", __pyx_methods, 0, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
+  __pyx_m = Py_InitModule4("mbedtls", __pyx_methods, __pyx_k_python_mbedtls_is_a_this_wrapper, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
   #else
   __pyx_m = PyModule_Create(&__pyx_moduledef);
   #endif
@@ -714,8 +794,152 @@ PyMODINIT_FUNC PyInit_mbedtls(void)
   if (__Pyx_patch_abc() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
 
+  /* "mbedtls/__init__.pyx":3
+ * """python-mbedtls is a this wrapper to ARM's mbed TLS library."""
+ * 
+ * __author__ = "Mathias Laurin"             # <<<<<<<<<<<<<<
+ * __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
+ * __license__ = "MIT License"
+ */
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_author, __pyx_kp_s_Mathias_Laurin) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "mbedtls/__init__.pyx":4
+ * 
+ * __author__ = "Mathias Laurin"
+ * __copyright__ = "Copyright 2015, Elaborated Networks GmbH"             # <<<<<<<<<<<<<<
+ * __license__ = "MIT License"
+ * 
+ */
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_copyright, __pyx_kp_s_Copyright_2015_Elaborated_Networ) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "mbedtls/__init__.pyx":5
+ * __author__ = "Mathias Laurin"
+ * __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
+ * __license__ = "MIT License"             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_license, __pyx_kp_s_MIT_License) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "mbedtls/__init__.pyx":8
+ * 
+ * 
+ * import mbedtls.cipher as cipher             # <<<<<<<<<<<<<<
+ * import mbedtls.exceptions as exceptions
+ * import mbedtls.hash as hash
+ */
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_INCREF(__pyx_n_s_);
+  __Pyx_GIVEREF(__pyx_n_s_);
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_);
+  __pyx_t_2 = __Pyx_Import(__pyx_n_s_mbedtls_cipher, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_cipher, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/__init__.pyx":9
+ * 
+ * import mbedtls.cipher as cipher
+ * import mbedtls.exceptions as exceptions             # <<<<<<<<<<<<<<
+ * import mbedtls.hash as hash
+ * import mbedtls.hmac as hmac
+ */
+  __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_INCREF(__pyx_n_s_);
+  __Pyx_GIVEREF(__pyx_n_s_);
+  PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_);
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_mbedtls_exceptions, __pyx_t_2, -1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_exceptions, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "mbedtls/__init__.pyx":10
+ * import mbedtls.cipher as cipher
+ * import mbedtls.exceptions as exceptions
+ * import mbedtls.hash as hash             # <<<<<<<<<<<<<<
+ * import mbedtls.hmac as hmac
+ * import mbedtls.pk as pk
+ */
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_INCREF(__pyx_n_s_);
+  __Pyx_GIVEREF(__pyx_n_s_);
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_);
+  __pyx_t_2 = __Pyx_Import(__pyx_n_s_mbedtls_hash, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_hash, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/__init__.pyx":11
+ * import mbedtls.exceptions as exceptions
+ * import mbedtls.hash as hash
+ * import mbedtls.hmac as hmac             # <<<<<<<<<<<<<<
+ * import mbedtls.pk as pk
+ * import mbedtls.random as random
+ */
+  __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_INCREF(__pyx_n_s_);
+  __Pyx_GIVEREF(__pyx_n_s_);
+  PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_);
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_mbedtls_hmac, __pyx_t_2, -1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_hmac, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "mbedtls/__init__.pyx":12
+ * import mbedtls.hash as hash
+ * import mbedtls.hmac as hmac
+ * import mbedtls.pk as pk             # <<<<<<<<<<<<<<
+ * import mbedtls.random as random
+ * 
+ */
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 12; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_INCREF(__pyx_n_s_);
+  __Pyx_GIVEREF(__pyx_n_s_);
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_);
+  __pyx_t_2 = __Pyx_Import(__pyx_n_s_mbedtls_pk, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 12; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_pk, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 12; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "mbedtls/__init__.pyx":13
+ * import mbedtls.hmac as hmac
+ * import mbedtls.pk as pk
+ * import mbedtls.random as random             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_INCREF(__pyx_n_s_);
+  __Pyx_GIVEREF(__pyx_n_s_);
+  PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_);
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_mbedtls_random, __pyx_t_2, -1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_random, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "mbedtls/__init__.pyx":16
+ * 
+ * 
+ * __all__ = "cipher", "exceptions", "hash", "hmac", "pk", "random"             # <<<<<<<<<<<<<<
+ */
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_all, __pyx_tuple__2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
   /* "mbedtls/__init__.pyx":1
-             # <<<<<<<<<<<<<<
+ * """python-mbedtls is a this wrapper to ARM's mbed TLS library."""             # <<<<<<<<<<<<<<
+ * 
+ * __author__ = "Mathias Laurin"
  */
   __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
@@ -727,6 +951,7 @@ PyMODINIT_FUNC PyInit_mbedtls(void)
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   if (__pyx_m) {
     if (__pyx_d) {
       __Pyx_AddTraceback("init mbedtls.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
@@ -822,6 +1047,79 @@ set_path:
     return result;
 }
 #endif
+
+static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
+    PyObject *empty_list = 0;
+    PyObject *module = 0;
+    PyObject *global_dict = 0;
+    PyObject *empty_dict = 0;
+    PyObject *list;
+    #if PY_VERSION_HEX < 0x03030000
+    PyObject *py_import;
+    py_import = __Pyx_PyObject_GetAttrStr(__pyx_b, __pyx_n_s_import);
+    if (!py_import)
+        goto bad;
+    #endif
+    if (from_list)
+        list = from_list;
+    else {
+        empty_list = PyList_New(0);
+        if (!empty_list)
+            goto bad;
+        list = empty_list;
+    }
+    global_dict = PyModule_GetDict(__pyx_m);
+    if (!global_dict)
+        goto bad;
+    empty_dict = PyDict_New();
+    if (!empty_dict)
+        goto bad;
+    {
+        #if PY_MAJOR_VERSION >= 3
+        if (level == -1) {
+            if (strchr(__Pyx_MODULE_NAME, '.')) {
+                #if PY_VERSION_HEX < 0x03030000
+                PyObject *py_level = PyInt_FromLong(1);
+                if (!py_level)
+                    goto bad;
+                module = PyObject_CallFunctionObjArgs(py_import,
+                    name, global_dict, empty_dict, list, py_level, NULL);
+                Py_DECREF(py_level);
+                #else
+                module = PyImport_ImportModuleLevelObject(
+                    name, global_dict, empty_dict, list, 1);
+                #endif
+                if (!module) {
+                    if (!PyErr_ExceptionMatches(PyExc_ImportError))
+                        goto bad;
+                    PyErr_Clear();
+                }
+            }
+            level = 0;
+        }
+        #endif
+        if (!module) {
+            #if PY_VERSION_HEX < 0x03030000
+            PyObject *py_level = PyInt_FromLong(level);
+            if (!py_level)
+                goto bad;
+            module = PyObject_CallFunctionObjArgs(py_import,
+                name, global_dict, empty_dict, list, py_level, NULL);
+            Py_DECREF(py_level);
+            #else
+            module = PyImport_ImportModuleLevelObject(
+                name, global_dict, empty_dict, list, level);
+            #endif
+        }
+    }
+bad:
+    #if PY_VERSION_HEX < 0x03030000
+    Py_XDECREF(py_import);
+    #endif
+    Py_XDECREF(empty_list);
+    Py_XDECREF(empty_dict);
+    return module;
+}
 
 static int __pyx_bisect_code_objects(__Pyx_CodeObjectCacheEntry* entries, int count, int code_line) {
     int start = 0, mid = 0, end = count - 1;
