@@ -1,13 +1,21 @@
 .DEFAULT_GOAL := debug
 
+PYX  = $(wildcard mbedtls/*.pyx)
+PYX += $(wildcard mbedtls/cipher/*.pyx)
+PYX += $(wildcard mbedtls/pk/*.pyx)
+
 release:
+	cython $(PYX)
 	python setup.py build_ext
 
 debug:
-	python setup.py build_ext --inplace
+	cython -a -X linetrace=True $(PYX)
+	CFLAGS='-DCYTHON_TRACE=1' python setup.py build_ext --inplace
 
 test:
-	nosetests -v tests
+	nosetests -v \
+		--with-coverage --cover-package=mbedtls \
+		tests
 
 html:
 	cd docs && make html
