@@ -55,41 +55,17 @@ under which mbed TLS is distributed.</p>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>The wrapper is currently developed and tested on Debian Jessie and targets
-Python 3.4.  It probably works with earlier Python releases although this was
-not tested.</p>
-<div class="section" id="mbed-tls">
-<h3>mbed TLS<a class="headerlink" href="#mbed-tls" title="Permalink to this headline">¶</a></h3>
-<p><cite>python-mbedtls</cite> requires the mbed TLS library that can be installed
-with:</p>
-<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/ARMmbed/mbedtls.git mbedtls.git
-cd mbedtls.git
-SHARED=1 make no_test
-sudo make install
+<p>The wrapper is currently developed and tested on Debian and targets Python 3.4.
+It probably works with earlier Python releases although this was not tested.</p>
+<p><cite>mbedtls</cite> is available in Debian Stretch, which may require the addition of
+<cite>stretch</cite> or <cite>testing</cite> to <code class="docutils literal"><span class="pre">/etc/apt/sources.list</span></code>.</p>
+<p>Then install the development libraries for mbedtls:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># aptitude install libmbedtls-dev</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="id1">
-<h3>python-mbedtls<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>Building <cite>python-mbedtls</cite> requires Cython:</p>
-<div class="highlight-python"><div class="highlight"><pre>python3 -m pip install cython
-</pre></div>
-</div>
-<p>then,</p>
+<p>and the wrapper:</p>
 <div class="highlight-python"><div class="highlight"><pre>python3 -m pip install python-mbedtls
 </pre></div>
-</div>
-<p>or</p>
-<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/Synss/python-mbedtls.git python-mbedtls.git
-cd python-mbedtls.git
-python3 setup.py build_ext
-</pre></div>
-</div>
-<p>The unit tests further require <cite>nose</cite> and <cite>pyCrypto</cite>:</p>
-<div class="highlight-python"><div class="highlight"><pre>python3 -m pip install nose pycrypto
-nosetests -v tests
-</pre></div>
-</div>
 </div>
 <div class="section" id="hashing-module-md-h">
 <h3>Hashing module (<cite>md.h</cite>)<a class="headerlink" href="#hashing-module-md-h" title="Permalink to this headline">¶</a></h3>
@@ -264,8 +240,6 @@ formats;</li>
 <li><a class="reference internal" href="#">Python wrapper to mbed TLS</a><ul>
 <li><a class="reference internal" href="#license">License</a></li>
 <li><a class="reference internal" href="#installation">Installation</a><ul>
-<li><a class="reference internal" href="#mbed-tls">mbed TLS</a></li>
-<li><a class="reference internal" href="#id1">python-mbedtls</a></li>
 <li><a class="reference internal" href="#hashing-module-md-h">Hashing module (<cite>md.h</cite>)</a><ul>
 <li><a class="reference internal" href="#message-digest-algorithms">Message digest algorithms</a></li>
 <li><a class="reference internal" href="#hmac-algorithm">HMAC algorithm</a></li>
