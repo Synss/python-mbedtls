@@ -27,48 +27,19 @@ under which mbed TLS is distributed.
 Installation
 ============
 
-The wrapper is currently developed and tested on Debian Jessie and targets
-Python 3.4.  It probably works with earlier Python releases although this was
-not tested.
+The wrapper is currently developed and tested on Debian and targets Python 3.4.
+It probably works with earlier Python releases although this was not tested.
 
+`mbedtls` is available in Debian Stretch, which may require the addition of
+`stretch` or `testing` to ``/etc/apt/sources.list``.
 
-mbed TLS
---------
+Then install the development libraries for mbedtls::
 
-`python-mbedtls` requires the mbed TLS library that can be installed
-with::
+   # aptitude install libmbedtls-dev
 
-	git clone https://github.com/ARMmbed/mbedtls.git mbedtls.git
-	cd mbedtls.git
-	SHARED=1 make no_test
-	sudo make install
-
-
-python-mbedtls
---------------
-
-Building `python-mbedtls` requires Cython::
-
-	python3 -m pip install cython
-
-then,
-
-::
+and the wrapper::
 
    python3 -m pip install python-mbedtls
-
-or
-
-::
-
-	git clone https://github.com/Synss/python-mbedtls.git python-mbedtls.git
-	cd python-mbedtls.git
-	python3 setup.py build_ext
-
-The unit tests further require `nose` and `pyCrypto`::
-
-	python3 -m pip install nose pycrypto
-	nosetests -v tests
 
 
 Hashing module (`md.h`)
