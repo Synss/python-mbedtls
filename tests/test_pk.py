@@ -2,6 +2,7 @@
 
 
 from functools import partial
+from tempfile import TemporaryFile
 
 from nose.plugins.skip import SkipTest
 from nose.tools import (assert_equal, assert_is_instance,
@@ -107,15 +108,39 @@ def test_rsa_sign_without_key_returns_none():
     assert_is_none(cipher.sign(message, hash.md5))
 
 
-class TestRsa:
+class _TestRsaBase:
 
     def setup(self):
         key_size = 2048
         self.cipher = RSA()
         self.cipher.generate(key_size)
 
+
+class TestRsa(_TestRsaBase):
+
     def test_keypair(self):
         assert_true(check_pair(self.cipher, self.cipher))
+
+    def test_has_private_and_has_public_with_private_key(self):
+        cipher = RSA()
+        assert_false(cipher.has_private())
+        assert_false(cipher.has_public())
+
+        cipher.import_(self.cipher._write_private_key_der())
+        assert_true(cipher.has_private())
+        assert_true(cipher.has_public())
+
+    def test_has_private_and_has_public_with_public_key(self):
+        cipher = RSA()
+        assert_false(cipher.has_private())
+        assert_false(cipher.has_public())
+
+        cipher.import_(self.cipher._write_public_key_der())
+        assert_false(cipher.has_private())
+        assert_true(cipher.has_public())
+
+
+class TestRsaWriteParse(_TestRsaBase):
 
     def test_write_and_parse_private_key_der(self):
         prv = self.cipher._write_private_key_der()
@@ -161,6 +186,9 @@ class TestRsa:
         cipher = RSA()
         cipher._parse_public_key(prv)
 
+
+class TestRsaImportExport(_TestRsaBase):
+
     def test_import_public_key(self):
         cipher = RSA()
         cipher.import_(self.cipher._write_public_key_der())
@@ -175,23 +203,8 @@ class TestRsa:
         assert_true(check_pair(cipher, self.cipher))  # Test public half.
         assert_true(check_pair(cipher, cipher))
 
-    def test_has_private_and_has_public_with_private_key(self):
-        cipher = RSA()
-        assert_false(cipher.has_private())
-        assert_false(cipher.has_public())
 
-        cipher.import_(self.cipher._write_private_key_der())
-        assert_true(cipher.has_private())
-        assert_true(cipher.has_public())
-
-    def test_has_private_and_has_public_with_public_key(self):
-        cipher = RSA()
-        assert_false(cipher.has_private())
-        assert_false(cipher.has_public())
-
-        cipher.import_(self.cipher._write_public_key_der())
-        assert_false(cipher.has_private())
-        assert_true(cipher.has_public())
+class TestRsaSignature(_TestRsaBase):
 
     def test_sign_verify(self):
         message = _rnd(4096)
