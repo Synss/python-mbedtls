@@ -203,6 +203,50 @@ class TestRsaImportExport(_TestRsaBase):
         assert_true(check_pair(cipher, self.cipher))  # Test public half.
         assert_true(check_pair(cipher, cipher))
 
+    def test_export_private_key_pem(self):
+        cipher = RSA()
+        prv, pub = self.cipher.export(format="PEM")
+        cipher.import_(prv)
+        assert_true(cipher.has_private())
+        assert_true(cipher.has_public())
+        assert_true(check_pair(self.cipher, cipher))  # Test private half.
+        assert_true(check_pair(cipher, self.cipher))  # Test public half.
+        assert_true(check_pair(cipher, cipher))
+
+    def test_export_private_key_der(self):
+        cipher = RSA()
+        prv, pub = self.cipher.export(format="DER")
+        cipher.import_(prv)
+        assert_true(cipher.has_private())
+        assert_true(cipher.has_public())
+        assert_true(check_pair(self.cipher, cipher))  # Test private half.
+        assert_true(check_pair(cipher, self.cipher))  # Test public half.
+        assert_true(check_pair(cipher, cipher))
+
+    def test_export_private_key_to_file_pem(self):
+        cipher = RSA()
+        with TemporaryFile() as prv:
+            prv.write(self.cipher.export(format="PEM")[0])
+            prv.seek(0)
+            cipher.import_(prv.read())
+        assert_true(cipher.has_private())
+        assert_true(cipher.has_public())
+        assert_true(check_pair(self.cipher, cipher))  # Test private half.
+        assert_true(check_pair(cipher, self.cipher))  # Test public half.
+        assert_true(check_pair(cipher, cipher))
+
+    def test_export_private_key_to_file_der(self):
+        cipher = RSA()
+        with TemporaryFile() as prv:
+            prv.write(self.cipher.export(format="DER")[0])
+            prv.seek(0)
+            cipher.import_(prv.read())
+        assert_true(cipher.has_private())
+        assert_true(cipher.has_public())
+        assert_true(check_pair(self.cipher, cipher))  # Test private half.
+        assert_true(check_pair(cipher, self.cipher))  # Test public half.
+        assert_true(check_pair(cipher, cipher))
+
 
 class TestRsaSignature(_TestRsaBase):
 
