@@ -252,21 +252,19 @@ def test_check_against_openssl():
         openssl_cipher = CIPHER_LOOKUP.get(
             cipher.name, cipher.name.decode("ascii").lower())
 
-        openssl = Popen(("openssl enc -%s -K %s -iv %s -nosalt" % (
-            openssl_cipher,
-            hexlify(key).decode("ascii"),
-            hexlify(iv).decode("ascii")) +
-            (" -nopad" if cipher.mode is MODE_ECB else "")
-        ).split(),
-            stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        cmd = ["openssl", "enc", "-%s" % openssl_cipher, "-nosalt",
+               "-K", hexlify(key).decode("ascii")]
+        if cipher.mode is MODE_ECB:
+            cmd.append("-nopad")
+        else:
+            cmd.extend(["-iv", hexlify(iv).decode("ascii")])
+        openssl = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         out, err = openssl.communicate(input=block)
         if err:
-            fail_test.description = description
-            yield fail_test, ":".join((str(cipher), openssl_cipher,
-                                       err.decode().splitlines()[0]))
-            continue
-
-        test = partial(assert_equal, cipher.encrypt(block), out)
+            test = partial(fail_test, ":".join((str(cipher), openssl_cipher,
+                                                err.decode().splitlines()[0])))
+        else:
+            test = partial(assert_equal, cipher.encrypt(block), out)
         test.description = description
         yield test
 
