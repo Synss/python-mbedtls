@@ -8,6 +8,7 @@ from functools import partial
 import hashlib
 import hmac
 
+from nose.plugins.skip import SkipTest
 from nose.tools import assert_equal, assert_greater_equal, assert_less
 
 # pylint: disable=import-error
@@ -70,8 +71,12 @@ def test_copy_hash():
 def test_check_hexdigest_against_hashlib():
     for name in md_hash.algorithms_available:
         buf = _rnd(1024)
-        alg = md_hash.new(name, buf)
-        ref = hashlib.new(name, buf)
+        try:
+            alg = md_hash.new(name, buf)
+            ref = hashlib.new(name, buf)
+        except ValueError as exc:
+            # Unsupported hash type.
+            raise SkipTest(str(exc)) from exc
         test = partial(assert_equal, alg.hexdigest(), ref.hexdigest())
         test.description = "check_hexdigest_against_hashlib(%s)" % name
         yield test
@@ -80,8 +85,12 @@ def test_check_hexdigest_against_hashlib():
 def test_check_against_hashlib_nobuf():
     for name in md_hash.algorithms_available:
         buf = _rnd(1024)
-        alg = md_hash.new(name, buf)
-        ref = hashlib.new(name, buf)
+        try:
+            alg = md_hash.new(name, buf)
+            ref = hashlib.new(name, buf)
+        except ValueError as exc:
+            # Unsupported hash type.
+            raise SkipTest(str(exc)) from exc
         test = partial(assert_equal, alg.digest(), ref.digest())
         test.description = "check_against_hashlib_nobuf(%s)" % name
         yield test
@@ -90,8 +99,12 @@ def test_check_against_hashlib_nobuf():
 def test_check_against_hashlib_buf():
     for name in md_hash.algorithms_available:
         buf = _rnd(4096)
-        alg = md_hash.new(name)
-        ref = hashlib.new(name)
+        try:
+            alg = md_hash.new(name)
+            ref = hashlib.new(name)
+        except ValueError as exc:
+            # Unsupported hash type.
+            raise SkipTest(str(exc)) from exc
         for chunk in make_chunks(buf, 500):
             alg.update(chunk)
             ref.update(chunk)
@@ -104,8 +117,12 @@ def test_check_against_hmac_nobuf():
     for name in md_hmac.algorithms_available:
         buf = _rnd(1024)
         key = _rnd(16)
-        alg = md_hmac.new(key, buf, digestmod=name)
-        ref = hmac.new(key, buf, digestmod=name)
+        try:
+            alg = md_hmac.new(key, buf, digestmod=name)
+            ref = hmac.new(key, buf, digestmod=name)
+        except ValueError as exc:
+            # Unsupported hash type.
+            raise SkipTest(str(exc)) from exc
         # Use partial to have the correct name in failed reports (by
         # avoiding late bindings).
         test = partial(assert_equal, alg.digest(), ref.digest())
@@ -117,8 +134,12 @@ def test_check_against_hmac_buf():
     for name in md_hmac.algorithms_available:
         buf = _rnd(4096)
         key = _rnd(16)
-        alg = md_hmac.new(key, digestmod=name)
-        ref = hmac.new(key, digestmod=name)
+        try:
+            alg = md_hmac.new(key, digestmod=name)
+            ref = hmac.new(key, digestmod=name)
+        except ValueError as exc:
+            # Unsupported hash type.
+            raise SkipTest(str(exc)) from exc
         for chunk in make_chunks(buf, 500):
             alg.update(chunk)
             ref.update(chunk)
