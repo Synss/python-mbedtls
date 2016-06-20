@@ -94,10 +94,10 @@ Example::
    >>> m.digest()
    b'\x9d-/rj\\\x98\x80\xb1rG\x87\x0f\xe9\xe4\xeb'
 
-.. warning::
+Warning:
 
    The message is cleared after calculation of the digest.  Only call
-   :meth:`mbedtls.hmac.Hmac.digest` or :meth:`mbedtls.hmac.Hmac.hexdigest` once
+   `mbedtls.hmac.Hmac.digest()` or `mbedtls.hmac.Hmac.hexdigest()` once
    per message.
 
 
