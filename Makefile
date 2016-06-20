@@ -13,9 +13,7 @@ debug:
 	CFLAGS='-DCYTHON_TRACE=1' python setup.py build_ext --inplace
 
 test:
-	nosetests -v \
-		--with-coverage --cover-package=mbedtls \
-		tests
+	nosetests -v --with-coverage --cover-package=mbedtls
 
 html:
 	cd docs && make html
