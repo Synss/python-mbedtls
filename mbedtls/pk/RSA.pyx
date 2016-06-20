@@ -22,19 +22,16 @@ cdef class RSA(_pk.CipherBase):
 
     """RSA public-key cryptosystem."""
 
-    cdef _pk.mbedtls_rsa_context* _rsa
-
     def __init__(self):
         super().__init__(b"RSA")
-        self._rsa = _pk.mbedtls_pk_rsa(self._ctx)
 
     cpdef bint has_private(self):
         """Return `True` if the key contains a valid private half."""
-        return _pk.mbedtls_rsa_check_privkey(self._rsa) == 0
+        return _pk.mbedtls_rsa_check_privkey(_pk.mbedtls_pk_rsa(self._ctx)) == 0
 
     cpdef bint has_public(self):
         """Return `True` if the key contains a valid public half."""
-        return _pk.mbedtls_rsa_check_pubkey(self._rsa) == 0
+        return _pk.mbedtls_rsa_check_pubkey(_pk.mbedtls_pk_rsa(self._ctx)) == 0
 
     cpdef generate(self, unsigned int key_size=2048, int exponent=65537):
         """Generate an RSA keypair.
@@ -45,5 +42,5 @@ cdef class RSA(_pk.CipherBase):
 
         """
         check_error(_pk.mbedtls_rsa_gen_key(
-            self._rsa, &_random.mbedtls_ctr_drbg_random, &__rng._ctx,
-            key_size, exponent))
+            _pk.mbedtls_pk_rsa(self._ctx), &_random.mbedtls_ctr_drbg_random,
+            &__rng._ctx, key_size, exponent))
