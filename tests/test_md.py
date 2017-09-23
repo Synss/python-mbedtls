@@ -7,9 +7,9 @@
 from functools import partial
 import hashlib
 import hmac
+import inspect
 
-from nose.plugins.skip import SkipTest
-from nose.tools import assert_equal, assert_greater_equal, assert_less
+import pytest
 
 # pylint: disable=import-error
 from mbedtls._md import MD_NAME
@@ -20,6 +20,12 @@ import mbedtls.hmac as md_hmac
 from . import _rnd
 
 
+@pytest.fixture(params=md_hash.algorithms_available)
+def algorithm(request):
+    name = request.param
+    return md_hash.new(name)
+
+
 def make_chunks(buffer, size):
     for i in range(0, len(buffer), size):
         yield buffer[i:i+size]
@@ -27,8 +33,7 @@ def make_chunks(buffer, size):
 
 def test_make_chunks():
     buffer = _rnd(1024)
-    assert_equal(b"".join(buf for buf in make_chunks(buffer, 100)),
-                 buffer)
+    assert b"".join(buf for buf in make_chunks(buffer, 100)) == buffer
 
 
 def test_md_list():
@@ -40,142 +45,99 @@ def test_algorithms():
         md_hash.algorithms_available)
 
 
-def test_type_accessor():
-    def assert_in_bounds(value, lower, higher):
-        assert_greater_equal(value, lower)
-        assert_less(value, higher)
-
-    for name in md_hash.algorithms_available:
-        alg = md_hash.new(name)
-        # pylint: disable=protected-access
-        test = partial(assert_in_bounds, alg._type, 0, len(MD_NAME))
-        test.description = "test_type_accessor(%s)" % name
-        yield test
+def test_type_accessor(algorithm):
+    # pylint: disable=protected-access
+    assert 0 <= algorithm._type < len(MD_NAME)
 
 
-def test_copy_hash():
-    for name in md_hash.algorithms_available:
-        buf0 = _rnd(512)
-        buf1 = _rnd(512)
-        alg = md_hash.new(name, buf0)
-        copy = alg.copy()
-        alg.update(buf1)
-        copy.update(buf1)
-        # Use partial to have the correct name in failed reports (by
-        # avoiding late bindings).
-        test = partial(assert_equal, alg.digest(), copy.digest())
-        test.description = "test_copy_hash(%s)" % name
-        yield test
+def test_copy_hash(algorithm):
+    buf0 = _rnd(512)
+    buf1 = _rnd(512)
+    copy = algorithm.copy()
+    algorithm.update(buf1)
+    copy.update(buf1)
+    assert algorithm.digest() == copy.digest()
 
 
-def test_check_hexdigest_against_hashlib():
-    for name in md_hash.algorithms_available:
-        buf = _rnd(1024)
-        try:
-            alg = md_hash.new(name, buf)
-            ref = hashlib.new(name, buf)
-        except ValueError as exc:
-            # Unsupported hash type.
-            raise SkipTest(str(exc)) from exc
-        test = partial(assert_equal, alg.hexdigest(), ref.hexdigest())
-        test.description = "check_hexdigest_against_hashlib(%s)" % name
-        yield test
+def test_check_hexdigest_against_hashlib(algorithm):
+    buf = _rnd(1024)
+    try:
+        alg = md_hash.new(algorithm.name, buf)
+        ref = hashlib.new(algorithm.name, buf)
+    except ValueError as exc:
+        # Unsupported hash type.
+        pytest.skip(str(exc))
+    assert alg.hexdigest() == ref.hexdigest()
 
 
-def test_check_against_hashlib_nobuf():
-    for name in md_hash.algorithms_available:
-        buf = _rnd(1024)
-        try:
-            alg = md_hash.new(name, buf)
-            ref = hashlib.new(name, buf)
-        except ValueError as exc:
-            # Unsupported hash type.
-            raise SkipTest(str(exc)) from exc
-        test = partial(assert_equal, alg.digest(), ref.digest())
-        test.description = "check_against_hashlib_nobuf(%s)" % name
-        yield test
+def test_check_against_hashlib_nobuf(algorithm):
+    buf = _rnd(1024)
+    try:
+        alg = md_hash.new(algorithm.name, buf)
+        ref = hashlib.new(algorithm.name, buf)
+    except ValueError as exc:
+        # Unsupported hash type.
+        pytest.skip(str(exc))
+    assert alg.digest() == ref.digest()
 
 
-def test_check_against_hashlib_buf():
-    for name in md_hash.algorithms_available:
-        buf = _rnd(4096)
-        try:
-            alg = md_hash.new(name)
-            ref = hashlib.new(name)
-        except ValueError as exc:
-            # Unsupported hash type.
-            raise SkipTest(str(exc)) from exc
-        for chunk in make_chunks(buf, 500):
-            alg.update(chunk)
-            ref.update(chunk)
-        test = partial(assert_equal, alg.digest(), ref.digest())
-        test.description = "check_against_hashlib_buf(%s)" % name
-        yield test
+def test_check_against_hashlib_buf(algorithm):
+    buf = _rnd(4096)
+    try:
+        alg = md_hash.new(algorithm.name)
+        ref = hashlib.new(algorithm.name)
+    except ValueError as exc:
+        # Unsupported hash type.
+        pytest.skip(str(exc))
+    for chunk in make_chunks(buf, 500):
+        alg.update(chunk)
+        ref.update(chunk)
+    assert alg.digest() == ref.digest()
 
 
-def test_check_against_hmac_nobuf():
-    for name in md_hmac.algorithms_available:
-        buf = _rnd(1024)
-        key = _rnd(16)
-        try:
-            alg = md_hmac.new(key, buf, digestmod=name)
-            ref = hmac.new(key, buf, digestmod=name)
-        except ValueError as exc:
-            # Unsupported hash type.
-            raise SkipTest(str(exc)) from exc
-        # Use partial to have the correct name in failed reports (by
-        # avoiding late bindings).
-        test = partial(assert_equal, alg.digest(), ref.digest())
-        test.description = "check_against_hmac_nobuf(%s)" % name
-        yield test
+def test_check_against_hmac_nobuf(algorithm):
+    buf = _rnd(1024)
+    key = _rnd(16)
+    try:
+        alg = md_hmac.new(key, buf, digestmod=algorithm.name)
+        ref = hmac.new(key, buf, digestmod=algorithm.name)
+    except ValueError as exc:
+        # Unsupported hash type.
+        pytest.skip(str(exc))
+    assert alg.digest() == ref.digest()
 
 
-def test_check_against_hmac_buf():
-    for name in md_hmac.algorithms_available:
-        buf = _rnd(4096)
-        key = _rnd(16)
-        try:
-            alg = md_hmac.new(key, digestmod=name)
-            ref = hmac.new(key, digestmod=name)
-        except ValueError as exc:
-            # Unsupported hash type.
-            raise SkipTest(str(exc)) from exc
-        for chunk in make_chunks(buf, 500):
-            alg.update(chunk)
-            ref.update(chunk)
-        test = partial(assert_equal, alg.digest(), ref.digest())
-        test.description = "check_against_hmac_buf(%s)" % name
-        yield test
+def test_check_against_hmac_buf(algorithm):
+    buf = _rnd(4096)
+    key = _rnd(16)
+    try:
+        alg = md_hmac.new(key, digestmod=algorithm.name)
+        ref = hmac.new(key, digestmod=algorithm.name)
+    except ValueError as exc:
+        # Unsupported hash type.
+        pytest.skip(str(exc))
+    for chunk in make_chunks(buf, 500):
+        alg.update(chunk)
+        ref.update(chunk)
+    assert alg.digest() == ref.digest()
 
 
-def test_hash_instantiation():
-    import inspect
-
-    def check_instantiation(fun, name):
-        alg1 = fun()
-        alg2 = md_hash.new(name)
-        assert_equal(type(alg1), type(alg2))
-        assert_equal(alg1.name, alg2.name)
-
-    for name, member in inspect.getmembers(md_hash):
-        if name in md_hash.algorithms_available:
-            test = partial(check_instantiation, member, name)
-            test.description = "check_hash_instantiation(%s)" % name
-            yield test
+@pytest.mark.parametrize("name, algcls", inspect.getmembers(md_hash))
+def test_hash_instantiation(name, algcls):
+    if name not in md_hash.algorithms_available:
+        pytest.skip("not a hash algorithm")
+    alg1 = algcls()
+    alg2 = md_hash.new(name)
+    assert type(alg1) is type(alg2)
+    assert alg1.name == alg2.name
 
 
-def test_hmac_instantiation():
-    import inspect
-
-    def check_instantiation(fun, name):
-        key = _rnd(16)
-        alg1 = fun(key)
-        alg2 = md_hmac.new(key, digestmod=name)
-        assert_equal(type(alg1), type(alg2))
-        assert_equal(alg1.name, alg2.name)
-
-    for name, member in inspect.getmembers(md_hmac):
-        if name in md_hmac.algorithms_available:
-            test = partial(check_instantiation, member, name)
-            test.description = "check_hmac_instantiation(%s)" % name
-            yield test
+@pytest.mark.parametrize("name, algcls", inspect.getmembers(md_hmac))
+def test_hmac_instantiation(name, algcls):
+    if name not in md_hash.algorithms_available:
+        pytest.skip("not an hmac algorithm")
+    key = _rnd(16)
+    alg1 = algcls(key)
+    alg2 = md_hmac.new(key, digestmod=name)
+    assert type(alg1) is type(alg2)
+    assert alg1.name == alg2.name
