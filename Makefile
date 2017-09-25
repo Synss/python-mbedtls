@@ -4,13 +4,17 @@ PYX  = $(wildcard mbedtls/*.pyx)
 PYX += $(wildcard mbedtls/cipher/*.pyx)
 PYX += $(wildcard mbedtls/pk/*.pyx)
 
+LIBMBEDTLS = $(HOME)/lib/mbedtls-2.5.2
+
 release:
 	cython $(PYX)
 	python setup.py build_ext
 
 debug:
 	cython -a -X linetrace=True $(PYX)
-	CFLAGS='-DCYTHON_TRACE=1' python setup.py build_ext --inplace
+	CFLAGS='-DCYTHON_TRACE=1' python setup.py build_ext --inplace \
+		   -L$(LIBMBEDTLS)/lib \
+		   -I$(LIBMBEDTLS)/include
 
 test:
 	nosetests -v --with-coverage --cover-package=mbedtls
