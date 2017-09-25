@@ -17,7 +17,7 @@ debug:
 		   -I$(LIBMBEDTLS)/include
 
 test:
-	nosetests -v --with-coverage --cover-package=mbedtls
+	pytest --cov mbedtls tests
 
 html:
 	cd docs && make html
