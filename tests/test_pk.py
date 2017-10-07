@@ -4,14 +4,9 @@
 from functools import partial
 from tempfile import TemporaryFile
 
-from nose.plugins.skip import SkipTest
-from nose.tools import (assert_equal, assert_is_instance,
-                        assert_true, assert_false,
-                        assert_is_none, assert_is_not_none,
-                        raises,
-                        )
+import pytest
 
-import mbedtls.hash as hash
+import mbedtls.hash as _hash
 from mbedtls.exceptions import *
 from mbedtls.exceptions import _ErrorBase
 from mbedtls.pk._pk import _type_from_name, _get_md_alg
@@ -20,9 +15,19 @@ from mbedtls.pk import *
 from . import _rnd
 
 
-def fail_test(message):
-    assert False, message
-fail_test.__test__ = False
+@pytest.fixture(params=(name for name in sorted(get_supported_ciphers())
+                        if name != b"NONE"))
+def cipher(request):
+    name = request.param
+    return CipherBase(name)
+
+
+@pytest.fixture(params=(1024, 2048, 4096))
+def rsa(request):
+    key_size = request.param
+    cipher = RSA()
+    cipher.generate(key_size)
+    return cipher
 
 
 def test_cipher_list():
@@ -35,231 +40,163 @@ def test_get_supported_ciphers():
 
 
 def test_type_from_name():
-    assert_equal(
-        tuple(_type_from_name(name) for name in CIPHER_NAME),
-        tuple(range(len(CIPHER_NAME))))
+    assert tuple(_type_from_name(name)
+                 for name in CIPHER_NAME) == tuple(range(len(CIPHER_NAME)))
 
 
-def get_ciphers():
-    return (name for name in sorted(get_supported_ciphers())
-            if name not in {b"NONE"})
+def test_type_accessor(cipher):
+    assert cipher._type == _type_from_name(cipher.name)
 
 
-def test_type_accessor():
-    for name in get_ciphers():
-        description = "test_type_accessor(%s)" % name
-        cipher = CipherBase(name)
-        test = partial(assert_equal, cipher._type, _type_from_name(name))
-        test.description = description
-        yield test
+def test_key_size_accessor(cipher):
+    assert cipher.key_size == 0
 
 
-def test_name_accessor():
-    for name in get_ciphers():
-        description = "test_name_accessor(%s)" % name
-        cipher = CipherBase(name)
-        test = partial(assert_equal, cipher.name, name)
-        test.description = description
-        yield test
+@pytest.mark.parametrize(
+    "algorithm", (_get_md_alg(name) for name in _hash.algorithms_available))
+def test_digestmod(algorithm):
+    assert isinstance(algorithm(), _hash.Hash)
 
 
-def test_key_size_accessor():
-    for name in get_ciphers():
-        description = "test_key_size_accessor(%s)" % name
-        cipher = CipherBase(name)
-        test = partial(assert_equal, cipher.key_size, 0)
-        test.description = description
-        yield test
+@pytest.mark.parametrize(
+    "md_algorithm", (vars(_hash)[name] for name in _hash.algorithms_available))
+def test_digestmod_from_ctor(md_algorithm):
+    assert callable(md_algorithm)
+    algorithm = _get_md_alg(md_algorithm)
+    assert isinstance(algorithm(), _hash.Hash)
 
 
-def test_digestmod():
-    for name in hash.algorithms_available:
-        alg = _get_md_alg(name)
-        test = partial(assert_is_instance, alg(), hash.Hash)
-        test.description = "test_digestmod_from_string(%s)" % name
-        yield test
-
-
-def test_digestmod_from_ctor():
-    for name in hash.algorithms_available:
-        md_alg = vars(hash)[name]
-        assert callable(md_alg)
-        alg = _get_md_alg(md_alg)
-        test = partial(assert_is_instance, alg(), hash.Hash)
-        test.description = "test_digestmod_from_ctor(%s)" % name
-        yield test
-
-
-def test_rsa_encrypt_decrypt():
-    for key_size in (1024, 2048, 4096):
-        cipher = RSA()
-        cipher.generate(key_size)
-        msg = _rnd(cipher.key_size - 11)
-        enc = cipher.encrypt(msg)
-        dec = cipher.decrypt(enc)
-        test = partial(assert_equal, dec, msg)
-        test.description = "test_encrypt_decrypt(%s:%s)" % ("RSA", key_size)
-        yield test
+def test_rsa_encrypt_decrypt(rsa):
+    msg = _rnd(rsa.key_size - 11)
+    assert rsa.decrypt(rsa.encrypt(msg)) == msg
 
 
 def test_rsa_sign_without_key_returns_none():
-    cipher = RSA()
+    rsa = RSA()
     message = _rnd(4096)
-    assert_is_none(cipher.sign(message, hash.md5))
+    assert rsa.sign(message, _hash.md5) is None
 
 
-class _TestRsaBase:
-
-    def setup(self):
-        key_size = 2048
-        self.cipher = RSA()
-        self.cipher.generate(key_size)
+def test_rsa_check_pair(rsa):
+    assert check_pair(rsa, rsa) is True
 
 
-class TestRsa(_TestRsaBase):
+def test_rsa_has_private_and_has_public_with_private_key(rsa):
+    cipher = RSA()
+    assert cipher.has_private() is False
+    assert cipher.has_public() is False
 
-    def test_keypair(self):
-        assert_true(check_pair(self.cipher, self.cipher))
-
-    def test_has_private_and_has_public_with_private_key(self):
-        cipher = RSA()
-        assert_false(cipher.has_private())
-        assert_false(cipher.has_public())
-
-        cipher.import_(self.cipher._write_private_key_der())
-        assert_true(cipher.has_private())
-        assert_true(cipher.has_public())
-
-    def test_has_private_and_has_public_with_public_key(self):
-        cipher = RSA()
-        assert_false(cipher.has_private())
-        assert_false(cipher.has_public())
-
-        cipher.import_(self.cipher._write_public_key_der())
-        assert_false(cipher.has_private())
-        assert_true(cipher.has_public())
+    cipher.import_(rsa._write_private_key_der())
+    assert cipher.has_private() is True
+    assert cipher.has_public() is True
 
 
-class TestRsaWriteParse(_TestRsaBase):
+def test_rsa_has_private_and_has_public_with_public_key(rsa):
+    cipher = RSA()
+    assert cipher.has_private() is False
+    assert cipher.has_public() is False
 
-    def test_write_and_parse_private_key_der(self):
-        prv = self.cipher._write_private_key_der()
-        cipher = RSA()
-        cipher._parse_private_key(prv)
-        assert_true(check_pair(self.cipher, cipher))  # Test private half.
-        assert_true(check_pair(cipher, self.cipher))  # Test public half.
-        assert_true(check_pair(cipher, cipher))
+    cipher.import_(rsa._write_public_key_der())
+    assert cipher.has_private() is False
+    assert cipher.has_public() is True
 
-    def test_write_and_parse_private_key_pem(self):
-        prv = self.cipher._write_private_key_pem()
-        cipher = RSA()
-        cipher._parse_private_key(prv)
-        assert_true(check_pair(self.cipher, cipher))  # Test private half.
-        assert_true(check_pair(cipher, self.cipher))  # Test public half.
-        assert_true(check_pair(cipher, cipher))
 
-    def test_write_and_parse_public_key_der(self):
-        pub = self.cipher._write_public_key_der()
-        cipher = RSA()
-        cipher._parse_public_key(pub)
-        assert_false(check_pair(self.cipher, cipher))  # Test private half.
-        assert_true(check_pair(cipher, self.cipher))   # Test public half.
-        assert_false(check_pair(cipher, cipher))
+def test_rsa_write_and_parse_private_key_der(rsa):
+    prv = rsa._write_private_key_der()
+    cipher = RSA()
+    cipher._parse_private_key(prv)
+    assert check_pair(rsa, cipher) is True  # Test private half.
+    assert check_pair(cipher, rsa) is True  # Test public half.
+    assert check_pair(cipher, cipher) is True
 
-    def test_write_and_parse_public_key_pem(self):
-        pub = self.cipher._write_public_key_pem()
-        cipher = RSA()
-        cipher._parse_public_key(pub)
-        assert_false(check_pair(self.cipher, cipher))  # Test private half.
-        assert_true(check_pair(cipher, self.cipher))   # Test public half.
-        assert_false(check_pair(cipher, cipher))
 
-    @raises(PkError)
-    def test_write_public_der_in_private_raises(self):
-        pub = self.cipher._write_public_key_der()
-        cipher = RSA()
+def test_rsa_write_and_parse_private_key_pem(rsa):
+    prv = rsa._write_private_key_pem()
+    cipher = RSA()
+    cipher._parse_private_key(prv)
+    assert check_pair(rsa, cipher) is True  # Test private half.
+    assert check_pair(cipher, rsa) is True  # Test public half.
+    assert check_pair(cipher, cipher) is True
+
+
+def test_rsa_write_and_parse_public_key_der(rsa):
+    pub = rsa._write_public_key_der()
+    cipher = RSA()
+    cipher._parse_public_key(pub)
+    assert check_pair(rsa, cipher) is False  # Test private half.
+    assert check_pair(cipher, rsa) is True   # Test public half.
+    assert check_pair(cipher, cipher) is False
+
+
+def test_rsa_write_and_parse_public_key_pem(rsa):
+    pub = rsa._write_public_key_pem()
+    cipher = RSA()
+    cipher._parse_public_key(pub)
+    assert check_pair(rsa, cipher) is False  # Test private half.
+    assert check_pair(cipher, rsa) is True   # Test public half.
+    assert check_pair(cipher, cipher) is False
+
+
+def test_rsa_write_public_der_in_private_raises(rsa):
+    pub = rsa._write_public_key_der()
+    cipher = RSA()
+    with pytest.raises(PkError):
         cipher._parse_private_key(pub)
 
-    @raises(_ErrorBase)
-    def test_write_private_der_in_public_raises(self):
-        prv = self.cipher._write_private_key_der()
-        cipher = RSA()
+
+def test_rsa_write_private_der_in_public_raises(rsa):
+    prv = rsa._write_private_key_der()
+    cipher = RSA()
+    with pytest.raises(_ErrorBase):
         cipher._parse_public_key(prv)
 
 
-class TestRsaImportExport(_TestRsaBase):
-
-    def test_import_public_key(self):
-        cipher = RSA()
-        cipher.import_(self.cipher._write_public_key_der())
-        assert_false(check_pair(self.cipher, cipher))  # Test private half.
-        assert_true(check_pair(cipher, self.cipher))   # Test public half.
-        assert_false(check_pair(cipher, cipher))
-
-    def test_import_private_key(self):
-        cipher = RSA()
-        cipher.import_(self.cipher._write_private_key_der())
-        assert_true(check_pair(self.cipher, cipher))  # Test private half.
-        assert_true(check_pair(cipher, self.cipher))  # Test public half.
-        assert_true(check_pair(cipher, cipher))
-
-    def test_export_private_key_pem(self):
-        cipher = RSA()
-        prv, pub = self.cipher.export(format="PEM")
-        cipher.import_(prv)
-        assert_true(cipher.has_private())
-        assert_true(cipher.has_public())
-        assert_true(check_pair(self.cipher, cipher))  # Test private half.
-        assert_true(check_pair(cipher, self.cipher))  # Test public half.
-        assert_true(check_pair(cipher, cipher))
-
-    def test_export_private_key_der(self):
-        cipher = RSA()
-        prv, pub = self.cipher.export(format="DER")
-        cipher.import_(prv)
-        assert_true(cipher.has_private())
-        assert_true(cipher.has_public())
-        assert_true(check_pair(self.cipher, cipher))  # Test private half.
-        assert_true(check_pair(cipher, self.cipher))  # Test public half.
-        assert_true(check_pair(cipher, cipher))
-
-    def test_export_private_key_to_file_pem(self):
-        cipher = RSA()
-        with TemporaryFile() as prv:
-            prv.write(self.cipher.export(format="PEM")[0])
-            prv.seek(0)
-            cipher.import_(prv.read())
-        assert_true(cipher.has_private())
-        assert_true(cipher.has_public())
-        assert_true(check_pair(self.cipher, cipher))  # Test private half.
-        assert_true(check_pair(cipher, self.cipher))  # Test public half.
-        assert_true(check_pair(cipher, cipher))
-
-    def test_export_private_key_to_file_der(self):
-        cipher = RSA()
-        with TemporaryFile() as prv:
-            prv.write(self.cipher.export(format="DER")[0])
-            prv.seek(0)
-            cipher.import_(prv.read())
-        assert_true(cipher.has_private())
-        assert_true(cipher.has_public())
-        assert_true(check_pair(self.cipher, cipher))  # Test private half.
-        assert_true(check_pair(cipher, self.cipher))  # Test public half.
-        assert_true(check_pair(cipher, cipher))
+def test_rsa_import_public_key(rsa):
+    cipher = RSA()
+    cipher.import_(rsa._write_public_key_der())
+    assert check_pair(rsa, cipher) is False  # Test private half.
+    assert check_pair(cipher, rsa) is True   # Test public half.
+    assert check_pair(cipher, cipher) is False
 
 
-class TestRsaSignature(_TestRsaBase):
+def test_rsa_import_private_key(rsa):
+    cipher = RSA()
+    cipher.import_(rsa._write_private_key_der())
+    assert check_pair(rsa, cipher) is True  # Test private half.
+    assert check_pair(cipher, rsa) is True # Test public half.
+    assert check_pair(cipher, cipher) is True
 
-    def test_sign_verify(self):
-        message = _rnd(4096)
-        sig = self.cipher.sign(message, hash.md5)
-        assert_is_not_none(sig)
-        assert_true(self.cipher.verify(message, sig, hash.md5))
-        assert_false(self.cipher.verify(message + b"\0", sig, hash.md5))
 
-    def test_sign_verify_default_digestmod(self):
-        message = _rnd(4096)
-        sig = self.cipher.sign(message)
-        assert_is_not_none(sig)
-        assert_true(self.cipher.verify(message, sig))
-        assert_false(self.cipher.verify(message + b"\0", sig))
+@pytest.mark.parametrize("format", ("PEM", "DER"))
+def test_rsa_export_private_key(rsa, format):
+    cipher = RSA()
+    prv, pub = rsa.export(format=format)
+    cipher.import_(prv)
+    assert cipher.has_private() is True
+    assert cipher.has_public() is True
+    assert check_pair(rsa, cipher) is True  # Test private half.
+    assert check_pair(cipher, rsa) is True  # Test public half.
+    assert check_pair(cipher, cipher) is True
+
+
+@pytest.mark.parametrize("format", ("PEM", "DER"))
+def test_rsa_export_private_key_to_file(tmpdir, rsa, format):
+    prv = tmpdir.join("key.prv")
+    prv.write_binary(rsa.export(format=format)[0])
+
+    cipher = RSA()
+    cipher.import_(prv.read_binary())
+    assert cipher.has_private() is True
+    assert cipher.has_public() is True
+    assert check_pair(rsa, cipher) is True  # Test private half.
+    assert check_pair(cipher, rsa) is True  # Test public half.
+    assert check_pair(cipher, cipher) is True
+
+
+@pytest.mark.parametrize("digestmod", (_hash.md5, None))
+def test_rsa_sign_verify(rsa, digestmod):
+    message = _rnd(4096)
+    sig = rsa.sign(message, digestmod)
+    assert sig is not None
+    assert rsa.verify(message, sig, digestmod) is True
+    assert rsa.verify(message + b"\0", sig, digestmod) is False
