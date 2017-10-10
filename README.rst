@@ -2,6 +2,15 @@
 Python wrapper to mbed TLS
 ==========================
 
+.. image::
+   https://circleci.com/gh/Synss/python-mbedtls/tree/develop.svg?style=svg
+   :target: https://circleci.com/gh/Synss/python-mbedtls/tree/develop
+
+.. image::
+   https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=develop
+   :target: https://coveralls.io/github/Synss/python-mbedtls?branch=develop
+
+
 `python-mbedtls`_ is a thin wrapper to ARM's mbed TLS library.
 
 According to the `official mbed TLS website`_
