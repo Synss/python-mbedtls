@@ -1,2 +1,4 @@
 cython
 pytest
+pytest-cov
+python-coveralls
