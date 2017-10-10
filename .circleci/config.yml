@@ -1,0 +1,41 @@
+# Python CircleCI 2.0 configuration file
+# vi: et:ts=2:sw=2
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.4
+        environment:
+          VERSION: 2.4.2
+    working_directory: ~/python-mbedtls
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - py-dependencies-{{ checksum "requirements.txt" }}
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+            ./install-mbedtls.sh $VERSION
+            cython $(find mbedtls -name "*.pyx")
+            LIBMBEDTLS=./mbedtls-$VERSION
+            python setup.py build_ext -i -L$LIBMBEDTLS/lib -I$LIBMBEDTLS/include
+      - save_cache:
+          key: py-dependencies-{{ checksum "requirements.txt" }}
+          paths:
+            - ./venv
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            export LD_LIBRARY_PATH="./mbedtls-$VERSION/lib"
+            pytest mbedtls tests
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
