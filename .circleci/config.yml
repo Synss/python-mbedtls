@@ -23,9 +23,9 @@ jobs:
             . venv/bin/activate
             pip install -r requirements.txt
             ./install-mbedtls.sh $VERSION
-            cython $(find mbedtls -name "*.pyx")
+            find mbedtls -name "*.pyx" -exec cython -X linetrace=True {} +
             LIBMBEDTLS=./mbedtls-$VERSION
-            python setup.py build_ext -i -L$LIBMBEDTLS/lib -I$LIBMBEDTLS/include
+            CFLAGS='-DCYTHON_TRACE=1' python setup.py build_ext -i -L$LIBMBEDTLS/lib -I$LIBMBEDTLS/include
       - save_cache:
           key: py-dependencies-{{ checksum "requirements.txt" }}
           paths:
@@ -35,7 +35,8 @@ jobs:
           command: |
             . venv/bin/activate
             export LD_LIBRARY_PATH="./mbedtls-$VERSION/lib"
-            pytest mbedtls tests
+            pytest --cov-report= --cov=mbedtls tests
+            coveralls
       - store_artifacts:
           path: test-reports
           destination: test-reports
