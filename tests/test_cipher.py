@@ -19,8 +19,6 @@ from mbedtls.exceptions import *
 import mbedtls.cipher as mb
 # pylint: enable=import-error
 
-from . import _rnd
-
 
 def test_cipher_list():
     assert len(CIPHER_NAME) == 49
@@ -72,11 +70,11 @@ def module_from_name(name):
 
 @pytest.fixture(params=(name for name in sorted(get_supported_ciphers())
                         if not name.endswith(b"CCM")))  # Not compiled by default.
-def cipher(request):
+def cipher(request, randbytes):
     name = request.param
     cipher = Cipher(name, key=None, mode=None, iv=b"\x00")
-    key = _rnd(cipher.key_size)
-    iv = _rnd(cipher.iv_size)
+    key = randbytes(cipher.key_size)
+    iv = randbytes(cipher.iv_size)
     return module_from_name(name).new(key, cipher.mode, iv)
 
 
@@ -84,8 +82,8 @@ def is_streaming(cipher):
     return cipher.name.startswith(b"ARC") or cipher.mode is not MODE_ECB
 
 
-def test_encrypt_decrypt(cipher):
-    block = _rnd(cipher.block_size)
+def test_encrypt_decrypt(cipher, randbytes):
+    block = randbytes(cipher.block_size)
     assert cipher.decrypt(cipher.encrypt(block)) == block
 
 
@@ -101,15 +99,16 @@ def test_module_level_key_size_variable(cipher):
     assert cipher.key_size == mod.key_size
 
 
-def test_wrong_key_size_raises_invalid_key_size_error(cipher):
+def test_wrong_key_size_raises_invalid_key_size_error(cipher, randbytes):
     mod = module_from_name(cipher.name)
     if mod.key_size is None:
         pytest.skip("module defines variable-length key")
     with pytest.raises(InvalidKeyLengthError):
-        mod.new(_rnd(cipher.key_size) + b"\x00", cipher.mode, _rnd(cipher.iv_size))
+        mod.new(randbytes(cipher.key_size) + b"\x00",
+                cipher.mode, randbytes(cipher.iv_size))
 
 
-def test_check_against_pycrypto(cipher):
+def test_check_against_pycrypto(cipher, randbytes):
     try:
         import Crypto.Cipher as pc
         # We must import the following to have them in scope.
@@ -136,9 +135,9 @@ def test_check_against_pycrypto(cipher):
         # Counter actually requires the counter.
         pytest.skip("encryption mode unsupported")
 
-    key = _rnd(cipher.key_size)
-    iv = _rnd(cipher.iv_size)
-    block = _rnd(cipher.block_size)
+    key = randbytes(cipher.key_size)
+    iv = randbytes(cipher.iv_size)
+    block = randbytes(cipher.block_size)
 
     cipher = mod.new(key, cipher.mode, iv)   # A new cipher...
     try:
@@ -161,7 +160,8 @@ def test_check_against_pycrypto(cipher):
         assert cipher.encrypt(block) == ref.encrypt(block)
 
 
-def test_check_against_openssl(cipher):
+@pytest.mark.skip
+def test_check_against_openssl(cipher, randbytes):
     from binascii import hexlify
     from subprocess import PIPE, Popen
 
@@ -177,9 +177,9 @@ def test_check_against_openssl(cipher):
     }:
         pytest.skip("not available in openssl")
 
-    key = _rnd(cipher.key_size)
-    iv = _rnd(cipher.iv_size)
-    block = _rnd(cipher.block_size)
+    key = randbytes(cipher.key_size)
+    iv = randbytes(cipher.iv_size)
+    block = randbytes(cipher.block_size)
 
     # A new cipher...
     cipher = module_from_name(cipher.name).new(key, cipher.mode, iv)
@@ -212,24 +212,26 @@ def test_check_against_openssl(cipher):
         assert cipher.encrypt(block) == out
 
 
-def test_streaming_ciphers(cipher):
+def test_streaming_ciphers(cipher, randbytes):
     if not is_streaming(cipher):
         pytest.skip("not a streaming cipher")
-    block = _rnd(20000)
+    block = randbytes(20000)
     assert cipher.decrypt(cipher.encrypt(block)) == block
 
 
-def test_fixed_block_size_ciphers_long_block_raise_ciphererror(cipher):
+def test_fixed_block_size_ciphers_long_block_raise_ciphererror(
+        cipher, randbytes):
     if is_streaming(cipher):
         pytest.skip("streaming cipher")
     with pytest.raises(CipherError):
-        block = _rnd(cipher.block_size) + _rnd(1)
+        block = randbytes(cipher.block_size) + randbytes(1)
         cipher.encrypt(block)
 
 
-def test_fixed_block_size_ciphers_short_block_raise_ciphererror(cipher):
+def test_fixed_block_size_ciphers_short_block_raise_ciphererror(
+        cipher, randbytes):
     if is_streaming(cipher):
         pytest.skip("streaming cipher")
     with pytest.raises(CipherError):
-        block = _rnd(cipher.block_size)[1:]
+        block = randbytes(cipher.block_size)[1:]
         cipher.encrypt(block)

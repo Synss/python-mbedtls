@@ -164,8 +164,7 @@ cdef _c_crypt(_cipher.mbedtls_cipher_context_t* ctx,
         # We can call `check_error` directly here because we return a
         # python object.
         check_error(err)
-        # The list comprehension is required.
-        return bytes([output[n] for n in range(olen)])
+        return bytes(output[:olen])
     finally:
         free(output)
 

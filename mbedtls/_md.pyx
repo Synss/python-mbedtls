@@ -63,7 +63,7 @@ cdef class MDBase:
 
     """
     def __init__(self, name, buffer, hmac):
-        if not isinstance(name, str):
+        if not isinstance(name, (str, unicode)):
             raise TypeError("name must be a string")
         self._info = _md.mbedtls_md_info_from_string(
             name.upper().encode("ascii"))
@@ -122,7 +122,7 @@ cdef class MDBase:
             raise MemoryError()
         try:
             check_error(self._finish(output))
-            return bytes([output[n] for n in range(self.digest_size)])
+            return bytes(output[:self.digest_size])
         finally:
             free(output)
 

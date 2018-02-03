@@ -34,7 +34,7 @@ cdef class Entropy:
         try:
             check_error(random.mbedtls_entropy_func(
                 &self._ctx, output, length))
-            return bytes([output[n] for n in range(length)])
+            return bytes(output[:length])
         finally:
             free(output)
 
@@ -79,7 +79,7 @@ cdef class Random:
         try:
             check_error(random.mbedtls_ctr_drbg_random(
                 &self._ctx, output, sz))
-            return bytes([output[n] for n in range(sz)])
+            return bytes(output[:sz])
         finally:
             free(output)
 

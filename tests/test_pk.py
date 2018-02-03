@@ -12,8 +12,6 @@ from mbedtls.exceptions import _ErrorBase
 from mbedtls.pk._pk import _type_from_name, _get_md_alg
 from mbedtls.pk import *
 
-from . import _rnd
-
 
 @pytest.fixture(params=(name for name in sorted(get_supported_ciphers())
                         if name != b"NONE"))
@@ -22,9 +20,9 @@ def cipher(request):
     return CipherBase(name)
 
 
-@pytest.fixture(params=(1024, 2048, 4096))
-def rsa(request):
-    key_size = request.param
+@pytest.fixture
+def rsa():
+    key_size = 1024
     cipher = RSA()
     cipher.generate(key_size)
     return cipher
@@ -66,14 +64,14 @@ def test_digestmod_from_ctor(md_algorithm):
     assert isinstance(algorithm(), _hash.Hash)
 
 
-def test_rsa_encrypt_decrypt(rsa):
-    msg = _rnd(rsa.key_size - 11)
+def test_rsa_encrypt_decrypt(rsa, randbytes):
+    msg = randbytes(rsa.key_size - 11)
     assert rsa.decrypt(rsa.encrypt(msg)) == msg
 
 
-def test_rsa_sign_without_key_returns_none():
+def test_rsa_sign_without_key_returns_none(randbytes):
     rsa = RSA()
-    message = _rnd(4096)
+    message = randbytes(4096)
     assert rsa.sign(message, _hash.md5) is None
 
 
@@ -194,8 +192,8 @@ def test_rsa_export_private_key_to_file(tmpdir, rsa, format):
 
 
 @pytest.mark.parametrize("digestmod", (_hash.md5, None))
-def test_rsa_sign_verify(rsa, digestmod):
-    message = _rnd(4096)
+def test_rsa_sign_verify(rsa, digestmod, randbytes):
+    message = randbytes(4096)
     sig = rsa.sign(message, digestmod)
     assert sig is not None
     assert rsa.verify(message, sig, digestmod) is True
