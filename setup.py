@@ -4,7 +4,7 @@ from setuptools import setup, Extension
 from Cython.Build import cythonize
 
 
-version = "0.6"
+version = "0.7"
 download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
 
 
