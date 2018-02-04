@@ -5,74 +5,76 @@
 # pylint: disable=import-error
 import mbedtls.random as _drbg
 # pylint: enable=import-error
-from nose.tools import assert_equal, assert_not_equal, raises
+
+import pytest
+
 from mbedtls.exceptions import EntropyError
-from . import _rnd
 
 
-def assert_length(collection, length):
-    assert_equal(len(collection), length)
-assert_length.__test__ = False
+@pytest.fixture
+def entropy():
+    return _drbg.Entropy()
 
 
-class TestEntropy:
-
-    def setup(self):
-        # pylint: disable=attribute-defined-outside-init
-        # pylint: disable=invalid-name
-        self.s = _drbg.Entropy()
-
-    def test_gather(self):
-        # Only test that this does not raise.
-        self.s.gather()
-
-    def test_retrieve(self):
-        for length in range(64):
-            assert_length(self.s.retrieve(length), length)
-
-    @raises(EntropyError)
-    def test_retrieve_long_block_raises(self):
-        self.s.retrieve(100)
-
-    def test_update(self):
-        # Only test that this does not raise.
-        buf = _rnd(64)
-        self.s.update(buf)
-
-    def test_not_reproducible(self):
-        assert_not_equal(self.s.retrieve(8), self.s.retrieve(8))
-
-    def test_random_initial_values(self):
-        # pylint: disable=invalid-name
-        s = _drbg.Entropy()
-        assert_not_equal(self.s.retrieve(8), s.retrieve(8))
+@pytest.fixture
+def random():
+    return _drbg.Random()
 
 
-class TestRandom:
+def test_entropy_gather(entropy):
+    # Only test that this does not raise.
+    entropy.gather()
 
-    def setup(self):
-        # pylint: disable=attribute-defined-outside-init
-        self.rnd = _drbg.Random()
 
-    def test_reseed(self):
-        self.rnd.reseed()
+@pytest.mark.parametrize("length", range(64))
+def test_entropy_retrieve(entropy, length):
+    assert len(entropy.retrieve(length)) == length
 
-    def test_not_reproducible(self):
-        assert_not_equal(self.rnd.token_bytes(8),
-                         self.rnd.token_bytes(8))
 
-    def test_update(self):
-        self.rnd.update(b"additional data")
+@pytest.mark.parametrize("length", (100, ))
+def test_entropy_retrieve_long_block_raises_entropyerror(entropy, length):
+    with pytest.raises(EntropyError):
+        entropy.retrieve(length)
 
-    def test_initial_values(self):
-        rnd = _drbg.Random()
-        assert_not_equal(self.rnd.token_bytes(8),
-                         rnd.token_bytes(8))
 
-    def test_token_bytes(self):
-        for length in range(1024):
-            assert_length(self.rnd.token_bytes(length), length)
+def test_entropy_update(entropy, randbytes):
+    # Only test that this does not raise.
+    buf = randbytes(64)
+    entropy.update(buf)
 
-    def test_token_hex(self):
-        for length in range(1024):
-            assert_length(self.rnd.token_hex(length), 2 * length)
+
+def test_entropy_not_reproducible(entropy):
+    assert entropy.retrieve(8) != entropy.retrieve(8)
+
+
+def test_entropy_random_initial_values(entropy):
+    # pylint: disable=invalid-name
+    other = _drbg.Entropy()
+    assert entropy.retrieve(8) != other.retrieve(8)
+
+
+def test_reseed(random):
+    random.reseed()
+
+
+def test_not_reproducible(random):
+    assert random.token_bytes(8) != random.token_bytes(8)
+
+
+def test_update(random):
+    random.update(b"additional data")
+
+
+def test_initial_values(random):
+    other = _drbg.Random()
+    assert random.token_bytes(8) != other.token_bytes(8)
+
+
+@pytest.mark.parametrize("length", range(1024))
+def test_token_bytes(random, length):
+    assert len(random.token_bytes(length)) == length
+
+
+@pytest.mark.parametrize("length", range(1024))
+def test_token_hex(random, length):
+    assert len(random.token_hex(length)) == 2 * length
