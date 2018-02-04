@@ -36,19 +36,15 @@ under which mbed TLS is distributed.
 Installation
 ============
 
-The wrapper is currently developed and tested on Debian and targets Python 3.4.
-It probably works with earlier Python releases although this was not tested.
+The bindings are tested with Python 2.7, 3.4, 3.5, and 3.6.
 
-`mbedtls` is available in Debian Stretch, which may require the addition of
-`stretch` or `testing` to ``/etc/apt/sources.list``.
-
-Then install the development libraries for mbedtls::
+`mbedtls` is available on Debian.  Install with::
 
    # aptitude install libmbedtls-dev
 
 and the wrapper::
 
-   python3 -m pip install python-mbedtls
+   python -m pip install python-mbedtls
 
 
 Hashing module (`md.h`)
