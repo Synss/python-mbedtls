@@ -107,6 +107,18 @@ jobs:
             pyenv shell 2.7.14 3.5.4 3.4.7 3.6.4
             . venv/bin/activate
             tox
+
+      - deploy:
+          name: Publish to Pypi
+          command: |
+            if [ "$CIRCLE_BRANCH" = "master" ]; then
+              echo "[pypi]\nusername = Synss" > $HOME/.pypirc
+              echo "password = $PYPI_PASSWORD" >> $HOME/.pypirc
+              . venv/bin/activate
+              python setup.py sdist
+              pip install twine
+              twine upload dist/*
+            fi
       - store_artifacts:
           path: test-reports
           destination: test-reports
