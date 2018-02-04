@@ -17,8 +17,6 @@ import mbedtls.hash as md_hash
 import mbedtls.hmac as md_hmac
 # pylint: enable=import-error
 
-from . import _rnd
-
 
 @pytest.fixture(params=md_hash.algorithms_available)
 def algorithm(request):
@@ -31,8 +29,8 @@ def make_chunks(buffer, size):
         yield buffer[i:i+size]
 
 
-def test_make_chunks():
-    buffer = _rnd(1024)
+def test_make_chunks(randbytes):
+    buffer = randbytes(1024)
     assert b"".join(buf for buf in make_chunks(buffer, 100)) == buffer
 
 
@@ -50,17 +48,17 @@ def test_type_accessor(algorithm):
     assert 0 <= algorithm._type < len(MD_NAME)
 
 
-def test_copy_hash(algorithm):
-    buf0 = _rnd(512)
-    buf1 = _rnd(512)
+def test_copy_hash(algorithm, randbytes):
+    buf0 = randbytes(512)
+    buf1 = randbytes(512)
     copy = algorithm.copy()
     algorithm.update(buf1)
     copy.update(buf1)
     assert algorithm.digest() == copy.digest()
 
 
-def test_check_hexdigest_against_hashlib(algorithm):
-    buf = _rnd(1024)
+def test_check_hexdigest_against_hashlib(algorithm, randbytes):
+    buf = randbytes(1024)
     try:
         alg = md_hash.new(algorithm.name, buf)
         ref = hashlib.new(algorithm.name, buf)
@@ -70,8 +68,8 @@ def test_check_hexdigest_against_hashlib(algorithm):
     assert alg.hexdigest() == ref.hexdigest()
 
 
-def test_check_against_hashlib_nobuf(algorithm):
-    buf = _rnd(1024)
+def test_check_against_hashlib_nobuf(algorithm, randbytes):
+    buf = randbytes(1024)
     try:
         alg = md_hash.new(algorithm.name, buf)
         ref = hashlib.new(algorithm.name, buf)
@@ -81,8 +79,8 @@ def test_check_against_hashlib_nobuf(algorithm):
     assert alg.digest() == ref.digest()
 
 
-def test_check_against_hashlib_buf(algorithm):
-    buf = _rnd(4096)
+def test_check_against_hashlib_buf(algorithm, randbytes):
+    buf = randbytes(4096)
     try:
         alg = md_hash.new(algorithm.name)
         ref = hashlib.new(algorithm.name)
@@ -95,24 +93,24 @@ def test_check_against_hashlib_buf(algorithm):
     assert alg.digest() == ref.digest()
 
 
-def test_check_against_hmac_nobuf(algorithm):
-    buf = _rnd(1024)
-    key = _rnd(16)
+def test_check_against_hmac_nobuf(algorithm, randbytes):
+    buf = randbytes(1024)
+    key = randbytes(16)
     try:
         alg = md_hmac.new(key, buf, digestmod=algorithm.name)
-        ref = hmac.new(key, buf, digestmod=algorithm.name)
+        ref = hmac.new(key, buf, digestmod=partial(hashlib.new, algorithm.name))
     except ValueError as exc:
         # Unsupported hash type.
         pytest.skip(str(exc))
     assert alg.digest() == ref.digest()
 
 
-def test_check_against_hmac_buf(algorithm):
-    buf = _rnd(4096)
-    key = _rnd(16)
+def test_check_against_hmac_buf(algorithm, randbytes):
+    buf = randbytes(4096)
+    key = randbytes(16)
     try:
         alg = md_hmac.new(key, digestmod=algorithm.name)
-        ref = hmac.new(key, digestmod=algorithm.name)
+        ref = hmac.new(key, digestmod=partial(hashlib.new, algorithm.name))
     except ValueError as exc:
         # Unsupported hash type.
         pytest.skip(str(exc))
@@ -133,10 +131,10 @@ def test_hash_instantiation(name, algcls):
 
 
 @pytest.mark.parametrize("name, algcls", inspect.getmembers(md_hmac))
-def test_hmac_instantiation(name, algcls):
+def test_hmac_instantiation(name, algcls, randbytes):
     if name not in md_hash.algorithms_available:
         pytest.skip("not an hmac algorithm")
-    key = _rnd(16)
+    key = randbytes(16)
     alg1 = algcls(key)
     alg2 = md_hmac.new(key, digestmod=name)
     assert type(alg1) is type(alg2)

@@ -1,0 +1,5 @@
+[0.7] - 2018-02-04
+
+- Add support for Python 2.7
+- Tests ported from nosetest to pytest
+- Setup continuous integration

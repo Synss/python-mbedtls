@@ -1,8 +1,10 @@
 import os
 from setuptools import setup, Extension
 
+from Cython.Build import cythonize
 
-version = "0.6"
+
+version = "0.7"
 download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
 
 
@@ -10,12 +12,14 @@ extensions = []
 for dirpath, dirnames, filenames in os.walk("mbedtls"):
     for fn in filenames:
         root, ext = os.path.splitext(fn)
-        if ext != ".c":
+        if ext != ".pyx":
             continue
         mod = ".".join(dirpath.split(os.sep) + [root])
         extensions.append(Extension(
-            mod, [os.path.join(dirpath, fn)],
-            libraries=["mbedtls"], include_dirs=["."]))
+            mod,
+            [os.path.join(dirpath, fn)],
+            libraries=["mbedtls"],
+        ))
 
 
 setup(
@@ -27,7 +31,8 @@ setup(
     license="MIT License",
     url="https://synss.github.io/python-mbedtls",
     download_url=download_url,
-    ext_modules=extensions,
+    ext_modules=cythonize(extensions),
+    setup_requires=["cython"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Cython",

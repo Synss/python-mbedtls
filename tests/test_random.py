@@ -9,7 +9,6 @@ import mbedtls.random as _drbg
 import pytest
 
 from mbedtls.exceptions import EntropyError
-from . import _rnd
 
 
 @pytest.fixture
@@ -38,9 +37,9 @@ def test_entropy_retrieve_long_block_raises_entropyerror(entropy, length):
         entropy.retrieve(length)
 
 
-def test_entropy_update(entropy):
+def test_entropy_update(entropy, randbytes):
     # Only test that this does not raise.
-    buf = _rnd(64)
+    buf = randbytes(64)
     entropy.update(buf)
 
 

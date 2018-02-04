@@ -73,10 +73,10 @@ def _get_md_alg(digestmod):
     # `hmac.py`.
     if callable(digestmod):
         return digestmod
-    elif isinstance(digestmod, str):
+    elif isinstance(digestmod, (str, unicode)):
         return partial(_hash.new, digestmod)
     else:
-        raise ValueError("a valid digestmod is required")
+        raise TypeError("a valid digestmod is required, got %r" % digestmod)
 
 
 cdef class CipherBase:
@@ -185,7 +185,7 @@ cdef class CipherBase:
             if sig_len == 0:
                 return None
             else:
-                return bytes([output[n] for n in range(sig_len)])
+                return bytes(bytearray(output[:sig_len]))
         finally:
             free(output)
 
@@ -208,7 +208,7 @@ cdef class CipherBase:
                 &self._ctx, &buf[0], buf.shape[0],
                 output, &olen, osize,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
-            return bytes([output[n] for n in range(olen)])
+            return bytes(bytearray(output[:olen]))
         finally:
             free(output)
 
@@ -231,7 +231,7 @@ cdef class CipherBase:
                 &self._ctx, &buf[0], buf.shape[0],
                 output, &olen, osize,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
-            return bytes([output[n] for n in range(olen)])
+            return bytes(bytearray(output[:olen]))
         finally:
             free(output)
 
@@ -245,16 +245,13 @@ cdef class CipherBase:
         cdef unsigned char[:] buf = bytearray(olen * b"\0")
         cdef int ret = fun(&self._ctx, &buf[0], buf.shape[0])
         check_error(ret)
-        if ret:
-            # DER format: `ret` is the size of the buffer, offset from the end.
-            key = bytes([buf[n] for n
-                         in range(buf.shape[0] - ret, buf.shape[0])])
-            assert len(key) == ret
-        else:
-            # PEM format: `ret` is zero.
-            key = bytes(buf[n] for n
-                        in range(buf.shape[0])).split(b"\0", 1)[0]
-        return key
+        # DER format: `ret` is the size of the buffer, offset from the end.
+        # PEM format: `ret` is zero.
+        if not ret:
+            ret = olen
+        # Convert _memoryviewslice to bytes.
+        # return b"".join(chr(_) for _ in buf[olen - ret:olen])
+        return bytes(bytearray(buf[olen - ret:olen]))
 
     cpdef bytes _write_private_key_der(self):
         return self._write(&_pk.mbedtls_pk_write_key_der,

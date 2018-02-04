@@ -23,7 +23,7 @@ html:
 	cd docs && make html
 
 clean:
-	$(RM) mbedtls/*.c mbedtls/*.so
-	$(RM) mbedtls/cipher/*.c mbedtls/cipher/*.so
-	$(RM) mbedtls/pk/*.c mbedtls/pk/*.so
+	$(RM) mbedtls/*.c mbedtls/*.so mbedtls/*.pyc
+	$(RM) mbedtls/cipher/*.c mbedtls/cipher/*.so mbedtls/cipher/*.pyc
+	$(RM) mbedtls/pk/*.c mbedtls/pk/*.so mbedtls/pk/*.pyc
 	$(RM) -r build
