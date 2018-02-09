@@ -19,7 +19,6 @@ for dirpath, dirnames, filenames in os.walk("mbedtls"):
             libraries=["mbedcrypto", "mbedtls", "mbedx509"],
             include_dirs=["."],
         )
-        extension.cython_c_in_temp = True
         extensions.append(extension)
 
 
@@ -49,6 +48,10 @@ setup(
     url="https://github.com/Synss/python-mbedtls",
     download_url=download_url,
     ext_modules=extensions,
+    options={
+        "build": {"build_base": "build-%i.%i.%i" % sys.version_info[:3]},
+        "build_ext": {"cython_c_in_temp": True},
+    },
     packages=["mbedtls", "mbedtls.cipher"],
     setup_requires=setup_requires,
     classifiers=[
