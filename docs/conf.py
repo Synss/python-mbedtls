@@ -34,7 +34,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.napoleon',
+    'sphinx.ext.napoleon',
 ]
 
 autodoc_default_flags = ['members',
@@ -67,7 +67,7 @@ author = 'Mathias Laurin'
 # built documents.
 #
 # The short X.Y version.
-version = '0.5'
+version = '0.7'
 # The full version, including alpha/beta/rc tags.
 release = version
 
