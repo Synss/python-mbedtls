@@ -1,37 +1,39 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>mbedtls.cipher Package API &mdash; python-mbedtls 0.6 documentation</title>
-    
+    <title>mbedtls.cipher Package API &#8212; python-mbedtls 0.7 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.6',
+        VERSION:     '0.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-mbedtls 0.6 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mbedtls.hash Module API" href="apimd.html" />
     <link rel="prev" title="Python wrapper to mbed TLS" href="index.html" />
    
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">  
+  <body>
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -41,8 +43,8 @@
   <div class="section" id="module-mbedtls.cipher">
 <span id="mbedtls-cipher-package-api"></span><h1><a class="reference internal" href="#module-mbedtls.cipher" title="mbedtls.cipher"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher</span></code></a> Package API<a class="headerlink" href="#module-mbedtls.cipher" title="Permalink to this headline">¶</a></h1>
 <p>The cipher package provide symmetric encryption and decryption.</p>
-<p>The API follows the recommendations from PEP 272 &#8220;API for Block
-Encryption Algorithms&#8221;</p>
+<p>The API follows the recommendations from PEP 272 “API for Block
+Encryption Algorithms”</p>
 <dl class="class">
 <dt id="mbedtls.cipher.Cipher">
 <em class="property">class </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">Cipher</code><a class="headerlink" href="#mbedtls.cipher.Cipher" title="Permalink to this definition">¶</a></dt>
@@ -53,18 +55,18 @@ Encryption Algorithms&#8221;</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<em>bytes</em>) &#8211; The cipher name known to mbed TLS.</li>
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+<li><strong>name</strong> (<em>bytes</em>) – The cipher name known to mbed TLS.</li>
+<li><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
 encryption and decryption are unavailable.</li>
-<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
-<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+<li><strong>mode</strong> (<em>int</em>) – The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
 required for every mode but ECB and CTR where it is ignored.
 If not set, the IV is initialized to all 0, which should not
 be used for encryption.</li>
-<li><strong>Attributes</strong> &#8211; block_size (int): The block size for the cipher in bytes.
+<li><strong>Attributes</strong> – block_size (int): The block size for the cipher in bytes.
 mode (int): The mode of operation of the cipher.
-iv_size (int): The size of the cipher&#8217;s IV/NONCE in bytes.
-key_size (int): The size of the cipher&#8217;s key, in bytes.</li>
+iv_size (int): The size of the cipher’s IV/NONCE in bytes.
+key_size (int): The size of the cipher’s key, in bytes.</li>
 </ul>
 </td>
 </tr>
@@ -79,13 +81,13 @@ key_size (int): The size of the cipher&#8217;s key, in bytes.</li>
 <dl class="attribute">
 <dt id="mbedtls.cipher.Cipher.iv_size">
 <code class="descname">iv_size</code><a class="headerlink" href="#mbedtls.cipher.Cipher.iv_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the size of the cipher&#8217;s IV/NONCE in bytes.</p>
+<dd><p>Return the size of the cipher’s IV/NONCE in bytes.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="mbedtls.cipher.Cipher.key_size">
 <code class="descname">key_size</code><a class="headerlink" href="#mbedtls.cipher.Cipher.key_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the size of the ciphers&#8217; key.</p>
+<dd><p>Return the size of the ciphers’ key.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -149,10 +151,10 @@ NIST in 2001.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+<li><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
 encryption and decryption are unavailable.</li>
-<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
-<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+<li><strong>mode</strong> (<em>int</em>) – The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
 required for every mode but ECB and CTR where it is ignored.
 If not set, the IV is initialized to all 0, which should not
 be used for encryption.</li>
@@ -192,10 +194,10 @@ at RSA Security.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+<li><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
 encryption and decryption are unavailable.</li>
-<li><strong>mode</strong> (<em>None</em>) &#8211; The feedback mode is ignored for ARC4.</li>
-<li><strong>iv</strong> (<em>None</em>) &#8211; ARC4 does not use IV.</li>
+<li><strong>mode</strong> (<em>None</em>) – The feedback mode is ignored for ARC4.</li>
+<li><strong>iv</strong> (<em>None</em>) – ARC4 does not use IV.</li>
 </ul>
 </td>
 </tr>
@@ -230,10 +232,10 @@ decryption.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+<li><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
 encryption and decryption are unavailable.</li>
-<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
-<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+<li><strong>mode</strong> (<em>int</em>) – The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
 required for every mode but ECB and CTR where it is ignored.
 If not set, the IV is initialized to all 0, which should not
 be used for encryption.</li>
@@ -259,22 +261,22 @@ be used for encryption.</li>
 </div>
 <div class="section" id="module-mbedtls.cipher.Camellia">
 <span id="mbedtls-cipher-camellia-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.Camellia" title="mbedtls.cipher.Camellia"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher.Camellia</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.Camellia" title="Permalink to this headline">¶</a></h1>
-<p>Camellia cipher developed by Japan&#8217;s Mitsubishi an NTT in 2000.</p>
+<p>Camellia cipher developed by Japan’s Mitsubishi an NTT in 2000.</p>
 <dl class="function">
 <dt id="mbedtls.cipher.Camellia.new">
 <code class="descclassname">mbedtls.cipher.Camellia.</code><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.cipher.Camellia.new" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a <cite>Cipher</cite> object that can perform Camellia encryption and
 decryption.</p>
-<p>Camellia cipher developed by Japan&#8217;s Mitsubishi an NTT in 2000.</p>
+<p>Camellia cipher developed by Japan’s Mitsubishi an NTT in 2000.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+<li><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
 encryption and decryption are unavailable.</li>
-<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
-<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+<li><strong>mode</strong> (<em>int</em>) – The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
 required for every mode but ECB and CTR where it is ignored.
 If not set, the IV is initialized to all 0, which should not
 be used for encryption.</li>
@@ -301,22 +303,22 @@ be used for encryption.</li>
 <div class="section" id="module-mbedtls.cipher.DES">
 <span id="mbedtls-cipher-des-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.DES" title="mbedtls.cipher.DES"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.cipher.DES</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.DES" title="Permalink to this headline">¶</a></h1>
 <p>Data Encryption Standard (DES) cipher developed by IBM
-in the 70&#8217;s.</p>
+in the 70’s.</p>
 <dl class="function">
 <dt id="mbedtls.cipher.DES.new">
 <code class="descclassname">mbedtls.cipher.DES.</code><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.cipher.DES.new" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a <cite>Cipher</cite> object that can perform DES encryption and
 decryption.</p>
-<p>Data Encryption Standard (DES) cipher developed by IBM in the 70&#8217;s.</p>
+<p>Data Encryption Standard (DES) cipher developed by IBM in the 70’s.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+<li><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
 encryption and decryption are unavailable.</li>
-<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
-<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+<li><strong>mode</strong> (<em>int</em>) – The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
 required for every mode but ECB and CTR where it is ignored.
 If not set, the IV is initialized to all 0, which should not
 be used for encryption.</li>
@@ -356,10 +358,10 @@ or DES-EDE).</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+<li><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
 encryption and decryption are unavailable.</li>
-<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
-<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+<li><strong>mode</strong> (<em>int</em>) – The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
 required for every mode but ECB and CTR where it is ignored.
 If not set, the IV is initialized to all 0, which should not
 be used for encryption.</li>
@@ -399,10 +401,10 @@ Triple DES, or DES-EDE3).</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>bytes or None</em>) &#8211; The key to encrypt decrypt.  If None,
+<li><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
 encryption and decryption are unavailable.</li>
-<li><strong>mode</strong> (<em>int</em>) &#8211; The mode of operation of the cipher.</li>
-<li><strong>iv</strong> (<em>bytes or None</em>) &#8211; The initialization vector (IV).  The IV is
+<li><strong>mode</strong> (<em>int</em>) – The mode of operation of the cipher.</li>
+<li><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
 required for every mode but ECB and CTR where it is ignored.
 If not set, the IV is initialized to all 0, which should not
 be used for encryption.</li>
@@ -456,21 +458,18 @@ be used for encryption.</li>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/apicipher.txt"
+      <li><a href="_sources/apicipher.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -481,11 +480,11 @@ be used for encryption.</li>
       &copy;2016, Mathias Laurin.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.7</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/apicipher.txt"
+      <a href="_sources/apicipher.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
