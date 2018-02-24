@@ -112,7 +112,8 @@ jobs:
           name: Publish to Pypi
           command: |
             if [ "$CIRCLE_BRANCH" = "master" ]; then
-              echo "[pypi]\nusername = Synss" > $HOME/.pypirc
+              echo "[pypi]" > $HOME/.pypirc
+              echo "username = Synss" >> $HOME/.pypirc
               echo "password = $PYPI_PASSWORD" >> $HOME/.pypirc
               . venv/bin/activate
               python setup.py sdist
