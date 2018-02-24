@@ -84,7 +84,7 @@ def test_rsa_has_private_and_has_public_with_private_key(rsa):
     assert cipher.has_private() is False
     assert cipher.has_public() is False
 
-    cipher.import_(rsa._write_private_key_der())
+    cipher.from_buffer(rsa._write_private_key_der())
     assert cipher.has_private() is True
     assert cipher.has_public() is True
 
@@ -94,45 +94,9 @@ def test_rsa_has_private_and_has_public_with_public_key(rsa):
     assert cipher.has_private() is False
     assert cipher.has_public() is False
 
-    cipher.import_(rsa._write_public_key_der())
+    cipher.from_buffer(rsa._write_public_key_der())
     assert cipher.has_private() is False
     assert cipher.has_public() is True
-
-
-def test_rsa_write_and_parse_private_key_der(rsa):
-    prv = rsa._write_private_key_der()
-    cipher = RSA()
-    cipher._parse_private_key(prv)
-    assert check_pair(rsa, cipher) is True  # Test private half.
-    assert check_pair(cipher, rsa) is True  # Test public half.
-    assert check_pair(cipher, cipher) is True
-
-
-def test_rsa_write_and_parse_private_key_pem(rsa):
-    prv = rsa._write_private_key_pem()
-    cipher = RSA()
-    cipher._parse_private_key(prv)
-    assert check_pair(rsa, cipher) is True  # Test private half.
-    assert check_pair(cipher, rsa) is True  # Test public half.
-    assert check_pair(cipher, cipher) is True
-
-
-def test_rsa_write_and_parse_public_key_der(rsa):
-    pub = rsa._write_public_key_der()
-    cipher = RSA()
-    cipher._parse_public_key(pub)
-    assert check_pair(rsa, cipher) is False  # Test private half.
-    assert check_pair(cipher, rsa) is True   # Test public half.
-    assert check_pair(cipher, cipher) is False
-
-
-def test_rsa_write_and_parse_public_key_pem(rsa):
-    pub = rsa._write_public_key_pem()
-    cipher = RSA()
-    cipher._parse_public_key(pub)
-    assert check_pair(rsa, cipher) is False  # Test private half.
-    assert check_pair(cipher, rsa) is True   # Test public half.
-    assert check_pair(cipher, cipher) is False
 
 
 def test_rsa_write_public_der_in_private_raises(rsa):
@@ -151,7 +115,7 @@ def test_rsa_write_private_der_in_public_raises(rsa):
 
 def test_rsa_import_public_key(rsa):
     cipher = RSA()
-    cipher.import_(rsa._write_public_key_der())
+    cipher.from_buffer(rsa._write_public_key_der())
     assert check_pair(rsa, cipher) is False  # Test private half.
     assert check_pair(cipher, rsa) is True   # Test public half.
     assert check_pair(cipher, cipher) is False
@@ -159,17 +123,16 @@ def test_rsa_import_public_key(rsa):
 
 def test_rsa_import_private_key(rsa):
     cipher = RSA()
-    cipher.import_(rsa._write_private_key_der())
+    cipher.from_buffer(rsa._write_private_key_der())
     assert check_pair(rsa, cipher) is True  # Test private half.
     assert check_pair(cipher, rsa) is True # Test public half.
     assert check_pair(cipher, cipher) is True
 
 
-@pytest.mark.parametrize("format", ("PEM", "DER"))
-def test_rsa_export_private_key(rsa, format):
+def test_rsa_to_PEM(rsa):
     cipher = RSA()
-    prv, pub = rsa.export(format=format)
-    cipher.import_(prv)
+    prv, pub = rsa.to_PEM()
+    cipher.from_PEM(prv)
     assert cipher.has_private() is True
     assert cipher.has_public() is True
     assert check_pair(rsa, cipher) is True  # Test private half.
@@ -177,13 +140,10 @@ def test_rsa_export_private_key(rsa, format):
     assert check_pair(cipher, cipher) is True
 
 
-@pytest.mark.parametrize("format", ("PEM", "DER"))
-def test_rsa_export_private_key_to_file(tmpdir, rsa, format):
-    prv = tmpdir.join("key.prv")
-    prv.write_binary(rsa.export(format=format)[0])
-
+def test_rsa_to_DER(rsa):
     cipher = RSA()
-    cipher.import_(prv.read_binary())
+    prv, pub = rsa.to_DER()
+    cipher.from_DER(prv)
     assert cipher.has_private() is True
     assert cipher.has_public() is True
     assert check_pair(rsa, cipher) is True  # Test private half.

@@ -1,5 +1,22 @@
+[0.8] - 2018-02-24
+
+Support X.509 Certificates
+
+* x509/Certificate: X.509 certificate writer and parser.
+* x509/CSR: X.509 certificate signing request writer and parser.
+* x509/CRL: X.509 certificate revocation list and validation.
+
+API Changes
+
+* CipherBase/RSA: import_() method renamed from_buffer() for PEP 543.
+* CipherBase/RSA: export(format="PEM") method renamed to_PEM()
+* CipherBase/RSA: export(format="DER") method renamed to_DER()
+* CipherBase/RSA: from_DER(), from_PEM() to import from DER or PEM.
+* CipherBase/RSA: to_bytes() alias to_DER()
+
+
 [0.7] - 2018-02-04
 
-- Add support for Python 2.7
-- Tests ported from nosetest to pytest
-- Setup continuous integration
+* Add support for Python 2.7, 3.5, and 3.6.
+* Tests ported from nosetest to pytest.
+* Setup continuous integration.
