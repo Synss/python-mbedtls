@@ -11,9 +11,6 @@ from mbedtls.pk import RSA
 from mbedtls import hash
 from mbedtls.x509 import *
 
-# Generate with:
-# openssl req -x509 -nodes -days 365 -newkey rsa:1024 -out cert.pem
-
 
 def pem_to_der(pem):
     return base64.b64decode(
