@@ -139,7 +139,7 @@ cdef class CipherBase:
             signature (bytes): The signature to verify.
             digestmod (optional): The digest name or digest constructor.
 
-        Returns:
+        Return:
             bool: True if the verification passed, False otherwise.
 
         """
@@ -161,7 +161,7 @@ cdef class CipherBase:
             message (bytes): The message to sign.
             digestmod (optional): The digest name or digest constructor.
 
-        Returns:
+        Return:
             bytes or None: The signature or None if the cipher does not
                 contain a private key.
 
@@ -283,7 +283,7 @@ cdef class CipherBase:
         check_error(_pk.mbedtls_pk_parse_public_key(
             &self._ctx, &c_key[0], c_key.shape[0]))
 
-    def import_(self, key, password=None):
+    def from_buffer(self, key, password=None):
         """Import a key (public or private half).
 
         The public half is automatically generated upon importing a
@@ -300,29 +300,47 @@ cdef class CipherBase:
         except PkError:
             self._parse_public_key(key)
 
-    def export(self, format="PEM"):
-        """Export the keys.
+    from_DER = from_buffer
 
-        Arguments:
-            format (string): One of {"PEM", "DER"}, defaults to PEM.
+    def from_PEM(self, key, password=None):
+        """Import a key (public and private half)."""
+        self.from_buffer(key.encode("ascii"), password=password)
 
-        Returns:
+    def to_PEM(self):
+        """Return the RSA in PEM format.
+
+        Return:
+            tuple(str, str): The private key and the public key.
+
+        """
+        prv, pub = "", ""
+        if self.has_private():
+            prv = self._write_private_key_pem().decode("ascii")
+        if self.has_public():
+            pub = self._write_public_key_pem().decode("ascii")
+        return prv, pub
+
+    def __str__(self):
+        return "\n".join(self.to_PEM())
+
+    def to_DER(self):
+        """Return the RSA in DER format.
+
+        Return:
             tuple(bytes, bytes): The private key and the public key.
 
         """
-        prv = b""
+        prv, pub = b"", b""
         if self.has_private():
-            if format == "DER":
-                prv = self._write_private_key_der()
-            else:
-                prv = self._write_private_key_pem()
-        pub = b""
+            prv = self._write_private_key_der()
         if self.has_public():
-            if format == "DER":
-                pub = self._write_public_key_der()
-            else:
-                pub = self._write_public_key_pem()
+            pub = self._write_public_key_der()
         return prv, pub
+
+    to_bytes = to_DER
+
+    def __bytes__(self):
+        return b"\n".join(self.to_DER())
 
 
 cpdef check_pair(CipherBase pub, CipherBase pri):
