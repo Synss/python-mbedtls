@@ -1,7 +1,8 @@
 import os
+import sys
 from setuptools import setup, Extension
 
-version = "0.7"
+version = "0.8"
 download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
 
 
@@ -19,6 +20,15 @@ for dirpath, dirnames, filenames in os.walk("mbedtls"):
         ))
 
 
+setup_requires = [
+    # Setuptools 18.0 properly handles Cython extensions.
+    "setuptools>=18.0",
+    "cython",
+]
+if sys.version_info < (2, ):
+    setup_requires.append("pathlib2")
+
+
 def readme():
     with open("README.rst") as f:
         return f.read()
@@ -27,24 +37,22 @@ def readme():
 setup(
     name="python-mbedtls",
     version=version,
-    description="mbed TLS (PolarSSL) wrapper",
+    description="hash, hmac, RSA, and X.509 with an mbed TLS back end",
     long_description=readme(),
     author="Mathias Laurin",
-    author_email="Mathias.Laurin@users.sf.net",
+    author_email="Mathias.Laurin@github.com",
     license="MIT License",
     url="https://github.com/Synss/python-mbedtls",
     download_url=download_url,
     ext_modules=extensions,
-    setup_requires=[
-        # Setuptools 18.0 properly handles Cython extensions.
-        "setuptools>=18.0",
-        "cython",
-    ],
+    setup_requires=setup_requires,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Cython",
-        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: MIT License",
         "Topic :: Security :: Cryptography",
     ]

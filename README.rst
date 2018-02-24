@@ -1,6 +1,6 @@
-==========================
-Python wrapper to mbed TLS
-==========================
+=======================================================
+Cryptographic library for Python with Mbed TLS back end
+=======================================================
 
 .. image::
    https://circleci.com/gh/Synss/python-mbedtls/tree/develop.svg?style=svg
@@ -11,18 +11,26 @@ Python wrapper to mbed TLS
    :target: https://coveralls.io/github/Synss/python-mbedtls?branch=develop
 
 
-`python-mbedtls`_ is a thin wrapper to ARM's mbed TLS library.
-
-According to the `official mbed TLS website`_
+`python-mbedtls`_ is a free cryptographic library for Python that uses
+`mbed TLS`_ for back end.
 
    mbed TLS (formerly known as PolarSSL) makes it trivially easy for
    developers to include cryptographic and SSL/TLS capabilities in their
    (embedded) products, facilitating this functionality with a minimal
    coding footprint.
 
-.. _python-mbedtls: https://synss.github.io/python-mbedtls
-.. _official mbed TLS website: https://tls.mbed.org
+`python-mbedtls` API follows the recommendations from `PEP 452`_: API for
+Cryptographic Hash Functions v2.0 and `PEP 272`_ API for Block Encryption
+Algorithms v1.0 and can therefore be used as a drop-in replacements to
+`PyCrypto`_ or Python's `hashlib`_ and `hmac`_
 
+.. _python-mbedtls: https://synss.github.io/python-mbedtls
+.. _mbed TLS: https://tls.mbed.org
+.. _PEP 452: https://www.python.org/dev/peps/pep-0452/
+.. _PEP 272: https://www.python.org/dev/peps/pep-0272/
+.. _PyCrypto: https://www.dlitz.net/software/pycrypto/
+.. _hashlib: https://docs.python.org/3.6/library/hashlib.html
+.. _hmac: https://docs.python.org/3.6/library/hmac.html
 
 License
 =======
@@ -42,23 +50,19 @@ The bindings are tested with Python 2.7, 3.4, 3.5, and 3.6.
 
    # aptitude install libmbedtls-dev
 
-and the wrapper::
+and the `pyton-mbedtls`::
 
-   python -m pip install python-mbedtls
+   $ python -m pip install python-mbedtls
 
-
-Hashing module (`md.h`)
------------------------
-
-Message digest algorithms
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Message digest with `mbedtls.hash`
+----------------------------------
 
 The `mbedtls.hash` module provides MD5, SHA-1, SHA-2, and RIPEMD-160 secure
 hashes and message digests.  The API follows the recommendations from PEP 452
 so that it can be used as a drop-in replacement to e.g. `hashlib` or
 `PyCrypto`.
 
-Here are the examples from `hashlib` executed with `python-mbedtls`::
+Here are the examples from `hashlib` ported to `python-mbedtls`::
 
     >>> from mbedtls import hash as hashlib
     >>> m = hashlib.md5()
@@ -84,8 +88,8 @@ Using `new()`::
    'cc4a5ce1b3df48aec5d22d1f16b894a0b894eccc'
 
 
-HMAC algorithm
-~~~~~~~~~~~~~~
+HMAC algorithm with `mbedtls.hmac`
+----------------------------------
 
 The `mbedtls.hmac` module computes HMAC.  The API follows the recommendations
 from PEP 452 as well.
@@ -106,8 +110,8 @@ Warning:
    per message.
 
 
-Symmetric cipher module (`cipher.h`)
-------------------------------------
+Symmetric cipher with `mbedtls.cipher`
+--------------------------------------
 
 The `mbedtls.cipher` module provides symmetric encryption.  The API follows the
 recommendations from PEP 272 so that it can be used as a drop-in replacement to
@@ -138,8 +142,8 @@ Example::
    b'This is a super-secret message!'
 
 
-Public key module (`pk.h`)
---------------------------
+RSA Public key with `mbedtls.pk`
+--------------------------------
 
 The `mbedtls.pk` module provides the RSA cryptosystem.  This includes:
 
@@ -173,10 +177,33 @@ Message signature and verification::
    True
    >>> rsa.verify(b"Sorry, wrong message.", sig)
    False
-   >>> prv, pub = rsa.export(format="DER")
+   >>> prv, pub = rsa.to_DER()
    >>> other = pk.RSA()
-   >>> other.import_(pub)
+   >>> other.from_DER(pub)
    >>> other.has_private()
    False
    >>> other.verify(b"Please sign here.", sig)
    True
+
+
+X.509 Certificate writing and parsing with `mbedtls.x509`
+---------------------------------------------------------
+
+Create new X.509 certificates::
+
+   >>> import datetime as dt
+   >>> from pathlib import Path
+   >>> from mbedtls.x509 import Certificate, CSR, CRL
+   >>> now = dt.datetime.utcnow()
+   >>> crt = Certificate(
+   ...     start=now, end=now + dt.timedelta(days=90),
+   ...     issuer="C=NL,O=PolarSSL,CN=PolarSSL Test CA", issuer_key=issuer_key,
+   ...     subject=None, subject_key=subject_key,
+   ...     md_alg=hash.sha1(), serial=None)
+   ...
+   >>> csr = CSR.new(subject_key, hash.sha1(),
+                     "C=NL,O=PolarSSL,CN=PolarSSL Server 1")
+
+and load existing certificates from file::
+
+   >>> crl = CRL.from_file("ca/wp_crl.pem")
