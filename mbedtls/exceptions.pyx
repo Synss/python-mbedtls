@@ -69,6 +69,10 @@ class EcError(PkError):
     """Errors defined in the ecp module."""
 
 
+class X509Error(_ErrorBase):
+    """Errors defined in the x509 module."""
+
+
 __lookup = {
     # Blowfish-specific
     0x0016: (InvalidKeyLengthError, "invalid key length"),
@@ -107,6 +111,26 @@ __lookup = {
     0x1400: (PemError,
              "unavailable feature, e.g. hashing/decryption combination"),
     0x1480: (PemError, "bad input parameters to function"),
+    # X509 errors
+    0x2080: (X509Error, "feature unavailable"),
+    0x2100: (X509Error, "unknown OID"),
+    0x2180: (X509Error, "invalid format"),
+    0x2200: (X509Error, "invalid version"),
+    0x2280: (X509Error, "invalid, serial"),
+    0x2300: (X509Error, "invalid alg"),
+    0x2380: (X509Error, "invalid name"),
+    0x2400: (X509Error, "invalid date"),
+    0x2480: (X509Error, "invalid signature"),
+    0x2500: (X509Error, "invalid extensions"),
+    0x2580: (X509Error, "unknown version"),
+    0x2600: (X509Error, "unknown sig alg"),
+    0x2680: (X509Error, "sig mismatch"),
+    0x2700: (X509Error, "cert verify failed"),
+    0x2780: (X509Error, "cert unknown format"),
+    0x2800: (X509Error, "bad input data"),
+    0x2880: (X509Error, "alloc failed"),
+    0x2900: (X509Error, "file io error"),
+    0x2980: (X509Error, "buffer too small"),
     # PK errors
     0x3f80: (PkError, "memory allocation failed"),
     0x3f00: (PkError,
@@ -175,3 +199,4 @@ cpdef check_error(const int err):
     if err < 0:
         exc, msg = __lookup.get(-err, (_ErrorBase, ""))
         raise exc(-err, msg)
+    return err
