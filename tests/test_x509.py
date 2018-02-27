@@ -12,12 +12,6 @@ from mbedtls import hash
 from mbedtls.x509 import *
 
 
-def pem_to_der(pem):
-    return base64.b64decode(
-        b"".join(line.encode("ascii") for line in pem.splitlines()
-                 if not line.startswith("-----")))
-
-
 @pytest.fixture
 def now():
     return dt.datetime.utcnow()
@@ -46,21 +40,33 @@ class TestCRT:
 
     @pytest.fixture
     def crt_der(self, crt_pem):
-        return pem_to_der(crt_pem)
+        return PEM_to_DER(crt_pem)
 
     def test_from_buffer(self, crt_der):
         crt = Certificate.from_buffer(crt_der)
-        assert "wikipedia.org" in str(crt)
+        assert "wikipedia.org" in crt._info()
 
     def test_from_DER(self, crt_der):
         crt = Certificate.from_DER(crt_der)
-        assert "wikipedia.org" in str(crt)
+        assert "wikipedia.org" in crt._info()
+
+    def test_from_PEM(self, crt_pem):
+        crt = Certificate.from_PEM(crt_pem)
+        assert crt.to_PEM() == crt_pem
 
     def test_from_file(self, crt_der, tmpdir):
         path = tmpdir.join("key.der")
         path.write_binary(crt_der)
         crt = Certificate.from_file(path)
-        assert "wikipedia.org" in str(crt)
+        assert "wikipedia.org" in crt._info()
+
+    def test_to_DER(self, crt_der):
+        crt = Certificate.from_DER(crt_der)
+        assert crt.to_DER() == crt_der
+
+    def test_to_PEM(self, crt_pem):
+        crt = Certificate.from_PEM(crt_pem)
+        assert crt.to_PEM() == crt_pem
 
     def test_new(self, now, issuer_key, subject_key):
         crt = Certificate.new(
@@ -72,7 +78,7 @@ class TestCRT:
             subject_key=subject_key,
             serial=0x1234567890,
             md_alg=hash.sha1())
-        assert "12:34:56:78:90" in str(crt)
+        assert "12:34:56:78:90" in crt._info()
 
     def test_revocation_bad_cast(self, crt_der):
         crt = Certificate.from_buffer(crt_der)
@@ -93,34 +99,34 @@ class TestCRTWriter:
 
     def test_to_pem(self, crt_writer):
         pem = crt_writer.to_PEM()
-        assert pem == str(crt_writer.to_PEM())
+        assert pem == crt_writer.to_PEM()
         assert pem.splitlines()[0] == "-----BEGIN CERTIFICATE-----"
         assert pem.splitlines()[-1] == "-----END CERTIFICATE-----"
 
     def test_to_der(self, crt_writer):
-        assert pem_to_der(crt_writer.to_PEM()) == crt_writer.to_DER()
+        assert PEM_to_DER(crt_writer.to_PEM()) == crt_writer.to_DER()
 
     def test_to_bytes(self, crt_writer):
         assert crt_writer.to_DER() == crt_writer.to_bytes()
 
     def test_to_certificate(self, crt_writer):
         crt = crt_writer.to_certificate()
-        assert "cert. version" in str(crt)
-        assert "PolarSSL" in str(crt)
+        assert "cert. version" in crt._info()
+        assert "PolarSSL" in crt._info()
 
     def test_set_serial(self, crt_writer):
-        assert "12:34:56:78:90" not in str(crt_writer.to_certificate())
+        assert "12:34:56:78:90" not in crt_writer.to_certificate()._info()
 
         serial = 0x1234567890
         crt_writer.set_serial(serial)
-        assert "12:34:56:78:90" in str(crt_writer.to_certificate())
+        assert "12:34:56:78:90" in crt_writer.to_certificate()._info()
 
     def test_set_subject(self, crt_writer):
-        assert "Server 1" not in str(crt_writer.to_certificate())
+        assert "Server 1" not in crt_writer.to_certificate()._info()
 
         subject = "C=NL,O=PolarSSL,CN=PolarSSL Server 1"
         crt_writer.set_subject(subject)
-        assert "Server 1" in str(crt_writer.to_certificate())
+        assert "Server 1" in crt_writer.to_certificate()._info()
 
 
 class TestCSR:
@@ -132,26 +138,38 @@ class TestCSR:
 
     @pytest.fixture
     def csr_der(self, csr_pem):
-        return pem_to_der(csr_pem)
+        return PEM_to_DER(csr_pem)
 
     def test_from_buffer(self, csr_der):
         csr = CSR.from_buffer(csr_der)
-        assert "PolarSSL" in str(csr)
+        assert "PolarSSL" in csr._info()
 
     def test_from_DER(self, csr_der):
         csr = CSR.from_DER(csr_der)
-        assert "PolarSSL" in str(csr)
+        assert "PolarSSL" in csr._info()
+
+    def test_from_PEM(self, csr_pem):
+        csr = CSR.from_PEM(csr_pem)
+        assert csr.to_PEM() == csr_pem
 
     def test_from_file(self, csr_der, tmpdir):
         path = tmpdir.join("key.der")
         path.write_binary(csr_der)
         csr = CSR.from_file(path)
-        assert "PolarSSL" in str(csr)
+        assert "PolarSSL" in csr._info()
+
+    def test_to_DER(self, csr_der):
+        csr = CSR.from_DER(csr_der)
+        assert csr.to_DER() == csr_der
+
+    def test_to_PEM(self, csr_pem):
+        csr = CSR.from_PEM(csr_pem)
+        assert csr.to_PEM() == csr_pem
 
     def test_new(self, subject_key):
         csr = CSR.new(subject_key, hash.sha1(),
                       "C=NL,O=PolarSSL,CN=PolarSSL Server 1")
-        assert "PolarSSL" in str(csr)
+        assert "PolarSSL" in csr._info()
 
 
 class TestCSRWriter:
@@ -163,12 +181,12 @@ class TestCSRWriter:
 
     def test_to_pem(self, csr_writer):
         pem = csr_writer.to_PEM()
-        assert pem == str(csr_writer.to_PEM())
+        assert pem == csr_writer.to_PEM()
         assert pem.splitlines()[0] == "-----BEGIN CERTIFICATE REQUEST-----"
         assert pem.splitlines()[-1] == "-----END CERTIFICATE REQUEST-----"
 
     def test_to_der(self, csr_writer):
-        assert pem_to_der(csr_writer.to_PEM()) == csr_writer.to_DER()
+        assert PEM_to_DER(csr_writer.to_PEM()) == csr_writer.to_DER()
 
     def test_to_bytes(self, csr_writer):
         assert csr_writer.to_DER() == csr_writer.to_bytes()
@@ -186,7 +204,7 @@ class TestCRL:
 
     @pytest.fixture
     def crl_der(self, crl_pem):
-        return pem_to_der(crl_pem)
+        return PEM_to_DER(crl_pem)
 
     @pytest.fixture
     def crt_pem(self):
@@ -195,21 +213,33 @@ class TestCRL:
 
     @pytest.fixture
     def crt_der(self, crt_pem):
-        return pem_to_der(crt_pem)
+        return PEM_to_DER(crt_pem)
 
     def test_from_buffer(self, crl_der):
         crl = CRL.from_buffer(crl_der)
-        assert "CRL version" in str(crl)
+        assert "CRL version" in crl._info()
 
     def test_from_file(self, crl_der, tmpdir):
         path = tmpdir.join("key.der")
         path.write_binary(crl_der)
         crl = CRL.from_file(path)
-        assert "CRL version" in str(crl)
+        assert "CRL version" in crl._info()
 
-    def test_from_der(self, crl_der):
+    def test_from_DER(self, crl_der):
         crl = CRL.from_DER(crl_der)
-        assert "CRL version" in str(crl)
+        assert "CRL version" in crl._info()
+
+    def test_from_PEM(self, crl_pem):
+        crl = CRL.from_PEM(crl_pem)
+        assert crl.to_PEM() == crl_pem
+
+    def test_to_DER(self, crl_der):
+        crl = CRL.from_DER(crl_der)
+        assert crl.to_DER() == crl_der
+
+    def test_to_PEM(self, crl_pem):
+        crl = CRL.from_PEM(crl_pem)
+        assert crl.to_PEM() == crl_pem
 
     def test_revocation_false(self, crl_der, crt_der):
         crt = Certificate.from_buffer(crt_der)

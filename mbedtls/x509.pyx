@@ -16,6 +16,22 @@ import base64
 from mbedtls.exceptions import *
 
 
+def PEM_to_DER(pem):
+    return base64.b64decode(
+        b"".join(line.encode("ascii") for line in pem.splitlines()
+                 if not line.startswith("-----")))
+
+
+def DER_to_PEM(der, text):
+    chunk_size = 64
+    pem = base64.b64encode(der).decode("ascii")
+    return "\n".join((
+        "-----BEGIN %s-----" % text.upper(),
+        "\n".join(pem[n:n+chunk_size] for n in range(0, len(pem), chunk_size)),
+        "-----END %s-----" % text.upper(),
+        ""))
+
+
 cdef class Certificate:
     """X.509 certificate."""
 
@@ -32,7 +48,7 @@ cdef class Certificate:
         """Unallocate all certificate data."""
         x509.mbedtls_x509_crt_free(&self._ctx)
 
-    def __str__(self):
+    def _info(self):
         cdef size_t osize = 2**24
         cdef char* output = <char*>malloc(osize * sizeof(char))
         cdef char* prefix = b""
@@ -74,6 +90,19 @@ cdef class Certificate:
         check_error(x509.mbedtls_x509_crt_parse_der(
             &self._ctx, &c_buffer[0], c_buffer.shape[0]))
         return self
+
+    @classmethod
+    def from_PEM(cls, pem):
+        return cls.from_DER(PEM_to_DER(pem))
+
+    def to_DER(self):
+        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
+
+    def to_PEM(self):
+        return DER_to_PEM(self.to_DER(), "Certificate")
+
+    __bytes__ = to_bytes = to_DER
+    __str__ = to_PEM
 
     @staticmethod
     def new(start, end, issuer, issuer_key, subject, subject_key,
@@ -271,7 +300,7 @@ cdef class CSR:
         """Unallocate all CSR data."""
         x509.mbedtls_x509_csr_free(&self._ctx)
 
-    def __str__(self):
+    def _info(self):
         cdef size_t osize = 2**24
         cdef char* output = <char*>malloc(osize * sizeof(char))
         cdef char* prefix = b""
@@ -309,6 +338,16 @@ cdef class CSR:
         check_error(x509.mbedtls_x509_csr_parse_der(
             &self._ctx, &c_buffer[0], c_buffer.shape[0]))
         return self
+
+    @classmethod
+    def from_PEM(cls, pem):
+        return cls.from_DER(PEM_to_DER(pem))
+
+    def to_DER(self):
+        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
+
+    def to_PEM(self):
+        return DER_to_PEM(self.to_DER(), "Certificate Request")
 
     @staticmethod
     def new(key, md_alg, subject):
@@ -433,7 +472,7 @@ cdef class CRL:
         """Unallocate all CRL data."""
         x509.mbedtls_x509_crl_free(&self._ctx)
 
-    def __str__(self):
+    def _info(self):
         cdef size_t osize = 2**24
         cdef char* output = <char*>malloc(osize * sizeof(char))
         cdef char* prefix = b""
@@ -471,3 +510,16 @@ cdef class CRL:
         check_error(x509.mbedtls_x509_crl_parse_der(
             &self._ctx, &c_buffer[0], c_buffer.shape[0]))
         return self
+
+    @classmethod
+    def from_PEM(cls, pem):
+        return cls.from_DER(PEM_to_DER(pem))
+
+    def to_DER(self):
+        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
+
+    def to_PEM(self):
+        return DER_to_PEM(self.to_DER(), "X509 CRL")
+
+    __bytes__ = to_bytes = to_DER
+    __str__ = to_PEM
