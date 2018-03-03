@@ -48,6 +48,20 @@ cdef class Certificate:
         """Unallocate all certificate data."""
         x509.mbedtls_x509_crt_free(&self._ctx)
 
+    def __hash__(self):
+        return hash(self.to_DER())
+
+    def __eq__(self, other):
+        if type(other) is not type(self):
+            return NotImplemented
+        return self.to_DER() == other.to_DER()
+
+    def __next__(self):
+        if self._ctx.next == NULL or self._ctx.version == 0:
+            raise StopIteration
+        cdef mbedtls_x509_buf buf = self._ctx.next.raw
+        return type(self).from_DER(buf.p[0:buf.len])
+
     def _info(self):
         cdef size_t osize = 2**24
         cdef char* output = <char*>malloc(osize * sizeof(char))
@@ -91,17 +105,18 @@ cdef class Certificate:
             &self._ctx, &c_buffer[0], c_buffer.shape[0]))
         return self
 
+    def to_DER(self):
+        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
+
+    __bytes__ = to_bytes = to_DER
+
     @classmethod
     def from_PEM(cls, pem):
         return cls.from_DER(PEM_to_DER(pem))
 
-    def to_DER(self):
-        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
-
     def to_PEM(self):
         return DER_to_PEM(self.to_DER(), "Certificate")
 
-    __bytes__ = to_bytes = to_DER
     __str__ = to_PEM
 
     @staticmethod
@@ -300,6 +315,14 @@ cdef class CSR:
         """Unallocate all CSR data."""
         x509.mbedtls_x509_csr_free(&self._ctx)
 
+    def __hash__(self):
+        return hash(self.to_DER())
+
+    def __eq__(self, other):
+        if type(other) is not type(self):
+            return NotImplemented
+        return self.to_DER() == other.to_DER()
+
     def _info(self):
         cdef size_t osize = 2**24
         cdef char* output = <char*>malloc(osize * sizeof(char))
@@ -472,6 +495,20 @@ cdef class CRL:
         """Unallocate all CRL data."""
         x509.mbedtls_x509_crl_free(&self._ctx)
 
+    def __hash__(self):
+        return hash(self.to_DER())
+
+    def __eq__(self, other):
+        if type(other) is not type(self):
+            return NotImplemented
+        return self.to_DER() == other.to_DER()
+
+    def __next__(self):
+        if self._ctx.next == NULL or self._ctx.version == 0:
+            raise StopIteration
+        cdef mbedtls_x509_buf buf = self._ctx.next.raw
+        return type(self).from_DER(buf.p[0:buf.len])
+
     def _info(self):
         cdef size_t osize = 2**24
         cdef char* output = <char*>malloc(osize * sizeof(char))
@@ -511,15 +548,16 @@ cdef class CRL:
             &self._ctx, &c_buffer[0], c_buffer.shape[0]))
         return self
 
+    def to_DER(self):
+        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
+
+    __bytes__ = to_bytes = to_DER
+
     @classmethod
     def from_PEM(cls, pem):
         return cls.from_DER(PEM_to_DER(pem))
 
-    def to_DER(self):
-        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
-
     def to_PEM(self):
         return DER_to_PEM(self.to_DER(), "X509 CRL")
 
-    __bytes__ = to_bytes = to_DER
     __str__ = to_PEM

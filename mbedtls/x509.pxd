@@ -37,6 +37,8 @@ cdef extern from "mbedtls/x509.h":
 cdef extern from "mbedtls/x509_crt.h":
     cdef struct mbedtls_x509_crt:
         mbedtls_x509_buf raw
+        mbedtls_x509_crt *next
+        int version
 
     ctypedef enum mbedtls_x509_crt_profile: pass
     ctypedef enum mbedtls_x509write_cert: pass
@@ -199,6 +201,8 @@ cdef extern from "mbedtls/x509_crl.h":
     ctypedef enum mbedtls_x509_crl_entry: pass
     cdef struct mbedtls_x509_crl:
         mbedtls_x509_buf raw
+        mbedtls_x509_crl *next
+        int version
 
     # mbedtls_x509_crl
     # ----------------

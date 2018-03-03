@@ -5,6 +5,7 @@ try:
 except ImportError:
     from pathlib2 import Path
 
+import certifi
 import pytest
 
 from mbedtls.pk import RSA
@@ -84,6 +85,12 @@ class TestCRT:
         crt = Certificate.from_buffer(crt_der)
         with pytest.raises(TypeError):
             crt.check_revocation(crt)
+
+    def test_next(self):
+        crt = Certificate.from_file(certifi.where())
+        with pytest.raises(StopIteration):
+            while True:
+                crt = next(crt)
 
 
 class TestCRTWriter:
