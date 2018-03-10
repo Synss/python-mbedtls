@@ -231,7 +231,7 @@ cdef class Certificate:
     cpdef _from_buffer(cls, unsigned char[:] buffer)
 
 
-cdef class CertificateWriter:
+cdef class _CertificateWriter:
     cdef mbedtls_x509write_cert _ctx
 
 
@@ -240,7 +240,7 @@ cdef class CSR:
     cpdef _from_buffer(cls, unsigned char[:] buffer)
 
 
-cdef class CSRWriter:
+cdef class _CSRWriter:
     cdef mbedtls_x509write_csr _ctx
 
 

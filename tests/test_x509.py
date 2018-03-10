@@ -11,6 +11,7 @@ import pytest
 from mbedtls.pk import RSA
 from mbedtls import hash
 from mbedtls.x509 import *
+from mbedtls.x509 import _CertificateWriter, _CSRWriter
 
 
 @pytest.fixture
@@ -97,7 +98,7 @@ class TestCRTWriter:
 
     @pytest.fixture
     def crt_writer(self, now, issuer_key, subject_key):
-        return CertificateWriter(
+        return _CertificateWriter(
             start=now, end=now + dt.timedelta(days=90),
             issuer="C=NL,O=PolarSSL,CN=PolarSSL Test CA", issuer_key=issuer_key,
             subject=None, subject_key=subject_key,
@@ -140,8 +141,8 @@ class TestCSR:
 
     @pytest.fixture
     def csr_pem(self, subject_key):
-        return CSRWriter(subject_key, hash.sha1(),
-                         "C=NL,O=PolarSSL,CN=PolarSSL Server 1").to_PEM()
+        return _CSRWriter(subject_key, hash.sha1(),
+                          "C=NL,O=PolarSSL,CN=PolarSSL Server 1").to_PEM()
 
     @pytest.fixture
     def csr_der(self, csr_pem):
@@ -183,8 +184,8 @@ class TestCSRWriter:
 
     @pytest.fixture
     def csr_writer(self, subject_key):
-        return CSRWriter(subject_key, hash.sha1(),
-                         "C=NL,O=PolarSSL,CN=PolarSSL Server 1")
+        return _CSRWriter(subject_key, hash.sha1(),
+                          "C=NL,O=PolarSSL,CN=PolarSSL Server 1")
 
     def test_to_pem(self, csr_writer):
         pem = csr_writer.to_PEM()

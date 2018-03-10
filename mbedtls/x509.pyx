@@ -123,12 +123,12 @@ cdef class Certificate:
     def new(start, end, issuer, issuer_key, subject, subject_key,
             serial, md_alg):
         """Return a new certificate."""
-        return CertificateWriter(
+        return _CertificateWriter(
             start, end, issuer, issuer_key,
             subject, subject_key, serial, md_alg).to_certificate()
 
 
-cdef class CertificateWriter:
+cdef class _CertificateWriter:
     """CRT writing context.
 
     This class should not be used directly.
@@ -138,7 +138,7 @@ cdef class CertificateWriter:
 
     def __init__(self, start, end, issuer, issuer_key,
                  subject, subject_key, serial, md_alg):
-        super(CertificateWriter, self).__init__()
+        super(_CertificateWriter, self).__init__()
         self.set_validity(start, end)
         self.set_issuer(issuer)
         self.set_issuer_key(issuer_key)
@@ -375,17 +375,17 @@ cdef class CSR:
     @staticmethod
     def new(key, md_alg, subject):
         """Return a new CSR."""
-        return CSRWriter(key, md_alg, subject).to_certificate()
+        return _CSRWriter(key, md_alg, subject).to_certificate()
 
 
-cdef class CSRWriter:
+cdef class _CSRWriter:
     """X.509 CSR writing context.
 
     This class should not be used directly.  Use `CSR.new()` instead.
 
     """
     def __init__(self, key, md_alg, subject):
-        super(CSRWriter, self).__init__()
+        super(_CSRWriter, self).__init__()
         self.set_key(key)
         self.set_algorithm(md_alg)
         self.set_subject(subject)
