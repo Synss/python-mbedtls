@@ -37,33 +37,33 @@ jobs:
 
       - restore_cache:
           keys:
-            - py34-3.4.7
+            - py34-3.4.8
       - run:
-          name: install python 3.4.7
+          name: install python 3.4.8
           command: |
-            if [ ! -d ".pyenv/versions/3.4.7" ]; then
+            if [ ! -d ".pyenv/versions/3.4.8" ]; then
               eval "$(pyenv init -)"
-              pyenv install 3.4.7
+              pyenv install 3.4.8
             fi
       - save_cache:
-          key: py34-3.4.7
+          key: py34-3.4.8
           paths:
-            - .pyenv/versions/3.4.7
+            - .pyenv/versions/3.4.8
 
       - restore_cache:
           keys:
-            - py35-3.5.4
+            - py35-3.5.5
       - run:
-          name: install python 3.5.4
+          name: install python 3.5.5
           command: |
-            if [ ! -d ".pyenv/versions/3.5.4" ]; then
+            if [ ! -d ".pyenv/versions/3.5.5" ]; then
               eval "$(pyenv init -)"
-              pyenv install 3.5.4
+              pyenv install 3.5.5
             fi
       - save_cache:
-          key: py35-3.5.4
+          key: py35-3.5.5
           paths:
-            - .pyenv/versions/3.5.4
+            - .pyenv/versions/3.5.5
 
       - restore_cache:
           keys:
@@ -93,18 +93,21 @@ jobs:
       - run:
           name: install mbedtls
           command: |
-            ./install-mbedtls.sh "$VERSION" "$DESTDIR"
+            echo 'deb http://deb.debian.org/debian jessie-backports main' |\
+              sudo tee /etc/apt/sources.list.d/backports.list
+            sudo apt-get update
+            sudo apt-get install libmbedtls-dev
       - run:
           name: install tox
           command: |
             python -m venv venv
             . venv/bin/activate
-            pip install tox tox-pyenv
+            pip install tox==2.9.1 tox-pyenv==1.1.0
       - run:
           name: run tests
           command: |
             eval "$(pyenv init -)"
-            pyenv shell 2.7.14 3.5.4 3.4.7 3.6.4
+            pyenv shell 2.7.14 3.4.8 3.5.5 3.6.4
             . venv/bin/activate
             tox
 
@@ -117,7 +120,7 @@ jobs:
               echo "password = $PYPI_PASSWORD" >> $HOME/.pypirc
               . venv/bin/activate
               python setup.py sdist
-              pip install twine
+              pip install twine==1.10.0
               twine upload dist/*
             fi
       - store_artifacts:
