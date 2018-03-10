@@ -5,7 +5,7 @@ __copyright__ = "Copyright 2018, Mathias Laurin"
 __license__ = "MIT License"
 
 
-cimport _mpi
+cimport mbedtls._mpi as _mpi
 from libc.stdlib cimport malloc, free
 
 import numbers

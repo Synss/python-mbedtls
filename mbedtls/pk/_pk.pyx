@@ -6,7 +6,7 @@ __license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free
-cimport _pk
+cimport mbedtls.pk._pk as _pk
 cimport mbedtls.random as _random
 from functools import partial
 import mbedtls.random as _random

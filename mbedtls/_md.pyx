@@ -5,7 +5,7 @@ __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
 __license__ = "MIT License"
 
 
-cimport _md
+cimport mbedtls._md as _md
 from libc.stdlib cimport malloc, free
 import binascii
 from mbedtls.exceptions import *

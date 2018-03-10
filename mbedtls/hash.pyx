@@ -6,8 +6,8 @@ __license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free
-cimport _md
-import _md
+cimport mbedtls._md as _md
+import mbedtls._md as _md
 from mbedtls.exceptions import *
 
 

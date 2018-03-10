@@ -8,8 +8,8 @@ __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
 __license__ = "MIT License"
 
 
-cimport _cipher
-import _cipher
+cimport mbedtls.cipher._cipher as _cipher
+import mbedtls.cipher._cipher as _cipher
 from mbedtls.exceptions import *
 
 
