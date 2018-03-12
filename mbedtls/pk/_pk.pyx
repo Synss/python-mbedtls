@@ -14,8 +14,7 @@ from mbedtls.exceptions import check_error, PkError
 import mbedtls.hash as _hash
 
 
-__all__ = ("CipherBase", "CIPHER_NAME", "check_pair",
-           "get_supported_ciphers", "get_rng")
+__all__ = ("CIPHER_NAME", "check_pair", "get_supported_ciphers", "get_rng")
 
 
 CIPHER_NAME = (

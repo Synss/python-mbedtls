@@ -9,7 +9,7 @@ import pytest
 import mbedtls.hash as _hash
 from mbedtls.exceptions import *
 from mbedtls.exceptions import _ErrorBase
-from mbedtls.pk._pk import _type_from_name, _get_md_alg
+from mbedtls.pk._pk import _type_from_name, _get_md_alg, CipherBase
 from mbedtls.pk import *
 
 
