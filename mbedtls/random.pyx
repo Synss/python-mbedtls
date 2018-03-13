@@ -6,7 +6,7 @@ __license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free
-cimport random
+cimport mbedtls.random as random
 import binascii
 from mbedtls.exceptions import check_error
 

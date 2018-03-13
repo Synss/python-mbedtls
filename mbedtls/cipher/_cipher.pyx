@@ -6,7 +6,7 @@ __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
 __license__ = "MIT License"
 
 
-cimport _cipher
+cimport mbedtls.cipher._cipher as _cipher
 from libc.stdlib cimport malloc, free
 from mbedtls.exceptions import *
 

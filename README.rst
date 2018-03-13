@@ -48,9 +48,11 @@ The bindings are tested with Python 2.7, 3.4, 3.5, and 3.6.
 
 `mbedtls` is available on Debian.  Install with::
 
-   # aptitude install libmbedtls-dev
+   # apt-get install libmbedtls-dev
+   # apt-get install libpython-dev   # for Python 2, or
+   # apt-get install libpython3-dev  # for Python 3
 
-and the `pyton-mbedtls`::
+and `pyton-mbedtls`::
 
    $ python -m pip install python-mbedtls
 
@@ -203,6 +205,9 @@ Create new X.509 certificates::
    ...
    >>> csr = CSR.new(subject_key, hash.sha1(),
                      "C=NL,O=PolarSSL,CN=PolarSSL Server 1")
+
+Call ``next(crt)`` to obtain the next certificate in a chain.  The
+call raises `StopIteration` if there is no further certificate.
 
 and load existing certificates from file::
 

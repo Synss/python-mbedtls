@@ -5,15 +5,17 @@ __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
 __license__ = "MIT License"
 
 
+cdef extern from "mbedtls/md_internal.h":
+    ctypedef struct mbedtls_md_info_t:
+        int block_size
+
+
 cdef extern from "mbedtls/md.h":
     ctypedef enum mbedtls_md_type_t:
         pass
 
-    ctypedef enum mbedtls_md_info_t:
-        pass
-    
-    ctypedef enum mbedtls_md_context_t:
-        pass
+    ctypedef struct mbedtls_md_context_t:
+        const mbedtls_md_info_t *md_info
 
     const int *mbedtls_md_list()
     const mbedtls_md_info_t *mbedtls_md_info_from_string(

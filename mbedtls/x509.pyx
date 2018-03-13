@@ -6,7 +6,7 @@ __license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free
-cimport x509
+cimport mbedtls.x509 as x509
 
 cimport mbedtls._mpi as _mpi
 cimport mbedtls.pk._pk as _pk
@@ -14,6 +14,22 @@ cimport mbedtls.pk._pk as _pk
 import base64
 
 from mbedtls.exceptions import *
+
+
+def PEM_to_DER(pem):
+    return base64.b64decode(
+        b"".join(line.encode("ascii") for line in pem.splitlines()
+                 if not line.startswith("-----")))
+
+
+def DER_to_PEM(der, text):
+    chunk_size = 64
+    pem = base64.b64encode(der).decode("ascii")
+    return "\n".join((
+        "-----BEGIN %s-----" % text.upper(),
+        "\n".join(pem[n:n+chunk_size] for n in range(0, len(pem), chunk_size)),
+        "-----END %s-----" % text.upper(),
+        ""))
 
 
 cdef class Certificate:
@@ -32,7 +48,21 @@ cdef class Certificate:
         """Unallocate all certificate data."""
         x509.mbedtls_x509_crt_free(&self._ctx)
 
-    def __str__(self):
+    def __hash__(self):
+        return hash(self.to_DER())
+
+    def __eq__(self, other):
+        if type(other) is not type(self):
+            return NotImplemented
+        return self.to_DER() == other.to_DER()
+
+    def __next__(self):
+        if self._ctx.next == NULL or self._ctx.version == 0:
+            raise StopIteration
+        cdef mbedtls_x509_buf buf = self._ctx.next.raw
+        return type(self).from_DER(buf.p[0:buf.len])
+
+    def _info(self):
         cdef size_t osize = 2**24
         cdef char* output = <char*>malloc(osize * sizeof(char))
         cdef char* prefix = b""
@@ -75,16 +105,30 @@ cdef class Certificate:
             &self._ctx, &c_buffer[0], c_buffer.shape[0]))
         return self
 
+    def to_DER(self):
+        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
+
+    __bytes__ = to_bytes = to_DER
+
+    @classmethod
+    def from_PEM(cls, pem):
+        return cls.from_DER(PEM_to_DER(pem))
+
+    def to_PEM(self):
+        return DER_to_PEM(self.to_DER(), "Certificate")
+
+    __str__ = to_PEM
+
     @staticmethod
     def new(start, end, issuer, issuer_key, subject, subject_key,
             serial, md_alg):
         """Return a new certificate."""
-        return CertificateWriter(
+        return _CertificateWriter(
             start, end, issuer, issuer_key,
             subject, subject_key, serial, md_alg).to_certificate()
 
 
-cdef class CertificateWriter:
+cdef class _CertificateWriter:
     """CRT writing context.
 
     This class should not be used directly.
@@ -94,7 +138,7 @@ cdef class CertificateWriter:
 
     def __init__(self, start, end, issuer, issuer_key,
                  subject, subject_key, serial, md_alg):
-        super(CertificateWriter, self).__init__()
+        super(_CertificateWriter, self).__init__()
         self.set_validity(start, end)
         self.set_issuer(issuer)
         self.set_issuer_key(issuer_key)
@@ -271,7 +315,15 @@ cdef class CSR:
         """Unallocate all CSR data."""
         x509.mbedtls_x509_csr_free(&self._ctx)
 
-    def __str__(self):
+    def __hash__(self):
+        return hash(self.to_DER())
+
+    def __eq__(self, other):
+        if type(other) is not type(self):
+            return NotImplemented
+        return self.to_DER() == other.to_DER()
+
+    def _info(self):
         cdef size_t osize = 2**24
         cdef char* output = <char*>malloc(osize * sizeof(char))
         cdef char* prefix = b""
@@ -310,20 +362,30 @@ cdef class CSR:
             &self._ctx, &c_buffer[0], c_buffer.shape[0]))
         return self
 
+    @classmethod
+    def from_PEM(cls, pem):
+        return cls.from_DER(PEM_to_DER(pem))
+
+    def to_DER(self):
+        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
+
+    def to_PEM(self):
+        return DER_to_PEM(self.to_DER(), "Certificate Request")
+
     @staticmethod
     def new(key, md_alg, subject):
         """Return a new CSR."""
-        return CSRWriter(key, md_alg, subject).to_certificate()
+        return _CSRWriter(key, md_alg, subject).to_certificate()
 
 
-cdef class CSRWriter:
+cdef class _CSRWriter:
     """X.509 CSR writing context.
 
     This class should not be used directly.  Use `CSR.new()` instead.
 
     """
     def __init__(self, key, md_alg, subject):
-        super(CSRWriter, self).__init__()
+        super(_CSRWriter, self).__init__()
         self.set_key(key)
         self.set_algorithm(md_alg)
         self.set_subject(subject)
@@ -433,7 +495,21 @@ cdef class CRL:
         """Unallocate all CRL data."""
         x509.mbedtls_x509_crl_free(&self._ctx)
 
-    def __str__(self):
+    def __hash__(self):
+        return hash(self.to_DER())
+
+    def __eq__(self, other):
+        if type(other) is not type(self):
+            return NotImplemented
+        return self.to_DER() == other.to_DER()
+
+    def __next__(self):
+        if self._ctx.next == NULL or self._ctx.version == 0:
+            raise StopIteration
+        cdef mbedtls_x509_buf buf = self._ctx.next.raw
+        return type(self).from_DER(buf.p[0:buf.len])
+
+    def _info(self):
         cdef size_t osize = 2**24
         cdef char* output = <char*>malloc(osize * sizeof(char))
         cdef char* prefix = b""
@@ -471,3 +547,17 @@ cdef class CRL:
         check_error(x509.mbedtls_x509_crl_parse_der(
             &self._ctx, &c_buffer[0], c_buffer.shape[0]))
         return self
+
+    def to_DER(self):
+        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
+
+    __bytes__ = to_bytes = to_DER
+
+    @classmethod
+    def from_PEM(cls, pem):
+        return cls.from_DER(PEM_to_DER(pem))
+
+    def to_PEM(self):
+        return DER_to_PEM(self.to_DER(), "X509 CRL")
+
+    __str__ = to_PEM

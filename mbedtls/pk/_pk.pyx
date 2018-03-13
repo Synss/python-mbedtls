@@ -6,7 +6,7 @@ __license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free
-cimport _pk
+cimport mbedtls.pk._pk as _pk
 cimport mbedtls.random as _random
 from functools import partial
 import mbedtls.random as _random
@@ -14,8 +14,7 @@ from mbedtls.exceptions import check_error, PkError
 import mbedtls.hash as _hash
 
 
-__all__ = ("CipherBase", "CIPHER_NAME", "check_pair",
-           "get_supported_ciphers", "get_rng")
+__all__ = ("CIPHER_NAME", "check_pair", "get_supported_ciphers", "get_rng")
 
 
 CIPHER_NAME = (

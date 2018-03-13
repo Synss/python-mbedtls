@@ -48,6 +48,10 @@ def test_type_accessor(algorithm):
     assert 0 <= algorithm._type < len(MD_NAME)
 
 
+def test_block_size_accessor(algorithm):
+    assert algorithm.block_size in {16, 32, 64, 128, 256}
+
+
 def test_copy_hash(algorithm, randbytes):
     buf0 = randbytes(512)
     buf1 = randbytes(512)

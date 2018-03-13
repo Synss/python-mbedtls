@@ -5,8 +5,8 @@ __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
 __license__ = "MIT License"
 
 
-cimport _pk
-import mbedtls.pk as _pk
+cimport mbedtls.pk._pk as _pk
+import mbedtls.pk._pk as _pk
 cimport mbedtls.random as _random
 import mbedtls.random as _random
 from mbedtls.exceptions import check_error

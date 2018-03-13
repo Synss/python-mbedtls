@@ -11,6 +11,13 @@ __copyright__ = "Copyright 2018, Mathias Laurin"
 __license__ = "MIT License"
 
 
+cdef extern from "mbedtls/asn1.h":
+    cdef struct mbedtls_asn1_buf:
+        int tag
+        size_t len
+        unsigned char *p
+
+
 cdef extern from "mbedtls/bignum.h":
     ctypedef enum mbedtls_mpi: pass
 
@@ -23,8 +30,16 @@ cdef extern from "mbedtls/pk.h":
    ctypedef enum mbedtls_pk_context: pass
 
 
+cdef extern from "mbedtls/x509.h":
+    ctypedef mbedtls_asn1_buf mbedtls_x509_buf
+
+
 cdef extern from "mbedtls/x509_crt.h":
-    ctypedef enum mbedtls_x509_crt: pass
+    cdef struct mbedtls_x509_crt:
+        mbedtls_x509_buf raw
+        mbedtls_x509_crt *next
+        int version
+
     ctypedef enum mbedtls_x509_crt_profile: pass
     ctypedef enum mbedtls_x509write_cert: pass
 
@@ -122,7 +137,9 @@ cdef extern from "mbedtls/x509_crt.h":
 cdef extern from "mbedtls/x509_csr.h":
     # Certificate signing request parsing and writing
     # -----------------------------------------------
-    ctypedef enum mbedtls_x509_csr: pass
+    cdef struct mbedtls_x509_csr:
+        mbedtls_x509_buf raw
+
     ctypedef enum mbedtls_x509write_csr: pass
 
     # mbedtls_x509_csr
@@ -182,7 +199,10 @@ cdef extern from "mbedtls/x509_crl.h":
     # Certificate revocation list parsing
     # -----------------------------------
     ctypedef enum mbedtls_x509_crl_entry: pass
-    ctypedef enum mbedtls_x509_crl: pass
+    cdef struct mbedtls_x509_crl:
+        mbedtls_x509_buf raw
+        mbedtls_x509_crl *next
+        int version
 
     # mbedtls_x509_crl
     # ----------------
@@ -211,7 +231,7 @@ cdef class Certificate:
     cpdef _from_buffer(cls, unsigned char[:] buffer)
 
 
-cdef class CertificateWriter:
+cdef class _CertificateWriter:
     cdef mbedtls_x509write_cert _ctx
 
 
@@ -220,7 +240,7 @@ cdef class CSR:
     cpdef _from_buffer(cls, unsigned char[:] buffer)
 
 
-cdef class CSRWriter:
+cdef class _CSRWriter:
     cdef mbedtls_x509write_csr _ctx
 
 

@@ -6,8 +6,8 @@ __license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free
-cimport _md
-import _md
+cimport mbedtls._md as _md
+import mbedtls._md as _md
 from mbedtls.exceptions import *
 
 
@@ -28,7 +28,8 @@ cdef class Hash(_md.MDBase):
 
     Attributes:
         digest_size (int): The size of the message digest, in bytes.
-        block_size (int): Not implemented.
+        block_size (int): The internal block size of the hash
+            algorithm in bytes.
         name (bytes): The name of the message digest.
 
     """

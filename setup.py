@@ -2,7 +2,7 @@ import os
 import sys
 from setuptools import setup, Extension
 
-version = "0.8"
+version = "0.9"
 download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
 
 
@@ -13,11 +13,14 @@ for dirpath, dirnames, filenames in os.walk("mbedtls"):
         if ext != ".pyx":
             continue
         mod = ".".join(dirpath.split(os.sep) + [root])
-        extensions.append(Extension(
+        extension = Extension(
             mod,
             [os.path.join(dirpath, fn)],
-            libraries=["mbedtls"],
-        ))
+            libraries=["mbedcrypto", "mbedtls", "mbedx509"],
+            include_dirs=["."],
+        )
+        extension.cython_c_in_temp = True
+        extensions.append(extension)
 
 
 setup_requires = [
@@ -45,6 +48,7 @@ setup(
     url="https://github.com/Synss/python-mbedtls",
     download_url=download_url,
     ext_modules=extensions,
+    packages=["mbedtls", "mbedtls.cipher", "mbedtls.pk"],
     setup_requires=setup_requires,
     classifiers=[
         "Development Status :: 4 - Beta",
