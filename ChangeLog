@@ -1,3 +1,11 @@
+[0.9.0] - 2018-03-14
+
+Misc.
+
+* Switch to semantic versioning.
+* Add pxd files to source distribution.
+
+
 [0.9] - 2018-03-13
 
 API Changes
@@ -9,7 +17,7 @@ Misc.
 
 * Clean up imports.
 * Fix tests and packaging.
-* Change git merge policy to fast-forward.
+* Change git merge policy to fast-forward on develop.
 
 
 [0.8 withdrawn] - 2018-02-24
