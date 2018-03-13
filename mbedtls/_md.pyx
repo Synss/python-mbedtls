@@ -58,7 +58,8 @@ cdef class MDBase:
 
     Attributes:
         digest_size (int): The size of the message digest, in bytes.
-        block_size (int): Not implemented.
+        block_size (int): The internal block size of the hash
+            algorithm in bytes.
         name (bytes): The name of the message digest.
 
     """
@@ -94,7 +95,7 @@ cdef class MDBase:
     property block_size:
         """The internal block size of the hash algorithm in bytes."""
         def __get__(self):
-            raise NotImplementedError
+            return self._ctx.md_info.block_size
 
     property name:
         """The canonical name of the hashing algorithm."""
