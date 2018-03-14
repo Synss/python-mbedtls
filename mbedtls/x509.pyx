@@ -6,10 +6,10 @@ __license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free
-cimport mbedtls.x509 as x509
 
+cimport mbedtls.x509 as x509
 cimport mbedtls._mpi as _mpi
-cimport mbedtls.pk._pk as _pk
+cimport mbedtls.pk as _pk
 
 import base64
 

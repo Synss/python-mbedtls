@@ -6,15 +6,18 @@ __license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free
-cimport mbedtls.pk._pk as _pk
+
+cimport mbedtls.pk as _pk
 cimport mbedtls.random as _random
+
 from functools import partial
+
 import mbedtls.random as _random
 from mbedtls.exceptions import check_error, PkError
 import mbedtls.hash as _hash
 
 
-__all__ = ("CIPHER_NAME", "check_pair", "get_supported_ciphers", "get_rng")
+__all__ = ("CIPHER_NAME", "check_pair", "get_supported_ciphers", "RSA")
 
 
 CIPHER_NAME = (
@@ -43,6 +46,10 @@ del RSA_PUB_DER_MAX_BYTES, MPI_MAX_SIZE_2, RSA_PRV_DER_MAX_BYTES
 del ECP_PUB_DER_MAX_BYTES, ECP_PRV_DER_MAX_BYTES
 
 
+cpdef check_pair(CipherBase pub, CipherBase pri):
+    """Check if a public-private pair of keys matches."""
+    return _pk.mbedtls_pk_check_pair(&pub._ctx, &pri._ctx) == 0
+
 
 def _type_from_name(name):
     return {name: n for n, name in enumerate(CIPHER_NAME)}.get(name, 0)
@@ -53,10 +60,6 @@ cpdef get_supported_ciphers():
 
 
 cdef _random.Random __rng = _random.Random()
-
-
-cpdef _random.Random get_rng():
-    return __rng
 
 
 def _get_md_alg(digestmod):
@@ -342,6 +345,29 @@ cdef class CipherBase:
         return b"\n".join(self.to_DER())
 
 
-cpdef check_pair(CipherBase pub, CipherBase pri):
-    """Check if a public-private pair of keys matches."""
-    return _pk.mbedtls_pk_check_pair(&pub._ctx, &pri._ctx) == 0
+cdef class RSA(CipherBase):
+
+    """RSA public-key cryptosystem."""
+
+    def __init__(self):
+        super().__init__(b"RSA")
+
+    cpdef bint has_private(self):
+        """Return `True` if the key contains a valid private half."""
+        return _pk.mbedtls_rsa_check_privkey(_pk.mbedtls_pk_rsa(self._ctx)) == 0
+
+    cpdef bint has_public(self):
+        """Return `True` if the key contains a valid public half."""
+        return _pk.mbedtls_rsa_check_pubkey(_pk.mbedtls_pk_rsa(self._ctx)) == 0
+
+    cpdef generate(self, unsigned int key_size=2048, int exponent=65537):
+        """Generate an RSA keypair.
+
+        Arguments:
+            key_size (unsigned int): size in bits.
+            exponent (int): public RSA exponent.
+
+        """
+        check_error(_pk.mbedtls_rsa_gen_key(
+            _pk.mbedtls_pk_rsa(self._ctx), &_random.mbedtls_ctr_drbg_random,
+            &__rng._ctx, key_size, exponent))

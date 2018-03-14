@@ -48,7 +48,7 @@ setup(
     url="https://github.com/Synss/python-mbedtls",
     download_url=download_url,
     ext_modules=extensions,
-    packages=["mbedtls", "mbedtls.cipher", "mbedtls.pk"],
+    packages=["mbedtls", "mbedtls.cipher"],
     setup_requires=setup_requires,
     classifiers=[
         "Development Status :: 4 - Beta",
