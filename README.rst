@@ -139,7 +139,7 @@ Example::
    >>> c = cipher.AES.new(b"My 16-bytes key.", cipher.MODE_CBC, b"CBC needs an IV.")
    >>> enc = c.encrypt(b"This is a super-secret message!")
    >>> enc
-   b'*`k6\x98\x97=[\xdf\x7f\x88\x96\xf5\t\x19J7\x93\xb5\xe0~\t\x9e\x968m\xcd\x
+   b'*`k6\x98\x97=[\xdf\x7f\x88\x96\xf5\t\x19J7\x93\xb5\xe0~\t\x9e\x968m\xcd\x9c3\x04o\xe6'
    >>> c.decrypt(enc)
    b'This is a super-secret message!'
 
@@ -170,7 +170,7 @@ Message encryption and decryption::
 
    >>> enc = rsa.encrypt(b"secret message")
    >>> rsa.decrypt(enc)
-   b"secret message"
+   b'secret message'
 
 Message signature and verification::
 
@@ -195,20 +195,26 @@ Create new X.509 certificates::
 
    >>> import datetime as dt
    >>> from pathlib import Path
+   >>>
+   >>> from mbedtls import hash as hashlib
+   >>> from mbedtls.pk import RSA
    >>> from mbedtls.x509 import Certificate, CSR, CRL
+   >>>
    >>> now = dt.datetime.utcnow()
-   >>> crt = Certificate(
+   >>> issuer_key = RSA()
+   >>> issuer_key.generate()
+   >>> subject_key = RSA()
+   >>> subject_key.generate()
+   >>>
+   >>> crt = Certificate.new(
    ...     start=now, end=now + dt.timedelta(days=90),
    ...     issuer="C=NL,O=PolarSSL,CN=PolarSSL Test CA", issuer_key=issuer_key,
    ...     subject=None, subject_key=subject_key,
-   ...     md_alg=hash.sha1(), serial=None)
+   ...     md_alg=hashlib.sha1(), serial=None)
    ...
-   >>> csr = CSR.new(subject_key, hash.sha1(),
-                     "C=NL,O=PolarSSL,CN=PolarSSL Server 1")
+   >>> csr = CSR.new(subject_key, hashlib.sha1(),
+   ...               "C=NL,O=PolarSSL,CN=PolarSSL Server 1")
+   >>>
 
 Call ``next(crt)`` to obtain the next certificate in a chain.  The
 call raises `StopIteration` if there is no further certificate.
-
-and load existing certificates from file::
-
-   >>> crl = CRL.from_file("ca/wp_crl.pem")
