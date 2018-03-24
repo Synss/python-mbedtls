@@ -133,7 +133,10 @@ cdef class CipherBase:
         """Return `True` if the key contains a valid public half."""
         raise NotImplementedError
 
-    cpdef verify(self, message, signature, digestmod=None):
+    def verify(self,
+               const unsigned char[:] message not None,
+               const unsigned char[:] signature not None,
+               digestmod=None):
         """Verify signature, including padding if relevant.
 
         Arguments:
@@ -148,15 +151,15 @@ cdef class CipherBase:
         if digestmod is None:
             digestmod = 'sha256'
         md_alg = _get_md_alg(digestmod)(message)
-        cdef unsigned char[:] c_hash = bytearray(md_alg.digest())
-        cdef unsigned char[:] c_sig = bytearray(signature)
-        ret = _pk.mbedtls_pk_verify(
+        cdef const unsigned char[:] hash_ = md_alg.digest()
+        return _pk.mbedtls_pk_verify(
             &self._ctx, md_alg._type,
-            &c_hash[0], c_hash.shape[0],
-            &c_sig[0], c_sig.shape[0])
-        return ret == 0
+            &hash_[0], hash_.size,
+            &signature[0], signature.size) == 0
 
-    cpdef sign(self, message, digestmod=None):
+    def sign(self,
+             const unsigned char[:] message not None,
+             digestmod=None):
         """Make signature, including padding if relevant.
 
         Arguments:
@@ -171,73 +174,68 @@ cdef class CipherBase:
         if digestmod is None:
             digestmod = 'sha256'
         md_alg = _get_md_alg(digestmod)(message)
-        cdef unsigned char[:] c_hash = bytearray(md_alg.digest())
-        cdef size_t osize = self.key_size
+        cdef const unsigned char[:] hash_ = md_alg.digest()
         cdef size_t sig_len = 0
         cdef unsigned char* output = <unsigned char*>malloc(
-            osize * sizeof(unsigned char))
+            self.key_size * sizeof(unsigned char))
         if not output:
             raise MemoryError()
         try:
             _pk.mbedtls_pk_sign(
                 &self._ctx, md_alg._type,
-                &c_hash[0], c_hash.shape[0],
+                &hash_[0], hash_.size,
                 &output[0], &sig_len,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx)
             if sig_len == 0:
                 return None
             else:
-                return bytes(bytearray(output[:sig_len]))
+                return bytes(output[:sig_len])
         finally:
             free(output)
 
-    cpdef encrypt(self, message):
+    def encrypt(self, const unsigned char[:] message not None):
         """Encrypt message (including padding if relevant).
 
         Arguments:
             message (bytes): Message to encrypt.
 
         """
-        cdef unsigned char[:] buf = bytearray(message)
-        cdef size_t osize = self.key_size
         cdef size_t olen = 0
         cdef unsigned char* output = <unsigned char*>malloc(
-            osize * sizeof(unsigned char))
+            self.key_size * sizeof(unsigned char))
         if not output:
             raise MemoryError()
         try:
             check_error(_pk.mbedtls_pk_encrypt(
-                &self._ctx, &buf[0], buf.shape[0],
-                output, &olen, osize,
+                &self._ctx, &message[0], message.size,
+                output, &olen, self.key_size,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
-            return bytes(bytearray(output[:olen]))
+            return bytes(output[:olen])
         finally:
             free(output)
 
-    cpdef decrypt(self, message):
+    def decrypt(self, const unsigned char[:] message not None):
         """Decrypt message (including padding if relevant).
 
         Arguments:
             message (bytes): Message to decrypt.
 
         """
-        cdef unsigned char[:] buf = bytearray(message)
-        cdef size_t osize = self.key_size
         cdef size_t olen = 0
         cdef unsigned char* output = <unsigned char*>malloc(
-            osize * sizeof(unsigned char))
+            self.key_size * sizeof(unsigned char))
         if not output:
             raise MemoryError()
         try:
             check_error(_pk.mbedtls_pk_decrypt(
-                &self._ctx, &buf[0], buf.shape[0],
-                output, &olen, osize,
+                &self._ctx, &message[0], message.size,
+                output, &olen, self.key_size,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
-            return bytes(bytearray(output[:olen]))
+            return bytes(output[:olen])
         finally:
             free(output)
 
-    cpdef generate(self):
+    def generate(self):
         """Generate a keypair."""
         raise NotImplementedError
 
@@ -245,45 +243,14 @@ cdef class CipherBase:
                                        unsigned char *, size_t),
                       size_t olen):
         cdef unsigned char[:] buf = bytearray(olen * b"\0")
-        cdef int ret = fun(&self._ctx, &buf[0], buf.shape[0])
+        cdef int ret = fun(&self._ctx, &buf[0], buf.size)
         check_error(ret)
         # DER format: `ret` is the size of the buffer, offset from the end.
         # PEM format: `ret` is zero.
         if not ret:
             ret = olen
-        # Convert _memoryviewslice to bytes.
-        # return b"".join(chr(_) for _ in buf[olen - ret:olen])
+        # cast unsigned char[:] -> bytearray -> bytes
         return bytes(bytearray(buf[olen - ret:olen]))
-
-    cpdef bytes _write_private_key_der(self):
-        return self._write(&_pk.mbedtls_pk_write_key_der,
-                           PRV_DER_MAX_BYTES)
-
-    cpdef bytes _write_public_key_der(self):
-        return self._write(&_pk.mbedtls_pk_write_pubkey_der,
-                           PUB_DER_MAX_BYTES)
-
-    cpdef bytes _write_private_key_pem(self):
-        return self._write(&_pk.mbedtls_pk_write_key_pem,
-                           PRV_DER_MAX_BYTES * 4 // 3 + 100)
-
-    cpdef bytes _write_public_key_pem(self):
-        return self._write(&_pk.mbedtls_pk_write_pubkey_pem,
-                           PUB_DER_MAX_BYTES * 4 // 3 + 100)
-
-    cpdef _parse_private_key(self, key, password=None):
-        cdef unsigned char[:] c_key = bytearray(key + b"\0")
-        cdef unsigned char[:] c_pwd = bytearray(password if password else b"")
-        mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
-        check_error(_pk.mbedtls_pk_parse_key(
-            &self._ctx, &c_key[0], c_key.shape[0],
-            &c_pwd[0] if c_pwd.shape[0] else NULL, c_pwd.shape[0]))
-
-    cpdef _parse_public_key(self, key):
-        cdef unsigned char[:] c_key = bytearray(key + b"\0")
-        mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
-        check_error(_pk.mbedtls_pk_parse_public_key(
-            &self._ctx, &c_key[0], c_key.shape[0]))
 
     def from_buffer(self, key, password=None):
         """Import a key (public or private half).
@@ -297,10 +264,18 @@ cdef class CipherBase:
                 password-protected private keys.
 
         """
+        if password is None:
+            password = bytearray()
+        cdef unsigned char[:] pwd_ = bytearray(password)
+        cdef unsigned char[:] key_ = bytearray(key + b"\0")
+        mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
         try:
-            self._parse_private_key(key, password)
+            check_error(_pk.mbedtls_pk_parse_key(
+                &self._ctx, &key_[0], key_.size,
+                &pwd_[0] if pwd_.size else NULL, pwd_.size))
         except PkError:
-            self._parse_public_key(key)
+            check_error(_pk.mbedtls_pk_parse_public_key(
+                &self._ctx, &key_[0], key_.size))
 
     from_DER = from_buffer
 
@@ -317,9 +292,11 @@ cdef class CipherBase:
         """
         prv, pub = "", ""
         if self.has_private():
-            prv = self._write_private_key_pem().decode("ascii")
+            prv = self._write(&_pk.mbedtls_pk_write_key_pem,
+                              PRV_DER_MAX_BYTES * 4 // 3 + 100).decode("ascii")
         if self.has_public():
-            pub = self._write_public_key_pem().decode("ascii")
+            pub = self._write(&_pk.mbedtls_pk_write_pubkey_pem,
+                              PUB_DER_MAX_BYTES * 4 // 3 + 100).decode("ascii")
         return prv, pub
 
     def __str__(self):
@@ -334,9 +311,11 @@ cdef class CipherBase:
         """
         prv, pub = b"", b""
         if self.has_private():
-            prv = self._write_private_key_der()
+            prv = self._write(&_pk.mbedtls_pk_write_key_der,
+                              PRV_DER_MAX_BYTES)
         if self.has_public():
-            pub = self._write_public_key_der()
+            pub = self._write(&_pk.mbedtls_pk_write_pubkey_der,
+                              PUB_DER_MAX_BYTES)
         return prv, pub
 
     to_bytes = to_DER
@@ -360,7 +339,7 @@ cdef class RSA(CipherBase):
         """Return `True` if the key contains a valid public half."""
         return _pk.mbedtls_rsa_check_pubkey(_pk.mbedtls_pk_rsa(self._ctx)) == 0
 
-    cpdef generate(self, unsigned int key_size=2048, int exponent=65537):
+    def generate(self, unsigned int key_size=2048, int exponent=65537):
         """Generate an RSA keypair.
 
         Arguments:

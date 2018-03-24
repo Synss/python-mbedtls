@@ -38,16 +38,18 @@ cdef class Hmac(_md.MDBase):
         name (bytes): The name of the message digest.
 
     """
-    def __init__(self, key, name, buffer=None):
+    def __init__(
+            self, const unsigned char[:] key not None, name, buffer=None):
         super().__init__(name, buffer, 1)
-        cdef unsigned char[:] c_key = bytearray(key)
-        check_error(_md.mbedtls_md_hmac_starts(
-            &self._ctx, &c_key[0], c_key.shape[0]))
+        check_error(_md.mbedtls_md_hmac_starts(&self._ctx, &key[0], key.size))
         self.update(buffer)
 
-    cdef _update(self, const unsigned char *input, size_t ilen):
+    def update(self, const unsigned char[:] buffer):
         """Update the HMAC object with `buffer`."""
-        return _md.mbedtls_md_hmac_update(&self._ctx, input, ilen)
+        if buffer is None:
+            return
+        check_error(
+            _md.mbedtls_md_hmac_update(&self._ctx, &buffer[0], buffer.size))
 
     cdef _finish(self, unsigned char *output):
         """Return the HMAC of key and message."""

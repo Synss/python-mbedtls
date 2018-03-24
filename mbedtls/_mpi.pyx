@@ -41,7 +41,7 @@ cdef class MPI:
             value = to_bytes(value)
         except TypeError:
             pass
-        self._from_bytes(bytearray(value))
+        self._from_bytes(value)
 
     def __cinit__(self):
         """Initialize one MPI."""
@@ -84,7 +84,7 @@ cdef class MPI:
     def from_bytes(cls, bytes, byteorder):
         assert byteorder in {"big", "little"}
         order = slice(None, None, -1 if byteorder is "little" else None)
-        return cls(None)._from_bytes(bytearray(bytes[order]))
+        return cls(None)._from_bytes(bytes[order])
 
     def to_bytes(self, length, byteorder):
         assert byteorder in {"big", "little"}

@@ -129,20 +129,7 @@ cdef class CipherBase:
     cpdef bint has_private(self)
     cpdef bint has_public(self)
 
-    cpdef sign(self, message, digestmod=*)
-    cpdef verify(self, message, signature, digestmod=*)
-
-    cpdef encrypt(self, message)
-    cpdef decrypt(self, message)
-
-    cpdef generate(self)
     cdef bytes _write(
         self,
         int (*fun)(mbedtls_pk_context*, unsigned char*, size_t),
         size_t)
-    cpdef bytes _write_private_key_der(self)
-    cpdef bytes _write_public_key_der(self)
-    cpdef bytes _write_private_key_pem(self)
-    cpdef bytes _write_public_key_pem(self)
-    cpdef _parse_private_key(self, key, password=*)
-    cpdef _parse_public_key(self, key)

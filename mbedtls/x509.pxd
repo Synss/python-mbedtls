@@ -228,7 +228,7 @@ cdef extern from "mbedtls/x509_crl.h":
 
 cdef class Certificate:
     cdef mbedtls_x509_crt _ctx
-    cpdef _from_buffer(cls, unsigned char[:] buffer)
+    cpdef _from_buffer(cls, const unsigned char[:] buffer)
 
 
 cdef class _CertificateWriter:
@@ -237,7 +237,7 @@ cdef class _CertificateWriter:
 
 cdef class CSR:
     cdef mbedtls_x509_csr _ctx
-    cpdef _from_buffer(cls, unsigned char[:] buffer)
+    cpdef _from_buffer(cls, const unsigned char[:] buffer)
 
 
 cdef class _CSRWriter:
@@ -246,4 +246,4 @@ cdef class _CSRWriter:
 
 cdef class CRL:
     cdef mbedtls_x509_crl _ctx
-    cpdef _from_buffer(cls, unsigned char[:] buffer)
+    cpdef _from_buffer(cls, const unsigned char[:] buffer)

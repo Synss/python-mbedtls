@@ -38,7 +38,7 @@ cdef class Certificate:
     def __init__(self, buffer):
         if buffer is None:
             return  # Implementation detail.
-        self._from_buffer(bytearray(buffer))
+        self._from_buffer(buffer)
 
     def __cinit__(self):
         """Initialize a certificate (chain)."""
@@ -75,9 +75,9 @@ cdef class Certificate:
         finally:
             free(output)
 
-    cpdef _from_buffer(self, unsigned char[:] buf):
+    cpdef _from_buffer(self, const unsigned char[:] buf):
         check_error(
-            x509.mbedtls_x509_crt_parse(&self._ctx, &buf[0], buf.shape[0]))
+            x509.mbedtls_x509_crt_parse(&self._ctx, &buf[0], buf.size))
         return self
 
     def check_revocation(self, CRL crl):
@@ -87,22 +87,22 @@ cdef class Certificate:
     @classmethod
     def from_buffer(cls, buffer):
         # PEP 543
-        return cls(None)._from_buffer(bytearray(buffer))
+        return cls(None)._from_buffer(buffer)
 
     @classmethod
     def from_file(cls, path):
         # PEP 543, test pathlib
-        cdef char[:] c_path = bytearray(str(path).encode("utf8"))
+        path_ = str(path).encode("utf8")
+        cdef const char* c_path = path_
         cdef Certificate self = cls(None)
-        check_error(x509.mbedtls_x509_crt_parse_file(&self._ctx, &c_path[0]))
+        check_error(x509.mbedtls_x509_crt_parse_file(&self._ctx, c_path))
         return self
 
     @classmethod
-    def from_DER(cls, buffer):
-        cdef unsigned char[:] c_buffer = bytearray(buffer)
+    def from_DER(cls, const unsigned char[:] buffer):
         cdef Certificate self = cls(None)
         check_error(x509.mbedtls_x509_crt_parse_der(
-            &self._ctx, &c_buffer[0], c_buffer.shape[0]))
+            &self._ctx, &buffer[0], buffer.size))
         return self
 
     def to_DER(self):
@@ -233,10 +233,13 @@ cdef class _CertificateWriter:
 
         """
         fmt = "%Y%m%d%H%M%S"
-        cdef char[:] c_start = bytearray(start.strftime(fmt).encode("ascii"))
-        cdef char[:] c_end = bytearray(end.strftime(fmt).encode("ascii"))
+        # Keep reference to Python objects.
+        start_ = start.strftime(fmt).encode("ascii")
+        end_ = end.strftime(fmt).encode("ascii")
+        cdef const char* c_start = start_
+        cdef const char* c_end = end_
         check_error(x509.mbedtls_x509write_crt_set_validity(
-            &self._ctx, &c_start[0], &c_end[0]))
+            &self._ctx, c_start, c_end))
 
     def set_issuer(self, issuer):
         """Set the issuer name.
@@ -246,9 +249,11 @@ cdef class _CertificateWriter:
                 e.g. "C=UK,I=ARM,CN=mbed TLS CA"
 
         """
-        cdef char[:] c_issuer = bytearray(issuer.encode("utf8"))
+        # Keep reference to Python object.
+        issuer_ = issuer.encode("utf8")
+        cdef const char* c_issuer = issuer_
         check_error(x509.mbedtls_x509write_crt_set_issuer_name(
-            &self._ctx, &c_issuer[0]))
+            &self._ctx, c_issuer))
 
     def set_subject(self, subject):
         """Set the subject name for a certificate.
@@ -259,11 +264,13 @@ cdef class _CertificateWriter:
                 e.g. "C=UK,O=ARM,CN=mbed TLS Server 1"
 
         """
-        if not subject:
+        if subject is None:
             return
-        cdef char[:] c_subject = bytearray(subject.encode("utf8"))
+        # Keep reference to Python object.
+        subject_ = subject.encode("utf8")
+        cdef const char* c_subject = subject_
         check_error(x509.mbedtls_x509write_crt_set_subject_name(
-            &self._ctx, &c_subject[0]))
+            &self._ctx, c_subject))
 
     def set_algorithm(self, md_alg):
         """Set MD algorithm to use for the signature.
@@ -305,7 +312,7 @@ cdef class CSR:
         super(CSR, self).__init__()
         if buffer is None:
             return  # Implementation detail.
-        self._from_buffer(bytearray(buffer))
+        self._from_buffer(buffer)
 
     def __cinit__(self):
         """Initialize a CSR."""
@@ -336,30 +343,30 @@ cdef class CSR:
         finally:
             free(output)
 
-    cpdef _from_buffer(self, unsigned char[:] buf):
+    cpdef _from_buffer(self, const unsigned char[:] buf):
         check_error(
-            x509.mbedtls_x509_csr_parse(&self._ctx, &buf[0], buf.shape[0]))
+            x509.mbedtls_x509_csr_parse(&self._ctx, &buf[0], buf.size))
         return self
 
     @classmethod
     def from_buffer(cls, buffer):
         # PEP 543
-        return cls(None)._from_buffer(bytearray(buffer))
+        return cls(None)._from_buffer(buffer)
 
     @classmethod
     def from_file(cls, path):
         # PEP 543, test pathlib
-        cdef char[:] c_path = bytearray(str(path).encode("utf8"))
+        path_ = str(path).encode("utf8")
+        cdef const char* c_path = path_
         cdef CSR self = cls(None)
-        check_error(x509.mbedtls_x509_csr_parse_file(&self._ctx, &c_path[0]))
+        check_error(x509.mbedtls_x509_csr_parse_file(&self._ctx, c_path))
         return self
 
     @classmethod
-    def from_DER(cls, buffer):
-        cdef unsigned char[:] c_buffer = bytearray(buffer)
+    def from_DER(cls, const unsigned char[:] buffer):
         cdef CSR self = cls(None)
         check_error(x509.mbedtls_x509_csr_parse_der(
-            &self._ctx, &c_buffer[0], c_buffer.shape[0]))
+            &self._ctx, &buffer[0], buffer.size))
         return self
 
     @classmethod
@@ -409,9 +416,11 @@ cdef class _CSRWriter:
         """
         if not subject:
             return
-        cdef char[:] c_subject = bytearray(subject.encode("utf8"))
+        # Keep reference to Python object.
+        subject_ = subject.encode("utf8")
+        cdef const char* c_subject = subject_
         check_error(x509.mbedtls_x509write_csr_set_subject_name(
-            &self._ctx, &c_subject[0]))
+            &self._ctx, c_subject))
 
     def set_key(self, _pk.CipherBase key):
         """Set the key for the CSR.
@@ -485,7 +494,7 @@ cdef class CRL:
         super(CRL, self).__init__()
         if buffer is None:
             return  # Implementation detail.
-        self._from_buffer(bytearray(buffer))
+        self._from_buffer(buffer)
 
     def __cinit__(self):
         """Initialize a CRL (chain)."""
@@ -522,30 +531,30 @@ cdef class CRL:
         finally:
             free(output)
 
-    cpdef _from_buffer(self, unsigned char[:] buf):
+    cpdef _from_buffer(self, const unsigned char[:] buf):
         check_error(
-            x509.mbedtls_x509_crl_parse(&self._ctx, &buf[0], buf.shape[0]))
+            x509.mbedtls_x509_crl_parse(&self._ctx, &buf[0], buf.size))
         return self
 
     @classmethod
     def from_buffer(cls, buffer):
         # PEP 543
-        return cls(None)._from_buffer(bytearray(buffer))
+        return cls(None)._from_buffer(buffer)
 
     @classmethod
     def from_file(cls, path):
         # PEP 543, test pathlib
-        cdef char[:] c_path = bytearray(str(path).encode("utf8"))
+        path_ = str(path).encode("utf8")
+        cdef const char* c_path = path_
         cdef CRL self = cls(None)
-        check_error(x509.mbedtls_x509_crl_parse_file(&self._ctx, &c_path[0]))
+        check_error(x509.mbedtls_x509_crl_parse_file(&self._ctx, c_path))
         return self
 
     @classmethod
-    def from_DER(cls, buffer):
-        cdef unsigned char[:] c_buffer = bytearray(buffer)
+    def from_DER(cls, const unsigned char[:] buffer):
         cdef CRL self = cls(None)
         check_error(x509.mbedtls_x509_crl_parse_der(
-            &self._ctx, &c_buffer[0], c_buffer.shape[0]))
+            &self._ctx, &buffer[0], buffer.size))
         return self
 
     def to_DER(self):

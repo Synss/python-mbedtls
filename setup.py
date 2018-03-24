@@ -26,7 +26,8 @@ for dirpath, dirnames, filenames in os.walk("mbedtls"):
 setup_requires = [
     # Setuptools 18.0 properly handles Cython extensions.
     "setuptools>=18.0",
-    "cython",
+    # Cython 0.28 handles const memoryviews.
+    "cython>=0.28.0",
 ]
 if sys.version_info < (2, ):
     setup_requires.append("pathlib2")

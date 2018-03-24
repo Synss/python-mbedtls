@@ -124,46 +124,42 @@ cpdef get_supported_ciphers():
 
 
 cdef _c_setup(_cipher.mbedtls_cipher_context_t* ctx,
-              char[:] cipher_name):
+              const char* cipher_name):
     """Initialize and fill the cipher context structure with the
     appropriate values.
 
     """
     return _cipher.mbedtls_cipher_setup(
-        ctx, _cipher.mbedtls_cipher_info_from_string(&cipher_name[0]))
+        ctx, _cipher.mbedtls_cipher_info_from_string(cipher_name))
 
 
 cdef _c_set_key(_cipher.mbedtls_cipher_context_t* ctx,
-                unsigned char[:] c_key,
+                const unsigned char[:] key,
                 _cipher.mbedtls_operation_t operation):
     """Set the key to use with the given context."""
-    return _cipher.mbedtls_cipher_setkey(ctx, &c_key[0], 8 * c_key.shape[0],
-                                         operation)
+    return _cipher.mbedtls_cipher_setkey(
+        ctx, &key[0], 8 * key.size, operation)
 
 
 cdef _c_crypt(_cipher.mbedtls_cipher_context_t* ctx,
-              object iv, object input):
+              const unsigned char[:] iv,
+              const unsigned char[:] input):
     """Generic all-in-one encryption/decryption."""
-    # Make sure that `c_iv` has at least size 1 before dereferencing.
-    if not input:
+    if input.size == 0:
         check_error(-0x6280)  # Raise full block expected error.
-    cdef unsigned char[:] c_iv = (
-        bytearray(iv) if iv else bytearray(b"\x00"))
-    cdef unsigned char[:] c_input = bytearray(input)
+    assert iv.size != 0
     cdef size_t olen
-    cdef size_t sz = c_input.shape[0] + _c_get_block_size(ctx)
+    cdef size_t sz = input.size + _c_get_block_size(ctx)
     cdef unsigned char* output = <unsigned char*>malloc(
         sz * sizeof(unsigned char))
     if not output:
         raise MemoryError()
-    cdef int err
     try:
-        err = _cipher.mbedtls_cipher_crypt(
-            ctx, &c_iv[0], c_iv.shape[0],
-            &c_input[0], c_input.shape[0], output, &olen)
         # We can call `check_error` directly here because we return a
         # python object.
-        check_error(err)
+        check_error(_cipher.mbedtls_cipher_crypt(
+            ctx, &iv[0], iv.size,
+            &input[0], input.size, output, &olen))
         return bytes(output[:olen])
     finally:
         free(output)
@@ -221,12 +217,28 @@ cdef class Cipher:
             key_size (int): The size of the cipher's key, in bytes.
 
     """
-    def __init__(self, cipher_name, key, mode, iv):
-        if mode in {MODE_CBC, MODE_CFB} and not iv:
+    def __init__(self, cipher_name, key, mode,
+                 const unsigned char[:] iv):
+        if mode in {MODE_CBC, MODE_CFB} and iv is None:
             raise ValueError("mode requires an IV")
-        self._setup(cipher_name)
-        self._setkey(key)
-        self._iv = iv if iv else b"\x00" * self.iv_size
+        if cipher_name not in get_supported_ciphers():
+            raise CipherError(-1, "unsupported cipher: %r" % cipher_name)
+
+        check_error(_c_setup(&self._enc_ctx, cipher_name))
+        check_error(_c_setup(&self._dec_ctx, cipher_name))
+
+        if key:
+            check_error(_c_set_key(
+                &self._enc_ctx, key, _cipher.MBEDTLS_ENCRYPT))
+            check_error(_c_set_key(
+                &self._dec_ctx, key, _cipher.MBEDTLS_DECRYPT))
+
+        if iv is None:
+            self._iv = b"\x00" * max(1, self.iv_size)
+        elif iv.size == 0:
+            self._iv = b"\x00" * max(1, self.iv_size)
+        else:
+            self._iv = iv
 
     def __cinit__(self):
         """Initialize a `cipher_context` (as NONE)."""
@@ -237,24 +249,6 @@ cdef class Cipher:
         """Free and clear the cipher-specific context of ctx."""
         _cipher.mbedtls_cipher_free(&self._enc_ctx)
         _cipher.mbedtls_cipher_free(&self._dec_ctx)
-
-    cpdef _setup(self, cipher_name):
-        """Initialize the context with `cipher_info_from_string`."""
-        if cipher_name not in get_supported_ciphers():
-            raise CipherError(-1, "unsupported cipher: %r" % cipher_name)
-        cdef char[:] c_cipher_name = bytearray(cipher_name)
-        check_error(_c_setup(&self._enc_ctx, c_cipher_name))
-        check_error(_c_setup(&self._dec_ctx, c_cipher_name))
-
-    cpdef _setkey(self, key):
-        """Set the encryption/decryption key."""
-        if not key:
-            return
-        # Casting read-only only buffer to typed memoryview fails, so we
-        # cast to bytearray.
-        c_key = bytearray(key)
-        check_error(_c_set_key(&self._enc_ctx, c_key, _cipher.MBEDTLS_ENCRYPT))
-        check_error(_c_set_key(&self._dec_ctx, c_key, _cipher.MBEDTLS_DECRYPT))
 
     def __str__(self):
         """Return the name of the cipher."""
@@ -290,8 +284,8 @@ cdef class Cipher:
         def __get__(self):
             return _c_get_key_size(&self._enc_ctx)
 
-    def encrypt(self, message):
+    def encrypt(self, const unsigned char[:] message not None):
         return _c_crypt(&self._enc_ctx, self._iv, message)
 
-    def decrypt(self, message):
+    def decrypt(self, const unsigned char[:] message not None):
         return _c_crypt(&self._dec_ctx, self._iv, message)

@@ -84,7 +84,8 @@ def test_rsa_has_private_and_has_public_with_private_key(rsa):
     assert cipher.has_private() is False
     assert cipher.has_public() is False
 
-    cipher.from_buffer(rsa._write_private_key_der())
+    prv, pub = rsa.to_DER()
+    cipher.from_buffer(prv)
     assert cipher.has_private() is True
     assert cipher.has_public() is True
 
@@ -94,28 +95,17 @@ def test_rsa_has_private_and_has_public_with_public_key(rsa):
     assert cipher.has_private() is False
     assert cipher.has_public() is False
 
-    cipher.from_buffer(rsa._write_public_key_der())
+    prv, pub = rsa.to_DER()
+    cipher.from_buffer(pub)
     assert cipher.has_private() is False
     assert cipher.has_public() is True
 
 
-def test_rsa_write_public_der_in_private_raises(rsa):
-    pub = rsa._write_public_key_der()
-    cipher = RSA()
-    with pytest.raises(PkError):
-        cipher._parse_private_key(pub)
-
-
-def test_rsa_write_private_der_in_public_raises(rsa):
-    prv = rsa._write_private_key_der()
-    cipher = RSA()
-    with pytest.raises(_ErrorBase):
-        cipher._parse_public_key(prv)
-
-
 def test_rsa_import_public_key(rsa):
     cipher = RSA()
-    cipher.from_buffer(rsa._write_public_key_der())
+
+    prv, pub = rsa.to_DER()
+    cipher.from_buffer(pub)
     assert check_pair(rsa, cipher) is False  # Test private half.
     assert check_pair(cipher, rsa) is True   # Test public half.
     assert check_pair(cipher, cipher) is False
@@ -123,7 +113,8 @@ def test_rsa_import_public_key(rsa):
 
 def test_rsa_import_private_key(rsa):
     cipher = RSA()
-    cipher.from_buffer(rsa._write_private_key_der())
+    prv, pub = rsa.to_DER()
+    cipher.from_buffer(prv)
     assert check_pair(rsa, cipher) is True  # Test private half.
     assert check_pair(cipher, rsa) is True # Test public half.
     assert check_pair(cipher, cipher) is True

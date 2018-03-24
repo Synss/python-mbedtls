@@ -102,17 +102,11 @@ cdef class MDBase:
         def __get__(self):
             return _md.mbedtls_md_get_name(self._info).decode("ascii").lower()
 
-    cdef _update(self, const unsigned char *input, size_t ilen):
-        return -0x5100  # Bad input data error.
-
     cdef _finish(self, const unsigned char *output):
         return -0x5100  # Bad input data error.
 
-    cpdef update(self, buffer):
-        if not buffer:
-            return
-        cdef unsigned char[:] buf = bytearray(buffer)
-        check_error(self._update(&buf[0], buf.shape[0]))
+    def update(self, const unsigned char[:] buffer):
+        return -0x5100  # Bad input data error.
 
     cpdef digest(self):
         """Return the digest output of `message`."""

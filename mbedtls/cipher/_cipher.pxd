@@ -29,9 +29,6 @@ cdef extern from "mbedtls/cipher.h":
         MBEDTLS_MODE_STREAM,
         MBEDTLS_MODE_CCM
 
-    ctypedef enum mbedtls_operation_t:
-        pass
-
     ctypedef struct mbedtls_cipher_base_t:
         pass
 
@@ -97,7 +94,4 @@ cdef class Cipher:
     # Encapsulate two contexts to push the keys into mbedtls ASAP.
     cdef mbedtls_cipher_context_t _enc_ctx
     cdef mbedtls_cipher_context_t _dec_ctx
-    cdef object _iv
-
-    cpdef _setup(self, cipher_name)
-    cpdef _setkey(self, key)
+    cdef const unsigned char[:] _iv
