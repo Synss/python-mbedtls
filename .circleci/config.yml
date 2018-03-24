@@ -97,12 +97,21 @@ jobs:
               sudo tee /etc/apt/sources.list.d/backports.list
             sudo apt-get update
             sudo apt-get install libmbedtls-dev
+
+      - restore_cache:
+          keys:
+            - py-deps-{{ checksum "requirements-tests.txt" }}
       - run:
-          name: install tox
+          name: install environment
           command: |
             python -m venv venv
             . venv/bin/activate
-            pip install tox==2.9.1 tox-pyenv==1.1.0
+            pip install -r requirements-tests.txt
+      - save_cache:
+          key: py-deps-{{ checksum "requirements-tests.txt" }}
+          paths:
+            - venv
+
       - run:
           name: run tests
           command: |
@@ -120,7 +129,6 @@ jobs:
               echo "password = $PYPI_PASSWORD" >> $HOME/.pypirc
               . venv/bin/activate
               python setup.py sdist
-              pip install twine==1.10.0
               twine upload dist/*
             fi
       - store_artifacts:
