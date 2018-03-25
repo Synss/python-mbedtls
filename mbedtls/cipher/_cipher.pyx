@@ -119,83 +119,6 @@ cpdef get_supported_ciphers():
     return ciphers
 
 
-# Making the following C-level functions staticmethods of Cipher is not
-# supported.  We therefore hold them at module scope.
-
-
-cdef _c_setup(_cipher.mbedtls_cipher_context_t* ctx,
-              const char* cipher_name):
-    """Initialize and fill the cipher context structure with the
-    appropriate values.
-
-    """
-    return _cipher.mbedtls_cipher_setup(
-        ctx, _cipher.mbedtls_cipher_info_from_string(cipher_name))
-
-
-cdef _c_set_key(_cipher.mbedtls_cipher_context_t* ctx,
-                const unsigned char[:] key,
-                _cipher.mbedtls_operation_t operation):
-    """Set the key to use with the given context."""
-    return _cipher.mbedtls_cipher_setkey(
-        ctx, &key[0], 8 * key.size, operation)
-
-
-cdef _c_crypt(_cipher.mbedtls_cipher_context_t* ctx,
-              const unsigned char[:] iv,
-              const unsigned char[:] input):
-    """Generic all-in-one encryption/decryption."""
-    if input.size == 0:
-        check_error(-0x6280)  # Raise full block expected error.
-    assert iv.size != 0
-    cdef size_t olen
-    cdef size_t sz = input.size + _c_get_block_size(ctx)
-    cdef unsigned char* output = <unsigned char*>malloc(
-        sz * sizeof(unsigned char))
-    if not output:
-        raise MemoryError()
-    try:
-        # We can call `check_error` directly here because we return a
-        # python object.
-        check_error(_cipher.mbedtls_cipher_crypt(
-            ctx, &iv[0], iv.size,
-            &input[0], input.size, output, &olen))
-        return bytes(output[:olen])
-    finally:
-        free(output)
-
-
-cdef _c_get_block_size(_cipher.mbedtls_cipher_context_t* ctx):
-    """Return the block size for the cipher."""
-    return _cipher.mbedtls_cipher_get_block_size(ctx)
-
-
-cdef _c_get_cipher_mode(_cipher.mbedtls_cipher_context_t* ctx):
-    """Return the mode of operation of the cipher."""
-    return _cipher.mbedtls_cipher_get_cipher_mode(ctx)
-
-
-cdef _c_get_iv_size(_cipher.mbedtls_cipher_context_t* ctx):
-    """Return the size of the cipher's IV/NONCE in bytes."""
-    return _cipher.mbedtls_cipher_get_iv_size(ctx)
-
-
-cdef _c_get_type(_cipher.mbedtls_cipher_context_t* ctx):
-    """Return the type of the cipher."""
-    return _cipher.mbedtls_cipher_get_type(ctx)
-
-
-cdef _c_get_name(_cipher.mbedtls_cipher_context_t* ctx):
-    """Return the name of the cipher."""
-    ret = _cipher.mbedtls_cipher_get_name(ctx)
-    return ret if ret is not NULL else b"NONE"
-
-
-cdef _c_get_key_size(_cipher.mbedtls_cipher_context_t* ctx):
-    """Return the size of the ciphers' key."""
-    return _cipher.mbedtls_cipher_get_key_bitlen(ctx) // 8
-
-
 cdef class Cipher:
 
     """Wrap and encapsulate the cipher library from mbed TLS.
@@ -217,21 +140,30 @@ cdef class Cipher:
             key_size (int): The size of the cipher's key, in bytes.
 
     """
-    def __init__(self, cipher_name, key, mode,
+    def __init__(self,
+                 cipher_name,
+                 const unsigned char[:] key,
+                 mode,
                  const unsigned char[:] iv):
         if mode in {MODE_CBC, MODE_CFB} and iv is None:
             raise ValueError("mode requires an IV")
         if cipher_name not in get_supported_ciphers():
             raise CipherError(-1, "unsupported cipher: %r" % cipher_name)
 
-        check_error(_c_setup(&self._enc_ctx, cipher_name))
-        check_error(_c_setup(&self._dec_ctx, cipher_name))
+        check_error(_cipher.mbedtls_cipher_setup(
+            &self._enc_ctx,
+            _cipher.mbedtls_cipher_info_from_string(cipher_name)))
+        check_error(_cipher.mbedtls_cipher_setup(
+            &self._dec_ctx,
+            _cipher.mbedtls_cipher_info_from_string(cipher_name)))
 
-        if key:
-            check_error(_c_set_key(
-                &self._enc_ctx, key, _cipher.MBEDTLS_ENCRYPT))
-            check_error(_c_set_key(
-                &self._dec_ctx, key, _cipher.MBEDTLS_DECRYPT))
+        if key is not None:
+            check_error(_cipher.mbedtls_cipher_setkey(
+                &self._enc_ctx, &key[0], 8 * key.size,
+                _cipher.MBEDTLS_ENCRYPT))
+            check_error(_cipher.mbedtls_cipher_setkey(
+                &self._dec_ctx, &key[0], 8 * key.size,
+                _cipher.MBEDTLS_DECRYPT))
 
         if iv is None:
             self._iv = b"\x00" * max(1, self.iv_size)
@@ -257,35 +189,63 @@ cdef class Cipher:
     property block_size:
         """Return the block size for the cipher."""
         def __get__(self):
-            return _c_get_block_size(&self._enc_ctx)
+            return _cipher.mbedtls_cipher_get_block_size(&self._enc_ctx)
 
     property mode:
         """Return the mode of operation of the cipher."""
         def __get__(self):
-            return _c_get_cipher_mode(&self._enc_ctx)
+            return _cipher.mbedtls_cipher_get_cipher_mode(&self._enc_ctx)
 
     property iv_size:
         """Return the size of the cipher's IV/NONCE in bytes."""
         def __get__(self):
-            return _c_get_iv_size(&self._enc_ctx)
+            return _cipher.mbedtls_cipher_get_iv_size(&self._enc_ctx)
 
     property _type:
         """Return the type of the cipher."""
         def __get__(self):
-            return _c_get_type(&self._enc_ctx)
+            return _cipher.mbedtls_cipher_get_type(&self._enc_ctx)
 
     property name:
         """Return the name of the cipher."""
         def __get__(self):
-            return _c_get_name(&self._enc_ctx)
+            ret = _cipher.mbedtls_cipher_get_name(&self._enc_ctx)
+            return ret if ret is not NULL else b"NONE"
 
     property key_size:
         """Return the size of the ciphers' key."""
         def __get__(self):
-            return _c_get_key_size(&self._enc_ctx)
+            return _cipher.mbedtls_cipher_get_key_bitlen(
+                &self._enc_ctx) // 8
+
+    cdef _crypt(self, 
+                const unsigned char[:] iv,
+                const unsigned char[:] input,
+                const _cipher.mbedtls_operation_t operation):
+        """Generic all-in-one encryption/decryption."""
+        if input.size == 0:
+            check_error(-0x6280)  # Raise full block expected error.
+        assert iv.size != 0
+        cdef size_t olen
+        cdef size_t sz = input.size + self.block_size
+        cdef unsigned char* output = <unsigned char*>malloc(
+            sz * sizeof(unsigned char))
+        if not output:
+            raise MemoryError()
+        try:
+            # We can call `check_error` directly here because we return a
+            # python object.
+            check_error(_cipher.mbedtls_cipher_crypt(
+                &self._enc_ctx if operation is _cipher.MBEDTLS_ENCRYPT else
+                &self._dec_ctx,
+                &iv[0], iv.size,
+                &input[0], input.size, output, &olen))
+            return bytes(output[:olen])
+        finally:
+            free(output)
 
     def encrypt(self, const unsigned char[:] message not None):
-        return _c_crypt(&self._enc_ctx, self._iv, message)
+        return self._crypt(self._iv, message, _cipher.MBEDTLS_ENCRYPT)
 
     def decrypt(self, const unsigned char[:] message not None):
-        return _c_crypt(&self._dec_ctx, self._iv, message)
+        return self._crypt(self._iv, message, _cipher.MBEDTLS_DECRYPT)

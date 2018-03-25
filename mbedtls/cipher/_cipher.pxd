@@ -95,3 +95,7 @@ cdef class Cipher:
     cdef mbedtls_cipher_context_t _enc_ctx
     cdef mbedtls_cipher_context_t _dec_ctx
     cdef const unsigned char[:] _iv
+    cdef _crypt(self,
+                const unsigned char[:] iv,
+                const unsigned char[:] input,
+                const mbedtls_operation_t operation)
