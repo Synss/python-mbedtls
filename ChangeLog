@@ -1,3 +1,32 @@
+[0.10.0] - 2018-05-07
+
+Support elliptic curve cryptography
+
+* pk/ECC: Elliptic curve digital signature algorithm.
+* pk/ECDHServer, pk/ECDHClient: Elliptic curve Diffie-Hellman.
+The two classes together support ECDHE (ephemeral) as well.
+
+API Changes
+
+* pk/RSA: generate() returns the private key.
+* pk/RSA: to_DER() and to_PEM() are obsolete and will be removed.
+Users should call export_key() and export_public_key() instead.
+* pk/RSA: has_public() and has_private() are now private.
+Test if export_key() and export_public_key() are truthy
+or falsy instead.
+* pk/RSA: __str__() now returns the private key in PEM format.
+* pk/RSA: to_bytes() and __bytes__() now return the private key
+in DER format.
+
+Bugfix
+
+* pk: Increase the size of the buffer for sign, encrypt, decrypt
+
+Misc.
+
+* Use const memoryviews supported by Cython 0.28.0.
+* pk: pk is now a module instead of a package.
+
 [0.9.0] - 2018-03-14
 
 Misc.

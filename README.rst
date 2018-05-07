@@ -139,12 +139,12 @@ Example::
    >>> c = cipher.AES.new(b"My 16-bytes key.", cipher.MODE_CBC, b"CBC needs an IV.")
    >>> enc = c.encrypt(b"This is a super-secret message!")
    >>> enc
-   b'*`k6\x98\x97=[\xdf\x7f\x88\x96\xf5\t\x19J7\x93\xb5\xe0~\t\x9e\x968m\xcd\x
+   b'*`k6\x98\x97=[\xdf\x7f\x88\x96\xf5\t\x19J7\x93\xb5\xe0~\t\x9e\x968m\xcd\x9c3\x04o\xe6'
    >>> c.decrypt(enc)
    b'This is a super-secret message!'
 
 
-RSA Public key with `mbedtls.pk`
+RSA public key with `mbedtls.pk`
 --------------------------------
 
 The `mbedtls.pk` module provides the RSA cryptosystem.  This includes:
@@ -158,19 +158,15 @@ Key generation, the default size is 2048 bits::
 
    >>> from mbedtls import pk
    >>> rsa = pk.RSA()
-   >>> rsa.has_private()
-   False
-   >>> rsa.generate()
+   >>> prv = rsa.generate()
    >>> rsa.key_size
    256
-   >>> rsa.has_private() and rsa.has_public()
-   True
 
 Message encryption and decryption::
 
    >>> enc = rsa.encrypt(b"secret message")
    >>> rsa.decrypt(enc)
-   b"secret message"
+   b'secret message'
 
 Message signature and verification::
 
@@ -179,12 +175,70 @@ Message signature and verification::
    True
    >>> rsa.verify(b"Sorry, wrong message.", sig)
    False
-   >>> prv, pub = rsa.to_DER()
+   >>> pub = rsa.export_public_key(format="DER")
    >>> other = pk.RSA()
-   >>> other.from_DER(pub)
-   >>> other.has_private()
-   False
+   >>> other.from_buffer(pub)
    >>> other.verify(b"Please sign here.", sig)
+   True
+
+Static and ephemeral Elliptic curve Diffie-Hellman
+--------------------------------------------------
+
+The `mbedtls.pk` module provides the ECC cryptosystem.  This includes:
+
+- Public-private key generation and key import/export in the PEM and DER
+  formats;
+- Asymmetric encrypt and decryption;
+- Message signature and verification;
+- Ephemeral ECDH key exchange.
+
+`get_supported_curves()` returns the list of supported curves.
+
+The API of the ECC class is the same as the API of the RSA class
+but ciphering (`encrypt()` and `decrypt()` is not supported by
+MBED TLS).
+
+Message signature and verification---elliptic curve digital signature
+algorithm (ECDSA)::
+
+   >>> from mbedtls import pk
+   >>> ecdsa = pk.ECC()
+   >>> prv = ecdsa.generate()
+   >>> sig = ecdsa.sign(b"Please sign here.")
+   >>> ecdsa.verify(b"Please sign here.", sig)
+   True
+   >>> ecdsa.verify(b"Sorry, wrong message.", sig)
+   False
+   >>> pub = ecdsa.export_public_key(format="DER")
+   >>> other = pk.ECC()
+   >>> other.from_buffer(pub)
+   >>> other.verify(b"Please sign here.", sig)
+   True
+
+The classes ECDHServer and ECDHClient may be used for ephemeral ECDH.
+The key exchange is as follows::
+
+   >>> srv = pk.ECDHServer()
+   >>> cli = pk.ECDHClient()
+
+The server generates the ServerKeyExchange encrypted payload and
+passes it to the client::
+
+   >>> ske = srv.generate()
+   >>> cli.import_SKE(ske)
+
+then the client generates the ClientKeyExchange encrypted payload and
+passes it back to the server::
+
+   >>> cke = cli.generate()
+   >>> srv.import_CKE(cke)
+
+Now, client and server may generate their shared secret::
+
+   >>> secret = srv.generate_secret()
+   >>> cli.generate_secret() == secret
+   True
+   >>> srv.shared_secret == cli.shared_secret
    True
 
 
@@ -195,20 +249,26 @@ Create new X.509 certificates::
 
    >>> import datetime as dt
    >>> from pathlib import Path
+   >>>
+   >>> from mbedtls import hash as hashlib
+   >>> from mbedtls.pk import RSA
    >>> from mbedtls.x509 import Certificate, CSR, CRL
+   >>>
    >>> now = dt.datetime.utcnow()
-   >>> crt = Certificate(
+   >>> issuer_key = RSA()
+   >>> _ = issuer_key.generate()
+   >>> subject_key = RSA()
+   >>> prv = subject_key.generate()
+   >>>
+   >>> crt = Certificate.new(
    ...     start=now, end=now + dt.timedelta(days=90),
    ...     issuer="C=NL,O=PolarSSL,CN=PolarSSL Test CA", issuer_key=issuer_key,
    ...     subject=None, subject_key=subject_key,
-   ...     md_alg=hash.sha1(), serial=None)
+   ...     md_alg=hashlib.sha1(), serial=None)
    ...
-   >>> csr = CSR.new(subject_key, hash.sha1(),
-                     "C=NL,O=PolarSSL,CN=PolarSSL Server 1")
+   >>> csr = CSR.new(subject_key, hashlib.sha1(),
+   ...               "C=NL,O=PolarSSL,CN=PolarSSL Server 1")
+   >>>
 
 Call ``next(crt)`` to obtain the next certificate in a chain.  The
 call raises `StopIteration` if there is no further certificate.
-
-and load existing certificates from file::
-
-   >>> crl = CRL.from_file("ca/wp_crl.pem")

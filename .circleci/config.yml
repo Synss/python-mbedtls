@@ -7,7 +7,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.6
+      - image: circleci/python:2.7
     working_directory: ~/python-mbedtls
     steps:
       - checkout
@@ -97,19 +97,29 @@ jobs:
               sudo tee /etc/apt/sources.list.d/backports.list
             sudo apt-get update
             sudo apt-get install libmbedtls-dev
+
+      - restore_cache:
+          keys:
+            - py-deps-2.7-{{ checksum "requirements-tests.txt" }}
       - run:
-          name: install tox
+          name: install environment
           command: |
-            python -m venv venv
+            sudo apt-get install python-virtualenv
+            python -m virtualenv venv
             . venv/bin/activate
-            pip install tox==2.9.1 tox-pyenv==1.1.0
+            pip install -r requirements-tests.txt
+      - save_cache:
+          key: py-deps-2.7-{{ checksum "requirements-tests.txt" }}
+          paths:
+            - venv
+
       - run:
           name: run tests
           command: |
             eval "$(pyenv init -)"
             pyenv shell 2.7.14 3.4.8 3.5.5 3.6.4
             . venv/bin/activate
-            tox
+            detox
 
       - deploy:
           name: Publish to Pypi
@@ -120,9 +130,9 @@ jobs:
               echo "password = $PYPI_PASSWORD" >> $HOME/.pypirc
               . venv/bin/activate
               python setup.py sdist
-              pip install twine==1.10.0
               twine upload dist/*
             fi
+
       - store_artifacts:
-          path: test-reports
-          destination: test-reports
+          path: dist
+          destination: dist

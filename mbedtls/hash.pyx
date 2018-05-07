@@ -38,9 +38,12 @@ cdef class Hash(_md.MDBase):
         check_error(_md.mbedtls_md_starts(&self._ctx))
         self.update(buffer)
 
-    cdef _update(self, const unsigned char *input, size_t ilen):
+    def update(self, const unsigned char[:] buffer):
         """Update the hash object with the `buffer`."""
-        return _md.mbedtls_md_update(&self._ctx, input, ilen)
+        if buffer is None:
+            return
+        check_error(
+            _md.mbedtls_md_update(&self._ctx, &buffer[0], buffer.size))
 
     cdef _finish(self, unsigned char *output):
         """Return the digest output of `message`."""
