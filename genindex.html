@@ -5,20 +5,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Index &#8212; python-mbedtls 0.7 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.7',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -30,8 +22,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -47,6 +38,7 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
@@ -55,6 +47,8 @@
  | <a href="#N"><strong>N</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
  
 </div>
@@ -81,36 +75,34 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apipk.html#mbedtls.pk.CipherBase">CipherBase (class in mbedtls.pk)</a>
-</li>
       <li><a href="apimd.html#mbedtls.hash.Hash.copy">copy() (mbedtls.hash.Hash method)</a>
 
       <ul>
         <li><a href="apimd.html#mbedtls.hmac.Hmac.copy">(mbedtls.hmac.Hmac method)</a>
 </li>
       </ul></li>
+      <li><a href="apipk.html#mbedtls.pk.Curve">Curve (class in mbedtls.pk)</a>, <a href="apipk.html#mbedtls.pk.Curve">[1]</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apipk.html#mbedtls.pk.CipherBase.decrypt">decrypt() (mbedtls.pk.CipherBase method)</a>
+      <li><a href="apipk.html#mbedtls.pk.ECC.decrypt">decrypt() (mbedtls.pk.ECC method)</a>
 
       <ul>
         <li><a href="apipk.html#mbedtls.pk.RSA.decrypt">(mbedtls.pk.RSA method)</a>
 </li>
-        <li><a href="apipk.html#mbedtls.pk.RSA.RSA.decrypt">(mbedtls.pk.RSA.RSA method)</a>
-</li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apimd.html#mbedtls.hash.Hash.digest">digest() (mbedtls.hash.Hash method)</a>
 
       <ul>
         <li><a href="apimd.html#mbedtls.hmac.Hmac.digest">(mbedtls.hmac.Hmac method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apimd.html#mbedtls.hash.Hash.digest_size">digest_size (mbedtls.hash.Hash attribute)</a>, <a href="apimd.html#mbedtls.hash.Hash.digest_size">[1]</a>
 
       <ul>
@@ -123,22 +115,56 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apipk.html#mbedtls.pk.CipherBase.encrypt">encrypt() (mbedtls.pk.CipherBase method)</a>
+      <li><a href="apipk.html#mbedtls.pk.ECC">ECC (class in mbedtls.pk)</a>
+</li>
+      <li><a href="apipk.html#mbedtls.pk.ECDHClient">ECDHClient (class in mbedtls.pk)</a>
+</li>
+      <li><a href="apipk.html#mbedtls.pk.ECDHServer">ECDHServer (class in mbedtls.pk)</a>
+</li>
+      <li><a href="apipk.html#mbedtls.pk.ECC.encrypt">encrypt() (mbedtls.pk.ECC method)</a>
 
       <ul>
         <li><a href="apipk.html#mbedtls.pk.RSA.encrypt">(mbedtls.pk.RSA method)</a>
 </li>
-        <li><a href="apipk.html#mbedtls.pk.RSA.RSA.encrypt">(mbedtls.pk.RSA.RSA method)</a>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apipk.html#mbedtls.pk.ECC.export_key">export_key() (mbedtls.pk.ECC method)</a>
+
+      <ul>
+        <li><a href="apipk.html#mbedtls.pk.RSA.export_key">(mbedtls.pk.RSA method)</a>
+</li>
+      </ul></li>
+      <li><a href="apipk.html#mbedtls.pk.ECC.export_public_key">export_public_key() (mbedtls.pk.ECC method)</a>
+
+      <ul>
+        <li><a href="apipk.html#mbedtls.pk.RSA.export_public_key">(mbedtls.pk.RSA method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apipk.html#mbedtls.pk.ECC.from_buffer">from_buffer() (mbedtls.pk.ECC method)</a>
+
+      <ul>
+        <li><a href="apipk.html#mbedtls.pk.RSA.from_buffer">(mbedtls.pk.RSA method)</a>
+</li>
+      </ul></li>
+      <li><a href="apipk.html#mbedtls.pk.ECC.from_DER">from_DER() (mbedtls.pk.ECC method)</a>
+
+      <ul>
+        <li><a href="apipk.html#mbedtls.pk.RSA.from_DER">(mbedtls.pk.RSA method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apipk.html#mbedtls.pk.CipherBase.export">export() (mbedtls.pk.CipherBase method)</a>
+      <li><a href="apipk.html#mbedtls.pk.ECC.from_PEM">from_PEM() (mbedtls.pk.ECC method)</a>
 
       <ul>
-        <li><a href="apipk.html#mbedtls.pk.RSA.export">(mbedtls.pk.RSA method)</a>
-</li>
-        <li><a href="apipk.html#mbedtls.pk.RSA.RSA.export">(mbedtls.pk.RSA.RSA method)</a>
+        <li><a href="apipk.html#mbedtls.pk.RSA.from_PEM">(mbedtls.pk.RSA method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -147,37 +173,31 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apipk.html#mbedtls.pk.CipherBase.generate">generate() (mbedtls.pk.CipherBase method)</a>
+      <li><a href="apipk.html#mbedtls.pk.ECC.generate">generate() (mbedtls.pk.ECC method)</a>
 
       <ul>
+        <li><a href="apipk.html#mbedtls.pk.ECDHClient.generate">(mbedtls.pk.ECDHClient method)</a>
+</li>
+        <li><a href="apipk.html#mbedtls.pk.ECDHServer.generate">(mbedtls.pk.ECDHServer method)</a>
+</li>
         <li><a href="apipk.html#mbedtls.pk.RSA.generate">(mbedtls.pk.RSA method)</a>
 </li>
-        <li><a href="apipk.html#mbedtls.pk.RSA.RSA.generate">(mbedtls.pk.RSA.RSA method)</a>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apipk.html#mbedtls.pk.ECDHClient.generate_secret">generate_secret() (mbedtls.pk.ECDHClient method)</a>
+
+      <ul>
+        <li><a href="apipk.html#mbedtls.pk.ECDHServer.generate_secret">(mbedtls.pk.ECDHServer method)</a>
 </li>
       </ul></li>
+      <li><a href="apipk.html#mbedtls.pk.get_supported_curves">get_supported_curves() (in module mbedtls.pk)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apipk.html#mbedtls.pk.CipherBase.has_private">has_private() (mbedtls.pk.CipherBase method)</a>
-
-      <ul>
-        <li><a href="apipk.html#mbedtls.pk.RSA.has_private">(mbedtls.pk.RSA method)</a>
-</li>
-        <li><a href="apipk.html#mbedtls.pk.RSA.RSA.has_private">(mbedtls.pk.RSA.RSA method)</a>
-</li>
-      </ul></li>
-      <li><a href="apipk.html#mbedtls.pk.CipherBase.has_public">has_public() (mbedtls.pk.CipherBase method)</a>
-
-      <ul>
-        <li><a href="apipk.html#mbedtls.pk.RSA.has_public">(mbedtls.pk.RSA method)</a>
-</li>
-        <li><a href="apipk.html#mbedtls.pk.RSA.RSA.has_public">(mbedtls.pk.RSA.RSA method)</a>
-</li>
-      </ul></li>
-  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apimd.html#mbedtls.hash.Hash">Hash (class in mbedtls.hash)</a>
 </li>
@@ -187,6 +207,8 @@
         <li><a href="apimd.html#mbedtls.hmac.Hmac.hexdigest">(mbedtls.hmac.Hmac method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apimd.html#mbedtls.hmac.Hmac">Hmac (class in mbedtls.hmac)</a>
 </li>
   </ul></td>
@@ -195,16 +217,12 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apipk.html#mbedtls.pk.CipherBase.import_">import_() (mbedtls.pk.CipherBase method)</a>
-
-      <ul>
-        <li><a href="apipk.html#mbedtls.pk.RSA.import_">(mbedtls.pk.RSA method)</a>
+      <li><a href="apipk.html#mbedtls.pk.ECDHServer.import_CKE">import_CKE() (mbedtls.pk.ECDHServer method)</a>
 </li>
-        <li><a href="apipk.html#mbedtls.pk.RSA.RSA.import_">(mbedtls.pk.RSA.RSA method)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apipk.html#mbedtls.pk.ECDHClient.import_SKE">import_SKE() (mbedtls.pk.ECDHClient method)</a>
+</li>
       <li><a href="apicipher.html#mbedtls.cipher.Cipher.iv_size">iv_size (mbedtls.cipher.Cipher attribute)</a>
 </li>
   </ul></td>
@@ -216,11 +234,9 @@
       <li><a href="apicipher.html#mbedtls.cipher.Cipher.key_size">key_size (mbedtls.cipher.Cipher attribute)</a>
 
       <ul>
-        <li><a href="apipk.html#mbedtls.pk.CipherBase.key_size">(mbedtls.pk.CipherBase attribute)</a>
+        <li><a href="apipk.html#mbedtls.pk.ECC.key_size">(mbedtls.pk.ECC attribute)</a>
 </li>
         <li><a href="apipk.html#mbedtls.pk.RSA.key_size">(mbedtls.pk.RSA attribute)</a>
-</li>
-        <li><a href="apipk.html#mbedtls.pk.RSA.RSA.key_size">(mbedtls.pk.RSA.RSA attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -251,16 +267,14 @@
 </li>
       <li><a href="apipk.html#module-mbedtls.pk">mbedtls.pk (module)</a>
 </li>
-      <li><a href="apipk.html#module-mbedtls.pk.RSA">mbedtls.pk.RSA (module)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apimd.html#mbedtls.hash.md2">md2() (in module mbedtls.hash)</a>
 
       <ul>
         <li><a href="apimd.html#mbedtls.hmac.md2">(in module mbedtls.hmac)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apimd.html#mbedtls.hash.md4">md4() (in module mbedtls.hash)</a>
 
       <ul>
@@ -300,11 +314,9 @@
 </li>
         <li><a href="apimd.html#mbedtls.hmac.Hmac.name">(mbedtls.hmac.Hmac attribute)</a>, <a href="apimd.html#mbedtls.hmac.Hmac.name">[1]</a>
 </li>
-        <li><a href="apipk.html#mbedtls.pk.CipherBase.name">(mbedtls.pk.CipherBase attribute)</a>
+        <li><a href="apipk.html#mbedtls.pk.ECC.name">(mbedtls.pk.ECC attribute)</a>
 </li>
         <li><a href="apipk.html#mbedtls.pk.RSA.name">(mbedtls.pk.RSA attribute)</a>
-</li>
-        <li><a href="apipk.html#mbedtls.pk.RSA.RSA.name">(mbedtls.pk.RSA.RSA attribute)</a>
 </li>
       </ul></li>
       <li><a href="apicipher.html#mbedtls.cipher.AES.new">new() (in module mbedtls.cipher.AES)</a>
@@ -342,11 +354,7 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apipk.html#mbedtls.pk.RSA">RSA (class in mbedtls.pk)</a>
-
-      <ul>
-        <li><a href="apipk.html#mbedtls.pk.RSA.RSA">(class in mbedtls.pk.RSA)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -371,26 +379,72 @@
         <li><a href="apimd.html#mbedtls.hmac.sha256">(in module mbedtls.hmac)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apimd.html#mbedtls.hash.sha384">sha384() (in module mbedtls.hash)</a>
 
       <ul>
         <li><a href="apimd.html#mbedtls.hmac.sha384">(in module mbedtls.hmac)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apimd.html#mbedtls.hash.sha512">sha512() (in module mbedtls.hash)</a>
 
       <ul>
         <li><a href="apimd.html#mbedtls.hmac.sha512">(in module mbedtls.hmac)</a>
 </li>
       </ul></li>
-      <li><a href="apipk.html#mbedtls.pk.CipherBase.sign">sign() (mbedtls.pk.CipherBase method)</a>
+      <li><a href="apipk.html#mbedtls.pk.ECDHClient.shared_secret">shared_secret (mbedtls.pk.ECDHClient attribute)</a>
+
+      <ul>
+        <li><a href="apipk.html#mbedtls.pk.ECDHServer.shared_secret">(mbedtls.pk.ECDHServer attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apipk.html#mbedtls.pk.ECC.sign">sign() (mbedtls.pk.ECC method)</a>
 
       <ul>
         <li><a href="apipk.html#mbedtls.pk.RSA.sign">(mbedtls.pk.RSA method)</a>
 </li>
-        <li><a href="apipk.html#mbedtls.pk.RSA.RSA.sign">(mbedtls.pk.RSA.RSA method)</a>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apipk.html#mbedtls.pk.ECC.to_bytes">to_bytes() (mbedtls.pk.ECC method)</a>
+
+      <ul>
+        <li><a href="apipk.html#mbedtls.pk.RSA.to_bytes">(mbedtls.pk.RSA method)</a>
+</li>
+      </ul></li>
+      <li><a href="apipk.html#mbedtls.pk.ECC.to_DER">to_DER() (mbedtls.pk.ECC method)</a>
+
+      <ul>
+        <li><a href="apipk.html#mbedtls.pk.RSA.to_DER">(mbedtls.pk.RSA method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apipk.html#mbedtls.pk.ECC.to_ECDH_client">to_ECDH_client() (mbedtls.pk.ECC method)</a>
+</li>
+      <li><a href="apipk.html#mbedtls.pk.ECC.to_ECDH_server">to_ECDH_server() (mbedtls.pk.ECC method)</a>
+</li>
+      <li><a href="apipk.html#mbedtls.pk.ECC.to_PEM">to_PEM() (mbedtls.pk.ECC method)</a>
+
+      <ul>
+        <li><a href="apipk.html#mbedtls.pk.RSA.to_PEM">(mbedtls.pk.RSA method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apimd.html#mbedtls.hash.Hash.update">update() (mbedtls.hash.Hash method)</a>
+
+      <ul>
+        <li><a href="apimd.html#mbedtls.hmac.Hmac.update">(mbedtls.hmac.Hmac method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -399,12 +453,10 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apipk.html#mbedtls.pk.CipherBase.verify">verify() (mbedtls.pk.CipherBase method)</a>
+      <li><a href="apipk.html#mbedtls.pk.ECC.verify">verify() (mbedtls.pk.ECC method)</a>
 
       <ul>
         <li><a href="apipk.html#mbedtls.pk.RSA.verify">(mbedtls.pk.RSA method)</a>
-</li>
-        <li><a href="apipk.html#mbedtls.pk.RSA.RSA.verify">(mbedtls.pk.RSA.RSA method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -416,24 +468,23 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-
-   <div class="relations">
+        <div class="sphinxsidebarwrapper"><div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
   </ul></li>
 </ul>
 </div>
-
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -444,7 +495,7 @@
       &copy;2016, Mathias Laurin.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>

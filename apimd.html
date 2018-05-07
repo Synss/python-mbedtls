@@ -4,26 +4,18 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>mbedtls.hash Module API &#8212; python-mbedtls 0.7 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.7',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="mbedtls.pk Package API" href="apipk.html" />
+    <link rel="next" title="mbedtls.pk Module API" href="apipk.html" />
     <link rel="prev" title="mbedtls.cipher Package API" href="apicipher.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -31,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -41,12 +32,12 @@
           <div class="body" role="main">
             
   <div class="section" id="module-mbedtls.hash">
-<span id="mbedtls-hash-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.hash" title="mbedtls.hash"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.hash</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.hash" title="Permalink to this headline">¶</a></h1>
+<span id="mbedtls-hash-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.hash" title="mbedtls.hash"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hash</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.hash" title="Permalink to this headline">¶</a></h1>
 <p>Generic message digest wrapper (hash algorithm).</p>
 <dl class="class">
 <dt id="mbedtls.hash.Hash">
 <em class="property">class </em><code class="descclassname">mbedtls.hash.</code><code class="descname">Hash</code><a class="headerlink" href="#mbedtls.hash.Hash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">mbedtls._md.MDBase</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mbedtls._md.MDBase</span></code></p>
 <p>Wrap and encapsulate hash calculations.</p>
 <p>This class is a wrapper for the hash calculations in the md module
 of mbed TLS.  The interface follows the recommendation from PEP 452
@@ -68,7 +59,8 @@ for unkeyed hashes.</p>
 <dl class="attribute">
 <dt id="mbedtls.hash.Hash.block_size">
 <code class="descname">block_size</code><a class="headerlink" href="#mbedtls.hash.Hash.block_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Not implemented.</p>
+<dd><p><em>int</em> – The internal block size of the hash
+algorithm in bytes.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -112,6 +104,12 @@ of double length.</p>
 <dt>
 <code class="descname">name</code></dt>
 <dd><p>The canonical name of the hashing algorithm.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.hash.Hash.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hash.Hash.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the hash object with the <cite>buffer</cite>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -180,12 +178,12 @@ algorithm as its first parameter.</p>
 
 </div>
 <div class="section" id="module-mbedtls.hmac">
-<span id="mbedtls-hmac-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.hmac" title="mbedtls.hmac"><code class="xref py py-mod docutils literal"><span class="pre">mbedtls.hmac</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.hmac" title="Permalink to this headline">¶</a></h1>
+<span id="mbedtls-hmac-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.hmac" title="mbedtls.hmac"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.hmac" title="Permalink to this headline">¶</a></h1>
 <p>Generic message digest wrapper (hash algorithm).</p>
 <dl class="class">
 <dt id="mbedtls.hmac.Hmac">
 <em class="property">class </em><code class="descclassname">mbedtls.hmac.</code><code class="descname">Hmac</code><a class="headerlink" href="#mbedtls.hmac.Hmac" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">mbedtls._md.MDBase</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mbedtls._md.MDBase</span></code></p>
 <p>Wrap and encapsulate HMAC calculations.</p>
 <p>This class is a wrapper for the HMAC calculations in the md module
 of mbed TLS.  The interface follows the recommendation from PEP 452
@@ -205,7 +203,7 @@ for keyed hashes.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">The message is cleared after calculation of the digest.  Only
-call <a class="reference internal" href="#mbedtls.hmac.Hmac.digest" title="mbedtls.hmac.Hmac.digest"><code class="xref py py-meth docutils literal"><span class="pre">digest()</span></code></a> or <a class="reference internal" href="#mbedtls.hmac.Hmac.hexdigest" title="mbedtls.hmac.Hmac.hexdigest"><code class="xref py py-meth docutils literal"><span class="pre">hexdigest()</span></code></a> once per message.</p>
+call <a class="reference internal" href="#mbedtls.hmac.Hmac.digest" title="mbedtls.hmac.Hmac.digest"><code class="xref py py-meth docutils literal notranslate"><span class="pre">digest()</span></code></a> or <a class="reference internal" href="#mbedtls.hmac.Hmac.hexdigest" title="mbedtls.hmac.Hmac.hexdigest"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hexdigest()</span></code></a> once per message.</p>
 </div>
 <dl class="attribute">
 <dt id="mbedtls.hmac.Hmac.digest_size">
@@ -216,7 +214,8 @@ call <a class="reference internal" href="#mbedtls.hmac.Hmac.digest" title="mbedt
 <dl class="attribute">
 <dt id="mbedtls.hmac.Hmac.block_size">
 <code class="descname">block_size</code><a class="headerlink" href="#mbedtls.hmac.Hmac.block_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Not implemented.</p>
+<dd><p><em>int</em> – The internal block size of the hash
+algorithm in bytes.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -264,6 +263,12 @@ of double length.</p>
 <dt>
 <code class="descname">name</code></dt>
 <dd><p>The canonical name of the hashing algorithm.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.hmac.Hmac.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hmac.Hmac.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the HMAC object with <cite>buffer</cite>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -340,15 +345,15 @@ parameter.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
-<li><a class="reference internal" href="#module-mbedtls.hmac"><code class="docutils literal"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
+<li><a class="reference internal" href="#module-mbedtls.hmac"><code class="docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="apicipher.html" title="previous chapter"><code class="docutils literal"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
-      <li>Next: <a href="apipk.html" title="next chapter"><code class="docutils literal"><span class="pre">mbedtls.pk</span></code> Package API</a></li>
+      <li>Previous: <a href="apicipher.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
+      <li>Next: <a href="apipk.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
   </ul></li>
 </ul>
 </div>
@@ -361,12 +366,14 @@ parameter.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -377,7 +384,7 @@ parameter.</p>
       &copy;2016, Mathias Laurin.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
