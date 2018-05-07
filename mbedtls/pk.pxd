@@ -1,36 +1,246 @@
 """Declarations for `mbedtls/pk.h`."""
 
+# Copyright 2016, Mathias Laurin, Elaborated Networks GmbH
+# Copyright 2018, Mathias Laurin
+
 __author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2016, Elaborated Networks GmbH"
+__copyright__ = "Copyright 2016, Mathias Laurin, Elaborated Networks GmbH"
 __license__ = "MIT License"
 
 
 cdef extern from "mbedtls/md.h":
-    ctypedef enum mbedtls_md_type_t:
-        pass
+    ctypedef enum mbedtls_md_type_t: pass
 
 
 cdef extern from "mbedtls/bignum.h":
+    ctypedef struct mbedtls_mpi:
+        pass
+
     int MBEDTLS_MPI_MAX_SIZE
 
 
 cdef extern from "mbedtls/ecp.h":
-    ctypedef struct mbedtls_ecp_keypair:
+    ctypedef enum mbedtls_ecp_group_id:
+        MBEDTLS_ECP_DP_NONE = 0,
+        MBEDTLS_ECP_DP_SECP192R1
+        MBEDTLS_ECP_DP_SECP224R1
+        MBEDTLS_ECP_DP_SECP256R1
+        MBEDTLS_ECP_DP_SECP384R1
+        MBEDTLS_ECP_DP_SECP521R1
+        MBEDTLS_ECP_DP_BP256R1
+        MBEDTLS_ECP_DP_BP384R1
+        MBEDTLS_ECP_DP_BP512R1
+        MBEDTLS_ECP_DP_CURVE25519
+        MBEDTLS_ECP_DP_SECP192K1
+        MBEDTLS_ECP_DP_SECP224K1
+        MBEDTLS_ECP_DP_SECP256K1
+
+    ctypedef struct mbedtls_ecp_curve_info:
+        mbedtls_ecp_group_id grp_id
+        int bit_size
+        const char *name
+
+    ctypedef struct mbedtls_ecp_point:
+        mbedtls_mpi X
+        mbedtls_mpi Y
+        mbedtls_mpi Z
+
+    ctypedef struct mbedtls_ecp_group:
         pass
 
+    ctypedef struct mbedtls_ecp_keypair:
+        mbedtls_ecp_group grp
+        mbedtls_mpi d
+        mbedtls_ecp_point Q
+
     int MBEDTLS_ECP_MAX_BYTES
+    int MBEDTLS_ECP_PF_UNCOMPRESSED
+
+    # Free functions
+    # --------------
+    const mbedtls_ecp_curve_info* mbedtls_ecp_curve_list()
+    # mbedtls_ecp_grp_id_list
+    # mbedtls_ecp_curve_info_from_grp_id
+    # mbedtls_ecp_curve_info_from_tls_id
+    # mbedtls_ecp_curve_info_from_name
+
+    # mbedtls_ecp_point
+    # -----------------
+    void mbedtls_ecp_point_init(mbedtls_ecp_point *pt)
+    void mbedtls_ecp_point_free(mbedtls_ecp_point *pt)
+    int mbedtls_ecp_copy(
+        mbedtls_ecp_point *P,
+        const mbedtls_ecp_point *Q)
+    # mbedtls_ecp_set_zero
+    int mbedtls_ecp_is_zero(mbedtls_ecp_point *pt)
+    int mbedtls_ecp_point_cmp(
+        const mbedtls_ecp_point *P,
+        const mbedtls_ecp_point *Q)
+    # mbedtls_ecp_point_read_string
+
+    # mbedtls_ecp_group
+    # -----------------
+    void mbedtls_ecp_group_init(mbedtls_ecp_group *grp)
+    void mbedtls_ecp_group_free(mbedtls_ecp_group *grp)
+    int mbedtls_ecp_group_copy(
+        mbedtls_ecp_group *dst,
+        const mbedtls_ecp_group *src)
+
+    int mbedtls_ecp_point_write_binary(
+        const mbedtls_ecp_group *grp,
+        const mbedtls_ecp_point *P,
+        int format, size_t *olen, unsigned char *buf, size_t buflen)
+    int mbedtls_ecp_point_read_binary(
+        const mbedtls_ecp_group *grp,
+        mbedtls_ecp_point *P,
+        const unsigned char *buf, size_t ilen)
+
+    # mbedtls_ecp_tls_read_point
+    # mbedtls_ecp_tls_write_point
+
+    int mbedtls_ecp_group_load(
+        mbedtls_ecp_group *grp,
+        mbedtls_ecp_group_id index)
+
+    # mbedtls_ecp_tls_read_group
+    # mbedtls_ecp_tls_write_group
+    # mbedtls_ecp_mul
+    # mbedtls_ecp_muladd
+    # mbedtls_ecp_check_pubkey
+    # mbedtls_ecp_check_privkey
+
+    # mbedtls_ecp_keypair
+    # -------------------
+    void mbedtls_ecp_keypair_init(mbedtls_ecp_keypair *key)
+    void mbedtls_ecp_keypair_free(mbedtls_ecp_keypair *key)
+    # mbedtls_ecp_gen_keypair_base
+    int mbedtls_ecp_gen_keypair(
+        mbedtls_ecp_group *grp,
+        mbedtls_mpi *d,
+        mbedtls_ecp_point *Q,
+        int (*f_rng)(void *, unsigned char *, size_t),
+        void *p_rng)
+    # mbedtls_ecp_check_pub_priv
+    int mbedtls_ecp_gen_key(
+        mbedtls_ecp_group_id grp_id,
+        mbedtls_ecp_keypair *key,
+        int (*f_rng)(void *, unsigned char *, size_t),
+        void *p_rng)
+
+
+cdef extern from "mbedtls/ecdh.h":
+    ctypedef enum mbedtls_ecdh_side:
+        MBEDTLS_ECDH_OURS
+        MBEDTLS_ECDH_THEIRS
+
+    ctypedef struct mbedtls_ecdh_context:
+        mbedtls_ecp_group grp
+        mbedtls_mpi d  # private key
+        mbedtls_ecp_point Q  # public key
+        mbedtls_ecp_point Qp  # peer's public key
+        mbedtls_mpi z  # shared secret
+
+    # mbedtls_ecp_group
+    # -----------------
+    # mbedtls_ecdh_gen_public
+    # mbedtls_ecdh_compute_shared
+
+    # mbedtls_ecdh_context
+    # --------------------
+    void mbedtls_ecdh_init(mbedtls_ecdh_context *ctx)
+    void mbedtls_ecdh_free(mbedtls_ecdh_context *ctx)
+
+    int mbedtls_ecdh_get_params(
+        mbedtls_ecdh_context *ctx,
+        const mbedtls_ecp_keypair *key,
+        mbedtls_ecdh_side side)
+
+    int mbedtls_ecdh_make_params(
+        mbedtls_ecdh_context *ctx,
+        size_t *olen, unsigned char *buf, size_t blen,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+    int mbedtls_ecdh_make_public(
+        mbedtls_ecdh_context *ctx,
+        size_t *olen, unsigned char *buf, size_t blen,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+
+    int mbedtls_ecdh_read_params(
+        mbedtls_ecdh_context *ctx,
+        const unsigned char **buf, const unsigned char *end)
+    int mbedtls_ecdh_read_public(
+        mbedtls_ecdh_context *ctx,
+        const unsigned char *buf, size_t blen)
+
+    int mbedtls_ecdh_calc_secret(
+        mbedtls_ecdh_context *ctx,
+        size_t *olen, unsigned char *buf, size_t blen,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+
+
+cdef extern from "mbedtls/ecdsa.h":
+    ctypedef struct mbedtls_ecdsa_context:
+        mbedtls_ecp_group grp
+        mbedtls_mpi d
+        mbedtls_ecp_point Q
+
+    int MBEDTLS_ECDSA_MAX_LEN
+
+    # mbedtls_ecp_group
+    # -----------------
+    # mbedtls_ecdsa_sign
+    # mbedtls_ecdsa_sign_det
+    # mbedtls_ecdsa_verify
+
+    # mbedtls_ecdsa_context
+    # ---------------------
+    void mbedtls_ecdsa_init(mbedtls_ecdsa_context *ctx)
+    void mbedtls_ecdsa_free(mbedtls_ecdsa_context *ctx)
+
+    int mbedtls_ecdsa_from_keypair(
+        mbedtls_ecdsa_context *ctx,
+        const mbedtls_ecp_keypair *key)
+
+    # mbedtls_ecdsa_write_signature
+    # mbedtls_ecdsa_write_signature_det
+    # mbedtls_ecdsa_read_signature
+
+    int mbedtls_ecdsa_genkey(
+        mbedtls_ecdsa_context *ctx, mbedtls_ecp_group_id gid,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
 
 
 cdef extern from "mbedtls/rsa.h":
     ctypedef struct mbedtls_rsa_context:
         pass
 
+    # mbedtls_rsa_context
+    # -------------------
+    # mbedtls_rsa_init
+    # mbedtls_rsa_set_padding
     int mbedtls_rsa_gen_key(
         mbedtls_rsa_context *ctx,
         int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
         unsigned int nbits, int exponent)
     int mbedtls_rsa_check_pubkey(const mbedtls_rsa_context *ctx)
     int mbedtls_rsa_check_privkey(const mbedtls_rsa_context *ctx)
+    # mbedtls_rsa_check_pub_priv
+    # mbedtls_rsa_public
+    # mbedtls_rsa_private
+    # mbedtls_rsa_pkcs1_encrypt
+    # mbedtls_rsa_rsaes_pkcs1_v15_encrypt
+    # mbedtls_rsa_rsaes_oaep_encrypt
+    # mbedtls_rsa_pkcs1_decrypt
+    # mbedtls_rsa_rsaes_pkcs1_v15_decrypt
+    # mbedtls_rsa_rsaes_oaep_decrypt
+    # mbedtls_rsa_pkcs1_sign
+    # mbedtls_rsa_rsassa_pkcs1_v15_sign
+    # mbedtls_rsa_rsassa_pss_sign
+    # mbedtls_rsa_pkcs1_verify
+    # mbedtls_rsa_rsassa_pkcs1_v15_verify
+    # mbedtls_rsa_rsassa_pss_verify
+    # mbedtls_rsa_rsassa_pss_verify_ext
+    # mbedtls_rsa_copy
+    # mbedtls_rsa_free
 
 
 cdef extern from "mbedtls/pk.h":
@@ -125,11 +335,20 @@ cdef extern from "mbedtls/pk.h":
 
 cdef class CipherBase:
     cdef mbedtls_pk_context _ctx
-
-    cpdef bint has_private(self)
-    cpdef bint has_public(self)
-
     cdef bytes _write(
         self,
         int (*fun)(mbedtls_pk_context*, unsigned char*, size_t),
         size_t)
+
+
+cdef class ECC(CipherBase):
+    cdef curve
+
+
+cdef class ECPoint:
+    cdef mbedtls_ecp_point _ctx
+
+
+cdef class ECDHBase:
+    cdef mbedtls_ecdh_context _ctx
+    cdef curve

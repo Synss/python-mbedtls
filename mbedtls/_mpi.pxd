@@ -8,7 +8,9 @@ __license__ = "MIT License"
 cdef extern from "mbedtls/bignum.h":
     # Multi-precision integer library
     # -------------------------------
-    ctypedef enum mbedtls_mpi: pass
+    ctypedef struct mbedtls_mpi:
+        pass
+
     ctypedef enum mbedtls_mpi_sint: pass
 
     # mbedtls_mpi
@@ -18,7 +20,9 @@ cdef extern from "mbedtls/bignum.h":
 
     # mbedtls_mpi_grow
     # mbedtls_mpi_shrink
-    # mbedtls_mpi_copy
+
+    int mbedtls_mpi_copy(mbedtls_mpi *X, const mbedtls_mpi *Y)
+
     # mbedtls_mpi_swap
     # mbedtls_mpi_safe_cond_assign
     # mbedtls_mpi_safe_cond_swap
@@ -47,7 +51,9 @@ cdef extern from "mbedtls/bignum.h":
     # mbedtls_mpi_shift_l
     # mbedtls_mpi_shift_r
     # mbedtls_mpi_cmp_abs
-    # mbedtls_mpi_cmp_mpi
+    int mbedtls_mpi_cmp_mpi(
+        const mbedtls_mpi *X,
+        const mbedtls_mpi *Y)
     # mbedtls_mpi_cmp_int
     # mbedtls_mpi_add_abs
     # mbedtls_mpi_sub_abs
@@ -73,3 +79,9 @@ cdef class MPI:
     cdef mbedtls_mpi _ctx
     cdef _len(self)
     cpdef _from_bytes(self, const unsigned char[:] bytes)
+
+
+cdef inline from_mpi(mbedtls_mpi *c_mpi):
+    new_mpi = MPI(0)
+    mbedtls_mpi_copy(&new_mpi._ctx, c_mpi)
+    return new_mpi

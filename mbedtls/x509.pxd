@@ -19,15 +19,17 @@ cdef extern from "mbedtls/asn1.h":
 
 
 cdef extern from "mbedtls/bignum.h":
-    ctypedef enum mbedtls_mpi: pass
+    ctypedef struct mbedtls_mpi:
+        pass
 
 
 cdef extern from "mbedtls/md.h":
-   ctypedef enum mbedtls_md_type_t: pass
+    ctypedef enum mbedtls_md_type_t: pass
 
 
 cdef extern from "mbedtls/pk.h":
-   ctypedef enum mbedtls_pk_context: pass
+    ctypedef struct mbedtls_pk_context:
+        pass
 
 
 cdef extern from "mbedtls/x509.h":
@@ -40,8 +42,11 @@ cdef extern from "mbedtls/x509_crt.h":
         mbedtls_x509_crt *next
         int version
 
-    ctypedef enum mbedtls_x509_crt_profile: pass
-    ctypedef enum mbedtls_x509write_cert: pass
+    ctypedef struct mbedtls_x509_crt_profile:
+        pass
+
+    ctypedef struct mbedtls_x509write_cert:
+        pass
 
     # mbedtls_x509_crt
     # ----------------
@@ -140,7 +145,8 @@ cdef extern from "mbedtls/x509_csr.h":
     cdef struct mbedtls_x509_csr:
         mbedtls_x509_buf raw
 
-    ctypedef enum mbedtls_x509write_csr: pass
+    ctypedef struct mbedtls_x509write_csr:
+        pass
 
     # mbedtls_x509_csr
     # ----------------
@@ -198,7 +204,9 @@ cdef extern from "mbedtls/x509_csr.h":
 cdef extern from "mbedtls/x509_crl.h":
     # Certificate revocation list parsing
     # -----------------------------------
-    ctypedef enum mbedtls_x509_crl_entry: pass
+    ctypedef struct mbedtls_x509_crl_entry:
+        pass
+
     cdef struct mbedtls_x509_crl:
         mbedtls_x509_buf raw
         mbedtls_x509_crl *next

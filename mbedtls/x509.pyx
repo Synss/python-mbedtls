@@ -119,6 +119,13 @@ cdef class Certificate:
 
     __str__ = to_PEM
 
+    def export(self, format="DER"):
+        if format == "DER":
+            return self.to_DER()
+        if format == "PEM":
+            return self.to_PEM()
+        raise ValueError(format)
+
     @staticmethod
     def new(start, end, issuer, issuer_key, subject, subject_key,
             serial, md_alg):
@@ -376,8 +383,19 @@ cdef class CSR:
     def to_DER(self):
         return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
 
+    __bytes__ = to_bytes = to_DER
+
     def to_PEM(self):
         return DER_to_PEM(self.to_DER(), "Certificate Request")
+
+    __str__ = to_PEM
+
+    def export(self, format="DER"):
+        if format == "DER":
+            return self.to_DER()
+        if format == "PEM":
+            return self.to_PEM()
+        raise ValueError(format)
 
     @staticmethod
     def new(key, md_alg, subject):
@@ -570,3 +588,10 @@ cdef class CRL:
         return DER_to_PEM(self.to_DER(), "X509 CRL")
 
     __str__ = to_PEM
+
+    def export(self, format="DER"):
+        if format == "DER":
+            return self.to_DER()
+        if format == "PEM":
+            return self.to_PEM()
+        raise ValueError(format)
