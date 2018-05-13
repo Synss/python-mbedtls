@@ -31,7 +31,7 @@ def new(key, mode=None, iv=None):
 
     """
     if len(key) != key_size:
-        raise InvalidKeyLengthError(
-            "key size must be %i bytes, got %i" % (key_size, len(key)))
+        raise MbedTLSError(
+            msg="key size must be %i bytes, got %i" % (key_size, len(key)))
     name = ("ARC4-%i" % (len(key) * 8)).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)

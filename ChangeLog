@@ -1,3 +1,11 @@
+[next]
+
+API Changes
+
+* exceptions: Rename `_ErrorBase` -> `MbedTLSError`.  It is now
+the only new exception.
+* exceptions: `mbedtls_strerror()` generates the error message.
+
 [0.10.0] - 2018-05-07
 
 Support elliptic curve cryptography

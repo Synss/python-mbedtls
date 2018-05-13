@@ -29,18 +29,18 @@ def test_get_supported_ciphers():
     assert cl and set(cl).issubset(set(CIPHER_NAME))
 
 
-def test_wrong_size_raises_cipher_error():
-    with pytest.raises(CipherError):
+def test_wrong_size_raises_exception():
+    with pytest.raises(MbedTLSError):
         Cipher(b"AES-512-ECB", b"", 0, b"")
 
 
-def test_random_name_raises_cipher_error():
-    with pytest.raises(CipherError):
+def test_random_name_raises_exception():
+    with pytest.raises(MbedTLSError):
         Cipher(b"RANDOM TEXT IS NOT A CIPHER", b"", 0, b"")
 
 
-def test_zero_length_raises_cipher_error():
-    with pytest.raises(CipherError):
+def test_zero_length_raises_exception():
+    with pytest.raises(MbedTLSError):
         Cipher(b"", b"", 0, b"")
 
 
@@ -99,11 +99,11 @@ def test_module_level_key_size_variable(cipher):
     assert cipher.key_size == mod.key_size
 
 
-def test_wrong_key_size_raises_invalid_key_size_error(cipher, randbytes):
+def test_wrong_key_size_raises_exception(cipher, randbytes):
     mod = module_from_name(cipher.name)
     if mod.key_size is None:
         pytest.skip("module defines variable-length key")
-    with pytest.raises(InvalidKeyLengthError):
+    with pytest.raises(MbedTLSError):
         mod.new(randbytes(cipher.key_size) + b"\x00",
                 cipher.mode, randbytes(cipher.iv_size))
 
@@ -219,19 +219,19 @@ def test_streaming_ciphers(cipher, randbytes):
     assert cipher.decrypt(cipher.encrypt(block)) == block
 
 
-def test_fixed_block_size_ciphers_long_block_raise_ciphererror(
+def test_fixed_block_size_ciphers_long_block_raise_exception(
         cipher, randbytes):
     if is_streaming(cipher):
         pytest.skip("streaming cipher")
-    with pytest.raises(CipherError):
+    with pytest.raises(MbedTLSError):
         block = randbytes(cipher.block_size) + randbytes(1)
         cipher.encrypt(block)
 
 
-def test_fixed_block_size_ciphers_short_block_raise_ciphererror(
+def test_fixed_block_size_ciphers_short_block_raise_exception(
         cipher, randbytes):
     if is_streaming(cipher):
         pytest.skip("streaming cipher")
-    with pytest.raises(CipherError):
+    with pytest.raises(MbedTLSError):
         block = randbytes(cipher.block_size)[1:]
         cipher.encrypt(block)

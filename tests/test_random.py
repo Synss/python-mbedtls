@@ -8,7 +8,7 @@ import mbedtls.random as _drbg
 
 import pytest
 
-from mbedtls.exceptions import EntropyError
+from mbedtls.exceptions import MbedTLSError
 
 
 @pytest.fixture
@@ -32,8 +32,8 @@ def test_entropy_retrieve(entropy, length):
 
 
 @pytest.mark.parametrize("length", (100, ))
-def test_entropy_retrieve_long_block_raises_entropyerror(entropy, length):
-    with pytest.raises(EntropyError):
+def test_entropy_retrieve_long_block_raises_exception(entropy, length):
+    with pytest.raises(MbedTLSError):
         entropy.retrieve(length)
 
 

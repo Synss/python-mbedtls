@@ -34,13 +34,13 @@ def new(key, mode, iv=None):
 
     """
     if len(key) != key_size:
-        raise InvalidKeyLengthError(
-            "key size must be %i bytes, got %i" % (key_size, len(key)))
+        raise MbedTLSError(
+            msg="key size must be %i bytes, got %i" % (key_size, len(key)))
     if mode not in {
         _cipher.MODE_ECB,
         _cipher.MODE_CBC,
     }:
-        raise FeatureUnavailableError("unsupported mode %r" % mode)
+        raise MbedTLSError(msg="unsupported mode %r" % mode)
     mode_name = _cipher._get_mode_name(mode)
     name = ("DES-EDE-%s" % mode_name).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)
