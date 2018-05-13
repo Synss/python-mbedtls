@@ -192,6 +192,29 @@ class TestECCtoECDH:
         assert srv_sec == cli_sec
 
 
+class TestDH:
+    @pytest.fixture(autouse=True)
+    def _setup(self):
+        self.srv = DHServer(23, 5)
+        self.cli = DHClient(23, 5)
+
+    def test_key_accessors_without_key(self):
+        for cipher in (self.srv, self.cli):
+            assert cipher.shared_secret == 0
+
+    def test_exchange(self):
+        ske = self.srv.generate()
+        self.cli.import_SKE(ske)
+        cke = self.cli.generate()
+        self.srv.import_CKE(cke)
+
+        srv_sec = self.srv.generate_secret()
+        cli_sec = self.cli.generate_secret()
+        assert srv_sec == cli_sec
+        assert srv_sec == self.srv.shared_secret
+        assert cli_sec == self.cli.shared_secret
+
+
 class TestECDH:
     @pytest.fixture(autouse=True, params=get_supported_curves())
     def _setup(self, request):

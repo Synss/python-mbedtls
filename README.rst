@@ -242,6 +242,46 @@ Now, client and server may generate their shared secret::
    True
 
 
+Diffie-Hellman-Merkle key exchange
+----------------------------------
+
+The classes DHServer and DHClient may be used for DH Key exchange.  The
+classes have the same API as ECDHServer and ECDHClient, respectively.
+
+The key exchange is as follow::
+
+   >>> from mbedtls import pk
+   >>> srv = pk.DHServer(23, 5)
+   >>> cli = pk.DHClient(23, 5)
+
+The values 23 and 5 are the prime modulus (P) and the generator (G).
+
+The server generates the ServerKeyExchange payload::
+
+   >>> ske = srv.generate()
+   >>> cli.import_SKE(ske)
+
+The payload ends with :math:`G^X mod P` where `X` is the secret value of
+the server.
+
+::
+
+   >>> cke = cli.generate()
+   >>> srv.import_CKE(cke)
+
+`cke` is :math:`G^Y mod P` (with `Y` the secret value from the client)
+returned as its representation in bytes so that it can be readily
+transported over the network.
+
+As in ECDH, client and server may now generate their shared secret::
+
+   >>> secret = srv.generate_secret()
+   >>> cli.generate_secret() == secret
+   True
+   >>> srv.shared_secret == cli.shared_secret
+   True
+
+
 X.509 Certificate writing and parsing with `mbedtls.x509`
 ---------------------------------------------------------
 

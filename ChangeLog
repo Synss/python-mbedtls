@@ -1,5 +1,7 @@
 [next]
 
+Support Diffie-Hellman-Merkle key exchange
+
 API Changes
 
 * exceptions: Rename `_ErrorBase` -> `MbedTLSError`.  It is now

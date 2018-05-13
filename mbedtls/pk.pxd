@@ -16,7 +16,49 @@ cdef extern from "mbedtls/bignum.h":
     ctypedef struct mbedtls_mpi:
         pass
 
-    int MBEDTLS_MPI_MAX_SIZE
+
+cdef extern from "mbedtls/dhm.h":
+    ctypedef struct mbedtls_dhm_context:
+        mbedtls_mpi P
+        mbedtls_mpi G
+        mbedtls_mpi X
+        mbedtls_mpi GX
+        mbedtls_mpi GY
+        mbedtls_mpi K
+
+    void mbedtls_dhm_init(mbedtls_dhm_context *ctx)
+    void mbedtls_dhm_free(mbedtls_dhm_context *ctx)
+
+    int mbedtls_dhm_make_params(
+        mbedtls_dhm_context *ctx,
+        int x_size,
+        unsigned char *output, size_t *olen,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+    int mbedtls_dhm_make_public(
+        mbedtls_dhm_context *ctx,
+        int x_size,
+        unsigned char *output, size_t olen,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+
+    int mbedtls_dhm_read_params(
+        mbedtls_dhm_context *ctx,
+        unsigned char **p,
+        const unsigned char *end)
+    int mbedtls_dhm_read_public(
+        mbedtls_dhm_context *ctx,
+        const unsigned char *input, size_t ilen)
+
+    int mbedtls_dhm_calc_secret(
+        mbedtls_dhm_context *ctx,
+        unsigned char *output, size_t output_size, size_t *olen,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+
+    # int mbedtls_dhm_parse_dhm(
+    #     mbedtls_dhm_context *dhm,
+    #     const unsigned char *dhmin, size_t dhminlen)
+    # int mbedtls_dhm_parse_dhmfile(
+    #     mbedtls_dhm_context *dhm,
+    #     const char *path)
 
 
 cdef extern from "mbedtls/ecp.h":
@@ -347,6 +389,10 @@ cdef class ECC(CipherBase):
 
 cdef class ECPoint:
     cdef mbedtls_ecp_point _ctx
+
+
+cdef class DHBase:
+    cdef mbedtls_dhm_context _ctx
 
 
 cdef class ECDHBase:

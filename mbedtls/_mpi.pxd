@@ -6,6 +6,8 @@ __license__ = "MIT License"
 
 
 cdef extern from "mbedtls/bignum.h":
+    int MBEDTLS_MPI_MAX_SIZE
+
     # Multi-precision integer library
     # -------------------------------
     ctypedef struct mbedtls_mpi:
