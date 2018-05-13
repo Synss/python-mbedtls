@@ -745,7 +745,7 @@ cdef class ECDHServer(ECDHBase):
         if not output:
             raise MemoryError()
         try:
-            check_error(mbedtls_ecdh_make_params(
+            check_error(_pk.mbedtls_ecdh_make_params(
                 &self._ctx, &olen, &output[0], _pk.MBEDTLS_MPI_MAX_SIZE,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
@@ -755,7 +755,7 @@ cdef class ECDHServer(ECDHBase):
 
     def import_CKE(self, const unsigned char[:] buffer):
         """Read the ClientKeyExchange payload."""
-        check_error(mbedtls_ecdh_read_public(
+        check_error(_pk.mbedtls_ecdh_read_public(
             &self._ctx, &buffer[0], buffer.size))
 
 
@@ -780,7 +780,7 @@ cdef class ECDHClient(ECDHBase):
         if not output:
             raise MemoryError()
         try:
-            check_error(mbedtls_ecdh_make_public(
+            check_error(_pk.mbedtls_ecdh_make_public(
                 &self._ctx, &olen, &output[0], _pk.MBEDTLS_MPI_MAX_SIZE,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
@@ -792,5 +792,5 @@ cdef class ECDHClient(ECDHBase):
         """Read the ServerKeyExchange payload."""
         cdef const unsigned char* first = &buffer[0]
         cdef const unsigned char* end = &buffer[-1] + 1
-        check_error(mbedtls_ecdh_read_params(
+        check_error(_pk.mbedtls_ecdh_read_params(
             &self._ctx, &first, end))
