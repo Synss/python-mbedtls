@@ -133,6 +133,20 @@ jobs:
               twine upload dist/*
             fi
 
+      - run:
+          name: save logs
+          command: |
+            mkdir -p out/log
+            cp .tox/*/log/py*.log out/log || true
+          when: on_fail
+
+      - run:
+          name: save dist
+          command: |
+            mkdir -p out/dist
+            cp dist/* out/dist
+          when: on_success
+
       - store_artifacts:
-          path: dist
-          destination: dist
+          path: out
+          destination: artifacts
