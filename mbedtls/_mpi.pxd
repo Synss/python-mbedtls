@@ -13,7 +13,8 @@ cdef extern from "mbedtls/bignum.h":
     ctypedef struct mbedtls_mpi:
         pass
 
-    ctypedef enum mbedtls_mpi_sint: pass
+    ctypedef enum mbedtls_mpi_sint:
+        pass
 
     # mbedtls_mpi
     # -----------
@@ -50,8 +51,12 @@ cdef extern from "mbedtls/bignum.h":
         unsigned char *buf,
         size_t buflen)
 
-    # mbedtls_mpi_shift_l
-    # mbedtls_mpi_shift_r
+    int mbedtls_mpi_shift_l(
+        mbedtls_mpi *X,
+        size_t count)
+    int mbedtls_mpi_shift_r(
+        mbedtls_mpi *X,
+        size_t count)
     # mbedtls_mpi_cmp_abs
     int mbedtls_mpi_cmp_mpi(
         const mbedtls_mpi *X,
@@ -59,15 +64,31 @@ cdef extern from "mbedtls/bignum.h":
     # mbedtls_mpi_cmp_int
     # mbedtls_mpi_add_abs
     # mbedtls_mpi_sub_abs
-    # mbedtls_mpi_add_mpi
-    # mbedtls_mpi_sub_mpi
+    int mbedtls_mpi_add_mpi(
+        mbedtls_mpi *X,
+        const mbedtls_mpi *A,
+        const mbedtls_mpi *B)
+    int mbedtls_mpi_sub_mpi(
+        mbedtls_mpi *X,
+        const mbedtls_mpi *A,
+        const mbedtls_mpi *B)
     # mbedtls_mpi_add_int
     # mbedtls_mpi_sub_int
-    # mbedtls_mpi_mul_mpi
+    int mbedtls_mpi_mul_mpi(
+        mbedtls_mpi *X,
+        const mbedtls_mpi *A,
+        const mbedtls_mpi *B)
     # mbedtls_mpi_mul_int
-    # mbedtls_mpi_div_mpi
+    int mbedtls_mpi_div_mpi(
+        mbedtls_mpi *Q,
+        mbedtls_mpi *R,
+        const mbedtls_mpi *A,
+        const mbedtls_mpi *B)
     # mbedtls_mpi_div_int
-    # mbedtls_mpi_mod_mpi
+    int mbedtls_mpi_mod_mpi(
+        mbedtls_mpi *X,
+        const mbedtls_mpi *A,
+        const mbedtls_mpi *B)
     # mbedtls_mpi_mod_int
     # mbedtls_mpi_exp_mod
     # mbedtls_mpi_fill_random

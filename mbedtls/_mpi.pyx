@@ -34,14 +34,13 @@ cdef class MPI:
     arbitrary-precision integers.
 
     """
-    def __init__(self, value):
-        if value is None:
-            return  # Implementation detail.
-        try:
+    def __init__(self, value=0):
+        if isinstance(value, MPI):
+            value_ = <MPI> value
+            check_error(mbedtls_mpi_copy(&self._ctx, &value_._ctx))
+        else:
             value = to_bytes(value)
-        except TypeError:
-            pass
-        self._from_bytes(value)
+            self._from_bytes(value)
 
     def __cinit__(self):
         """Initialize one MPI."""
@@ -63,28 +62,113 @@ cdef class MPI:
     def __str__(self):
         return "%i" % long(self)
 
+    def __repr__(self):
+        return "%s(%i)" % (type(self).__name__, long(self))
+
     def bit_length(self):
         """Return the number of bits necessary to represent MPI in binary."""
         return _mpi.mbedtls_mpi_bitlen(&self._ctx)
-
-    def __eq__(self, other):
-        if not isinstance(other, numbers.Integral):
-            raise NotImplemented
-        return long(self) == other
 
     @classmethod
     def from_int(cls, value):
         # mbedtls_mpi_lset is 'limited' to 64 bits.
         return cls.from_bytes(to_bytes(value), byteorder="big")
 
+    def __eq__(self, other):
+        if not all((isinstance(self, (MPI, numbers.Integral)),
+                    isinstance(other, (MPI, numbers.Integral)))):
+            return NotImplemented
+        cdef MPI self_ = MPI(self)
+        cdef MPI other_ = MPI(other)
+        return mbedtls_mpi_cmp_mpi(&self_._ctx, &other_._ctx) == 0
+
+    def __hash__(self):
+        return long(self)
+
     def __int__(self):
         return from_bytes(self.to_bytes(self._len(), byteorder="big"))
+
+    def __float__(self):
+        return float(long(self))
+
+    def __index__(self):
+        return long(self)
+
+    def __lshift__(self, other):
+        if not isinstance(self, MPI):
+            return NotImplemented
+        cdef MPI self_ = MPI(self)
+        check_error(mbedtls_mpi_shift_l(&self_._ctx, long(other)))
+        return self_
+
+    def __rshift__(self, other):
+        if not isinstance(self, MPI):
+            return NotImplemented
+        cdef MPI self_ = MPI(self)
+        check_error(mbedtls_mpi_shift_r(&self_._ctx, long(other)))
+        return self_
+
+    def __add__(self, other):
+        if not all((isinstance(self, (MPI, numbers.Integral)),
+                    isinstance(other, (MPI, numbers.Integral)))):
+            return NotImplemented
+        cdef MPI self_ = MPI(self)
+        cdef MPI other_ = MPI(other)
+        cdef MPI result = MPI()
+        check_error(mbedtls_mpi_add_mpi(
+            &result._ctx, &self_._ctx, &other_._ctx))
+        return result
+
+    def __sub__(self, other):
+        if not all((isinstance(self, (MPI, numbers.Integral)),
+                    isinstance(other, (MPI, numbers.Integral)))):
+            return NotImplemented
+        cdef MPI self_ = MPI(self)
+        cdef MPI other_ = MPI(other)
+        cdef MPI result = MPI()
+        check_error(mbedtls_mpi_sub_mpi(
+            &result._ctx, &self_._ctx, &other_._ctx))
+        return result
+
+    def __mul__(self, other):
+        if not all((isinstance(self, (MPI, numbers.Integral)),
+                    isinstance(other, (MPI, numbers.Integral)))):
+            return NotImplemented
+        cdef MPI self_ = MPI(self)
+        cdef MPI other_ = MPI(other)
+        cdef MPI result = MPI()
+        check_error(mbedtls_mpi_mul_mpi(
+            &result._ctx, &self_._ctx, &other_._ctx))
+        return result
+
+    def __floordiv__(self, other):
+        if not all((isinstance(self, (MPI, numbers.Integral)),
+                    isinstance(other, (MPI, numbers.Integral)))):
+            return NotImplemented
+        cdef MPI self_ = MPI(self)
+        cdef MPI other_ = MPI(other)
+        cdef MPI quotient = MPI()
+        cdef MPI rest = MPI()
+        check_error(mbedtls_mpi_div_mpi(
+            &quotient._ctx, &rest._ctx, &self_._ctx, &other_._ctx))
+        return quotient
+
+    def __mod__(self, other):
+        if not all((isinstance(self, (MPI, numbers.Integral)),
+                    isinstance(other, (MPI, numbers.Integral)))):
+            return NotImplemented
+        cdef MPI self_ = MPI(self)
+        cdef MPI other_ = MPI(other)
+        cdef MPI result = MPI()
+        check_error(mbedtls_mpi_mod_mpi(
+            &result._ctx, &self_._ctx, &other_._ctx))
+        return result
 
     @classmethod
     def from_bytes(cls, bytes, byteorder):
         assert byteorder in {"big", "little"}
         order = slice(None, None, -1 if byteorder is "little" else None)
-        return cls(None)._from_bytes(bytes[order])
+        return cls()._from_bytes(bytes[order])
 
     def to_bytes(self, length, byteorder):
         assert byteorder in {"big", "little"}

@@ -9,6 +9,60 @@ from mbedtls._mpi import MPI
 def test_from_int(value):
     mpi = MPI.from_int(value)
     assert mpi == value
+    assert value == mpi
+    assert mpi == mpi
+
+
+def test_eq():
+    assert MPI(12) == MPI(12)
+    assert MPI(12) == 12
+    assert 12 == MPI(12)
+
+
+def test_float():
+    assert float(MPI(12)) == 12.0
+
+
+def test_rshift():
+    assert MPI(12) >> MPI(2) == 3
+    assert MPI(12) >> 2 == 3
+    assert 12 >> int(MPI(2)) == 3
+
+
+def test_lshift():
+    assert MPI(12) << MPI(2) == 48
+    assert MPI(12) << 2 == 48
+    assert 12 << int(MPI(2)) == 48
+
+
+def test_add():
+    assert MPI(12) + MPI(12) == 24
+    assert MPI(12) + 12 == 24
+    assert 12 + MPI(12) == 24
+
+
+def test_sub():
+    assert MPI(12) - MPI(5) == 7
+    assert MPI(12) - 5 == 7
+    assert 12 - MPI(5) == 7
+
+
+def test_mul():
+    assert MPI(12) * MPI(2) == 24
+    assert MPI(12) * 2 == 24
+    assert 12 * MPI(2) == 24
+
+
+def test_floordiv():
+    assert MPI(24) // MPI(2) == 12
+    assert MPI(24) // 2 == 12
+    assert 24 // MPI(2) == 12
+
+
+def test_mod():
+    assert MPI(12) % MPI(10) == 2
+    assert MPI(12) % 10 == 2
+    assert 12 % MPI(10) == 2
 
 
 @pytest.mark.parametrize("value", (12, 2**32 - 1, 10**100))
