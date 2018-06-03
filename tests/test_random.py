@@ -1,6 +1,7 @@
 """Unit tests for mbedtls.random."""
 # pylint: disable=missing-docstring
 
+import random as _random
 
 # pylint: disable=import-error
 import mbedtls.random as _drbg
@@ -9,6 +10,10 @@ import mbedtls.random as _drbg
 import pytest
 
 from mbedtls.exceptions import MbedTLSError
+
+
+def sample(start, end, k=20):
+    return _random.sample(range(start, end), k)
 
 
 @pytest.fixture
@@ -26,7 +31,7 @@ def test_entropy_gather(entropy):
     entropy.gather()
 
 
-@pytest.mark.parametrize("length", range(64))
+@pytest.mark.parametrize("length", sample(0, 64))
 def test_entropy_retrieve(entropy, length):
     assert len(entropy.retrieve(length)) == length
 
@@ -70,11 +75,11 @@ def test_initial_values(random):
     assert random.token_bytes(8) != other.token_bytes(8)
 
 
-@pytest.mark.parametrize("length", range(1024))
+@pytest.mark.parametrize("length", sample(0, 1024))
 def test_token_bytes(random, length):
     assert len(random.token_bytes(length)) == length
 
 
-@pytest.mark.parametrize("length", range(1024))
+@pytest.mark.parametrize("length", sample(0, 1024))
 def test_token_hex(random, length):
     assert len(random.token_hex(length)) == 2 * length
