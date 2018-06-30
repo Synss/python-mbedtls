@@ -36,11 +36,6 @@ import mbedtls.random as _random
 from mbedtls.exceptions import check_error, MbedTLSError
 import mbedtls.hash as _hash
 
-try:
-    long
-except NameError:
-    long = int
-
 
 __all__ = ("check_pair", "get_supported_ciphers", "get_supported_curves",
            "Curve", "RSA", "ECC", "DHServer", "DHClient",
@@ -499,25 +494,25 @@ cdef class ECPoint:
         """Return the X coordinate."""
         def __get__(self):
             try:
-                return long(_mpi.from_mpi(&self._ctx.X))
+                return _mpi.from_mpi(&self._ctx.X)
             except ValueError:
-                return 0
+                return _mpi.MPI()
 
     property y:
         """Return the Y coordinate."""
         def __get__(self):
             try:
-                return long(_mpi.from_mpi(&self._ctx.Y))
+                return _mpi.from_mpi(&self._ctx.Y)
             except ValueError:
-                return 0
+                return _mpi.MPI()
 
     property z:
         """Return the Z coordinate."""
         def __get__(self):
             try:
-                return long(_mpi.from_mpi(&self._ctx.Z))
+                return _mpi.from_mpi(&self._ctx.Z)
             except ValueError:
-                return 0
+                return _mpi.MPI()
 
     def _tuple(self):
         return (self.x, self.y)
@@ -580,7 +575,7 @@ cdef class ECC(CipherBase):
     def _has_private(self):
         """Return `True` if the key contains a valid private half."""
         cdef const mbedtls_ecp_keypair* ecp = _pk.mbedtls_pk_ec(self._ctx)
-        return _mpi.mbedtls_mpi_cmp_mpi(&ecp.d, &_mpi.MPI(0)._ctx) != 0
+        return _mpi.mbedtls_mpi_cmp_mpi(&ecp.d, &_mpi.MPI()._ctx) != 0
 
     def _has_public(self):
         """Return `True` if the key contains a valid public half."""
@@ -604,9 +599,9 @@ cdef class ECC(CipherBase):
 
     def _private_to_num(self):
         try:
-            return long(_mpi.from_mpi(&_pk.mbedtls_pk_ec(self._ctx).d))
+            return _mpi.from_mpi(&_pk.mbedtls_pk_ec(self._ctx).d)
         except ValueError:
-            return 0
+            return _mpi.MPI()
 
     def export_key(self, format="DER"):
         """Return the private key.
@@ -689,17 +684,17 @@ cdef class DHBase:
     property modulus:
         """Return the prime modulus, P."""
         def __get__(self):
-            return long(_mpi.from_mpi(&self._ctx.P))
+            return _mpi.from_mpi(&self._ctx.P)
 
     property generator:
         """Return the generator, G."""
         def __get__(self):
-            return long(_mpi.from_mpi(&self._ctx.G))
+            return _mpi.from_mpi(&self._ctx.G)
 
     property _secret:
         """Return the secret (int)."""
         def __get__(self):
-            return long(_mpi.from_mpi(&self._ctx.X))
+            return _mpi.from_mpi(&self._ctx.X)
 
     property shared_secret:
         """The shared secret (int).
@@ -709,13 +704,13 @@ cdef class DHBase:
         """
         def __get__(self):
             try:
-                return long(_mpi.from_mpi(&self._ctx.K))
+                return _mpi.from_mpi(&self._ctx.K)
             except ValueError:
-                return 0
+                return _mpi.MPI()
 
     def generate_secret(self):
         """Generate the shared secret."""
-        cdef _mpi.MPI mpi = _mpi.MPI(0)
+        cdef _mpi.MPI mpi
         cdef unsigned char* output = <unsigned char*>malloc(
             _mpi.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
         cdef size_t olen = 0
@@ -726,8 +721,9 @@ cdef class DHBase:
                 &self._ctx, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE, &olen,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
+            mpi = _mpi.MPI()
             _mpi.mbedtls_mpi_read_binary(&mpi._ctx, &output[0], olen)
-            return long(mpi)
+            return mpi
         finally:
             free(output)
 
@@ -827,7 +823,7 @@ cdef class ECDHBase:
 
     def _has_private(self):
         """Return `True` if the key contains a valid private half."""
-        return _mpi.mbedtls_mpi_cmp_mpi(&self._ctx.d, &_mpi.MPI(0)._ctx) != 0
+        return _mpi.mbedtls_mpi_cmp_mpi(&self._ctx.d, &_mpi.MPI()._ctx) != 0
 
     def _has_public(self):
         """Return `True` if the key contains a valid public half."""
@@ -839,7 +835,7 @@ cdef class ECDHBase:
 
     def generate_secret(self):
         """Generate the shared secret."""
-        cdef _mpi.MPI mpi = _mpi.MPI(0)
+        cdef _mpi.MPI mpi = _mpi.MPI()
         cdef unsigned char* output = <unsigned char*>malloc(
             _mpi.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
         cdef size_t olen = 0
@@ -851,7 +847,7 @@ cdef class ECDHBase:
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
             _mpi.mbedtls_mpi_read_binary(&mpi._ctx, &output[0], olen)
-            return long(mpi)
+            return mpi
         finally:
             free(output)
 
@@ -863,9 +859,9 @@ cdef class ECDHBase:
         """
         def __get__(self):
             try:
-                return long(_mpi.from_mpi(&self._ctx.z))
+                return _mpi.from_mpi(&self._ctx.z)
             except ValueError:
-                return 0
+                return _mpi.MPI()
 
 
 cdef class ECDHServer(ECDHBase):

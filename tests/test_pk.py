@@ -1,6 +1,7 @@
 """Unit tests for mbedtls.pk."""
 
 
+import numbers
 from itertools import product
 from functools import partial
 from tempfile import TemporaryFile
@@ -156,9 +157,9 @@ class TestECC(_TestCipherBase):
     @pytest.mark.usefixtures("key")
     def test_public_value_accessor(self):
         pub = self.cipher.export_public_key("POINT")
-        assert isinstance(pub.x, long)
-        assert isinstance(pub.y, long)
-        assert isinstance(pub.z, long)
+        assert isinstance(pub.x, numbers.Integral)
+        assert isinstance(pub.y, numbers.Integral)
+        assert isinstance(pub.z, numbers.Integral)
         assert pub.x not in (0, pub.y, pub.z)
         assert pub.y not in (0, pub.x, pub.z)
         assert pub.z in (0, 1)
@@ -166,7 +167,7 @@ class TestECC(_TestCipherBase):
     @pytest.mark.usefixtures("key")
     def test_private_value_accessor(self):
         prv = self.cipher.export_key("NUM")
-        assert isinstance(prv, long)
+        assert isinstance(prv, numbers.Integral)
         assert prv != 0
 
 

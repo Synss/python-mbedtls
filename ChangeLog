@@ -1,9 +1,14 @@
 [next]
 
-Support Diffie-Hellman-Merkle key exchange
+* Support Diffie-Hellman-Merkle key exchange.
+* MPIs (multi-precision integers) now implement the full
+`numbers.Integral` API.
+* MPIs are erased from memory upon garbage collection.
 
 API Changes
 
+* pk: Methods that were previously returning a long integer now
+return an MPI.
 * exceptions: Rename `_ErrorBase` -> `MbedTLSError`.  It is now
 the only new exception.
 * exceptions: `mbedtls_strerror()` generates the error message.
