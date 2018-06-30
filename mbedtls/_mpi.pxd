@@ -90,21 +90,32 @@ cdef extern from "mbedtls/bignum.h":
         const mbedtls_mpi *A,
         const mbedtls_mpi *B)
     # mbedtls_mpi_mod_int
-    # mbedtls_mpi_exp_mod
-    # mbedtls_mpi_fill_random
+    int mbedtls_mpi_exp_mod(
+        mbedtls_mpi *X,
+        const mbedtls_mpi *A,
+        const mbedtls_mpi *E,
+        const mbedtls_mpi *N,
+        mbedtls_mpi *_RR)
+    int mbedtls_mpi_fill_random(
+        mbedtls_mpi *X, size_t size,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
     # mbedtls_mpi_gcd
     # mbedtls_mpi_inv_mod
-    # mbedtls_mpi_is_prime
-    # mbedtls_mpi_gen_prime
+    int mbedtls_mpi_is_prime(
+        mbedtls_mpi *X,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
+    int mbedtls_mpi_gen_prime(
+        mbedtls_mpi *X, size_t size, int dh_flag,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
 
 
 cdef class MPI:
     cdef mbedtls_mpi _ctx
-    cdef _len(self)
+    cdef size_t _len(self)
     cpdef _from_bytes(self, const unsigned char[:] bytes)
 
 
 cdef inline from_mpi(mbedtls_mpi *c_mpi):
-    new_mpi = MPI(0)
+    new_mpi = MPI()
     mbedtls_mpi_copy(&new_mpi._ctx, c_mpi)
     return new_mpi
