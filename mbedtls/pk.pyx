@@ -19,7 +19,7 @@ __license__ = "MIT License"
 
 from libc.stdlib cimport malloc, free
 
-cimport mbedtls._mpi as _mpi
+cimport mbedtls.mpi as _mpi
 cimport mbedtls.pk as _pk
 cimport mbedtls.random as _random
 
@@ -33,17 +33,13 @@ import enum
 from functools import partial
 
 import mbedtls.random as _random
-from mbedtls.exceptions import check_error, PkError
+from mbedtls.exceptions import check_error, MbedTLSError
 import mbedtls.hash as _hash
-
-try:
-    long
-except NameError:
-    long = int
 
 
 __all__ = ("check_pair", "get_supported_ciphers", "get_supported_curves",
-           "Curve", "RSA", "ECC", "ECDHServer", "ECDHClient")
+           "Curve", "RSA", "ECC", "DHServer", "DHClient",
+           "ECDHServer", "ECDHClient")
 
 
 CIPHER_NAME = (
@@ -76,9 +72,9 @@ class Curve(bytes, enum.Enum):
 
 
 # The following calculations come from mbedtls/library/pkwrite.c.
-RSA_PUB_DER_MAX_BYTES = 38 + 2 * _pk.MBEDTLS_MPI_MAX_SIZE
-MPI_MAX_SIZE_2 = MBEDTLS_MPI_MAX_SIZE / 2 + MBEDTLS_MPI_MAX_SIZE % 2
-RSA_PRV_DER_MAX_BYTES = 47 + 3 * _pk.MBEDTLS_MPI_MAX_SIZE + 5 * MPI_MAX_SIZE_2
+RSA_PUB_DER_MAX_BYTES = 38 + 2 * _mpi.MBEDTLS_MPI_MAX_SIZE
+MPI_MAX_SIZE_2 = _mpi.MBEDTLS_MPI_MAX_SIZE / 2 + _mpi.MBEDTLS_MPI_MAX_SIZE % 2
+RSA_PRV_DER_MAX_BYTES = 47 + 3 * _mpi.MBEDTLS_MPI_MAX_SIZE + 5 * MPI_MAX_SIZE_2
 
 ECP_PUB_DER_MAX_BYTES = 30 + 2 * _pk.MBEDTLS_ECP_MAX_BYTES
 ECP_PRV_DER_MAX_BYTES = 29 + 3 * _pk.MBEDTLS_ECP_MAX_BYTES
@@ -172,7 +168,7 @@ cdef class CipherBase:
             return NotImplemented
         try:
             return self.to_DER() == other.to_DER()
-        except PkError:
+        except MbedTLSError:
             return False
 
     property _type:
@@ -225,7 +221,7 @@ cdef class CipherBase:
         cdef const unsigned char[:] hash_ = md_alg.digest()
         cdef size_t sig_len = 0
         cdef unsigned char* output = <unsigned char*>malloc(
-            _pk.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
+            _mpi.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
         if not output:
             raise MemoryError()
         try:
@@ -272,7 +268,7 @@ cdef class CipherBase:
         """
         cdef size_t olen = 0
         cdef unsigned char* output = <unsigned char*>malloc(
-            _pk.MBEDTLS_MPI_MAX_SIZE // 2 * sizeof(unsigned char))
+            _mpi.MBEDTLS_MPI_MAX_SIZE // 2 * sizeof(unsigned char))
         if not output:
             raise MemoryError()
         try:
@@ -293,7 +289,7 @@ cdef class CipherBase:
         """
         cdef size_t olen = 0
         cdef unsigned char* output = <unsigned char*>malloc(
-            _pk.MBEDTLS_MPI_MAX_SIZE // 2 * sizeof(unsigned char))
+            _mpi.MBEDTLS_MPI_MAX_SIZE // 2 * sizeof(unsigned char))
         if not output:
             raise MemoryError()
         try:
@@ -347,7 +343,7 @@ cdef class CipherBase:
             check_error(_pk.mbedtls_pk_parse_key(
                 &self._ctx, &key_[0], key_.size,
                 &pwd_[0] if pwd_.size else NULL, pwd_.size))
-        except PkError:
+        except MbedTLSError:
             check_error(_pk.mbedtls_pk_parse_public_key(
                 &self._ctx, &key_[0], key_.size))
 
@@ -498,25 +494,25 @@ cdef class ECPoint:
         """Return the X coordinate."""
         def __get__(self):
             try:
-                return long(_mpi.from_mpi(&self._ctx.X))
+                return _mpi.from_mpi(&self._ctx.X)
             except ValueError:
-                return 0
+                return _mpi.MPI()
 
     property y:
         """Return the Y coordinate."""
         def __get__(self):
             try:
-                return long(_mpi.from_mpi(&self._ctx.Y))
+                return _mpi.from_mpi(&self._ctx.Y)
             except ValueError:
-                return 0
+                return _mpi.MPI()
 
     property z:
         """Return the Z coordinate."""
         def __get__(self):
             try:
-                return long(_mpi.from_mpi(&self._ctx.Z))
+                return _mpi.from_mpi(&self._ctx.Z)
             except ValueError:
-                return 0
+                return _mpi.MPI()
 
     def _tuple(self):
         return (self.x, self.y)
@@ -579,7 +575,7 @@ cdef class ECC(CipherBase):
     def _has_private(self):
         """Return `True` if the key contains a valid private half."""
         cdef const mbedtls_ecp_keypair* ecp = _pk.mbedtls_pk_ec(self._ctx)
-        return _mpi.mbedtls_mpi_cmp_mpi(&ecp.d, &_mpi.MPI(0)._ctx) != 0
+        return _mpi.mbedtls_mpi_cmp_mpi(&ecp.d, &_mpi.MPI()._ctx) != 0
 
     def _has_public(self):
         """Return `True` if the key contains a valid public half."""
@@ -603,9 +599,9 @@ cdef class ECC(CipherBase):
 
     def _private_to_num(self):
         try:
-            return long(_mpi.from_mpi(&_pk.mbedtls_pk_ec(self._ctx).d))
+            return _mpi.from_mpi(&_pk.mbedtls_pk_ec(self._ctx).d)
         except ValueError:
-            return 0
+            return _mpi.MPI()
 
     def export_key(self, format="DER"):
         """Return the private key.
@@ -653,6 +649,150 @@ cdef class ECC(CipherBase):
         return ecdh
 
 
+cdef class DHBase:
+
+    """Base class to DH key exchange: client and server.
+
+    Args:
+        modulus (int): The prime modulus P.
+        generator (int): The generator G, a primitive root modulo P.
+
+    See Also:
+        DHServer, DHClient: The derived classes.
+
+    """
+    def __init__(self, modulus, generator):
+        super().__init__()
+        check_error(_mpi.mbedtls_mpi_copy(
+            &self._ctx.P, &_mpi.MPI(modulus)._ctx))
+        check_error(_mpi.mbedtls_mpi_copy(
+            &self._ctx.G, &_mpi.MPI(generator)._ctx))
+
+    def __cinit__(self):
+        """Initialize the context."""
+        _pk.mbedtls_dhm_init(&self._ctx)
+
+    def __dealloc__(self):
+        """Free and clear the context."""
+        _pk.mbedtls_dhm_free(&self._ctx)
+
+    property key_size:
+        """Return the size of the key, in bytes."""
+        def __get__(self):
+            return _mpi.mbedtls_mpi_size(&self._ctx.P)
+
+    property modulus:
+        """Return the prime modulus, P."""
+        def __get__(self):
+            return _mpi.from_mpi(&self._ctx.P)
+
+    property generator:
+        """Return the generator, G."""
+        def __get__(self):
+            return _mpi.from_mpi(&self._ctx.G)
+
+    property _secret:
+        """Return the secret (int)."""
+        def __get__(self):
+            return _mpi.from_mpi(&self._ctx.X)
+
+    property shared_secret:
+        """The shared secret (int).
+
+        The shared secret is 0 if the TLS handshake is not finished.
+
+        """
+        def __get__(self):
+            try:
+                return _mpi.from_mpi(&self._ctx.K)
+            except ValueError:
+                return _mpi.MPI()
+
+    def generate_secret(self):
+        """Generate the shared secret."""
+        cdef _mpi.MPI mpi
+        cdef unsigned char* output = <unsigned char*>malloc(
+            _mpi.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
+        cdef size_t olen = 0
+        if not output:
+            raise MemoryError()
+        try:
+            check_error(mbedtls_dhm_calc_secret(
+                &self._ctx, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE, &olen,
+                &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
+            assert olen != 0
+            mpi = _mpi.MPI()
+            _mpi.mbedtls_mpi_read_binary(&mpi._ctx, &output[0], olen)
+            return mpi
+        finally:
+            free(output)
+
+    
+cdef class DHServer(DHBase):
+
+    """The server side of the DH key exchange."""
+
+    def generate(self):
+        """Generate a public key.
+
+        Return:
+            bytes: A TLS ServerKeyExchange payload.
+
+        """
+        cdef unsigned char* output = <unsigned char*>malloc(
+            _mpi.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
+        cdef size_t olen = 0
+        if not output:
+            raise MemoryError()
+        try:
+            check_error(_pk.mbedtls_dhm_make_params(
+                &self._ctx, self.key_size, &output[0], &olen,
+                &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
+            assert olen != 0
+            return bytes(output[:olen])
+        finally:
+            free(output)
+
+    def import_CKE(self, const unsigned char[:] buffer):
+        """Read the ClientKeyExchange payload."""
+        check_error(_pk.mbedtls_dhm_read_public(
+            &self._ctx, &buffer[0], buffer.size))
+
+
+cdef class DHClient(DHBase):
+
+    """The client side of the DH key exchange."""
+
+    def generate(self):
+        """Generate the public key.
+
+        Return:
+            bytes: The byte representation (big endian) of: G^X mod P.
+
+        """
+        cdef _mpi.MPI mpi
+        cdef unsigned char* output = <unsigned char*>malloc(
+            _mpi.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
+        if not output:
+            raise MemoryError()
+        try:
+            check_error(_pk.mbedtls_dhm_make_public(
+                &self._ctx, self.key_size, &output[0], self.key_size,
+                &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
+            mpi = _mpi.from_mpi(&self._ctx.GX)
+            return mpi.to_bytes(
+                _mpi.mbedtls_mpi_size(&mpi._ctx), "big")
+        finally:
+            free(output)
+
+    def import_SKE(self, const unsigned char[:] buffer):
+        """Read the ServerKeyExchange payload."""
+        cdef const unsigned char* first = &buffer[0]
+        cdef const unsigned char* end = &buffer[-1] + 1
+        check_error(_pk.mbedtls_dhm_read_params(
+            &self._ctx, &first, end))
+
+
 cdef class ECDHBase:
 
     """Base class to ECDH(E) key exchange: client and server.
@@ -683,7 +823,7 @@ cdef class ECDHBase:
 
     def _has_private(self):
         """Return `True` if the key contains a valid private half."""
-        return _mpi.mbedtls_mpi_cmp_mpi(&self._ctx.d, &_mpi.MPI(0)._ctx) != 0
+        return _mpi.mbedtls_mpi_cmp_mpi(&self._ctx.d, &_mpi.MPI()._ctx) != 0
 
     def _has_public(self):
         """Return `True` if the key contains a valid public half."""
@@ -695,19 +835,19 @@ cdef class ECDHBase:
 
     def generate_secret(self):
         """Generate the shared secret."""
-        cdef _mpi.MPI mpi = _mpi.MPI(0)
+        cdef _mpi.MPI mpi = _mpi.MPI()
         cdef unsigned char* output = <unsigned char*>malloc(
-            _pk.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
+            _mpi.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
         cdef size_t olen = 0
         if not output:
             raise MemoryError()
         try:
             check_error(mbedtls_ecdh_calc_secret(
-                &self._ctx, &olen, &output[0], _pk.MBEDTLS_MPI_MAX_SIZE,
+                &self._ctx, &olen, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
             _mpi.mbedtls_mpi_read_binary(&mpi._ctx, &output[0], olen)
-            return long(mpi)
+            return mpi
         finally:
             free(output)
 
@@ -719,9 +859,9 @@ cdef class ECDHBase:
         """
         def __get__(self):
             try:
-                return long(_mpi.from_mpi(&self._ctx.z))
+                return _mpi.from_mpi(&self._ctx.z)
             except ValueError:
-                return 0
+                return _mpi.MPI()
 
 
 cdef class ECDHServer(ECDHBase):
@@ -740,13 +880,13 @@ cdef class ECDHServer(ECDHBase):
 
         """
         cdef unsigned char* output = <unsigned char*>malloc(
-            _pk.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
+            _mpi.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
         cdef size_t olen = 0
         if not output:
             raise MemoryError()
         try:
-            check_error(mbedtls_ecdh_make_params(
-                &self._ctx, &olen, &output[0], _pk.MBEDTLS_MPI_MAX_SIZE,
+            check_error(_pk.mbedtls_ecdh_make_params(
+                &self._ctx, &olen, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
             return bytes(output[:olen])
@@ -755,7 +895,7 @@ cdef class ECDHServer(ECDHBase):
 
     def import_CKE(self, const unsigned char[:] buffer):
         """Read the ClientKeyExchange payload."""
-        check_error(mbedtls_ecdh_read_public(
+        check_error(_pk.mbedtls_ecdh_read_public(
             &self._ctx, &buffer[0], buffer.size))
 
 
@@ -775,13 +915,13 @@ cdef class ECDHClient(ECDHBase):
 
         """
         cdef unsigned char* output = <unsigned char*>malloc(
-            _pk.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
+            _mpi.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
         cdef size_t olen = 0
         if not output:
             raise MemoryError()
         try:
-            check_error(mbedtls_ecdh_make_public(
-                &self._ctx, &olen, &output[0], _pk.MBEDTLS_MPI_MAX_SIZE,
+            check_error(_pk.mbedtls_ecdh_make_public(
+                &self._ctx, &olen, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
             return bytes(output[:olen])
@@ -792,5 +932,5 @@ cdef class ECDHClient(ECDHBase):
         """Read the ServerKeyExchange payload."""
         cdef const unsigned char* first = &buffer[0]
         cdef const unsigned char* end = &buffer[-1] + 1
-        check_error(mbedtls_ecdh_read_params(
+        check_error(_pk.mbedtls_ecdh_read_params(
             &self._ctx, &first, end))

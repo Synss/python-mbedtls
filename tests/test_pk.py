@@ -1,6 +1,7 @@
 """Unit tests for mbedtls.pk."""
 
 
+import numbers
 from itertools import product
 from functools import partial
 from tempfile import TemporaryFile
@@ -9,7 +10,6 @@ import pytest
 
 import mbedtls.hash as _hash
 from mbedtls.exceptions import *
-from mbedtls.exceptions import _ErrorBase
 from mbedtls.pk import _type_from_name, _get_md_alg, CipherBase
 from mbedtls.pk import *
 
@@ -157,9 +157,9 @@ class TestECC(_TestCipherBase):
     @pytest.mark.usefixtures("key")
     def test_public_value_accessor(self):
         pub = self.cipher.export_public_key("POINT")
-        assert isinstance(pub.x, long)
-        assert isinstance(pub.y, long)
-        assert isinstance(pub.z, long)
+        assert isinstance(pub.x, numbers.Integral)
+        assert isinstance(pub.y, numbers.Integral)
+        assert isinstance(pub.z, numbers.Integral)
         assert pub.x not in (0, pub.y, pub.z)
         assert pub.y not in (0, pub.x, pub.z)
         assert pub.z in (0, 1)
@@ -167,7 +167,7 @@ class TestECC(_TestCipherBase):
     @pytest.mark.usefixtures("key")
     def test_private_value_accessor(self):
         prv = self.cipher.export_key("NUM")
-        assert isinstance(prv, long)
+        assert isinstance(prv, numbers.Integral)
         assert prv != 0
 
 
@@ -191,6 +191,29 @@ class TestECCtoECDH:
         srv_sec = self.srv.generate_secret()
         cli_sec = self.cli.generate_secret()
         assert srv_sec == cli_sec
+
+
+class TestDH:
+    @pytest.fixture(autouse=True)
+    def _setup(self):
+        self.srv = DHServer(23, 5)
+        self.cli = DHClient(23, 5)
+
+    def test_key_accessors_without_key(self):
+        for cipher in (self.srv, self.cli):
+            assert cipher.shared_secret == 0
+
+    def test_exchange(self):
+        ske = self.srv.generate()
+        self.cli.import_SKE(ske)
+        cke = self.cli.generate()
+        self.srv.import_CKE(cke)
+
+        srv_sec = self.srv.generate_secret()
+        cli_sec = self.cli.generate_secret()
+        assert srv_sec == cli_sec
+        assert srv_sec == self.srv.shared_secret
+        assert cli_sec == self.cli.shared_secret
 
 
 class TestECDH:

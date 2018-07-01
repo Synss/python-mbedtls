@@ -6,12 +6,15 @@ __license__ = "MIT License"
 
 
 cdef extern from "mbedtls/bignum.h":
+    int MBEDTLS_MPI_MAX_SIZE
+
     # Multi-precision integer library
     # -------------------------------
     ctypedef struct mbedtls_mpi:
         pass
 
-    ctypedef enum mbedtls_mpi_sint: pass
+    ctypedef enum mbedtls_mpi_sint:
+        pass
 
     # mbedtls_mpi
     # -----------
@@ -48,8 +51,12 @@ cdef extern from "mbedtls/bignum.h":
         unsigned char *buf,
         size_t buflen)
 
-    # mbedtls_mpi_shift_l
-    # mbedtls_mpi_shift_r
+    int mbedtls_mpi_shift_l(
+        mbedtls_mpi *X,
+        size_t count)
+    int mbedtls_mpi_shift_r(
+        mbedtls_mpi *X,
+        size_t count)
     # mbedtls_mpi_cmp_abs
     int mbedtls_mpi_cmp_mpi(
         const mbedtls_mpi *X,
@@ -57,31 +64,58 @@ cdef extern from "mbedtls/bignum.h":
     # mbedtls_mpi_cmp_int
     # mbedtls_mpi_add_abs
     # mbedtls_mpi_sub_abs
-    # mbedtls_mpi_add_mpi
-    # mbedtls_mpi_sub_mpi
+    int mbedtls_mpi_add_mpi(
+        mbedtls_mpi *X,
+        const mbedtls_mpi *A,
+        const mbedtls_mpi *B)
+    int mbedtls_mpi_sub_mpi(
+        mbedtls_mpi *X,
+        const mbedtls_mpi *A,
+        const mbedtls_mpi *B)
     # mbedtls_mpi_add_int
     # mbedtls_mpi_sub_int
-    # mbedtls_mpi_mul_mpi
+    int mbedtls_mpi_mul_mpi(
+        mbedtls_mpi *X,
+        const mbedtls_mpi *A,
+        const mbedtls_mpi *B)
     # mbedtls_mpi_mul_int
-    # mbedtls_mpi_div_mpi
+    int mbedtls_mpi_div_mpi(
+        mbedtls_mpi *Q,
+        mbedtls_mpi *R,
+        const mbedtls_mpi *A,
+        const mbedtls_mpi *B)
     # mbedtls_mpi_div_int
-    # mbedtls_mpi_mod_mpi
+    int mbedtls_mpi_mod_mpi(
+        mbedtls_mpi *X,
+        const mbedtls_mpi *A,
+        const mbedtls_mpi *B)
     # mbedtls_mpi_mod_int
-    # mbedtls_mpi_exp_mod
-    # mbedtls_mpi_fill_random
+    int mbedtls_mpi_exp_mod(
+        mbedtls_mpi *X,
+        const mbedtls_mpi *A,
+        const mbedtls_mpi *E,
+        const mbedtls_mpi *N,
+        mbedtls_mpi *_RR)
+    int mbedtls_mpi_fill_random(
+        mbedtls_mpi *X, size_t size,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
     # mbedtls_mpi_gcd
     # mbedtls_mpi_inv_mod
-    # mbedtls_mpi_is_prime
-    # mbedtls_mpi_gen_prime
+    int mbedtls_mpi_is_prime(
+        mbedtls_mpi *X,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
+    int mbedtls_mpi_gen_prime(
+        mbedtls_mpi *X, size_t size, int dh_flag,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
 
 
 cdef class MPI:
     cdef mbedtls_mpi _ctx
-    cdef _len(self)
+    cdef size_t _len(self)
     cpdef _from_bytes(self, const unsigned char[:] bytes)
 
 
 cdef inline from_mpi(mbedtls_mpi *c_mpi):
-    new_mpi = MPI(0)
+    new_mpi = MPI()
     mbedtls_mpi_copy(&new_mpi._ctx, c_mpi)
     return new_mpi

@@ -1,3 +1,19 @@
+[next]
+
+* Support Diffie-Hellman-Merkle key exchange.
+* MPIs (multi-precision integers) now implement the full
+`numbers.Integral` API.
+* MPIs are erased from memory upon garbage collection.
+* The `mpi` library is now public (renamed `_mpi` -> `mpi`).
+
+API Changes
+
+* pk: Methods that were previously returning a long integer now
+return an MPI.
+* exceptions: Rename `_ErrorBase` -> `MbedTLSError`.  It is now
+the only new exception.
+* exceptions: `mbedtls_strerror()` generates the error message.
+
 [0.10.0] - 2018-05-07
 
 Support elliptic curve cryptography

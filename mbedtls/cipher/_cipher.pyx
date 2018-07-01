@@ -144,11 +144,11 @@ cdef class Cipher:
                  cipher_name,
                  const unsigned char[:] key,
                  mode,
-                 const unsigned char[:] iv):
-        if mode in {MODE_CBC, MODE_CFB} and iv is None:
+                 const unsigned char[:] iv not None):
+        if mode in {MODE_CBC, MODE_CFB} and iv.size == 0:
             raise ValueError("mode requires an IV")
         if cipher_name not in get_supported_ciphers():
-            raise CipherError(-1, "unsupported cipher: %r" % cipher_name)
+            raise MbedTLSError(msg="unsupported cipher: %r" % cipher_name)
 
         check_error(_cipher.mbedtls_cipher_setup(
             &self._enc_ctx,

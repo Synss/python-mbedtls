@@ -7,7 +7,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:2.7
+      - image: circleci/python:2.7.14-jessie
     working_directory: ~/python-mbedtls
     steps:
       - checkout
@@ -22,63 +22,63 @@ jobs:
 
       - restore_cache:
           keys:
-            - py27-2.7.14
+            - py27-v1-{{ arch }}-2.7.15
       - run:
-          name: install python 2.7.14
+          name: install python 2.7
           command: |
-            if [ ! -d ".pyenv/versions/2.7.14" ]; then
+            if [ ! -d ".pyenv/versions/2.7.15" ]; then
               eval "$(pyenv init -)"
-              pyenv install 2.7.14
+              pyenv install 2.7.15
             fi
       - save_cache:
-          key: py27-2.7.14
+          key: py27-v1-{{ arch }}-2.7.15
           paths:
-            - .pyenv/versions/2.7.14
+            - .pyenv/versions/2.7.15
 
       - restore_cache:
           keys:
-            - py34-3.4.8
+            - py34-v1-{{ arch }}-3.4.8
       - run:
-          name: install python 3.4.8
+          name: install python 3.4
           command: |
             if [ ! -d ".pyenv/versions/3.4.8" ]; then
               eval "$(pyenv init -)"
               pyenv install 3.4.8
             fi
       - save_cache:
-          key: py34-3.4.8
+          key: py34-v1-{{ arch }}-3.4.8
           paths:
             - .pyenv/versions/3.4.8
 
       - restore_cache:
           keys:
-            - py35-3.5.5
+            - py35-v1-{{ arch }}-3.5.5
       - run:
-          name: install python 3.5.5
+          name: install python 3.5
           command: |
             if [ ! -d ".pyenv/versions/3.5.5" ]; then
               eval "$(pyenv init -)"
               pyenv install 3.5.5
             fi
       - save_cache:
-          key: py35-3.5.5
+          key: py35-v1-{{ arch }}-3.5.5
           paths:
             - .pyenv/versions/3.5.5
 
       - restore_cache:
           keys:
-            - py36-3.6.4
+            - py36-v1-{{ arch }}-3.6.5
       - run:
-          name: install python 3.6.4
+          name: install python 3.6
           command: |
-            if [ ! -d ".pyenv/versions/3.6.4" ]; then
+            if [ ! -d ".pyenv/versions/3.6.5" ]; then
               eval "$(pyenv init -)"
-              pyenv install 3.6.4
+              pyenv install 3.6.5
             fi
       - save_cache:
-          key: py36-3.6.4
+          key: py36-v1-{{ arch }}-3.6.5
           paths:
-            - .pyenv/versions/3.6.4
+            - .pyenv/versions/3.6.5
 
       - run:
           name: setup environment
@@ -117,7 +117,7 @@ jobs:
           name: run tests
           command: |
             eval "$(pyenv init -)"
-            pyenv shell 2.7.14 3.4.8 3.5.5 3.6.4
+            pyenv shell 2.7.15 3.4.8 3.5.5 3.6.5
             . venv/bin/activate
             detox
 
@@ -133,6 +133,20 @@ jobs:
               twine upload dist/*
             fi
 
+      - run:
+          name: save logs
+          command: |
+            mkdir -p out/log
+            cp .tox/*/log/py*.log out/log || true
+          when: on_fail
+
+      - run:
+          name: save dist
+          command: |
+            mkdir -p out/dist
+            cp dist/* out/dist
+          when: on_success
+
       - store_artifacts:
-          path: dist
-          destination: dist
+          path: out
+          destination: artifacts

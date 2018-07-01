@@ -1,14 +1,147 @@
+import numbers
 from binascii import hexlify, unhexlify
 
 import pytest
 
-from mbedtls._mpi import MPI
+from mbedtls.mpi import MPI
 
 
 @pytest.mark.parametrize("value", (12, 2**32 - 1, 10**100))
 def test_from_int(value):
     mpi = MPI.from_int(value)
     assert mpi == value
+    assert value == mpi
+    assert mpi == mpi
+
+
+def test_is_integral():
+    assert isinstance(MPI(42), numbers.Integral)
+
+
+def test_prime():
+    assert MPI.prime(512).is_prime()
+
+
+def test_add():
+    assert MPI(12) + MPI(12) == 24
+    assert MPI(12) + 12 == 24
+    assert 12 + MPI(12) == 24
+
+
+def test_sub():
+    assert MPI(12) - MPI(5) == 7
+    assert MPI(12) - 5 == 7
+    assert 12 - MPI(5) == 7
+
+
+def test_mul():
+    assert MPI(12) * MPI(2) == 24
+    assert MPI(12) * 2 == 24
+    assert 12 * MPI(2) == 24
+
+
+def test_eq_same_number_is_true():
+    assert (MPI(12) == MPI(12)) is True
+    assert (MPI(12) == 12) is True
+    assert (12 == MPI(12)) is True
+
+
+def test_eq_different_numbers_is_false():
+    assert (MPI(12) == MPI(42)) is False
+    assert (MPI(12) == 42) is False
+    assert (12 == MPI(42)) is False
+
+
+def test_neq_same_numbers_is_false():
+    assert (MPI(12) != MPI(12)) is False
+    assert (MPI(12) != 12) is False
+    assert (12 != MPI(12)) is False
+
+
+def test_neq_different_numbers_is_true():
+    assert (MPI(12) != MPI(42)) is True
+    assert (MPI(12) != 42) is True
+    assert (12 != MPI(42)) is True
+
+
+def test_lt_larger_number_is_true():
+    assert (MPI(12) < MPI(42)) is True
+    assert (MPI(12) < 42) is True
+    assert (12 < MPI(42)) is True
+
+
+def test_lt_smaller_number_is_false():
+    assert (MPI(42) < MPI(12)) is False
+    assert (MPI(42) < 12) is False
+    assert (42 < MPI(12)) is False
+
+
+def test_lt_same_number_is_false():
+    assert (MPI(12) < MPI(12)) is False
+    assert (MPI(12) < 12) is False
+    assert (12 < MPI(12)) is False
+
+
+def test_gt_larger_number_is_false():
+    assert (MPI(12) > MPI(42)) is False
+    assert (MPI(12) > 42) is False
+    assert (12 > MPI(42)) is False
+
+
+def test_gt_smaller_number_is_true():
+    assert (MPI(42) > MPI(12)) is True
+    assert (MPI(42) > 12) is True
+    assert (42 > MPI(12)) is True
+
+
+def test_gt_same_number_is_false():
+    assert (MPI(12) > MPI(12)) is False
+    assert (MPI(12) > 12) is False
+    assert (12 > MPI(12)) is False
+
+
+def test_le():
+    assert (MPI(12) <= MPI(42)) is True
+    assert (MPI(12) <= MPI(12)) is True
+    assert (MPI(42) <= MPI(12)) is False
+
+
+def test_ge():
+    assert (MPI(42) >= MPI(12)) is True
+    assert (MPI(42) >= MPI(42)) is True
+    assert (MPI(12) >= MPI(42)) is False
+
+
+def test_bool():
+    assert bool(MPI(0)) is False
+
+
+def test_float():
+    assert float(MPI(12)) == 12.0
+
+
+def test_rshift():
+    assert MPI(12) >> MPI(2) == 3
+    assert MPI(12) >> 2 == 3
+    assert 12 >> int(MPI(2)) == 3
+
+
+def test_lshift():
+    assert MPI(12) << MPI(2) == 48
+    assert MPI(12) << 2 == 48
+    assert 12 << int(MPI(2)) == 48
+
+
+def test_floordiv():
+    assert MPI(24) // MPI(2) == 12
+    assert MPI(24) // 2 == 12
+    assert 24 // MPI(2) == 12
+
+
+def test_mod():
+    assert MPI(12) % MPI(10) == 2
+    assert MPI(12) % 10 == 2
+    assert 12 % MPI(10) == 2
 
 
 @pytest.mark.parametrize("value", (12, 2**32 - 1, 10**100))
