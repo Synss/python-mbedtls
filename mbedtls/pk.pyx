@@ -19,7 +19,7 @@ __license__ = "MIT License"
 
 from libc.stdlib cimport malloc, free
 
-cimport mbedtls._mpi as _mpi
+cimport mbedtls.mpi as _mpi
 cimport mbedtls.pk as _pk
 cimport mbedtls.random as _random
 

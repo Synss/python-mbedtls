@@ -3,7 +3,7 @@ from binascii import hexlify, unhexlify
 
 import pytest
 
-from mbedtls._mpi import MPI
+from mbedtls.mpi import MPI
 
 
 @pytest.mark.parametrize("value", (12, 2**32 - 1, 10**100))

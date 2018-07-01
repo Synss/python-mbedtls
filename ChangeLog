@@ -4,6 +4,7 @@
 * MPIs (multi-precision integers) now implement the full
 `numbers.Integral` API.
 * MPIs are erased from memory upon garbage collection.
+* The `mpi` library is now public (renamed `_mpi` -> `mpi`).
 
 API Changes
 
