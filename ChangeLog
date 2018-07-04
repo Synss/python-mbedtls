@@ -1,4 +1,9 @@
-[next]
+[0.11.1] - 2018-07-04
+
+Update changelog.  No changes in the code.
+
+
+[0.11.0] - 2018-07-01
 
 * Support Diffie-Hellman-Merkle key exchange.
 * MPIs (multi-precision integers) now implement the full
