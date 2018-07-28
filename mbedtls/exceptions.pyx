@@ -10,14 +10,14 @@ from libc.stdlib cimport malloc, free
 cimport mbedtls.exceptions as _err
 
 
-__all__ = ("MbedTLSError", "check_error")
+__all__ = ("TLSError", "check_error")
 
 
-class MbedTLSError(Exception):
+class TLSError(Exception):
     """Exception raise by Mbed TLS."""
 
     def __init__(self, err=None, msg=""):
-        super(MbedTLSError, self).__init__()
+        super(TLSError, self).__init__()
         if err is not None:
             assert err >= 0
         self.err = err
@@ -55,4 +55,4 @@ class MbedTLSError(Exception):
 cpdef check_error(const int err):
     if err >= 0:
         return err
-    raise MbedTLSError(-err)
+    raise TLSError(-err)

@@ -33,7 +33,7 @@ import enum
 from functools import partial
 
 import mbedtls.random as _random
-from mbedtls.exceptions import check_error, MbedTLSError
+from mbedtls.exceptions import check_error, TLSError
 import mbedtls.hash as _hash
 
 
@@ -168,7 +168,7 @@ cdef class CipherBase:
             return NotImplemented
         try:
             return self.to_DER() == other.to_DER()
-        except MbedTLSError:
+        except TLSError:
             return False
 
     property _type:
@@ -343,7 +343,7 @@ cdef class CipherBase:
             check_error(_pk.mbedtls_pk_parse_key(
                 &self._ctx, &key_[0], key_.size,
                 &pwd_[0] if pwd_.size else NULL, pwd_.size))
-        except MbedTLSError:
+        except TLSError:
             check_error(_pk.mbedtls_pk_parse_public_key(
                 &self._ctx, &key_[0], key_.size))
 

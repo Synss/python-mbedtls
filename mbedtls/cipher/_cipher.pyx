@@ -148,7 +148,7 @@ cdef class Cipher:
         if mode in {MODE_CBC, MODE_CFB} and iv.size == 0:
             raise ValueError("mode requires an IV")
         if cipher_name not in get_supported_ciphers():
-            raise MbedTLSError(msg="unsupported cipher: %r" % cipher_name)
+            raise TLSError(msg="unsupported cipher: %r" % cipher_name)
 
         check_error(_cipher.mbedtls_cipher_setup(
             &self._enc_ctx,
