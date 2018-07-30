@@ -25,6 +25,7 @@ lib64/
 parts/
 sdist/
 var/
+venv/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -49,6 +50,7 @@ nosetests.xml
 coverage.xml
 *,cover
 ./cover
+.pytest_cache/
 
 # Translations
 *.mo
@@ -62,3 +64,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Local mbed-tls installations
+src-*/
