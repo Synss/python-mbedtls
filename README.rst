@@ -176,8 +176,7 @@ Message signature and verification::
    >>> rsa.verify(b"Sorry, wrong message.", sig)
    False
    >>> pub = rsa.export_public_key(format="DER")
-   >>> other = pk.RSA()
-   >>> other.from_buffer(pub)
+   >>> other = pk.RSA.from_buffer(pub)
    >>> other.verify(b"Please sign here.", sig)
    True
 
@@ -210,8 +209,7 @@ algorithm (ECDSA)::
    >>> ecdsa.verify(b"Sorry, wrong message.", sig)
    False
    >>> pub = ecdsa.export_public_key(format="DER")
-   >>> other = pk.ECC()
-   >>> other.from_buffer(pub)
+   >>> other = pk.ECC.from_buffer(pub)
    >>> other.verify(b"Please sign here.", sig)
    True
 

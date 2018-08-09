@@ -21,11 +21,11 @@ cdef class Entropy:
         """Free and clear the context."""
         random.mbedtls_entropy_free(&self._ctx)
 
-    cpdef gather(self):
+    def gather(self):
         """Trigger an extra gather poll for the accumulator."""
         random.mbedtls_entropy_gather(&self._ctx)
 
-    cpdef retrieve(self, size_t length):
+    def retrieve(self, size_t length):
         """Retrieve entropy from the accumulator."""
         cdef unsigned char* output = <unsigned char*>malloc(
             length * sizeof(unsigned char))
@@ -38,7 +38,7 @@ cdef class Entropy:
         finally:
             free(output)
 
-    cpdef update(self, data):
+    def update(self, data):
         """Add data to the accumulator manually."""
         cdef unsigned char[:] c_data = bytearray(data)
         check_error(random.mbedtls_entropy_update_manual(
@@ -60,16 +60,16 @@ cdef class Random:
         """Free and clear the context."""
         random.mbedtls_ctr_drbg_free(&self._ctx)
 
-    cpdef reseed(self):
+    def reseed(self):
         """Reseed the RNG."""
         check_error(random.mbedtls_ctr_drbg_reseed(&self._ctx, NULL, 0))
 
-    cpdef update(self, data):
+    def update(self, data):
         """Update state with additional data."""
         cdef unsigned char[:] c_data = bytearray(data)
         random.mbedtls_ctr_drbg_update(&self._ctx, &c_data[0], c_data.shape[0])
 
-    cpdef token_bytes(self, length):
+    def token_bytes(self, length):
         """Returns `length` random bytes."""
         cdef size_t sz = length
         cdef unsigned char* output = <unsigned char*>malloc(
@@ -83,6 +83,6 @@ cdef class Random:
         finally:
             free(output)
 
-    cpdef token_hex(self, length):
+    def token_hex(self, length):
         """Same as `token_bytes` but returned as a string."""
         return binascii.hexlify(self.token_bytes(length)).decode("ascii")

@@ -1,6 +1,5 @@
 """Unit tests for mbedtls.pk."""
 
-
 import numbers
 from itertools import product
 from functools import partial
@@ -87,10 +86,8 @@ class _TestCipherBase(object):
 
     @pytest.mark.usefixtures("key")
     def test_import_public_key(self):
-        other = type(self.cipher)()
-
         pub = self.cipher.export_public_key()
-        other.from_buffer(pub)
+        other = type(self.cipher).from_buffer(pub)
         assert not other.export_key()
         assert other.export_public_key()
         assert check_pair(self.cipher, other) is False  # Test private half.
@@ -99,8 +96,7 @@ class _TestCipherBase(object):
         assert self.cipher != other
 
     def test_import_private_key(self, key):
-        other = type(self.cipher)()
-        other.from_buffer(key)
+        other = type(self.cipher).from_buffer(key)
         assert other.export_key()
         assert other.export_public_key()
         assert check_pair(self.cipher, other) is True  # Test private half.
@@ -110,10 +106,8 @@ class _TestCipherBase(object):
 
     @pytest.mark.usefixtures("key")
     def test_export_to_PEM(self):
-        other = type(self.cipher)()
-
         prv = self.cipher.export_key(format="PEM")
-        other.from_PEM(prv)
+        other = type(self.cipher).from_PEM(prv)
         assert self.cipher == other
 
 

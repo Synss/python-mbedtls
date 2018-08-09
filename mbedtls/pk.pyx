@@ -145,15 +145,31 @@ cdef class CipherBase:
 
     Parameters:
         name (bytes): The cipher name known to mbed TLS.
+        key (bytes, optional): A key (public or private half).
+        password (bytes, optional): The password for the key.
 
     """
-    def __init__(self, name):
+    def __init__(self,
+                 name,
+                 const unsigned char[:] key=None,
+                 const unsigned char[:] password=None):
         check_error(_pk.mbedtls_pk_setup(
             &self._ctx,
             _pk.mbedtls_pk_info_from_type(
                 _type_from_name(name)
             )
         ))
+        if key is None:
+            return
+        mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
+        try:
+            check_error(_pk.mbedtls_pk_parse_key(
+                &self._ctx, &key[0], key.size,
+                NULL if password is None else &password[0],
+                0 if password is None else password.size))
+        except TLSError:
+            check_error(_pk.mbedtls_pk_parse_public_key(
+                &self._ctx, &key[0], key.size))
 
     def __cinit__(self):
         """Initialize the context."""
@@ -170,6 +186,27 @@ cdef class CipherBase:
             return self.to_DER() == other.to_DER()
         except TLSError:
             return False
+
+    @classmethod
+    def from_buffer(cls, key):
+        """Import a key (public or private half).
+
+        The public half is generated upon importing a private key.
+
+        Arguments:
+            key (bytes): The key in PEM or DER format.
+            password (bytes, optional): The password for
+                password-protected private keys.
+
+        """
+        raise NotImplementedError
+
+    from_DER = from_buffer
+
+    @classmethod
+    def from_PEM(cls, key):
+        """Import a key (public or private half)."""
+        return cls.from_buffer(key.encode("ascii"))
 
     property _type:
         """Return the type of the cipher."""
@@ -323,36 +360,6 @@ cdef class CipherBase:
         # cast unsigned char[:] -> bytearray -> bytes
         return bytes(bytearray(buf[olen - ret:olen]))
 
-    def from_buffer(self, key, password=None):
-        """Import a key (public or private half).
-
-        The public half is generated upon importing a private key.
-
-        Arguments:
-            key (bytes): The key in PEM or DER format.
-            password (bytes, optional): The password for
-                password-protected private keys.
-
-        """
-        if password is None:
-            password = bytearray()
-        cdef unsigned char[:] pwd_ = bytearray(password)
-        cdef unsigned char[:] key_ = bytearray(key + b"\0")
-        mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
-        try:
-            check_error(_pk.mbedtls_pk_parse_key(
-                &self._ctx, &key_[0], key_.size,
-                &pwd_[0] if pwd_.size else NULL, pwd_.size))
-        except TLSError:
-            check_error(_pk.mbedtls_pk_parse_public_key(
-                &self._ctx, &key_[0], key_.size))
-
-    from_DER = from_buffer
-
-    def from_PEM(self, key, password=None):
-        """Import a key (public and private half)."""
-        self.from_buffer(key.encode("ascii"), password=password)
-
     def _private_to_DER(self):
         if not self._has_private():
             return b""
@@ -450,8 +457,24 @@ cdef class RSA(CipherBase):
 
     """RSA public-key cryptosystem."""
 
-    def __init__(self):
-        super().__init__(b"RSA")
+    def __init__(self,
+                 const unsigned char[:] key=None,
+                 const unsigned char[:] password=None):
+        super().__init__(b"RSA", key, password)
+
+    @classmethod
+    def from_buffer(cls, key):
+        """Import a key (public or private half).
+
+        The public half is generated upon importing a private key.
+
+        Arguments:
+            key (bytes): The key in PEM or DER format.
+            password (bytes, optional): The password for
+                password-protected private keys.
+
+        """
+        return cls(key)
 
     def _has_private(self):
         """Return `True` if the key contains a valid private half."""
@@ -566,11 +589,28 @@ cdef class ECC(CipherBase):
         get_supported_curves()
 
     """
-    def __init__(self, curve=None):
-        super().__init__(b"EC")
+    def __init__(self,
+                 curve=None,
+                 const unsigned char[:] key=None,
+                 const unsigned char[:] password=None):
+        super().__init__(b"EC", key, password)
         if curve is None:
             curve = get_supported_curves()[0]
         self.curve = curve
+
+    @classmethod
+    def from_buffer(cls, key):
+        """Import a key (public or private half).
+
+        The public half is generated upon importing a private key.
+
+        Arguments:
+            key (bytes): The key in PEM or DER format.
+            password (bytes, optional): The password for
+                password-protected private keys.
+
+        """
+        return cls(None, key)
 
     def _has_private(self):
         """Return `True` if the key contains a valid private half."""

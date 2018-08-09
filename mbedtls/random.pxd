@@ -74,15 +74,8 @@ cdef extern from "mbedtls/ctr_drbg.h":
 
 cdef class Entropy:
     cdef mbedtls_entropy_context _ctx
-    cpdef gather(self)
-    cpdef retrieve(self, size_t length)
-    cpdef update(self, data)
 
 
 cdef class Random:
     cdef mbedtls_ctr_drbg_context _ctx
     cdef Entropy _entropy
-    cpdef reseed(self)
-    cpdef update(self, data)
-    cpdef token_bytes(self, length)
-    cpdef token_hex(self, length)

@@ -2,6 +2,8 @@
 
 API Changes
 
+* pk: `from_{PEM,DER,buffer}` are now `classmethod`s to
+comply with PEP 543.
 * exceptions: Rename `MbedTLSError` -> `TLSError` to comply
 with PEP 543.
 
