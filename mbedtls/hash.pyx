@@ -24,13 +24,13 @@ cdef class Hash(_md.MDBase):
     for unkeyed hashes.
 
     Parameters:
-        name (bytes): The MD name known to mbed TLS.
+        name (str): The MD name known to mbed TLS.
 
     Attributes:
         digest_size (int): The size of the message digest, in bytes.
         block_size (int): The internal block size of the hash
             algorithm in bytes.
-        name (bytes): The name of the message digest.
+        name (str): The name of the message digest.
 
     """
     def __init__(self, name, buffer=None):
