@@ -30,6 +30,7 @@ except ImportError:
     from collections import Sequence
 
 import enum
+from collections import namedtuple
 from functools import partial
 
 import mbedtls.random as _random
@@ -51,6 +52,9 @@ CIPHER_NAME = (
     # b"RSA_ALT",
     # b"RSASSA_PSS",
 )
+
+
+KeyPair = namedtuple("KeyPair", ["private", "public"])
 
 
 class Curve(bytes, enum.Enum):
@@ -79,8 +83,8 @@ RSA_PRV_DER_MAX_BYTES = 47 + 3 * _mpi.MBEDTLS_MPI_MAX_SIZE + 5 * MPI_MAX_SIZE_2
 ECP_PUB_DER_MAX_BYTES = 30 + 2 * _pk.MBEDTLS_ECP_MAX_BYTES
 ECP_PRV_DER_MAX_BYTES = 29 + 3 * _pk.MBEDTLS_ECP_MAX_BYTES
 
-cdef int PUB_DER_MAX_BYTES = max(RSA_PUB_DER_MAX_BYTES, ECP_PUB_DER_MAX_BYTES)
-cdef int PRV_DER_MAX_BYTES = max(RSA_PRV_DER_MAX_BYTES, ECP_PRV_DER_MAX_BYTES)
+PUB_DER_MAX_BYTES = max(RSA_PUB_DER_MAX_BYTES, ECP_PUB_DER_MAX_BYTES)
+PRV_DER_MAX_BYTES = max(RSA_PRV_DER_MAX_BYTES, ECP_PRV_DER_MAX_BYTES)
 
 del RSA_PUB_DER_MAX_BYTES, MPI_MAX_SIZE_2, RSA_PRV_DER_MAX_BYTES
 del ECP_PUB_DER_MAX_BYTES, ECP_PRV_DER_MAX_BYTES
@@ -188,7 +192,7 @@ cdef class CipherBase:
             return False
 
     @classmethod
-    def from_buffer(cls, key):
+    def from_buffer(cls, const unsigned char[:] key):
         """Import a key (public or private half).
 
         The public half is generated upon importing a private key.
@@ -201,7 +205,9 @@ cdef class CipherBase:
         """
         raise NotImplementedError
 
-    from_DER = from_buffer
+    @classmethod
+    def from_DER(cls, const unsigned char[:] key):
+        return cls.from_buffer(key)
 
     @classmethod
     def from_PEM(cls, key):
@@ -425,7 +431,7 @@ cdef class CipherBase:
             export_key(), export_public_key()
 
         """
-        return self.export_key("PEM"), self.export_public_key("PEM")
+        return KeyPair(self.export_key("PEM"), self.export_public_key("PEM"))
 
     def __str__(self):
         return self.export_key(format="PEM")
@@ -443,7 +449,7 @@ cdef class CipherBase:
             export_key(), export_public_key()
 
         """
-        return self.export_key("DER"), self.export_public_key("DER")
+        return KeyPair(self.export_key("DER"), self.export_public_key("DER"))
 
     def to_bytes(self):
         """Return the private key in DER format."""
@@ -463,7 +469,7 @@ cdef class RSA(CipherBase):
         super().__init__(b"RSA", key, password)
 
     @classmethod
-    def from_buffer(cls, key):
+    def from_buffer(cls, const unsigned char[:] key):
         """Import a key (public or private half).
 
         The public half is generated upon importing a private key.
@@ -599,7 +605,7 @@ cdef class ECC(CipherBase):
         self.curve = curve
 
     @classmethod
-    def from_buffer(cls, key):
+    def from_buffer(cls, const unsigned char[:] key):
         """Import a key (public or private half).
 
         The public half is generated upon importing a private key.
