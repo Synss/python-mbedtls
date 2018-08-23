@@ -54,6 +54,16 @@ CIPHER_NAME = (
 )
 
 
+class CipherType(enum.Enum):
+    NONE = _pk.MBEDTLS_PK_NONE
+    RSA = _pk.MBEDTLS_PK_RSA
+    ECKEY = _pk.MBEDTLS_PK_ECKEY
+    ECKEY_DH = _pk.MBEDTLS_PK_ECKEY_DH
+    ECDSA = _pk.MBEDTLS_PK_ECDSA
+    RSA_ALT = _pk.MBEDTLS_PK_RSA_ALT
+    RSASSA_PSS = _pk.MBEDTLS_PK_RSASSA_PSS
+
+
 KeyPair = namedtuple("KeyPair", ["private", "public"])
 
 
@@ -183,13 +193,27 @@ cdef class CipherBase:
         """Free and clear the context."""
         _pk.mbedtls_pk_free(&self._ctx)
 
+    def __hash__(self):
+        if self._has_private():
+            return hash(self.export_key(format="DER"))
+        else:
+            return hash(self.export_public_key(format="DER"))
+
     def __eq__(self, other):
         if type(other) is not type(self):
-            return NotImplemented
-        try:
-            return self.to_DER() == other.to_DER()
-        except TLSError:
-            return False
+            try:
+                other = other.encode("ascii")
+            except:
+                pass
+            try:
+                other = type(self).from_buffer(other)
+            except:
+                return False
+        if self._has_private() or other._has_private():
+            return other.export_key() == self.export_key()
+        elif not (self._has_private() and other._has_private()):
+            return other.export_public_key() == self.export_public_key()
+        return False
 
     @classmethod
     def from_buffer(cls, const unsigned char[:] key):

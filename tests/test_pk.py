@@ -40,6 +40,29 @@ class _TestCipherBase(object):
     def key(self):
         raise NotImplementedError
 
+    @pytest.fixture
+    def pub(self, key):
+        return type(self.cipher).from_buffer(
+            self.cipher.export_public_key())
+
+    @pytest.mark.usefixtures("key")
+    def test_cmp_eq(self):
+        assert self.cipher == self.cipher
+
+    @pytest.mark.parametrize("format", ["DER", "PEM"])
+    @pytest.mark.usefixtures("key")
+    def test_cmp_eq_prv(self, format):
+        assert self.cipher == self.cipher.export_key(format)
+
+    @pytest.mark.parametrize("format", ["DER", "PEM"])
+    def test_cmp_eq_pub(self, pub, format):
+        assert pub == pub.export_public_key(format)
+
+    @pytest.mark.parametrize("invalid", [b"", "", b"\1\2\3", "123"])
+    @pytest.mark.userfixtures("key")
+    def test_cmp_neq(self, invalid):
+        assert self.cipher != invalid
+
     def test_key_accessors_without_key(self):
         assert not self.cipher.export_key()
         assert not self.cipher.export_public_key()
