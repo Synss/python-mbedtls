@@ -283,30 +283,58 @@ As in ECDH, client and server may now generate their shared secret::
 X.509 Certificate writing and parsing with `mbedtls.x509`
 ---------------------------------------------------------
 
-Create new X.509 certificates::
+The x509 module can be used to parse X.509 certificates or create
+and verify a certificate chain.
+
+Here, the trusted root is a self-signed CA certificate
+`ca0_crt` signed by `ca0_key`::
 
    >>> import datetime as dt
-   >>> from pathlib import Path
    >>>
    >>> from mbedtls import hash as hashlib
-   >>> from mbedtls.pk import RSA
-   >>> from mbedtls.x509 import Certificate, CSR, CRL
+   >>> from mbedtls import pk
+   >>> from mbedtls import x509
    >>>
    >>> now = dt.datetime.utcnow()
-   >>> issuer_key = RSA()
-   >>> _ = issuer_key.generate()
-   >>> subject_key = RSA()
-   >>> prv = subject_key.generate()
-   >>>
-   >>> crt = Certificate.new(
-   ...     start=now, end=now + dt.timedelta(days=90),
-   ...     issuer="C=NL,O=PolarSSL,CN=PolarSSL Test CA", issuer_key=issuer_key,
-   ...     subject=None, subject_key=subject_key,
-   ...     md_alg=hashlib.sha1(), serial=None)
+   >>> ca0_key = pk.RSA()
+   >>> _ = ca0_key.generate()
+   >>> ca0_csr = x509.CSR.new(ca0_key, "CN=Trusted CA", hashlib.sha256())
+   >>> ca0_crt = x509.CRT.selfsign(
+   ...     ca0_csr, ca0_key,
+   ...     not_before=now, not_after=now + dt.timedelta(days=90),
+   ...     serial_number=0x123456, ca=True, max_path_length=-1)
    ...
-   >>> csr = CSR.new(subject_key, hashlib.sha1(),
-   ...               "C=NL,O=PolarSSL,CN=PolarSSL Server 1")
-   >>>
 
-Call ``next(crt)`` to obtain the next certificate in a chain.  The
-call raises `StopIteration` if there is no further certificate.
+An intermediate then issues a Certificate Singing Request (CSR) that the
+root CA signs::
+
+   >>> ca1_key = pk.ECC()
+   >>> _ = ca1_key.generate()
+   >>> ca1_csr = x509.CSR.new(ca1_key, "CN=Intermediate CA", hashlib.sha256())
+   >>>
+   >>> ca1_crt = ca0_crt.sign(
+   ...     ca1_csr, ca0_key, now, now + dt.timedelta(days=90), 0x123456, 
+   ...     ca=True, max_path_length=3)
+   ...
+
+And finally, the intermediate CA signs a certificate for the
+End Entity on the basis of a new CSR::
+
+   >>> ee0_key = pk.ECC()
+   >>> _ = ee0_key.generate()
+   >>> ee0_csr = x509.CSR.new(ee0_key, "CN=End Entity", hashlib.sha256())
+   >>>
+   >>> ee0_crt = ca1_crt.sign(
+   ...     ee0_csr, ca1_key, now, now + dt.timedelta(days=90), 0x987654)
+   ...
+
+The emitting certificate can be used to verify the next certificate in
+the chain::
+
+   >>> ca1_crt.verify(ee0_crt)
+   True
+   >>> ca0_crt.verify(ca1_crt)
+   True
+
+Note, however, that this verification is only one step in a private key
+infrastructure and does not take CRLs, path length, etc. into account.

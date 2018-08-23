@@ -12,8 +12,35 @@ cimport mbedtls.mpi as _mpi
 cimport mbedtls.pk as _pk
 
 import base64
+import datetime as dt
+from collections import namedtuple
 
+import mbedtls.hash as hashlib
+import mbedtls.mpi as _mpi
+import mbedtls.pk as _pk
+import mbedtls._md as _md
 from mbedtls.exceptions import *
+
+import enum
+
+
+@enum.unique
+class KeyUsage(enum.IntEnum):
+    """Key Usage Extension.
+
+    See Also:
+        RFC 5280 - 4.2.1.3 Key Usage.
+
+    """
+    DIGITAL_SIGNATURE  = 0x80
+    NON_REPUDIATION = 0x40
+    KEY_ENCIPHERMENT  = 0x20
+    DATA_ENCIPHERMENT = 0x10
+    KEY_AGREEMENT = 0x08
+    KEY_CERT_SIGN = 0x04
+    CRL_SIGN = 0x02
+    ENCIPHER_ONLY = 0x01
+    DECIPHER_ONLY = 0x8000
 
 
 def PEM_to_DER(pem):
@@ -33,12 +60,65 @@ def DER_to_PEM(der, text):
 
 
 cdef class Certificate:
+    @classmethod
+    def from_buffer(cls, buffer):
+        # PEP 543
+        return cls(buffer)
+
+    @classmethod
+    def from_file(cls, path):
+        # PEP 543
+        raise NotImplementedError
+
+    @classmethod
+    def from_DER(cls, der):
+        raise NotImplementedError
+
+    @classmethod
+    def from_PEM(cls, pem):
+        raise NotImplementedError
+
+    def __hash__(self):
+        return hash(self.to_DER())
+
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self.to_DER() == other.to_DER()
+        else:
+            return self.to_DER() == other or self.to_PEM() == other
+
+    def __str__(self):
+        raise NotImplementedError
+
+    def __bytes__(self):
+        return self.to_DER()
+
+    def export(self, format="DER"):
+        if format == "DER":
+            return self.to_DER()
+        if format == "PEM":
+            return self.to_PEM()
+        raise ValueError(format)
+
+    def to_bytes(self):
+        return self.to_DER()
+
+    def to_DER(self):
+        raise NotImplementedError
+
+    def to_PEM(self):
+        raise NotImplementedError
+
+
+cdef class CRT(Certificate):
     """X.509 certificate."""
 
-    def __init__(self, buffer):
+    def __init__(self, const unsigned char[:] buffer):
+        super(CRT, self).__init__()
         if buffer is None:
-            return  # Implementation detail.
-        self._from_buffer(buffer)
+            return
+        check_error(x509.mbedtls_x509_crt_parse(
+            &self._ctx, &buffer[0], buffer.size))
 
     def __cinit__(self):
         """Initialize a certificate (chain)."""
@@ -48,24 +128,16 @@ cdef class Certificate:
         """Unallocate all certificate data."""
         x509.mbedtls_x509_crt_free(&self._ctx)
 
-    def __hash__(self):
-        return hash(self.to_DER())
-
-    def __eq__(self, other):
-        if type(other) is not type(self):
-            return NotImplemented
-        return self.to_DER() == other.to_DER()
-
     def __next__(self):
         if self._ctx.next == NULL or self._ctx.version == 0:
             raise StopIteration
         cdef mbedtls_x509_buf buf = self._ctx.next.raw
         return type(self).from_DER(buf.p[0:buf.len])
 
-    def _info(self):
+    def __str__(self):
         cdef size_t osize = 2**24
-        cdef char* output = <char*>malloc(osize * sizeof(char))
-        cdef char* prefix = b""
+        cdef char *output = <char *>malloc(osize * sizeof(char))
+        cdef char *prefix = b""
         if not output:
             raise MemoryError()
         try:
@@ -75,84 +147,326 @@ cdef class Certificate:
         finally:
             free(output)
 
-    cpdef _from_buffer(self, const unsigned char[:] buf):
-        check_error(
-            x509.mbedtls_x509_crt_parse(&self._ctx, &buf[0], buf.size))
-        return self
+    # RFC 5280, Section 4.1 Basic Certificate Fields
+    # RFC 5280, Section 4.1.1 Certificate Fields
+
+    @property
+    def tbs_certificate(self):
+        """The TBS (to be signed) certificate in DER format.
+
+        See Also:
+            RFC 5280, Section 4.1.1.1 TBS Certificate
+
+        """
+        return bytes(self._ctx.tbs.p[:self._ctx.tbs.len])
+
+    @property
+    def _signature_algorithm(self):
+        """Cryptographic algorithm used by the CA to sign this CRT.
+
+        See Also:
+            RFC 5280, Section 4.1.1.2 Signature Algorithm
+
+        """
+        # The byte structure should be parsed according to RFC 5280.
+        return bytes(self._ctx.sig_oid.p[:self._ctx.sig_oid.len])
+
+    @property
+    def signature_value(self):
+        """Digital signature of the TBS certificate.
+
+        See Also:
+            RFC 5280, Section 4.1.1.3 Signature Value
+
+        """
+        return bytes(self._ctx.sig.p[:self._ctx.sig.len])
+
+    # RFC 5280, Section 4.1.2 TBS Certificate
+
+    @property
+    def version(self):
+        """The version of the encoded certificate.
+
+        See Also:
+            RF 5280, Section 4.1.2.1 Version
+
+        """
+        return int(self._ctx.version)
+
+    @property
+    def serial_number(self):
+        """The certificate serial number.
+
+        See Also:
+            RFC 5280, Section 4.1.2.2 Serial Number
+
+        """
+        return int(_mpi.MPI.from_bytes(
+            self._ctx.serial.p[:self._ctx.serial.len], "big"))
+
+    # RFC 4.1.2.3 Signature
+    @property
+    def digestmod(self):
+        return hashlib.new(
+            _md.MD_NAME[self._ctx.sig_md].decode("ascii").lower())
+
+    @property
+    def issuer(self):
+        """Entity that has signed and issued the certificate.
+
+        See Also:
+            RFC 5280, Section 4.1.2.4 Issuer
+
+        """
+        cdef size_t osize = 200
+        cdef char* c_buf = <char *>malloc(osize * sizeof(char))
+        if not c_buf:
+            raise MemoryError()
+        try:
+            written = x509.mbedtls_x509_dn_gets(
+                &c_buf[0], osize, &self._ctx.issuer)
+            return bytes(c_buf[:written]).decode("utf8")
+        finally:
+            free(c_buf)
+
+    @property
+    def not_before(self):
+        """Beginning of the validity of the certificate (inclusive).
+
+        See Also:
+            RFC 5280, Section 4.1.2.5 Validity
+
+        """
+        cdef x509.mbedtls_x509_time *valid_from = &self._ctx.valid_from
+        return dt.datetime(
+            valid_from[0].year, valid_from[0].mon, valid_from[0].day,
+            valid_from[0].hour, valid_from[0].min, valid_from[0].sec)
+
+    @property
+    def not_after(self):
+        """End of the validity of the certificate (inclusive).
+
+        See Also:
+            RFC 5280, Section 4.1.2.5 Validity
+
+        """
+        cdef x509.mbedtls_x509_time *valid_to = &self._ctx.valid_to
+        return dt.datetime(
+            valid_to[0].year, valid_to[0].mon, valid_to[0].day,
+            valid_to[0].hour, valid_to[0].min, valid_to[0].sec)
+
+    @property
+    def subject(self):
+        """Entity associated with the public key.
+
+        See Also:
+            RFC 5280, Section 4.1.2.6 Subject
+
+        """
+        cdef size_t osize = 200
+        cdef char *c_buf = <char *>malloc(osize * sizeof(char))
+        if not c_buf:
+            raise MemoryError()
+        try:
+            written = x509.mbedtls_x509_dn_gets(
+                &c_buf[0], osize, &self._ctx.subject)
+            return bytes(c_buf[:written]).decode("utf8")
+        finally:
+            free(c_buf)
+
+    @property
+    def subject_public_key(self):
+        """The public key.
+
+        See Also:
+            RFC 5280, Section 4.1.2.7 Subject Public Key Info
+
+        """
+        cipher_type = _pk.CipherType(_pk.mbedtls_pk_get_type(&self._ctx.pk))
+        cipher = {
+            _pk.CipherType.RSA: _pk.RSA,
+            _pk.CipherType.ECKEY: _pk.ECC,
+        }.get(cipher_type, None)
+        if cipher is None:
+            raise ValueError("unsupported cipher %r" % cipher_type)
+
+        cdef size_t osize = _pk.PUB_DER_MAX_BYTES
+        cdef unsigned char *c_buf = <unsigned char *>malloc(
+            osize * sizeof(unsigned char))
+        if not c_buf:
+            raise MemoryError()
+        try:
+            ret = check_error(_pk.mbedtls_pk_write_pubkey_der(
+                &self._ctx.pk, &c_buf[0], osize))
+            return cipher.from_DER(c_buf[osize - ret:osize])
+        finally:
+            free(c_buf)
+
+    # RFC 5280, Section 4.1.2.8 Unique Identifiers
+    # RFC 5280, Section 4.1.2.9 Extensions
+    # RFC 5280, Section 4.2 Certificate Extensions
+    # RFC 5280, Section 4.2.1 Standard Extensions
+    # RFC 5280, Section 4.2.1.1 Authority Key Identifier
+    # RFC 5280, Section 4.2.1.2 Subject Key Identifier
+
+    @property
+    def key_usage(self):
+        """Key usage extension (bitfield).
+
+        See Also:
+            RFC 5280, Section 4.2.1.3 Key Usage
+
+        """
+        return KeyUsage(self._ctx.key_usage)
+
+    # RFC 5280, Section 4.2.1.4 Certificate Policies
+    # RFC 5280, Section 4.2.1.5 Policy Mappings
+
+    @property
+    def subject_alternative_names(self):
+        """Subject alternative name extension.
+
+        See Also:
+            RFC 5280, Section 4.2.1.6 Subject Alternative Name
+
+        """
+        cdef mbedtls_x509_sequence *item
+        item = &self._ctx.subject_alt_names
+        names = set()
+        while item != NULL:
+            names.add(item.buf.p[:item.buf.len].decode("utf8"))
+            item = item.next
+        return frozenset(names)
+
+    # RFC 5280, Section 4.2.1.7 Issuer Alternative Name
+    # RFC 5280, Section 4.2.1.8 Subject Directory Attributes
+
+    @property
+    def ca(self):
+        """True if the certified public key may be used to verify
+        certificate signatures.
+
+        See Also:
+            RFC 5280, Section 4.2.1.9 Basic Constraints
+
+        """
+        return bool(self._ctx.ca_istrue)
+
+    @property
+    def max_path_length(self):
+        """RFC 5280 `max_path_length`."""
+        max_path_length = int(self._ctx.max_pathlen)
+        return max_path_length - 1 if max_path_length > 0 else 0
+
+    # RFC 5280, Section 4.2.1.10 Name Constraints
+    # RFC 5280, Section 4.2.1.11 Policy Constraints
+    # RFC 5280, Section 4.2.1.12 Extended Key Usage
+    # RFC 5280, Section 4.2.1.13 CRL Distribution Points
+    # RFC 5280, Section 4.2.1.14 Inhibit Any-Policy
+    # RFC 5280, Section 4.2.1.15 Freshest CRL
 
     def check_revocation(self, CRL crl):
         """Return True if the certificate is revoked, False otherwise."""
         return bool(x509.mbedtls_x509_crt_is_revoked(&self._ctx, &crl._ctx))
 
     @classmethod
-    def from_buffer(cls, buffer):
-        # PEP 543
-        return cls(None)._from_buffer(buffer)
-
-    @classmethod
     def from_file(cls, path):
-        # PEP 543, test pathlib
         path_ = str(path).encode("utf8")
         cdef const char* c_path = path_
-        cdef Certificate self = cls(None)
+        cdef CRT self = cls(None)
         check_error(x509.mbedtls_x509_crt_parse_file(&self._ctx, c_path))
         return self
 
     @classmethod
     def from_DER(cls, const unsigned char[:] buffer):
-        cdef Certificate self = cls(None)
+        cdef CRT self = cls(None)
         check_error(x509.mbedtls_x509_crt_parse_der(
             &self._ctx, &buffer[0], buffer.size))
         return self
-
-    def to_DER(self):
-        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
-
-    __bytes__ = to_bytes = to_DER
 
     @classmethod
     def from_PEM(cls, pem):
         return cls.from_DER(PEM_to_DER(pem))
 
+    def to_DER(self):
+        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
+
     def to_PEM(self):
         return DER_to_PEM(self.to_DER(), "Certificate")
 
-    __str__ = to_PEM
+    def sign(self, csr, issuer_key, not_before, not_after, serial_number,
+             ca=False, max_path_length=0):
+        """Return a new, signed certificate for the CSR."""
+        if not _pk.check_pair(
+                self.subject_public_key,
+                issuer_key):
+            raise ValueError(
+                "The issuer_key does not correspond to this certificate")
+        cdef CRT crt = self.new(
+            not_before=not_before,
+            not_after=not_after,
+            issuer=self.subject,
+            issuer_key=issuer_key,
+            subject=csr.subject,
+            subject_key=csr.subject_public_key,
+            serial_number=serial_number,
+            digestmod=csr.digestmod,
+            ca=ca,
+            max_path_length=max_path_length)
+        # if crt._ctx.next == NULL:
+        #     crt._ctx.next = &crt._ctx
+        return crt
 
-    def export(self, format="DER"):
-        if format == "DER":
-            return self.to_DER()
-        if format == "PEM":
-            return self.to_PEM()
-        raise ValueError(format)
+    @classmethod
+    def selfsign(cls, csr, issuer_key, not_before, not_after, serial_number,
+                 ca=False, max_path_length=0):
+        """Return a new, self-signed certificate for the CSR."""
+        return cls.new(
+            not_before=not_before,
+            not_after=not_after,
+            issuer=csr.subject,
+            issuer_key=issuer_key,
+            subject=csr.subject,
+            subject_key=csr.subject_public_key,
+            serial_number=serial_number,
+            digestmod=csr.digestmod,
+            ca=ca,
+            max_path_length=max_path_length)
+
+    def verify(self, crt):
+        """Verify the certificate `crt`."""
+        return self.subject_public_key.verify(
+            crt.tbs_certificate, crt.signature_value, crt.digestmod.name)
 
     @staticmethod
-    def new(start, end, issuer, issuer_key, subject, subject_key,
-            serial, md_alg):
+    def new(not_before, not_after, issuer, issuer_key, subject, subject_key,
+            serial_number, digestmod, ca=False, max_path_length=0):
         """Return a new certificate."""
-        return _CertificateWriter(
-            start, end, issuer, issuer_key,
-            subject, subject_key, serial, md_alg).to_certificate()
+        return _CRTWriter(
+            not_before, not_after, issuer, issuer_key,
+            subject, subject_key, serial_number, digestmod,
+            ca, max_path_length).to_certificate()
 
 
-cdef class _CertificateWriter:
+cdef class _CRTWriter:
     """CRT writing context.
 
     This class should not be used directly.
-    Use `Certificate.new()` instead.
+    Use `CRT.new()` instead.
 
     """
-
-    def __init__(self, start, end, issuer, issuer_key,
-                 subject, subject_key, serial, md_alg):
-        super(_CertificateWriter, self).__init__()
-        self.set_validity(start, end)
+    def __init__(self, not_before, not_after, issuer, issuer_key,
+                 subject, subject_key, serial_number, digestmod,
+                 ca=False, max_path_length=0):
+        super(_CRTWriter, self).__init__()
+        self.set_validity(not_before, not_after)
         self.set_issuer(issuer)
         self.set_issuer_key(issuer_key)
         self.set_subject(subject)
         self.set_subject_key(subject_key)
-        self.set_serial(serial)
-        self.set_algorithm(md_alg)
+        self.set_serial_number(serial_number)
+        self.set_digestmod(digestmod)
+        self.set_basic_constraints(ca, max_path_length)
 
     def __cinit__(self):
         """Initialize a CRT write context."""
@@ -170,7 +484,7 @@ cdef class _CertificateWriter:
 
         """
         cdef size_t osize = 4096
-        cdef unsigned char* output = <unsigned char*>malloc(
+        cdef unsigned char *output = <unsigned char *>malloc(
             osize * sizeof(unsigned char))
         if not output:
             raise MemoryError()
@@ -181,32 +495,12 @@ cdef class _CertificateWriter:
         finally:
             free(output)
 
-    to_bytes = to_DER
-
-    def to_PEM(self):
-        """Return the Certificate in PEM format.
-
-        Warning:
-            No RNG function is used.
-
-        """
-        cdef size_t osize = 4096
-        cdef unsigned char* output = <unsigned char*>malloc(
-            osize * sizeof(unsigned char))
-        if not output:
-            raise MemoryError()
-        try:
-            check_error(x509.mbedtls_x509write_crt_pem(
-                &self._ctx, &output[0], osize, NULL, NULL))
-            return output.decode("ascii")
-        finally:
-            free(output)
-
-    __str__ = to_PEM
+    def to_bytes(self):
+        return self.to_DER()
 
     def to_certificate(self):
         """Return a Certificate object."""
-        return Certificate.from_DER(self.to_DER())
+        return CRT.from_DER(self.to_DER())
 
     def set_version(self, version=3):
         """Set the version for a certificate.
@@ -219,34 +513,34 @@ cdef class _CertificateWriter:
             raise ValueError("version not between 1 and 3")
         x509.mbedtls_x509write_crt_set_version(&self._ctx, version - 1)
 
-    def set_serial(self, serial):
+    def set_serial_number(self, serial_number):
         """Set the serial number for a certificate.
 
         Arg:
-            serial (int or bytes): The serial number.
+            serial_number (int or bytes): The serial number.
 
         """
-        if not serial:
+        if not serial_number:
             return
-        cdef _mpi.MPI ser = _mpi.MPI(serial)
+        cdef _mpi.MPI ser = _mpi.MPI(serial_number)
         x509.mbedtls_x509write_crt_set_serial(&self._ctx, &ser._ctx)
 
-    def set_validity(self, start, end):
+    def set_validity(self, not_before, not_after):
         """Set the validity period for a certificate.
 
         Args:
-            start (datetime): Begin timestamp.
-            end (datetime): End timestamp.
+            not_before (datetime): Begin timestamp.
+            not_after (datetime): End timestamp.
 
         """
         fmt = "%Y%m%d%H%M%S"
         # Keep reference to Python objects.
-        start_ = start.strftime(fmt).encode("ascii")
-        end_ = end.strftime(fmt).encode("ascii")
-        cdef const char* c_start = start_
-        cdef const char* c_end = end_
+        not_before = not_before.strftime(fmt).encode("ascii")
+        not_after = not_after.strftime(fmt).encode("ascii")
+        cdef const char* c_not_before = not_before
+        cdef const char* c_not_after = not_after
         check_error(x509.mbedtls_x509write_crt_set_validity(
-            &self._ctx, c_start, c_end))
+            &self._ctx, c_not_before, c_not_after))
 
     def set_issuer(self, issuer):
         """Set the issuer name.
@@ -279,14 +573,14 @@ cdef class _CertificateWriter:
         check_error(x509.mbedtls_x509write_crt_set_subject_name(
             &self._ctx, c_subject))
 
-    def set_algorithm(self, md_alg):
+    def set_digestmod(self, digestmod):
         """Set MD algorithm to use for the signature.
 
         Args:
-            md_alg (MDBase): MD algorithm, for ex. `hash.sha1()`.
+            digestmod (MDBase): MD algorithm, for ex. `hash.sha1()`.
 
         """
-        x509.mbedtls_x509write_crt_set_md_alg(&self._ctx, md_alg._type)
+        x509.mbedtls_x509write_crt_set_md_alg(&self._ctx, digestmod._type)
 
     def set_subject_key(self, _pk.CipherBase key):
         """Set the subject key.
@@ -311,15 +605,28 @@ cdef class _CertificateWriter:
         check_error(
             x509.mbedtls_x509write_crt_set_authority_key_identifier(&self._ctx))
 
+    def set_basic_constraints(self, ca, max_path_length):
+        """Set the basic constraints extension for a CRT.
 
-cdef class CSR:
+        Args:
+            ca (bool): True if this is a CA certificate.
+            max_path_length (int): Maximum length of a certificate below
+                this certificate, -1 is unlimited.
+
+        """
+        check_error(x509.mbedtls_x509write_crt_set_basic_constraints(
+            &self._ctx, int(ca), max_path_length))
+
+
+cdef class CSR(Certificate):
     """X.509 certificate signing request parser."""
 
-    def __init__(self, buffer):
+    def __init__(self, const unsigned char[:] buffer):
         super(CSR, self).__init__()
         if buffer is None:
-            return  # Implementation detail.
-        self._from_buffer(buffer)
+            return
+        check_error(x509.mbedtls_x509_csr_parse(
+            &self._ctx, &buffer[0], buffer.size))
 
     def __cinit__(self):
         """Initialize a CSR."""
@@ -329,18 +636,10 @@ cdef class CSR:
         """Unallocate all CSR data."""
         x509.mbedtls_x509_csr_free(&self._ctx)
 
-    def __hash__(self):
-        return hash(self.to_DER())
-
-    def __eq__(self, other):
-        if type(other) is not type(self):
-            return NotImplemented
-        return self.to_DER() == other.to_DER()
-
-    def _info(self):
+    def __str__(self):
         cdef size_t osize = 2**24
-        cdef char* output = <char*>malloc(osize * sizeof(char))
-        cdef char* prefix = b""
+        cdef char *output = <char *>malloc(osize * sizeof(char))
+        cdef char *prefix = b""
         if not output:
             raise MemoryError()
         try:
@@ -350,19 +649,76 @@ cdef class CSR:
         finally:
             free(output)
 
-    cpdef _from_buffer(self, const unsigned char[:] buf):
-        check_error(
-            x509.mbedtls_x509_csr_parse(&self._ctx, &buf[0], buf.size))
-        return self
+    @property
+    def digestmod(self):
+        """Return the hash function used for the signature.
 
-    @classmethod
-    def from_buffer(cls, buffer):
-        # PEP 543
-        return cls(None)._from_buffer(buffer)
+        See Also:
+            RFC5280, Section 4.1.1.2 Signature Algorithm.
+
+        """
+        return hashlib.new(
+            _md.MD_NAME[self._ctx.sig_md].decode("ascii").lower())
+
+    @property
+    def version(self):
+        """The version of the encoded certificate.
+
+        See Also:
+            RF 5280, Section 4.1.2.1 Version
+
+        """
+        return int(self._ctx.version)
+
+    @property
+    def subject(self):
+        """Entity associated with the public key.
+
+        See Also:
+            RFC 5280, Section 4.1.2.6 Subject
+
+        """
+        cdef size_t osize = 200
+        cdef char *c_buf = <char *>malloc(osize * sizeof(char))
+        if not c_buf:
+            raise MemoryError()
+        try:
+            written = x509.mbedtls_x509_dn_gets(
+                &c_buf[0], osize, &self._ctx.subject)
+            return bytes(c_buf[:written]).decode("utf8")
+        finally:
+            free(c_buf)
+
+    @property
+    def subject_public_key(self):
+        """The public key.
+
+        See Also:
+            RFC 5280, Section 4.1.2.7 Subject Public Key Info
+
+        """
+        cipher_type = _pk.CipherType(_pk.mbedtls_pk_get_type(&self._ctx.pk))
+        cipher = {
+            _pk.CipherType.RSA: _pk.RSA,
+            _pk.CipherType.ECKEY: _pk.ECC,
+        }.get(cipher_type, None)
+        if cipher is None:
+            raise ValueError("unsupported cipher %r" % cipher_type)
+
+        cdef size_t osize = _pk.PUB_DER_MAX_BYTES
+        cdef unsigned char *c_buf = <unsigned char *>malloc(
+            osize * sizeof(unsigned char))
+        if not c_buf:
+            raise MemoryError()
+        try:
+            ret = check_error(_pk.mbedtls_pk_write_pubkey_der(
+                &self._ctx.pk, &c_buf[0], osize))
+            return cipher.from_DER(c_buf[osize - ret:osize])
+        finally:
+            free(c_buf)
 
     @classmethod
     def from_file(cls, path):
-        # PEP 543, test pathlib
         path_ = str(path).encode("utf8")
         cdef const char* c_path = path_
         cdef CSR self = cls(None)
@@ -383,24 +739,13 @@ cdef class CSR:
     def to_DER(self):
         return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
 
-    __bytes__ = to_bytes = to_DER
-
     def to_PEM(self):
         return DER_to_PEM(self.to_DER(), "Certificate Request")
 
-    __str__ = to_PEM
-
-    def export(self, format="DER"):
-        if format == "DER":
-            return self.to_DER()
-        if format == "PEM":
-            return self.to_PEM()
-        raise ValueError(format)
-
     @staticmethod
-    def new(key, md_alg, subject):
+    def new(subject_key, subject, digestmod):
         """Return a new CSR."""
-        return _CSRWriter(key, md_alg, subject).to_certificate()
+        return _CSRWriter(subject_key, subject, digestmod).to_certificate()
 
 
 cdef class _CSRWriter:
@@ -409,11 +754,11 @@ cdef class _CSRWriter:
     This class should not be used directly.  Use `CSR.new()` instead.
 
     """
-    def __init__(self, key, md_alg, subject):
+    def __init__(self, subject_key, subject, digestmod):
         super(_CSRWriter, self).__init__()
-        self.set_key(key)
-        self.set_algorithm(md_alg)
+        self.set_subject_key(subject_key)
         self.set_subject(subject)
+        self.set_digestmod(digestmod)
 
     def __cinit__(self):
         """Initialize a CSR context."""
@@ -440,7 +785,7 @@ cdef class _CSRWriter:
         check_error(x509.mbedtls_x509write_csr_set_subject_name(
             &self._ctx, c_subject))
 
-    def set_key(self, _pk.CipherBase key):
+    def set_subject_key(self, _pk.CipherBase key):
         """Set the key for the CSR.
 
         Args:
@@ -449,14 +794,14 @@ cdef class _CSRWriter:
         """
         x509.mbedtls_x509write_csr_set_key(&self._ctx, &key._ctx)
 
-    def set_algorithm(self, md_alg):
+    def set_digestmod(self, digestmod):
         """Set MD algorithm to use for the signature.
 
         Args:
-            md_alg (MDBase): MD algorithm, for ex. `hash.sha1()`.
+            digestmod (MDBase): MD algorithm, for ex. `hash.sha1()`.
 
         """
-        x509.mbedtls_x509write_csr_set_md_alg(&self._ctx, md_alg._type)
+        x509.mbedtls_x509write_csr_set_md_alg(&self._ctx, digestmod._type)
 
     def to_DER(self):
         """Return the CSR in DER format.
@@ -466,7 +811,7 @@ cdef class _CSRWriter:
 
         """
         cdef size_t osize = 4096
-        cdef unsigned char* output = <unsigned char*>malloc(
+        cdef unsigned char *output = <unsigned char *>malloc(
             osize * sizeof(unsigned char))
         if not output:
             raise MemoryError()
@@ -477,42 +822,27 @@ cdef class _CSRWriter:
         finally:
             free(output)
 
-    to_bytes = to_DER
-
-    def to_PEM(self):
-        """Return the CSR in PEM format.
-
-        Warning:
-            No RNG function is used.
-
-        """
-        cdef size_t osize = 4096
-        cdef unsigned char* output = <unsigned char*>malloc(
-            osize * sizeof(unsigned char))
-        if not output:
-            raise MemoryError
-        try:
-            check_error(x509.mbedtls_x509write_csr_pem(
-                &self._ctx, &output[0], osize, NULL, NULL))
-            return output.decode("ascii")
-        finally:
-            free(output)
-
-    __str__ = to_PEM
+    def to_bytes(self):
+        return self.to_DER()
 
     def to_certificate(self):
         """Return a CSR object."""
         return CSR.from_DER(self.to_DER())
 
 
-cdef class CRL:
+class CRLEntry(namedtuple("CRLEntry", ["serial", "revocation_date"])):
+    """An entry in the revocation list."""
+
+
+cdef class CRL(Certificate):
     """X.509 revocation list."""
 
-    def __init__(self, buffer):
+    def __init__(self, const unsigned char[:] buffer):
         super(CRL, self).__init__()
         if buffer is None:
-            return  # Implementation detail.
-        self._from_buffer(buffer)
+            return
+        check_error(x509.mbedtls_x509_crl_parse(
+            &self._ctx, &buffer[0], buffer.size))
 
     def __cinit__(self):
         """Initialize a CRL (chain)."""
@@ -522,24 +852,16 @@ cdef class CRL:
         """Unallocate all CRL data."""
         x509.mbedtls_x509_crl_free(&self._ctx)
 
-    def __hash__(self):
-        return hash(self.to_DER())
-
-    def __eq__(self, other):
-        if type(other) is not type(self):
-            return NotImplemented
-        return self.to_DER() == other.to_DER()
-
     def __next__(self):
         if self._ctx.next == NULL or self._ctx.version == 0:
             raise StopIteration
         cdef mbedtls_x509_buf buf = self._ctx.next.raw
         return type(self).from_DER(buf.p[0:buf.len])
 
-    def _info(self):
+    def __str__(self):
         cdef size_t osize = 2**24
-        cdef char* output = <char*>malloc(osize * sizeof(char))
-        cdef char* prefix = b""
+        cdef char *output = <char *>malloc(osize * sizeof(char))
+        cdef char *prefix = b""
         if not output:
             raise MemoryError()
         try:
@@ -549,19 +871,116 @@ cdef class CRL:
         finally:
             free(output)
 
-    cpdef _from_buffer(self, const unsigned char[:] buf):
-        check_error(
-            x509.mbedtls_x509_crl_parse(&self._ctx, &buf[0], buf.size))
-        return self
+    # RFC 5280, Section 5.1 CRL Fields
+    # RFC 5280, Section 5.1.1 Certificate List Fields
+    @property
+    def tbs_certificate(self):
+        """The TBS (to be signed) certificate in DER format.
 
-    @classmethod
-    def from_buffer(cls, buffer):
-        # PEP 543
-        return cls(None)._from_buffer(buffer)
+        See Also:
+            RFC 5280, Section 5.1.1.1 TBS Certificate
+
+        """
+        return bytes(self._ctx.tbs.p[:self._ctx.tbs.len])
+
+    # RFC 5280, Section 5.1.1.2 Signature Algorithm
+
+    @property
+    def signature_value(self):
+        """Cryptographic algorithm used by the CA to sign this CRL.
+
+        See Also:
+            RFC 5280, Section 5.1.1.3 Signature Algorithm
+
+        """
+        return bytes(self._ctx.sig.p[:self._ctx.sig.len])
+
+    # RFC 5280, Section 5.1.2 Certificate List "To Be Signed"
+
+    @property
+    def version(self):
+        """The version of the encoded certificate.
+
+        See Also:
+            RF 5280, Section 5.1.2.1 Version
+
+        """
+        return int(self._ctx.version)
+
+    # RFC 5280, Section 5.1.2.2 Signature
+
+    @property
+    def issuer_name(self):
+        """Entity that has signed and issued the certificate.
+
+        See Also:
+            RFC 5280, Section 5.1.2.3 Issuer Name
+
+        """
+        cdef size_t osize = 200
+        cdef char* c_buf = <char *>malloc(osize * sizeof(char))
+        if not c_buf:
+            raise MemoryError()
+        try:
+            written = x509.mbedtls_x509_dn_gets(
+                &c_buf[0], osize, &self._ctx.issuer)
+            return bytes(c_buf[:written]).decode("utf8")
+        finally:
+            free(c_buf)
+
+    @property
+    def this_update(self):
+        """The issue date of this certificate.
+
+        See Also:
+            RFC 5280, Section 5.1.2.4 This Update
+
+        """
+        cdef x509.mbedtls_x509_time *this_update = &self._ctx.this_update
+        return dt.datetime(
+            this_update[0].year, this_update[0].mon, this_update[0].day,
+            this_update[0].hour, this_update[0].min, this_update[0].sec)
+
+    @property
+    def next_update(self):
+        """The date by which the next certificate will be issued.
+
+        See Also:
+            RFC 5280, Section 5.1.2.5 Next Update
+
+        """
+        cdef x509.mbedtls_x509_time *next_update = &self._ctx.next_update
+        return dt.datetime(
+            next_update[0].year, next_update[0].mon, next_update[0].day,
+            next_update[0].hour, next_update[0].min, next_update[0].sec)
+
+    @property
+    def revoked_certificates(self):
+        """The list of revoked certificates.
+
+        See Also:
+            RFC 5280, Section 5.1.2.6 Revoked Certificates
+
+        """
+        cdef x509.mbedtls_x509_crl_entry *item
+        item = &self._ctx.entry
+        revoked = []
+        while item != NULL:
+            revoked.append(CRLEntry(
+                int(_mpi.MPI.from_bytes(
+                    item.serial.p[:item.serial.len], "big")),
+                dt.datetime(
+                    item.revocation_date.year,
+                    item.revocation_date.mon,
+                    item.revocation_date.day,
+                    item.revocation_date.hour,
+                    item.revocation_date.min,
+                    item.revocation_date.sec)))
+            item = item.next
+        return tuple(revoked)
 
     @classmethod
     def from_file(cls, path):
-        # PEP 543, test pathlib
         path_ = str(path).encode("utf8")
         cdef const char* c_path = path_
         cdef CRL self = cls(None)
@@ -575,23 +994,12 @@ cdef class CRL:
             &self._ctx, &buffer[0], buffer.size))
         return self
 
-    def to_DER(self):
-        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
-
-    __bytes__ = to_bytes = to_DER
-
     @classmethod
     def from_PEM(cls, pem):
         return cls.from_DER(PEM_to_DER(pem))
 
+    def to_DER(self):
+        return bytes(self._ctx.raw.p[0:self._ctx.raw.len])
+
     def to_PEM(self):
         return DER_to_PEM(self.to_DER(), "X509 CRL")
-
-    __str__ = to_PEM
-
-    def export(self, format="DER"):
-        if format == "DER":
-            return self.to_DER()
-        if format == "PEM":
-            return self.to_PEM()
-        raise ValueError(format)

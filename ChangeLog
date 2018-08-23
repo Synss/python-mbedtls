@@ -1,11 +1,26 @@
 [next]
 
+* x509: Add accessors to most fields of CRT, CSR, and CRL.
+The `x509` module can now be used to inspect existing certificates.
+* x509: The module now offers basic signing and
+verification capabilities.
+
 API Changes
 
 * pk: `from_{PEM,DER,buffer}` are now `classmethod`s to
 comply with PEP 543.
+* x509: `Certificate` class renamed `CRT`.
+* x509: `start` and `end` arguments renamed `not_before` and
+`not_after`; `md_alg` argument is now `digestmod`.
+* x509: Re-order the arguments of the `new()` methods.
 * exceptions: Rename `MbedTLSError` -> `TLSError` to comply
 with PEP 543.
+
+Misc
+
+* pk: `__eq__()` now also accepts DER (bytes) or PEM (str) formats.
+* x509: `__bytes__()` returns the certificates in the DER format.
+* x509: `__str__()` now returns a human-readable string.
 
 
 [0.11.1] - 2018-07-04
@@ -28,6 +43,7 @@ return an MPI.
 * exceptions: Rename `_ErrorBase` -> `MbedTLSError`.  It is now
 the only new exception.
 * exceptions: `mbedtls_strerror()` generates the error message.
+
 
 [0.10.0] - 2018-05-07
 

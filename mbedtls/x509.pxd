@@ -16,6 +16,14 @@ cdef extern from "mbedtls/asn1.h":
         int tag
         size_t len
         unsigned char *p
+    cdef struct mbedtls_asn1_sequence:
+        mbedtls_asn1_buf buf
+        mbedtls_asn1_sequence *next
+    cdef struct mbedtls_asn1_named_data:
+        mbedtls_asn1_buf oid
+        mbedtls_asn1_buf val
+        mbedtls_asn1_named_data *next
+        unsigned char next_merged
 
 
 cdef extern from "mbedtls/bignum.h":
@@ -34,13 +42,45 @@ cdef extern from "mbedtls/pk.h":
 
 cdef extern from "mbedtls/x509.h":
     ctypedef mbedtls_asn1_buf mbedtls_x509_buf
+    ctypedef mbedtls_asn1_named_data mbedtls_x509_name
+    ctypedef mbedtls_asn1_sequence mbedtls_x509_sequence
+    int mbedtls_x509_dn_gets(
+        char *buf, size_t size, const mbedtls_x509_name *dn)
+    cdef struct mbedtls_x509_time:
+        int year, mon, day
+        int hour, min, sec
 
 
 cdef extern from "mbedtls/x509_crt.h":
     cdef struct mbedtls_x509_crt:
         mbedtls_x509_buf raw
-        mbedtls_x509_crt *next
+        mbedtls_x509_buf tbs
         int version
+        mbedtls_x509_buf serial
+        mbedtls_x509_buf sig_oid
+        # mbedtls_x509_buf issuer_raw
+        # mbedtls_x509_buf subject_raw
+        mbedtls_x509_name issuer
+        mbedtls_x509_name subject
+        mbedtls_x509_time valid_from
+        mbedtls_x509_time valid_to
+        mbedtls_pk_context pk  # public key
+        # mbedtls_x509_buf issuer_id
+        # mbedtls_x509_buf subject_id
+        # mbedtls_x509_buf v3_ext
+        mbedtls_x509_sequence subject_alt_names
+        # int ext_types
+        int ca_istrue  # 1 if this certificate belongs to a CA, 0 otherwise
+        int max_pathlen
+        unsigned int key_usage
+        # mbedtls_x509_sequence ext_key_usage
+        # unsigned char ns_cert_type
+
+        mbedtls_x509_buf sig
+        mbedtls_md_type_t sig_md
+        # mbedtls_pk_type_t sig_pk
+        # void *sig_opts
+        mbedtls_x509_crt *next
 
     ctypedef struct mbedtls_x509_crt_profile:
         pass
@@ -115,7 +155,9 @@ cdef extern from "mbedtls/x509_crt.h":
         mbedtls_md_type_t md_alg)
 
     # mbedtls_x509write_crt_set_extension
-    # mbedtls_x509write_crt_set_basic_constraints
+    int mbedtls_x509write_crt_set_basic_constraints(
+        mbedtls_x509write_cert *ctx,
+        int is_ca, int max_pathlen)
 
     int mbedtls_x509write_crt_set_subject_key_identifier(
         mbedtls_x509write_cert *ctx)
@@ -144,6 +186,16 @@ cdef extern from "mbedtls/x509_csr.h":
     # -----------------------------------------------
     cdef struct mbedtls_x509_csr:
         mbedtls_x509_buf raw
+        # mbedtls_x509_buf cri
+        int version
+        # mbedtls_x509_buf subject_raw
+        mbedtls_x509_name subject
+        mbedtls_pk_context pk
+        mbedtls_x509_buf sig_oid
+        mbedtls_x509_buf sig
+        mbedtls_md_type_t sig_md
+        # mbedtls_pk_type_t sig_pk
+        # void *sig_opts
 
     ctypedef struct mbedtls_x509write_csr:
         pass
@@ -205,12 +257,29 @@ cdef extern from "mbedtls/x509_crl.h":
     # Certificate revocation list parsing
     # -----------------------------------
     ctypedef struct mbedtls_x509_crl_entry:
-        pass
+        mbedtls_x509_buf raw
+        mbedtls_x509_buf serial
+        mbedtls_x509_time revocation_date
+        mbedtls_x509_buf entry_ext
+        mbedtls_x509_crl_entry *next
 
     cdef struct mbedtls_x509_crl:
         mbedtls_x509_buf raw
-        mbedtls_x509_crl *next
+        mbedtls_x509_buf tbs
         int version
+        mbedtls_x509_buf sig_oid
+        mbedtls_x509_buf issuer_raw
+        mbedtls_x509_name issuer
+        mbedtls_x509_time this_update
+        mbedtls_x509_time next_update
+        mbedtls_x509_crl_entry entry
+        mbedtls_x509_buf crl_ext
+        mbedtls_x509_buf sig_oid2
+        mbedtls_x509_buf sig
+        mbedtls_md_type_t sig_md
+        # mbedtls_pk_type_t sig_pk
+        # void *sig_opts
+        mbedtls_x509_crl *next
 
     # mbedtls_x509_crl
     # ----------------
@@ -235,23 +304,24 @@ cdef extern from "mbedtls/x509_crl.h":
 
 
 cdef class Certificate:
+    pass
+
+
+cdef class CRT(Certificate):
     cdef mbedtls_x509_crt _ctx
-    cpdef _from_buffer(cls, const unsigned char[:] buffer)
 
 
-cdef class _CertificateWriter:
+cdef class _CRTWriter:
     cdef mbedtls_x509write_cert _ctx
 
 
-cdef class CSR:
+cdef class CSR(Certificate):
     cdef mbedtls_x509_csr _ctx
-    cpdef _from_buffer(cls, const unsigned char[:] buffer)
 
 
 cdef class _CSRWriter:
     cdef mbedtls_x509write_csr _ctx
 
 
-cdef class CRL:
+cdef class CRL(Certificate):
     cdef mbedtls_x509_crl _ctx
-    cpdef _from_buffer(cls, const unsigned char[:] buffer)

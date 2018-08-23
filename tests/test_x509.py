@@ -8,15 +8,14 @@ except ImportError:
 import certifi
 import pytest
 
-from mbedtls.pk import RSA
+from mbedtls.pk import RSA, ECC
 from mbedtls import hash
 from mbedtls.x509 import *
-from mbedtls.x509 import _CertificateWriter, _CSRWriter
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def now():
-    return dt.datetime.utcnow()
+    return dt.datetime.utcnow().replace(microsecond=0)
 
 
 @pytest.fixture
@@ -33,227 +32,319 @@ def subject_key():
     return subject_key
 
 
-class TestCRT:
+class _X509Base:
+    # Derive and provide `x509`.
 
     @pytest.fixture
-    def crt_pem(self):
-        with (Path(__file__).parent / "ca/wikipedia.pem").open() as crt:
-            return crt.read()
+    def der(self, x509):
+        return x509.to_DER()
 
     @pytest.fixture
-    def crt_der(self, crt_pem):
-        return PEM_to_DER(crt_pem)
+    def pem(self, x509):
+        return x509.to_PEM()
 
-    def test_from_buffer(self, crt_der):
-        crt = Certificate.from_buffer(crt_der)
-        assert "wikipedia.org" in crt._info()
 
-    def test_from_DER(self, crt_der):
-        crt = Certificate.from_DER(crt_der)
-        assert "wikipedia.org" in crt._info()
+class _CommonTests(_X509Base):
 
-    def test_from_PEM(self, crt_pem):
-        crt = Certificate.from_PEM(crt_pem)
-        assert crt.to_PEM() == crt_pem
+    def test_from_buffer(self, x509, der):
+        assert type(x509).from_buffer(der) == x509
 
-    def test_from_file(self, crt_der, tmpdir):
+    def test_from_file(self, x509, der, tmpdir):
         path = tmpdir.join("key.der")
-        path.write_binary(crt_der)
-        crt = Certificate.from_file(path)
-        assert "wikipedia.org" in crt._info()
+        path.write_binary(der)
+        assert type(x509).from_file(path) == x509
 
-    def test_to_DER(self, crt_der):
-        crt = Certificate.from_DER(crt_der)
-        assert crt.to_DER() == crt_der
+    def test_from_DER(self, x509, der):
+        assert type(x509).from_DER(der) == x509
 
-    def test_to_PEM(self, crt_pem):
-        crt = Certificate.from_PEM(crt_pem)
-        assert crt.to_PEM() == crt_pem
+    def test_eq(self, x509):
+        assert x509 == x509
 
-    def test_new(self, now, issuer_key, subject_key):
-        crt = Certificate.new(
-            start=now,
-            end=now + dt.timedelta(days=90),
-            issuer="C=NL,O=PolarSSL,CN=PolarSSL Test CA",
+    def test_eq_der(self, x509, der):
+        assert x509 == der
+
+    def test_eq_pem(self, x509, pem):
+        assert x509 == pem
+
+
+class _CRTWikipediaBase(_X509Base):
+
+    @pytest.fixture
+    def x509(self):
+        with (Path(__file__).parent / "ca/wikipedia.pem").open() as crt:
+            return CRT(PEM_to_DER(crt.read()))
+
+    @pytest.fixture
+    def crt(self, x509):
+        return x509
+
+
+class TestCRTWikipediaBase(_CommonTests, _CRTWikipediaBase):
+    pass
+
+
+class TestCRTWikipediaAccessors(_CRTWikipediaBase):
+
+    def test_issuer(self, crt):
+        assert crt.issuer == ", ".join((
+            "C=US", "O=DigiCert Inc", "OU=www.digicert.com",
+            "CN=DigiCert SHA2 High Assurance Server CA"))
+
+    def test_subject(self, crt):
+        assert crt.subject == ", ".join((
+            "C=US", "ST=California", "L=San Francisco",
+            "O=Wikimedia Foundation, Inc.", "CN=*.wikipedia.org"))
+
+    def test_subject_alternative_names(self, crt):
+        assert "*.m.wikidata.org" in crt.subject_alternative_names
+        assert len(crt.subject_alternative_names) == 41
+
+    def test_key_usage(self, crt):
+        assert crt.key_usage is KeyUsage.DIGITAL_SIGNATURE
+
+
+class _CRTBase(_X509Base):
+
+    @pytest.fixture
+    def issuer(self):
+        return "C=NL, O=PolarSSL, CN=PolarSSL Test CA"
+
+    @pytest.fixture
+    def subject(self):
+        return "C=NL"
+
+    @pytest.fixture
+    def serial_number(self):
+        return 0x1234567890
+
+    @pytest.fixture
+    def digestmod(self):
+        return hash.sha256()
+
+    @pytest.fixture
+    def is_ca(self):
+        return False, 0
+
+    @pytest.fixture
+    def x509(self,
+             now,
+             issuer, issuer_key,
+             subject, subject_key,
+             serial_number,
+             digestmod,
+             is_ca
+            ):
+        is_ca, max_path_length = is_ca
+        return CRT.new(
+            not_before=now,
+            not_after=now + dt.timedelta(days=90),
+            issuer=issuer,
             issuer_key=issuer_key,
-            subject="",
+            subject=subject,
             subject_key=subject_key,
-            serial=0x1234567890,
-            md_alg=hash.sha1())
-        assert "12:34:56:78:90" in crt._info()
+            serial_number=serial_number,
+            digestmod=digestmod,
+            ca=is_ca,
+            max_path_length=max_path_length)
 
-    def test_revocation_bad_cast(self, crt_der):
-        crt = Certificate.from_buffer(crt_der)
+    @pytest.fixture
+    def crt(self, x509):
+        return x509
+
+
+class TestCRTBase(_CommonTests, _CRTBase):
+    pass
+
+
+class TestCRTAccessors(_CRTBase):
+
+    def test_version(self, crt):
+        assert crt.version == 3
+
+    def test_not_before(self, crt, now):
+        assert crt.not_before == now
+
+    def test_not_after(self, crt, now):
+        assert crt.not_after == now + dt.timedelta(days=90)
+
+    def test_issuer(self, crt, issuer):
+        assert crt.issuer == issuer
+
+    def test_public_key(self, crt):
+        pem = crt.subject_public_key.export_public_key(format="PEM")
+        assert pem.startswith("-----BEGIN PUBLIC KEY-----\n")
+        assert pem.rstrip("\0").endswith("-----END PUBLIC KEY-----\n")
+
+    def test_subject(self, crt, subject):
+        assert crt.subject == subject
+
+    def test_serial_number(self, crt, serial_number):
+        assert crt.serial_number == serial_number
+
+    def test_revocation_bad_cast(self, der):
+        crt = CRT.from_buffer(der)
         with pytest.raises(TypeError):
             crt.check_revocation(crt)
 
     def test_next(self):
-        crt = Certificate.from_file(certifi.where())
+        crt = CRT.from_file(certifi.where())
         with pytest.raises(StopIteration):
             while True:
                 crt = next(crt)
 
 
-class TestCRTWriter:
+class TestCRTMDAlg(_CRTBase):
+
+    @pytest.fixture(params=[hash.sha1, hash.sha256])
+    def digestmod(self, request):
+        return request.param()
+
+    def test_digestmod(self, crt, digestmod):
+        assert crt.digestmod.name == digestmod.name
+
+
+class TestCRTCAPath(_CRTBase):
+
+    @pytest.fixture(params=[(True, 0), (True, 2), (False, 0)])
+    def is_ca(self, request):
+        return request.param
+
+    def test_ca(self, crt, is_ca):
+        assert (crt.ca, crt.max_path_length) == is_ca
+
+
+class _CSRBase(_X509Base):
 
     @pytest.fixture
-    def crt_writer(self, now, issuer_key, subject_key):
-        return _CertificateWriter(
-            start=now, end=now + dt.timedelta(days=90),
-            issuer="C=NL,O=PolarSSL,CN=PolarSSL Test CA", issuer_key=issuer_key,
-            subject=None, subject_key=subject_key,
-            md_alg=hash.sha1(),
-            serial=None)
-
-    def test_to_pem(self, crt_writer):
-        pem = crt_writer.to_PEM()
-        assert pem == crt_writer.to_PEM()
-        assert pem.splitlines()[0] == "-----BEGIN CERTIFICATE-----"
-        assert pem.splitlines()[-1] == "-----END CERTIFICATE-----"
-
-    def test_to_der(self, crt_writer):
-        assert PEM_to_DER(crt_writer.to_PEM()) == crt_writer.to_DER()
-
-    def test_to_bytes(self, crt_writer):
-        assert crt_writer.to_DER() == crt_writer.to_bytes()
-
-    def test_to_certificate(self, crt_writer):
-        crt = crt_writer.to_certificate()
-        assert "cert. version" in crt._info()
-        assert "PolarSSL" in crt._info()
-
-    def test_set_serial(self, crt_writer):
-        assert "12:34:56:78:90" not in crt_writer.to_certificate()._info()
-
-        serial = 0x1234567890
-        crt_writer.set_serial(serial)
-        assert "12:34:56:78:90" in crt_writer.to_certificate()._info()
-
-    def test_set_subject(self, crt_writer):
-        assert "Server 1" not in crt_writer.to_certificate()._info()
-
-        subject = "C=NL,O=PolarSSL,CN=PolarSSL Server 1"
-        crt_writer.set_subject(subject)
-        assert "Server 1" in crt_writer.to_certificate()._info()
-
-
-class TestCSR:
+    def subject(self):
+        return "C=NL, O=PolarSSL, CN=PolarSSL Server 1"
 
     @pytest.fixture
-    def csr_pem(self, subject_key):
-        return _CSRWriter(subject_key, hash.sha1(),
-                          "C=NL,O=PolarSSL,CN=PolarSSL Server 1").to_PEM()
+    def x509(self, subject, subject_key):
+        return CSR.new(subject_key, subject, hash.sha1())
 
     @pytest.fixture
-    def csr_der(self, csr_pem):
-        return PEM_to_DER(csr_pem)
-
-    def test_from_buffer(self, csr_der):
-        csr = CSR.from_buffer(csr_der)
-        assert "PolarSSL" in csr._info()
-
-    def test_from_DER(self, csr_der):
-        csr = CSR.from_DER(csr_der)
-        assert "PolarSSL" in csr._info()
-
-    def test_from_PEM(self, csr_pem):
-        csr = CSR.from_PEM(csr_pem)
-        assert csr.to_PEM() == csr_pem
-
-    def test_from_file(self, csr_der, tmpdir):
-        path = tmpdir.join("key.der")
-        path.write_binary(csr_der)
-        csr = CSR.from_file(path)
-        assert "PolarSSL" in csr._info()
-
-    def test_to_DER(self, csr_der):
-        csr = CSR.from_DER(csr_der)
-        assert csr.to_DER() == csr_der
-
-    def test_to_PEM(self, csr_pem):
-        csr = CSR.from_PEM(csr_pem)
-        assert csr.to_PEM() == csr_pem
-
-    def test_new(self, subject_key):
-        csr = CSR.new(subject_key, hash.sha1(),
-                      "C=NL,O=PolarSSL,CN=PolarSSL Server 1")
-        assert "PolarSSL" in csr._info()
+    def csr(self, x509):
+        return x509
 
 
-class TestCSRWriter:
+class TestCSRBase(_CommonTests, _CSRBase):
+    pass
+
+
+class TestCSRAccessors(_CSRBase):
+
+    def test_version(self, csr):
+        assert csr.version == 1
+
+    def test_subject(self, csr, subject):
+        assert csr.subject == subject
+
+    def test_subject_public_key(self, csr, subject_key):
+        assert csr.subject_public_key == subject_key.export_public_key()
+
+
+class _CRLBase(_X509Base):
 
     @pytest.fixture
-    def csr_writer(self, subject_key):
-        return _CSRWriter(subject_key, hash.sha1(),
-                          "C=NL,O=PolarSSL,CN=PolarSSL Server 1")
-
-    def test_to_pem(self, csr_writer):
-        pem = csr_writer.to_PEM()
-        assert pem == csr_writer.to_PEM()
-        assert pem.splitlines()[0] == "-----BEGIN CERTIFICATE REQUEST-----"
-        assert pem.splitlines()[-1] == "-----END CERTIFICATE REQUEST-----"
-
-    def test_to_der(self, csr_writer):
-        assert PEM_to_DER(csr_writer.to_PEM()) == csr_writer.to_DER()
-
-    def test_to_bytes(self, csr_writer):
-        assert csr_writer.to_DER() == csr_writer.to_bytes()
-
-    def test_to_certificate(self, csr_writer):
-        csr = csr_writer.to_certificate()
-
-
-class TestCRL:
-
-    @pytest.fixture
-    def crl_pem(self):
+    def x509(self):
         with (Path(__file__).parent / "ca/wp_crl.pem").open() as crl:
-            return crl.read()
+            return CRL.from_PEM(crl.read())
 
     @pytest.fixture
-    def crl_der(self, crl_pem):
-        return PEM_to_DER(crl_pem)
+    def crl(self, x509):
+        return x509
 
-    @pytest.fixture
-    def crt_pem(self):
-        with (Path(__file__).parent / "ca/wikipedia.pem").open() as crt:
-            return crt.read()
 
-    @pytest.fixture
-    def crt_der(self, crt_pem):
-        return PEM_to_DER(crt_pem)
+class TestCRLBase(_CommonTests, _CRLBase):
+    pass
 
-    def test_from_buffer(self, crl_der):
-        crl = CRL.from_buffer(crl_der)
-        assert "CRL version" in crl._info()
 
-    def test_from_file(self, crl_der, tmpdir):
-        path = tmpdir.join("key.der")
-        path.write_binary(crl_der)
-        crl = CRL.from_file(path)
-        assert "CRL version" in crl._info()
+class TestCRLAccessors(_CRLBase):
 
-    def test_from_DER(self, crl_der):
-        crl = CRL.from_DER(crl_der)
-        assert "CRL version" in crl._info()
+    def test_tbs_certificate(self, crl):
+        assert isinstance(crl.tbs_certificate, bytes)
+        assert crl.tbs_certificate
 
-    def test_from_PEM(self, crl_pem):
-        crl = CRL.from_PEM(crl_pem)
-        assert crl.to_PEM() == crl_pem
+    def test_signature_value(self, crl):
+        assert isinstance(crl.signature_value, bytes)
+        assert crl.signature_value
 
-    def test_to_DER(self, crl_der):
-        crl = CRL.from_DER(crl_der)
-        assert crl.to_DER() == crl_der
+    def test_version(self, crl):
+        assert crl.version == 2
 
-    def test_to_PEM(self, crl_pem):
-        crl = CRL.from_PEM(crl_pem)
-        assert crl.to_PEM() == crl_pem
+    def test_issuer_name(self, crl):
+        assert crl.issuer_name == (
+            "C=US, O=DigiCert Inc, OU=www.digicert.com, "
+            "CN=DigiCert SHA2 High Assurance Server CA")
 
-    def test_revocation_false(self, crl_der, crt_der):
-        crt = Certificate.from_buffer(crt_der)
-        crl = CRL.from_buffer(crl_der)
-        assert crt.check_revocation(crl) is False
+    def test_this_update(self, crl):
+        assert crl.this_update == dt.datetime(2018, 2, 17, 17, 5, 44)
 
-    @pytest.mark.skip("requires data")
-    def test_crt_revocation_true(self, crl_der, crt_der):
+    def test_next_update(self, crl):
+        assert crl.next_update == dt.datetime(2018, 2, 24, 17, 0)
+
+    def test_revoked_certificates(self, crl):
+        assert len(crl.revoked_certificates) == 1060
+        entry = crl.revoked_certificates[0]
+        assert entry.revocation_date == dt.datetime(
+            2017, 10, 30, 18, 32, 28)
+        assert entry.serial == 0xaac5cafcfe310e006434867f38e22bf
+
+
+class TestCRL(_CRLBase):
+
+    @pytest.mark.skip("not implemented")
+    def test_revocation_false(self, der):
         pass
+        # crt = CRT.from_buffer(der)
+        # crl = CRL.from_buffer(crl_der)
+        # assert crt.check_revocation(crl) is False
+
+    @pytest.mark.skip("not implemented")
+    def test_crt_revocation_true(self, der):
+        pass
+
+
+class TestVerifyCertificateChain:
+    @pytest.fixture
+    def ca0_key(self):
+        ca0_key = RSA()
+        ca0_key.generate()
+        return ca0_key
+
+    @pytest.fixture
+    def ca1_key(self):
+        ca1_key = ECC()
+        ca1_key.generate()
+        return ca1_key
+
+    @pytest.fixture
+    def ee0_key(self):
+        ee0_key = ECC()
+        ee0_key.generate()
+        return ee0_key
+
+    @pytest.fixture
+    def ca0_crt(self, ca0_key, now):
+        ca0_csr = CSR.new(ca0_key, "CN=Trusted CA", hash.sha256())
+        return CRT.selfsign(
+            ca0_csr, ca0_key,
+            not_before=now, not_after=now + dt.timedelta(days=90),
+            serial_number=0x123456, ca=True, max_path_length=-1)
+
+    @pytest.fixture
+    def ca1_crt(self, ca1_key, ca0_crt, ca0_key, now):
+        ca1_csr = CSR.new(ca1_key, "CN=Intermediate CA", hash.sha256())
+        return ca0_crt.sign(
+            ca1_csr, ca0_key, now, now + dt.timedelta(days=90), 0x234567,
+            ca=True, max_path_length=1)
+
+    @pytest.fixture
+    def ee0_crt(self, ee0_key, ca1_crt, ca1_key, now):
+        ee0_csr = CSR.new(ee0_key, "CN=End Entity", hash.sha256())
+        return ca1_crt.sign(
+            ee0_csr, ca1_key, now, now + dt.timedelta(days=90), 0x345678)
+
+    def test_verify_chain(self, ca0_crt, ca1_crt, ee0_crt):
+        assert all((ca1_crt.verify(ee0_crt), ca0_crt.verify(ca0_crt)))
