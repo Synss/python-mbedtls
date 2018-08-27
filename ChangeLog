@@ -1,3 +1,7 @@
+[0.12.1] - 2018-08-27
+
+Update version in `setup.py`.  No change in the code.
+
 [0.12.0] - 2018-08-27
 
 * x509: Add accessors to most fields of CRT, CSR, and CRL.
