@@ -4,7 +4,7 @@ PYX  = $(wildcard mbedtls/*.pyx)
 PYX += $(wildcard mbedtls/cipher/*.pyx)
 PYX += $(wildcard mbedtls/pk/*.pyx)
 
-LIBMBEDTLS = $(HOME)/lib/mbedtls-2.4.2
+LIBMBEDTLS = $(HOME)/lib/mbedtls
 
 debug:
 	cython -a -X linetrace=True $(PYX)

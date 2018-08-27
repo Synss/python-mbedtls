@@ -287,7 +287,13 @@ cdef extern from "mbedtls/rsa.h":
 
 cdef extern from "mbedtls/pk.h":
     ctypedef enum mbedtls_pk_type_t:
-        pass
+        MBEDTLS_PK_NONE=0
+        MBEDTLS_PK_RSA
+        MBEDTLS_PK_ECKEY
+        MBEDTLS_PK_ECKEY_DH
+        MBEDTLS_PK_ECDSA
+        MBEDTLS_PK_RSA_ALT
+        MBEDTLS_PK_RSASSA_PSS
 
     ctypedef struct mbedtls_pk_rsassa_pss_options:
         pass

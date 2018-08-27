@@ -35,7 +35,7 @@ def new(key, mode, iv=None):
 
     """
     if len(key) not in {16, 24, 32}:
-        raise MbedTLSError(
+        raise TLSError(
             msg="key size must 16, 24, or 32 bytes, got %i" % len(key))
     if mode not in {
         _cipher.MODE_ECB, 
@@ -45,7 +45,7 @@ def new(key, mode, iv=None):
         _cipher.MODE_GCM, 
         _cipher.MODE_CCM
     }:
-        raise MbedTLSError(msg="unsupported mode %r" % mode)
+        raise TLSError(msg="unsupported mode %r" % mode)
     mode_name = _cipher._get_mode_name(mode)
     if mode is _cipher.MODE_CFB:
         mode_name += "128"

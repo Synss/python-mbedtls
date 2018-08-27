@@ -1,6 +1,5 @@
 """Unit tests for mbedtls.pk."""
 
-
 import numbers
 from itertools import product
 from functools import partial
@@ -40,6 +39,29 @@ class _TestCipherBase(object):
     @pytest.fixture
     def key(self):
         raise NotImplementedError
+
+    @pytest.fixture
+    def pub(self, key):
+        return type(self.cipher).from_buffer(
+            self.cipher.export_public_key())
+
+    @pytest.mark.usefixtures("key")
+    def test_cmp_eq(self):
+        assert self.cipher == self.cipher
+
+    @pytest.mark.parametrize("format", ["DER", "PEM"])
+    @pytest.mark.usefixtures("key")
+    def test_cmp_eq_prv(self, format):
+        assert self.cipher == self.cipher.export_key(format)
+
+    @pytest.mark.parametrize("format", ["DER", "PEM"])
+    def test_cmp_eq_pub(self, pub, format):
+        assert pub == pub.export_public_key(format)
+
+    @pytest.mark.parametrize("invalid", [b"", "", b"\1\2\3", "123"])
+    @pytest.mark.userfixtures("key")
+    def test_cmp_neq(self, invalid):
+        assert self.cipher != invalid
 
     def test_key_accessors_without_key(self):
         assert not self.cipher.export_key()
@@ -87,10 +109,8 @@ class _TestCipherBase(object):
 
     @pytest.mark.usefixtures("key")
     def test_import_public_key(self):
-        other = type(self.cipher)()
-
         pub = self.cipher.export_public_key()
-        other.from_buffer(pub)
+        other = type(self.cipher).from_buffer(pub)
         assert not other.export_key()
         assert other.export_public_key()
         assert check_pair(self.cipher, other) is False  # Test private half.
@@ -99,8 +119,7 @@ class _TestCipherBase(object):
         assert self.cipher != other
 
     def test_import_private_key(self, key):
-        other = type(self.cipher)()
-        other.from_buffer(key)
+        other = type(self.cipher).from_buffer(key)
         assert other.export_key()
         assert other.export_public_key()
         assert check_pair(self.cipher, other) is True  # Test private half.
@@ -110,10 +129,8 @@ class _TestCipherBase(object):
 
     @pytest.mark.usefixtures("key")
     def test_export_to_PEM(self):
-        other = type(self.cipher)()
-
         prv = self.cipher.export_key(format="PEM")
-        other.from_PEM(prv)
+        other = type(self.cipher).from_PEM(prv)
         assert self.cipher == other
 
 
