@@ -238,25 +238,25 @@ cdef class CipherBase:
         """Import a key (public or private half)."""
         return cls.from_buffer(key.encode("ascii"))
 
-    property _type:
+    @property
+    def _type(self):
         """Return the type of the cipher."""
-        def __get__(self):
-            return _pk.mbedtls_pk_get_type(&self._ctx)
+        return _pk.mbedtls_pk_get_type(&self._ctx)
     
-    property name:
+    @property
+    def name(self):
         """Return the name of the cipher."""
-        def __get__(self):
-            return _pk.mbedtls_pk_get_name(&self._ctx)
+        return _pk.mbedtls_pk_get_name(&self._ctx)
 
-    property _bitlen:
+    @property
+    def _bitlen(self):
         """Return the size of the key, in bits."""
-        def __get__(self):
-            return _pk.mbedtls_pk_get_bitlen(&self._ctx)
+        return _pk.mbedtls_pk_get_bitlen(&self._ctx)
 
-    property key_size:
+    @property
+    def key_size(self):
         """Return the size of the key, in bytes."""
-        def __get__(self):
-            return _pk.mbedtls_pk_get_len(&self._ctx)
+        return _pk.mbedtls_pk_get_len(&self._ctx)
 
     def _has_private(self):
         """Return `True` if the key contains a valid private half."""
@@ -543,29 +543,29 @@ cdef class ECPoint:
         """Free and clear the context."""
         _pk.mbedtls_ecp_point_free(&self._ctx)
 
-    property x:
+    @property
+    def x(self):
         """Return the X coordinate."""
-        def __get__(self):
-            try:
-                return _mpi.from_mpi(&self._ctx.X)
-            except ValueError:
-                return _mpi.MPI()
+        try:
+            return _mpi.from_mpi(&self._ctx.X)
+        except ValueError:
+            return _mpi.MPI()
 
-    property y:
+    @property
+    def y(self):
         """Return the Y coordinate."""
-        def __get__(self):
-            try:
-                return _mpi.from_mpi(&self._ctx.Y)
-            except ValueError:
-                return _mpi.MPI()
+        try:
+            return _mpi.from_mpi(&self._ctx.Y)
+        except ValueError:
+            return _mpi.MPI()
 
-    property z:
+    @property
+    def z(self):
         """Return the Z coordinate."""
-        def __get__(self):
-            try:
-                return _mpi.from_mpi(&self._ctx.Z)
-            except ValueError:
-                return _mpi.MPI()
+        try:
+            return _mpi.from_mpi(&self._ctx.Z)
+        except ValueError:
+            return _mpi.MPI()
 
     def _tuple(self):
         return (self.x, self.y)
@@ -746,37 +746,37 @@ cdef class DHBase:
         """Free and clear the context."""
         _pk.mbedtls_dhm_free(&self._ctx)
 
-    property key_size:
+    @property
+    def key_size(self):
         """Return the size of the key, in bytes."""
-        def __get__(self):
-            return _mpi.mbedtls_mpi_size(&self._ctx.P)
+        return _mpi.mbedtls_mpi_size(&self._ctx.P)
 
-    property modulus:
+    @property
+    def modulus(self):
         """Return the prime modulus, P."""
-        def __get__(self):
-            return _mpi.from_mpi(&self._ctx.P)
+        return _mpi.from_mpi(&self._ctx.P)
 
-    property generator:
+    @property
+    def generator(self):
         """Return the generator, G."""
-        def __get__(self):
-            return _mpi.from_mpi(&self._ctx.G)
+        return _mpi.from_mpi(&self._ctx.G)
 
-    property _secret:
+    @property
+    def _secret(self):
         """Return the secret (int)."""
-        def __get__(self):
-            return _mpi.from_mpi(&self._ctx.X)
+        return _mpi.from_mpi(&self._ctx.X)
 
-    property shared_secret:
+    @property
+    def shared_secret(self):
         """The shared secret (int).
 
         The shared secret is 0 if the TLS handshake is not finished.
 
         """
-        def __get__(self):
-            try:
-                return _mpi.from_mpi(&self._ctx.K)
-            except ValueError:
-                return _mpi.MPI()
+        try:
+            return _mpi.from_mpi(&self._ctx.K)
+        except ValueError:
+            return _mpi.MPI()
 
     def generate_secret(self):
         """Generate the shared secret."""
@@ -921,17 +921,17 @@ cdef class ECDHBase:
         finally:
             free(output)
 
-    property shared_secret:
+    @property
+    def shared_secret(self):
         """The shared secret (int).
 
         The shared secret is 0 if the TLS handshake is not finished.
 
         """
-        def __get__(self):
-            try:
-                return _mpi.from_mpi(&self._ctx.z)
-            except ValueError:
-                return _mpi.MPI()
+        try:
+            return _mpi.from_mpi(&self._ctx.z)
+        except ValueError:
+            return _mpi.MPI()
 
 
 cdef class ECDHServer(ECDHBase):

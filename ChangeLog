@@ -1,3 +1,9 @@
+[next]
+
+Misc.
+
+New `property` syntax from Cython 0.24.
+
 [0.12.1] - 2018-08-27
 
 Update version in `setup.py`.  No change in the code.
