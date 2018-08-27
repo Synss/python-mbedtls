@@ -1,4 +1,4 @@
-[next]
+[0.12.0] - 2018-08-27
 
 * x509: Add accessors to most fields of CRT, CSR, and CRL.
 The `x509` module can now be used to inspect existing certificates.
