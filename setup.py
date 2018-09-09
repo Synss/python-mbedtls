@@ -34,7 +34,7 @@ if sys.version_info < (2, ):
 
 def readme():
     with open("README.rst") as f:
-        return f.read()
+        return f.read().replace(":math:", "")
 
 
 setup(

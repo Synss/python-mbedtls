@@ -2,7 +2,9 @@
 
 Misc.
 
-New `property` syntax from Cython 0.24.
+* New `property` syntax from Cython 0.24.
+* Fixup rendering on Pypi.
+* Update required deps.
 
 [0.12.1] - 2018-08-27
 

@@ -7,7 +7,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:2.7.14-jessie
+      - image: circleci/python:3.4.9-jessie
     working_directory: ~/python-mbedtls
     steps:
       - checkout
@@ -37,48 +37,48 @@ jobs:
 
       - restore_cache:
           keys:
-            - py34-v1-{{ arch }}-3.4.8
+            - py34-v1-{{ arch }}-3.4.9
       - run:
           name: install python 3.4
           command: |
-            if [ ! -d ".pyenv/versions/3.4.8" ]; then
+            if [ ! -d ".pyenv/versions/3.4.9" ]; then
               eval "$(pyenv init -)"
-              pyenv install 3.4.8
+              pyenv install 3.4.9
             fi
       - save_cache:
-          key: py34-v1-{{ arch }}-3.4.8
+          key: py34-v1-{{ arch }}-3.4.9
           paths:
-            - .pyenv/versions/3.4.8
+            - .pyenv/versions/3.4.9
 
       - restore_cache:
           keys:
-            - py35-v1-{{ arch }}-3.5.5
+            - py35-v1-{{ arch }}-3.5.6
       - run:
           name: install python 3.5
           command: |
-            if [ ! -d ".pyenv/versions/3.5.5" ]; then
+            if [ ! -d ".pyenv/versions/3.5.6" ]; then
               eval "$(pyenv init -)"
-              pyenv install 3.5.5
+              pyenv install 3.5.6
             fi
       - save_cache:
-          key: py35-v1-{{ arch }}-3.5.5
+          key: py35-v1-{{ arch }}-3.5.6
           paths:
-            - .pyenv/versions/3.5.5
+            - .pyenv/versions/3.5.6
 
       - restore_cache:
           keys:
-            - py36-v1-{{ arch }}-3.6.5
+            - py36-v1-{{ arch }}-3.6.6
       - run:
           name: install python 3.6
           command: |
-            if [ ! -d ".pyenv/versions/3.6.5" ]; then
+            if [ ! -d ".pyenv/versions/3.6.6" ]; then
               eval "$(pyenv init -)"
-              pyenv install 3.6.5
+              pyenv install 3.6.6
             fi
       - save_cache:
-          key: py36-v1-{{ arch }}-3.6.5
+          key: py36-v1-{{ arch }}-3.6.6
           paths:
-            - .pyenv/versions/3.6.5
+            - .pyenv/versions/3.6.6
 
       - run:
           name: setup environment
@@ -100,16 +100,15 @@ jobs:
 
       - restore_cache:
           keys:
-            - py-deps-2.7-{{ checksum "requirements-tests.txt" }}
+            - py-deps-3.4-{{ checksum "requirements-tests.txt" }}
       - run:
           name: install environment
           command: |
-            sudo apt-get install python-virtualenv
-            python -m virtualenv venv
+            python -m venv venv
             . venv/bin/activate
             pip install -r requirements-tests.txt
       - save_cache:
-          key: py-deps-2.7-{{ checksum "requirements-tests.txt" }}
+          key: py-deps-3.4-{{ checksum "requirements-tests.txt" }}
           paths:
             - venv
 
@@ -117,21 +116,27 @@ jobs:
           name: run tests
           command: |
             eval "$(pyenv init -)"
-            pyenv shell 2.7.15 3.4.8 3.5.5 3.6.5
+            pyenv shell 2.7.15 3.4.9 3.5.6 3.6.6
             . venv/bin/activate
-            detox
+            detox -e py27 -e py34 -e py35 -e py36
+            tox -e doctest
+            tox -e readme
 
       - deploy:
-          name: Publish to Pypi
+          name: Distribute
           command: |
+            . venv/bin/activate
+            python setup.py sdist
+            mkdir -p out/dist
+            cp dist/* out/dist
+
             if [ "$CIRCLE_BRANCH" = "master" ]; then
               echo "[pypi]" > $HOME/.pypirc
               echo "username = Synss" >> $HOME/.pypirc
               echo "password = $PYPI_PASSWORD" >> $HOME/.pypirc
-              . venv/bin/activate
-              python setup.py sdist
               twine upload dist/*
             fi
+          when: on_success
 
       - run:
           name: save logs
@@ -139,13 +144,6 @@ jobs:
             mkdir -p out/log
             cp .tox/*/log/py*.log out/log || true
           when: on_fail
-
-      - run:
-          name: save dist
-          command: |
-            mkdir -p out/dist
-            cp dist/* out/dist
-          when: on_success
 
       - store_artifacts:
           path: out
