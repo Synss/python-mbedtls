@@ -82,25 +82,25 @@ cdef class MDBase:
         """Return the name of the message digest output."""
         return self.name
 
-    property _type:
+    @property
+    def _type(self):
         """The type of the message digest output."""
-        def __get__(self):
-            return _md.mbedtls_md_get_type(self._info)
+        return _md.mbedtls_md_get_type(self._info)
 
-    property digest_size:
+    @property
+    def digest_size(self):
         """The size of the resulting hash in bytes."""
-        def __get__(self):
-            return _md.mbedtls_md_get_size(self._info)
+        return _md.mbedtls_md_get_size(self._info)
 
-    property block_size:
+    @property
+    def block_size(self):
         """The internal block size of the hash algorithm in bytes."""
-        def __get__(self):
-            return self._ctx.md_info.block_size
+        return self._ctx.md_info.block_size
 
-    property name:
+    @property
+    def name(self):
         """The canonical name of the hashing algorithm."""
-        def __get__(self):
-            return _md.mbedtls_md_get_name(self._info).decode("ascii").lower()
+        return _md.mbedtls_md_get_name(self._info).decode("ascii").lower()
 
     cdef _finish(self, const unsigned char *output):
         return -0x5100  # Bad input data error.

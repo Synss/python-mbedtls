@@ -1,0 +1,22 @@
+language: python
+dist: trusty
+python:
+  - "3.6"
+before_install:
+  - ./install-mbedtls.sh 2.4.2 $HOME/mbedtls
+install:
+  - python --version
+  - python -m pip install -r requirements-tests.txt
+  - >
+    python setup.py build_ext
+    --inplace
+    --with-coverage
+    -L$HOME/mbedtls/lib
+    -I$HOME/mbedtls/include
+script:
+  - >
+    LD_LIBRARY_PATH=$HOME/mbedtls/lib
+    python -m coverage run -m pytest tests
+  - python -m coverage report
+after_success:
+  - coveralls

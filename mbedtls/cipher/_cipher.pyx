@@ -186,37 +186,36 @@ cdef class Cipher:
         """Return the name of the cipher."""
         return self.name.decode("ascii")
 
-    property block_size:
+    @property
+    def block_size(self):
         """Return the block size for the cipher."""
-        def __get__(self):
-            return _cipher.mbedtls_cipher_get_block_size(&self._enc_ctx)
+        return _cipher.mbedtls_cipher_get_block_size(&self._enc_ctx)
 
-    property mode:
+    @property
+    def mode(self):
         """Return the mode of operation of the cipher."""
-        def __get__(self):
-            return _cipher.mbedtls_cipher_get_cipher_mode(&self._enc_ctx)
+        return _cipher.mbedtls_cipher_get_cipher_mode(&self._enc_ctx)
 
-    property iv_size:
+    @property
+    def iv_size(self):
         """Return the size of the cipher's IV/NONCE in bytes."""
-        def __get__(self):
-            return _cipher.mbedtls_cipher_get_iv_size(&self._enc_ctx)
+        return _cipher.mbedtls_cipher_get_iv_size(&self._enc_ctx)
 
-    property _type:
+    @property
+    def _type(self):
         """Return the type of the cipher."""
-        def __get__(self):
-            return _cipher.mbedtls_cipher_get_type(&self._enc_ctx)
+        return _cipher.mbedtls_cipher_get_type(&self._enc_ctx)
 
-    property name:
+    @property
+    def name(self):
         """Return the name of the cipher."""
-        def __get__(self):
-            ret = _cipher.mbedtls_cipher_get_name(&self._enc_ctx)
-            return ret if ret is not NULL else b"NONE"
+        ret = _cipher.mbedtls_cipher_get_name(&self._enc_ctx)
+        return ret if ret is not NULL else b"NONE"
 
-    property key_size:
+    @property
+    def key_size(self):
         """Return the size of the ciphers' key."""
-        def __get__(self):
-            return _cipher.mbedtls_cipher_get_key_bitlen(
-                &self._enc_ctx) // 8
+        return _cipher.mbedtls_cipher_get_key_bitlen(&self._enc_ctx) // 8
 
     cdef _crypt(self, 
                 const unsigned char[:] iv,
