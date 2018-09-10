@@ -1,2 +1,6 @@
 [run]
 plugins = Cython.Coverage
+source = mbedtls
+
+[report]
+omit = */__init__.py
