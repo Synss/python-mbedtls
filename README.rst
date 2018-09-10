@@ -7,6 +7,10 @@ Cryptographic library for Python with Mbed TLS back end
    :target: https://circleci.com/gh/Synss/python-mbedtls/tree/develop
 
 .. image::
+   https://travis-ci.org/Synss/python-mbedtls.svg?branch=develop
+   :target: https://travis-ci.org/Synss/python-mbedtls
+
+.. image::
    https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=develop
    :target: https://coveralls.io/github/Synss/python-mbedtls?branch=develop
 
