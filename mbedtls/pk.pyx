@@ -790,7 +790,6 @@ cdef class DHBase:
             check_error(mbedtls_dhm_calc_secret(
                 &self._ctx, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE, &olen,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
-            assert olen != 0
             mpi = _mpi.MPI()
             _mpi.mbedtls_mpi_read_binary(&mpi._ctx, &output[0], olen)
             return mpi
