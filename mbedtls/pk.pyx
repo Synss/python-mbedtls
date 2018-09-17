@@ -177,13 +177,16 @@ cdef class CipherBase:
             return
         mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
         try:
-            check_error(_pk.mbedtls_pk_parse_key(
-                &self._ctx, &key[0], key.size,
-                NULL if password is None else &password[0],
-                0 if password is None else password.size))
-        except TLSError:
-            check_error(_pk.mbedtls_pk_parse_public_key(
-                &self._ctx, &key[0], key.size))
+            try:
+                check_error(_pk.mbedtls_pk_parse_key(
+                    &self._ctx, &key[0], key.size,
+                    NULL if password is None else &password[0],
+                    0 if password is None else password.size))
+            except TLSError:
+                check_error(_pk.mbedtls_pk_parse_public_key(
+                    &self._ctx, &key[0], key.size))
+        except IndexError:
+            raise ValueError("wrong key format")
 
     def __cinit__(self):
         """Initialize the context."""

@@ -152,6 +152,11 @@ class TestRSA(_TestCipherBase):
         msg = randbytes(self.cipher.key_size - 11)
         assert self.cipher.decrypt(self.cipher.encrypt(msg)) == msg
 
+    @pytest.mark.userfixtures("key")
+    def test_ecc_from_rsa_raises_valueerror(self):
+        with pytest.raises(ValueError):
+            ECC.from_buffer(self.cipher.export_key("DER"))
+
 
 class TestECC(_TestCipherBase):
 
@@ -186,6 +191,11 @@ class TestECC(_TestCipherBase):
         prv = self.cipher.export_key("NUM")
         assert isinstance(prv, numbers.Integral)
         assert prv != 0
+
+    @pytest.mark.userfixtures("key")
+    def test_rsa_from_ecc_raises_valueerror(self):
+        with pytest.raises(ValueError):
+            RSA.from_buffer(self.cipher.export_key("DER"))
 
 
 class TestECCtoECDH:

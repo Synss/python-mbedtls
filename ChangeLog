@@ -10,6 +10,7 @@ Bugfixes
 
 Misc.
 
+* pk: Improved error handling.
 * Declare mbedtls functions nogil.
 * The install script uses cmake to install mbedtls.
 
