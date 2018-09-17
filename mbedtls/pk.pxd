@@ -316,8 +316,8 @@ cdef extern from "mbedtls/pk.h" nogil:
 
     size_t mbedtls_pk_get_bitlen(const mbedtls_pk_context *ctx)
     size_t mbedtls_pk_get_len(const mbedtls_pk_context *ctx)
-    # int mbedtls_pk_can_do(const mbedtls_pk_context *ctx,
-    #                       mbedtls_pk_type_t type)
+    int mbedtls_pk_can_do(const mbedtls_pk_context *ctx,
+                          mbedtls_pk_type_t type)
 
     int mbedtls_pk_verify(
         mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg,

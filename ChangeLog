@@ -1,5 +1,9 @@
 [next]
 
+Add TLS support.  Both client side and server side are implemented.
+SSLv3 is not supported.  Session management and SNI callbacks are
+not implemented.
+
 API Changes
 
 * random: `random` module renamed `_random`.
