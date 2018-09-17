@@ -389,6 +389,10 @@ cdef class CipherBase:
         size_t)
 
 
+cdef class RSA(CipherBase):
+    pass
+
+
 cdef class ECC(CipherBase):
     cdef curve
 
