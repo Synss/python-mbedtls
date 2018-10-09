@@ -309,6 +309,9 @@ cdef class Certificate:
 
 cdef class CRT(Certificate):
     cdef mbedtls_x509_crt _ctx
+    cdef set_next(self, CRT crt)
+    cdef unset_next(self)
+    cdef CRT _next
 
 
 cdef class _CRTWriter:
@@ -325,3 +328,6 @@ cdef class _CSRWriter:
 
 cdef class CRL(Certificate):
     cdef mbedtls_x509_crl _ctx
+    cdef set_next(self, CRL crl)
+    cdef unset_next(self)
+    cdef CRL _next

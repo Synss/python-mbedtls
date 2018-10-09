@@ -124,6 +124,7 @@ cdef class CRT(Certificate):
 
     def __init__(self, const unsigned char[:] buffer):
         super(CRT, self).__init__()
+        self._next = None
         if buffer is None:
             return
         check_error(x509.mbedtls_x509_crt_parse(
@@ -135,13 +136,13 @@ cdef class CRT(Certificate):
 
     def __dealloc__(self):
         """Unallocate all certificate data."""
+        self.unset_next()
         x509.mbedtls_x509_crt_free(&self._ctx)
 
     def __next__(self):
-        if self._ctx.next == NULL or self._ctx.version == 0:
+        if self._next is None:
             raise StopIteration
-        cdef mbedtls_x509_buf buf = self._ctx.next.raw
-        return type(self).from_DER(buf.p[0:buf.len])
+        return self._next
 
     def __str__(self):
         cdef size_t osize = 2**24
@@ -374,6 +375,14 @@ cdef class CRT(Certificate):
     # RFC 5280, Section 4.2.1.14 Inhibit Any-Policy
     # RFC 5280, Section 4.2.1.15 Freshest CRL
 
+    cdef set_next(self, CRT crt):
+        self._next = crt
+        self._ctx.next = &crt._ctx
+
+    cdef unset_next(self):
+        self._ctx.next = NULL
+        self._next = None
+
     def check_revocation(self, CRL crl):
         """Return True if the certificate is revoked, False otherwise."""
         return bool(x509.mbedtls_x509_crt_is_revoked(&self._ctx, &crl._ctx))
@@ -422,8 +431,6 @@ cdef class CRT(Certificate):
             digestmod=csr.digestmod,
             ca=ca,
             max_path_length=max_path_length)
-        # if crt._ctx.next == NULL:
-        #     crt._ctx.next = &crt._ctx
         return crt
 
     @classmethod
@@ -848,6 +855,7 @@ cdef class CRL(Certificate):
 
     def __init__(self, const unsigned char[:] buffer):
         super(CRL, self).__init__()
+        self._next = None
         if buffer is None:
             return
         check_error(x509.mbedtls_x509_crl_parse(
@@ -859,13 +867,13 @@ cdef class CRL(Certificate):
 
     def __dealloc__(self):
         """Unallocate all CRL data."""
+        self.unset_next()
         x509.mbedtls_x509_crl_free(&self._ctx)
 
     def __next__(self):
-        if self._ctx.next == NULL or self._ctx.version == 0:
+        if self._next is None:
             raise StopIteration
-        cdef mbedtls_x509_buf buf = self._ctx.next.raw
-        return type(self).from_DER(buf.p[0:buf.len])
+        return self._next
 
     def __str__(self):
         cdef size_t osize = 2**24
@@ -1012,3 +1020,11 @@ cdef class CRL(Certificate):
 
     def to_PEM(self):
         return DER_to_PEM(self.to_DER(), "X509 CRL")
+
+    cdef set_next(self, CRL crl):
+        self._next = crl
+        self._ctx.next = &crl._ctx
+
+    cdef unset_next(self):
+        self._ctx.next = NULL
+        self._next = None
