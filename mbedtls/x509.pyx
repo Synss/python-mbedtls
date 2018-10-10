@@ -13,6 +13,11 @@ cimport mbedtls.pk as _pk
 
 import base64
 import datetime as dt
+try:
+    from contextlib import suppress
+except ImportError:
+    # Python 2.7
+    from contextlib2 import suppress
 from collections import namedtuple
 
 import mbedtls.hash as hashlib
@@ -85,7 +90,11 @@ cdef class Certificate:
         if type(other) is type(self):
             return self.to_DER() == other.to_DER()
         else:
-            return self.to_DER() == other or self.to_PEM() == other
+            # Python 2.7: Explicitly call `bytes()` to avoid warning.
+            with suppress(TypeError):
+                return (self.to_PEM() == str(other)
+                        or self.to_DER() == bytes(other))
+        return False
 
     def __str__(self):
         raise NotImplementedError
