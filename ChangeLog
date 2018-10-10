@@ -4,6 +4,10 @@ API Changes
 
 * random: `random` module renamed `_random`.
 
+Bugfixes
+
+* mpi: GC now actually overwrites keys with random data.
+
 Misc.
 
 * Declare mbedtls functions nogil.
