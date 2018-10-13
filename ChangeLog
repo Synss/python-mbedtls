@@ -7,6 +7,7 @@ API Changes
 Misc.
 
 * Declare mbedtls functions nogil.
+* The install script uses cmake to install mbedtls.
 
 [0.12.2] - 2018-09-10
 

@@ -5,7 +5,10 @@ set -ex
 
 if [ $# -ne 3 ] && [ -n "$2" ]; then
 	version="$1"
-	destdir="$2"
+	case $2 in
+		/*) destdir=$2;;
+		*) destdir=$PWD/$2;;
+	esac
 else
 	cat <<-EOF
 
@@ -22,15 +25,16 @@ fi
 license="apache"
 name="mbedtls"
 url="https://tls.mbed.org/download/$name-$version-$license.tgz"
-src="$PWD/src-$version"
-builddir="$PWD/build-$version"
+src="$destdir/_src"
 
 mkdir -p "$src"
 wget -qO - "$url" | tar xz -C "$src" --strip-components 1
 
-mkdir -p "$builddir"
 mkdir -p "$destdir"
 cd "$src"
-sed -i.bak -E "s,(DESTDIR=).*,\1$destdir," Makefile
-SHARED="yes" make -j4 no_test
+cmake . \
+	-DCMAKE_INSTALL_PREFIX=$destdir \
+	-DENABLE_TESTING=OFF \
+	-DUSE_SHARED_MBEDTLS_LIBRARY=ON
+make -j4
 make install
