@@ -10,7 +10,6 @@ import mbedtls.exceptions as exceptions
 import mbedtls.hash as hash
 import mbedtls.hmac as hmac
 import mbedtls.pk as pk
-import mbedtls.random as random
 
 
-__all__ = ("cipher", "exceptions", "hash", "hmac", "pk", "random")
+__all__ = ("cipher", "exceptions", "hash", "hmac", "pk")

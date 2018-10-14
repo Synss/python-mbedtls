@@ -1,14 +1,10 @@
 """Unit tests for mbedtls.random."""
-# pylint: disable=missing-docstring
 
 import random as _random
 
-# pylint: disable=import-error
-import mbedtls.random as _drbg
-# pylint: enable=import-error
-
 import pytest
 
+import mbedtls._random as _drbg
 from mbedtls.exceptions import TLSError
 
 

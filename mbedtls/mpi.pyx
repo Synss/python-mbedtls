@@ -6,13 +6,13 @@ __license__ = "MIT License"
 
 
 cimport mbedtls.mpi as _mpi
-cimport mbedtls.random as _random
+cimport mbedtls._random as _random
 from libc.stdlib cimport malloc, free
 
 import numbers
 from binascii import hexlify, unhexlify
 
-import mbedtls.random as _random
+import mbedtls._random as _random
 from mbedtls.exceptions import *
 
 try:

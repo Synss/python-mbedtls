@@ -21,7 +21,7 @@ from libc.stdlib cimport malloc, free
 
 cimport mbedtls.mpi as _mpi
 cimport mbedtls.pk as _pk
-cimport mbedtls.random as _random
+cimport mbedtls._random as _random
 
 try:
     from collections.abc import Sequence
@@ -33,7 +33,7 @@ import enum
 from collections import namedtuple
 from functools import partial
 
-import mbedtls.random as _random
+import mbedtls._random as _random
 from mbedtls.exceptions import check_error, TLSError
 import mbedtls.hash as _hash
 
