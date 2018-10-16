@@ -5,7 +5,7 @@ __copyright__ = "Copyright 2018, Mathias Laurin"
 __license__ = "MIT License"
 
 
-cdef extern from "mbedtls/bignum.h":
+cdef extern from "mbedtls/bignum.h" nogil:
     int MBEDTLS_MPI_MAX_SIZE
 
     # Multi-precision integer library

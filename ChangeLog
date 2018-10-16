@@ -4,6 +4,10 @@ API Changes
 
 * random: `random` module renamed `_random`.
 
+Misc.
+
+* Declare mbedtls functions nogil.
+
 [0.12.2] - 2018-09-10
 
 Misc.

@@ -11,7 +11,7 @@ __copyright__ = "Copyright 2018, Mathias Laurin"
 __license__ = "MIT License"
 
 
-cdef extern from "mbedtls/asn1.h":
+cdef extern from "mbedtls/asn1.h" nogil:
     cdef struct mbedtls_asn1_buf:
         int tag
         size_t len
@@ -26,21 +26,21 @@ cdef extern from "mbedtls/asn1.h":
         unsigned char next_merged
 
 
-cdef extern from "mbedtls/bignum.h":
+cdef extern from "mbedtls/bignum.h" nogil:
     ctypedef struct mbedtls_mpi:
         pass
 
 
-cdef extern from "mbedtls/md.h":
+cdef extern from "mbedtls/md.h" nogil:
     ctypedef enum mbedtls_md_type_t: pass
 
 
-cdef extern from "mbedtls/pk.h":
+cdef extern from "mbedtls/pk.h" nogil:
     ctypedef struct mbedtls_pk_context:
         pass
 
 
-cdef extern from "mbedtls/x509.h":
+cdef extern from "mbedtls/x509.h" nogil:
     ctypedef mbedtls_asn1_buf mbedtls_x509_buf
     ctypedef mbedtls_asn1_named_data mbedtls_x509_name
     ctypedef mbedtls_asn1_sequence mbedtls_x509_sequence
@@ -51,7 +51,7 @@ cdef extern from "mbedtls/x509.h":
         int hour, min, sec
 
 
-cdef extern from "mbedtls/x509_crt.h":
+cdef extern from "mbedtls/x509_crt.h" nogil:
     cdef struct mbedtls_x509_crt:
         mbedtls_x509_buf raw
         mbedtls_x509_buf tbs
@@ -181,7 +181,7 @@ cdef extern from "mbedtls/x509_crt.h":
         void *p_rng)
 
 
-cdef extern from "mbedtls/x509_csr.h":
+cdef extern from "mbedtls/x509_csr.h" nogil:
     # Certificate signing request parsing and writing
     # -----------------------------------------------
     cdef struct mbedtls_x509_csr:
@@ -253,7 +253,7 @@ cdef extern from "mbedtls/x509_csr.h":
         void *p_rng)
 
 
-cdef extern from "mbedtls/x509_crl.h":
+cdef extern from "mbedtls/x509_crl.h" nogil:
     # Certificate revocation list parsing
     # -----------------------------------
     ctypedef struct mbedtls_x509_crl_entry:

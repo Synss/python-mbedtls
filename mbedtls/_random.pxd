@@ -5,7 +5,7 @@ __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
 __license__ = "MIT License"
 
 
-cdef extern from "mbedtls/entropy.h":
+cdef extern from "mbedtls/entropy.h" nogil:
     ctypedef struct mbedtls_entropy_context:
         pass
 
@@ -30,7 +30,7 @@ cdef extern from "mbedtls/entropy.h":
     #     const char *path)
 
 
-cdef extern from "mbedtls/ctr_drbg.h":
+cdef extern from "mbedtls/ctr_drbg.h" nogil:
     ctypedef struct mbedtls_ctr_drbg_context:
         pass
 
