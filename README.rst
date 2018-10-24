@@ -306,7 +306,8 @@ Here, the trusted root is a self-signed CA certificate
    >>> ca0_crt = x509.CRT.selfsign(
    ...     ca0_csr, ca0_key,
    ...     not_before=now, not_after=now + dt.timedelta(days=90),
-   ...     serial_number=0x123456, ca=True, max_path_length=-1)
+   ...     serial_number=0x123456,
+   ...     basic_constraints=x509.BasicConstraints(True, 1))
    ...
 
 An intermediate then issues a Certificate Singing Request (CSR) that the
@@ -318,7 +319,7 @@ root CA signs::
    >>>
    >>> ca1_crt = ca0_crt.sign(
    ...     ca1_csr, ca0_key, now, now + dt.timedelta(days=90), 0x123456, 
-   ...     ca=True, max_path_length=3)
+   ...     basic_constraints=x509.BasicConstraints(ca=True, max_path_length=3))
    ...
 
 And finally, the intermediate CA signs a certificate for the

@@ -15,7 +15,7 @@ import pytest
 import mbedtls.hash as hashlib
 from mbedtls.exceptions import TLSError
 from mbedtls.pk import RSA, ECC
-from mbedtls.x509 import CRT, CSR
+from mbedtls.x509 import BasicConstraints, CRT, CSR
 from mbedtls.tls import *
 
 
@@ -96,14 +96,15 @@ class Chain:
         return CRT.selfsign(
             ca0_csr, ca0_key,
             not_before=now, not_after=now + dt.timedelta(days=90),
-            serial_number=0x123456, ca=True, max_path_length=-1)
+            serial_number=0x123456,
+            basic_constraints=BasicConstraints(True, -1))
 
     @pytest.fixture(scope="class")
     def ca1_crt(self, ca1_key, ca0_crt, ca0_key, digestmod, now):
         ca1_csr = CSR.new(ca1_key, "CN=Intermediate CA", digestmod())
         return ca0_crt.sign(
             ca1_csr, ca0_key, now, now + dt.timedelta(days=90), 0x234567,
-            ca=True, max_path_length=1)
+            basic_constraints=BasicConstraints(True, -1))
 
     @pytest.fixture(scope="class")
     def ee0_crt(self, ee0_key, ca1_crt, ca1_key, digestmod, now):

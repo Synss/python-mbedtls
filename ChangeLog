@@ -6,6 +6,10 @@ not implemented.
 
 API Changes
 
+* x509: `ca` and `max_path_length` basic constraints are now
+grouped into a `BasicConstraints` namedtuple.  It is possible
+to leave the basic constraints unset by passing None
+to `CRT.new(..., basic_constraints=None)`.
 * random: `random` module renamed `_random`.
 
 Bugfixes
