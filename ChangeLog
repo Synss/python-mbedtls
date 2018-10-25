@@ -1,4 +1,4 @@
-[next]
+[0.13.0] - 2018-10-25
 
 Add TLS support.  Both client side and server side are implemented.
 SSLv3 is not supported.  Session management and SNI callbacks are
