@@ -21,7 +21,7 @@ from libc.stdlib cimport malloc, free
 
 cimport mbedtls.mpi as _mpi
 cimport mbedtls.pk as _pk
-cimport mbedtls.random as _random
+cimport mbedtls._random as _random
 
 try:
     from collections.abc import Sequence
@@ -33,7 +33,7 @@ import enum
 from collections import namedtuple
 from functools import partial
 
-import mbedtls.random as _random
+import mbedtls._random as _random
 from mbedtls.exceptions import check_error, TLSError
 import mbedtls.hash as _hash
 
@@ -177,13 +177,16 @@ cdef class CipherBase:
             return
         mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
         try:
-            check_error(_pk.mbedtls_pk_parse_key(
-                &self._ctx, &key[0], key.size,
-                NULL if password is None else &password[0],
-                0 if password is None else password.size))
-        except TLSError:
-            check_error(_pk.mbedtls_pk_parse_public_key(
-                &self._ctx, &key[0], key.size))
+            try:
+                check_error(_pk.mbedtls_pk_parse_key(
+                    &self._ctx, &key[0], key.size,
+                    NULL if password is None else &password[0],
+                    0 if password is None else password.size))
+            except TLSError:
+                check_error(_pk.mbedtls_pk_parse_public_key(
+                    &self._ctx, &key[0], key.size))
+        except IndexError:
+            raise ValueError("wrong key format")
 
     def __cinit__(self):
         """Initialize the context."""
@@ -790,7 +793,6 @@ cdef class DHBase:
             check_error(mbedtls_dhm_calc_secret(
                 &self._ctx, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE, &olen,
                 &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
-            assert olen != 0
             mpi = _mpi.MPI()
             _mpi.mbedtls_mpi_read_binary(&mpi._ctx, &output[0], olen)
             return mpi

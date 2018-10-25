@@ -8,6 +8,13 @@ __license__ = "MIT License"
 
 cimport mbedtls.cipher._cipher as _cipher
 from libc.stdlib cimport malloc, free
+
+try:
+    from contextlib import suppress
+except ImportError:
+    # Python 2.7
+    from contextlib2 import suppress
+
 from mbedtls.exceptions import *
 
 
@@ -114,7 +121,8 @@ cpdef get_supported_ciphers():
     cdef size_t n = 0
     ciphers = set()
     while cipher_types[n]:
-        ciphers.add(cipher_lookup[cipher_types[n]])
+        with suppress(KeyError):
+            ciphers.add(cipher_lookup[cipher_types[n]])
         n += 1
     return ciphers
 

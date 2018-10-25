@@ -5,12 +5,12 @@ __copyright__ = "Copyright 2015, Elaborated Networks GmbH"
 __license__ = "MIT License"
 
 
-cdef extern from "mbedtls/md_internal.h":
+cdef extern from "mbedtls/md_internal.h" nogil:
     ctypedef struct mbedtls_md_info_t:
         int block_size
 
 
-cdef extern from "mbedtls/md.h":
+cdef extern from "mbedtls/md.h" nogil:
     ctypedef enum mbedtls_md_type_t:
         pass
 

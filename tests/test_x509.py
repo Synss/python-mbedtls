@@ -122,8 +122,8 @@ class _CRTBase(_X509Base):
         return hash.sha256()
 
     @pytest.fixture
-    def is_ca(self):
-        return False, 0
+    def basic_constraints(self):
+        return BasicConstraints(False, 0)
 
     @pytest.fixture
     def x509(self,
@@ -132,9 +132,8 @@ class _CRTBase(_X509Base):
              subject, subject_key,
              serial_number,
              digestmod,
-             is_ca
+             basic_constraints
             ):
-        is_ca, max_path_length = is_ca
         return CRT.new(
             not_before=now,
             not_after=now + dt.timedelta(days=90),
@@ -144,8 +143,7 @@ class _CRTBase(_X509Base):
             subject_key=subject_key,
             serial_number=serial_number,
             digestmod=digestmod,
-            ca=is_ca,
-            max_path_length=max_path_length)
+            basic_constraints=basic_constraints)
 
     @pytest.fixture
     def crt(self, x509):
@@ -205,12 +203,14 @@ class TestCRTMDAlg(_CRTBase):
 
 class TestCRTCAPath(_CRTBase):
 
-    @pytest.fixture(params=[(True, 0), (True, 2), (False, 0)])
-    def is_ca(self, request):
+    @pytest.fixture(params=[(True, 0), (True, 2), (False, 0), None])
+    def basic_constraints(self, request):
         return request.param
 
-    def test_ca(self, crt, is_ca):
-        assert (crt.ca, crt.max_path_length) == is_ca
+    def test_ca(self, crt, basic_constraints):
+        if basic_constraints is None:
+            basic_constraints = BasicConstraints()
+        assert crt.basic_constraints == basic_constraints
 
 
 class _CSRBase(_X509Base):
@@ -331,14 +331,15 @@ class TestVerifyCertificateChain:
         return CRT.selfsign(
             ca0_csr, ca0_key,
             not_before=now, not_after=now + dt.timedelta(days=90),
-            serial_number=0x123456, ca=True, max_path_length=-1)
+            serial_number=0x123456,
+            basic_constraints=BasicConstraints(True, -1))
 
     @pytest.fixture
     def ca1_crt(self, ca1_key, ca0_crt, ca0_key, now):
         ca1_csr = CSR.new(ca1_key, "CN=Intermediate CA", hash.sha256())
         return ca0_crt.sign(
             ca1_csr, ca0_key, now, now + dt.timedelta(days=90), 0x234567,
-            ca=True, max_path_length=1)
+            basic_constraints=BasicConstraints(True, 1))
 
     @pytest.fixture
     def ee0_crt(self, ee0_key, ca1_crt, ca1_key, now):

@@ -6,7 +6,7 @@ __license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free
-cimport mbedtls.random as random
+cimport mbedtls._random as random
 import binascii
 from mbedtls.exceptions import check_error
 
@@ -38,11 +38,10 @@ cdef class Entropy:
         finally:
             free(output)
 
-    def update(self, data):
+    def update(self, const unsigned char[:] data):
         """Add data to the accumulator manually."""
-        cdef unsigned char[:] c_data = bytearray(data)
         check_error(random.mbedtls_entropy_update_manual(
-            &self._ctx, &c_data[0], c_data.shape[0]))
+            &self._ctx, &data[0], data.shape[0]))
 
 
 cdef class Random:
@@ -64,22 +63,20 @@ cdef class Random:
         """Reseed the RNG."""
         check_error(random.mbedtls_ctr_drbg_reseed(&self._ctx, NULL, 0))
 
-    def update(self, data):
+    def update(self, const unsigned char[:] data):
         """Update state with additional data."""
-        cdef unsigned char[:] c_data = bytearray(data)
-        random.mbedtls_ctr_drbg_update(&self._ctx, &c_data[0], c_data.shape[0])
+        random.mbedtls_ctr_drbg_update(&self._ctx, &data[0], data.shape[0])
 
-    def token_bytes(self, length):
+    def token_bytes(self, size_t length):
         """Returns `length` random bytes."""
-        cdef size_t sz = length
         cdef unsigned char* output = <unsigned char*>malloc(
-            sz * sizeof(unsigned char))
+            length * sizeof(unsigned char))
         if not output:
             raise MemoryError()
         try:
             check_error(random.mbedtls_ctr_drbg_random(
-                &self._ctx, output, sz))
-            return bytes(output[:sz])
+                &self._ctx, output, length))
+            return bytes(output[:length])
         finally:
             free(output)
 

@@ -8,16 +8,16 @@ __copyright__ = "Copyright 2016, Mathias Laurin, Elaborated Networks GmbH"
 __license__ = "MIT License"
 
 
-cdef extern from "mbedtls/md.h":
+cdef extern from "mbedtls/md.h" nogil:
     ctypedef enum mbedtls_md_type_t: pass
 
 
-cdef extern from "mbedtls/bignum.h":
+cdef extern from "mbedtls/bignum.h" nogil:
     ctypedef struct mbedtls_mpi:
         pass
 
 
-cdef extern from "mbedtls/dhm.h":
+cdef extern from "mbedtls/dhm.h" nogil:
     ctypedef struct mbedtls_dhm_context:
         mbedtls_mpi P
         mbedtls_mpi G
@@ -61,7 +61,7 @@ cdef extern from "mbedtls/dhm.h":
     #     const char *path)
 
 
-cdef extern from "mbedtls/ecp.h":
+cdef extern from "mbedtls/ecp.h" nogil:
     ctypedef enum mbedtls_ecp_group_id:
         MBEDTLS_ECP_DP_NONE = 0,
         MBEDTLS_ECP_DP_SECP192R1
@@ -170,7 +170,7 @@ cdef extern from "mbedtls/ecp.h":
         void *p_rng)
 
 
-cdef extern from "mbedtls/ecdh.h":
+cdef extern from "mbedtls/ecdh.h" nogil:
     ctypedef enum mbedtls_ecdh_side:
         MBEDTLS_ECDH_OURS
         MBEDTLS_ECDH_THEIRS
@@ -219,7 +219,7 @@ cdef extern from "mbedtls/ecdh.h":
         int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
 
 
-cdef extern from "mbedtls/ecdsa.h":
+cdef extern from "mbedtls/ecdsa.h" nogil:
     ctypedef struct mbedtls_ecdsa_context:
         mbedtls_ecp_group grp
         mbedtls_mpi d
@@ -251,7 +251,7 @@ cdef extern from "mbedtls/ecdsa.h":
         int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
 
 
-cdef extern from "mbedtls/rsa.h":
+cdef extern from "mbedtls/rsa.h" nogil:
     ctypedef struct mbedtls_rsa_context:
         pass
 
@@ -285,7 +285,7 @@ cdef extern from "mbedtls/rsa.h":
     # mbedtls_rsa_free
 
 
-cdef extern from "mbedtls/pk.h":
+cdef extern from "mbedtls/pk.h" nogil:
     ctypedef enum mbedtls_pk_type_t:
         MBEDTLS_PK_NONE=0
         MBEDTLS_PK_RSA
@@ -316,8 +316,8 @@ cdef extern from "mbedtls/pk.h":
 
     size_t mbedtls_pk_get_bitlen(const mbedtls_pk_context *ctx)
     size_t mbedtls_pk_get_len(const mbedtls_pk_context *ctx)
-    # int mbedtls_pk_can_do(const mbedtls_pk_context *ctx,
-    #                       mbedtls_pk_type_t type)
+    int mbedtls_pk_can_do(const mbedtls_pk_context *ctx,
+                          mbedtls_pk_type_t type)
 
     int mbedtls_pk_verify(
         mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg,
@@ -387,6 +387,10 @@ cdef class CipherBase:
         self,
         int (*fun)(mbedtls_pk_context*, unsigned char*, size_t),
         size_t)
+
+
+cdef class RSA(CipherBase):
+    pass
 
 
 cdef class ECC(CipherBase):

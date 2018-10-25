@@ -6,13 +6,13 @@ __license__ = "MIT License"
 
 
 cimport mbedtls.mpi as _mpi
-cimport mbedtls.random as _random
+cimport mbedtls._random as _random
 from libc.stdlib cimport malloc, free
 
 import numbers
 from binascii import hexlify, unhexlify
 
-import mbedtls.random as _random
+import mbedtls._random as _random
 from mbedtls.exceptions import *
 
 try:
@@ -50,18 +50,15 @@ cdef class MPI:
             value = to_bytes(value)
             self._from_bytes(value)
 
-    def __del__(self):
-        """Fill the MPI with random data."""
-        check_error(mbedtls_mpi_fill_random(
-            &self._ctx, self._len(),
-            &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
-
     def __cinit__(self):
         """Initialize one MPI."""
         _mpi.mbedtls_mpi_init(&self._ctx)
 
     def __dealloc__(self):
         """Unallocate one MPI."""
+        check_error(mbedtls_mpi_fill_random(
+            &self._ctx, self._len(),
+            &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
         _mpi.mbedtls_mpi_free(&self._ctx)
 
     cdef size_t _len(self):

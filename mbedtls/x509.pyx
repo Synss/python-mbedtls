@@ -13,6 +13,11 @@ cimport mbedtls.pk as _pk
 
 import base64
 import datetime as dt
+try:
+    from contextlib import suppress
+except ImportError:
+    # Python 2.7
+    from contextlib2 import suppress
 from collections import namedtuple
 
 import mbedtls.hash as hashlib
@@ -85,7 +90,11 @@ cdef class Certificate:
         if type(other) is type(self):
             return self.to_DER() == other.to_DER()
         else:
-            return self.to_DER() == other or self.to_PEM() == other
+            # Python 2.7: Explicitly call `bytes()` to avoid warning.
+            with suppress(TypeError):
+                return (self.to_PEM() == str(other)
+                        or self.to_DER() == bytes(other))
+        return False
 
     def __str__(self):
         raise NotImplementedError
@@ -110,11 +119,20 @@ cdef class Certificate:
         raise NotImplementedError
 
 
+class BasicConstraints(
+        namedtuple("BasicConstraints", ["ca", "max_path_length"])):
+    """The basic constraints for the certificate."""
+
+    def __new__(cls, ca=False, max_path_length=0):
+        return super(BasicConstraints, cls).__new__(cls, ca, max_path_length)
+
+
 cdef class CRT(Certificate):
     """X.509 certificate."""
 
     def __init__(self, const unsigned char[:] buffer):
         super(CRT, self).__init__()
+        self._next = None
         if buffer is None:
             return
         check_error(x509.mbedtls_x509_crt_parse(
@@ -126,13 +144,13 @@ cdef class CRT(Certificate):
 
     def __dealloc__(self):
         """Unallocate all certificate data."""
+        self.unset_next()
         x509.mbedtls_x509_crt_free(&self._ctx)
 
     def __next__(self):
-        if self._ctx.next == NULL or self._ctx.version == 0:
+        if self._next is None:
             raise StopIteration
-        cdef mbedtls_x509_buf buf = self._ctx.next.raw
-        return type(self).from_DER(buf.p[0:buf.len])
+        return self._next
 
     def __str__(self):
         cdef size_t osize = 2**24
@@ -342,21 +360,20 @@ cdef class CRT(Certificate):
     # RFC 5280, Section 4.2.1.8 Subject Directory Attributes
 
     @property
-    def ca(self):
-        """True if the certified public key may be used to verify
-        certificate signatures.
+    def basic_constraints(self):
+        """ca is true if the certified public key may be used
+        to verify certificate signatures.
 
         See Also:
-            RFC 5280, Section 4.2.1.9 Basic Constraints
+            - RFC 5280, Section 4.2.1.9 Basic Constraints
+            - RFC 5280, `max_path_length`
 
         """
-        return bool(self._ctx.ca_istrue)
-
-    @property
-    def max_path_length(self):
-        """RFC 5280 `max_path_length`."""
         max_path_length = int(self._ctx.max_pathlen)
-        return max_path_length - 1 if max_path_length > 0 else 0
+        if max_path_length > 0:
+            max_path_length -= 1
+        ca = bool(self._ctx.ca_istrue)
+        return BasicConstraints(ca, max_path_length)
 
     # RFC 5280, Section 4.2.1.10 Name Constraints
     # RFC 5280, Section 4.2.1.11 Policy Constraints
@@ -364,6 +381,14 @@ cdef class CRT(Certificate):
     # RFC 5280, Section 4.2.1.13 CRL Distribution Points
     # RFC 5280, Section 4.2.1.14 Inhibit Any-Policy
     # RFC 5280, Section 4.2.1.15 Freshest CRL
+
+    cdef set_next(self, CRT crt):
+        self._next = crt
+        self._ctx.next = &crt._ctx
+
+    cdef unset_next(self):
+        self._ctx.next = NULL
+        self._next = None
 
     def check_revocation(self, CRL crl):
         """Return True if the certificate is revoked, False otherwise."""
@@ -395,7 +420,7 @@ cdef class CRT(Certificate):
         return DER_to_PEM(self.to_DER(), "Certificate")
 
     def sign(self, csr, issuer_key, not_before, not_after, serial_number,
-             ca=False, max_path_length=0):
+             basic_constraints=BasicConstraints()):
         """Return a new, signed certificate for the CSR."""
         if not _pk.check_pair(
                 self.subject_public_key,
@@ -411,15 +436,12 @@ cdef class CRT(Certificate):
             subject_key=csr.subject_public_key,
             serial_number=serial_number,
             digestmod=csr.digestmod,
-            ca=ca,
-            max_path_length=max_path_length)
-        # if crt._ctx.next == NULL:
-        #     crt._ctx.next = &crt._ctx
+            basic_constraints=basic_constraints)
         return crt
 
     @classmethod
     def selfsign(cls, csr, issuer_key, not_before, not_after, serial_number,
-                 ca=False, max_path_length=0):
+                 basic_constraints=BasicConstraints()):
         """Return a new, self-signed certificate for the CSR."""
         return cls.new(
             not_before=not_before,
@@ -430,8 +452,7 @@ cdef class CRT(Certificate):
             subject_key=csr.subject_public_key,
             serial_number=serial_number,
             digestmod=csr.digestmod,
-            ca=ca,
-            max_path_length=max_path_length)
+            basic_constraints=basic_constraints)
 
     def verify(self, crt):
         """Verify the certificate `crt`."""
@@ -440,12 +461,12 @@ cdef class CRT(Certificate):
 
     @staticmethod
     def new(not_before, not_after, issuer, issuer_key, subject, subject_key,
-            serial_number, digestmod, ca=False, max_path_length=0):
+            serial_number, digestmod, basic_constraints=BasicConstraints()):
         """Return a new certificate."""
         return _CRTWriter(
             not_before, not_after, issuer, issuer_key,
             subject, subject_key, serial_number, digestmod,
-            ca, max_path_length).to_certificate()
+            basic_constraints=basic_constraints).to_certificate()
 
 
 cdef class _CRTWriter:
@@ -457,7 +478,7 @@ cdef class _CRTWriter:
     """
     def __init__(self, not_before, not_after, issuer, issuer_key,
                  subject, subject_key, serial_number, digestmod,
-                 ca=False, max_path_length=0):
+                 basic_constraints=BasicConstraints()):
         super(_CRTWriter, self).__init__()
         self.set_validity(not_before, not_after)
         self.set_issuer(issuer)
@@ -466,7 +487,7 @@ cdef class _CRTWriter:
         self.set_subject_key(subject_key)
         self.set_serial_number(serial_number)
         self.set_digestmod(digestmod)
-        self.set_basic_constraints(ca, max_path_length)
+        self.set_basic_constraints(basic_constraints)
 
     def __cinit__(self):
         """Initialize a CRT write context."""
@@ -605,17 +626,17 @@ cdef class _CRTWriter:
         check_error(
             x509.mbedtls_x509write_crt_set_authority_key_identifier(&self._ctx))
 
-    def set_basic_constraints(self, ca, max_path_length):
+    def set_basic_constraints(self, basic_constraints):
         """Set the basic constraints extension for a CRT.
 
         Args:
-            ca (bool): True if this is a CA certificate.
-            max_path_length (int): Maximum length of a certificate below
-                this certificate, -1 is unlimited.
+            basic_constraints (BasicConstraints): The basic constraints.
 
         """
+        if not basic_constraints:
+            return
         check_error(x509.mbedtls_x509write_crt_set_basic_constraints(
-            &self._ctx, int(ca), max_path_length))
+            &self._ctx, int(basic_constraints[0]), basic_constraints[1]))
 
 
 cdef class CSR(Certificate):
@@ -839,6 +860,7 @@ cdef class CRL(Certificate):
 
     def __init__(self, const unsigned char[:] buffer):
         super(CRL, self).__init__()
+        self._next = None
         if buffer is None:
             return
         check_error(x509.mbedtls_x509_crl_parse(
@@ -850,13 +872,13 @@ cdef class CRL(Certificate):
 
     def __dealloc__(self):
         """Unallocate all CRL data."""
+        self.unset_next()
         x509.mbedtls_x509_crl_free(&self._ctx)
 
     def __next__(self):
-        if self._ctx.next == NULL or self._ctx.version == 0:
+        if self._next is None:
             raise StopIteration
-        cdef mbedtls_x509_buf buf = self._ctx.next.raw
-        return type(self).from_DER(buf.p[0:buf.len])
+        return self._next
 
     def __str__(self):
         cdef size_t osize = 2**24
@@ -1003,3 +1025,11 @@ cdef class CRL(Certificate):
 
     def to_PEM(self):
         return DER_to_PEM(self.to_DER(), "X509 CRL")
+
+    cdef set_next(self, CRL crl):
+        self._next = crl
+        self._ctx.next = &crl._ctx
+
+    cdef unset_next(self):
+        self._ctx.next = NULL
+        self._next = None

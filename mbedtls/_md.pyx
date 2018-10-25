@@ -30,6 +30,9 @@ def __get_supported_mds():
     """Return the set of digests supported by the generic
     message digest module.
 
+    See Also:
+        mbedtls.tls.__get_supported_ciphersuites()
+
     """
     md_lookup = {n: v for n, v in enumerate(MD_NAME)}
     cdef const int* md_types = _md.mbedtls_md_list()

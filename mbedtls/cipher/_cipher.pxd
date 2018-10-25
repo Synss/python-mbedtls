@@ -10,7 +10,7 @@ cdef:
     enum: MAX_IV_LENGTH = 16
 
 
-cdef extern from "mbedtls/cipher.h":
+cdef extern from "mbedtls/cipher.h" nogil:
     ctypedef enum mbedtls_operation_t:
         MBEDTLS_DECRYPT = 0, MBEDTLS_ENCRYPT = 1
 

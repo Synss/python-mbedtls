@@ -306,7 +306,8 @@ Here, the trusted root is a self-signed CA certificate
    >>> ca0_crt = x509.CRT.selfsign(
    ...     ca0_csr, ca0_key,
    ...     not_before=now, not_after=now + dt.timedelta(days=90),
-   ...     serial_number=0x123456, ca=True, max_path_length=-1)
+   ...     serial_number=0x123456,
+   ...     basic_constraints=x509.BasicConstraints(True, 1))
    ...
 
 An intermediate then issues a Certificate Singing Request (CSR) that the
@@ -318,7 +319,7 @@ root CA signs::
    >>>
    >>> ca1_crt = ca0_crt.sign(
    ...     ca1_csr, ca0_key, now, now + dt.timedelta(days=90), 0x123456, 
-   ...     ca=True, max_path_length=3)
+   ...     basic_constraints=x509.BasicConstraints(ca=True, max_path_length=3))
    ...
 
 And finally, the intermediate CA signs a certificate for the
@@ -342,3 +343,117 @@ the chain::
 
 Note, however, that this verification is only one step in a private key
 infrastructure and does not take CRLs, path length, etc. into account.
+
+
+TLS client and server
+---------------------
+
+The `mbedtls.tls` module provides TLS clients and servers.  The API
+follows the recommendations of `PEP 543`_.  Note, however, that the
+Python standard SSL library does not follow the PEP so that this
+library may not be a drop-in replacement.  Also, SSL 3 is not
+yet supported.
+
+.. _PEP 543: https://www.python.org/dev/peps/pep-0543/
+
+Here are some simple HTTP messages to pass from the client to the
+server and back.
+
+>>> get_request = "\r\n".join((
+...     "GET / HTTP/1.0",
+...     "",
+...     "")).encode("ascii")
+...
+>>> http_response = "\r\n".join((
+...     "HTTP/1.0 200 OK",
+...     "Content-Type: text/html",
+...     "",
+...     "<h2>Test Server</h2>",
+...     "<p>Successful connection.</p>",
+...     "")).encode("ascii")
+...
+>>> http_error = "\r\n".join((
+...     "HTTP/1.0 400 Bad Request",
+...     "",
+...     ""))
+...
+
+For this example, the trust store just consists in the root certificate
+`ca0_crt` from the previous section.
+
+>>> from mbedtls import tls
+>>> trust_store = tls.TrustStore()
+>>> trust_store.add(ca0_crt)
+
+The next step is to configure the TLS contexts for server and client.
+
+>>> srv_ctx = tls.ServerContext(tls.TLSConfiguration(
+...     trust_store=trust_store,
+...     certificate_chain=([ee0_crt, ca1_crt], ee0_key),
+...     validate_certificates=False,
+... ))
+...
+>>> cli_ctx = tls.ClientContext(tls.TLSConfiguration(
+...     trust_store=trust_store,
+...     validate_certificates=True,
+... ))
+...
+
+The contexts are used to wrap TCP sockets.
+
+>>> import socket
+>>> srv = srv_ctx.wrap_socket(
+...     socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+...
+
+>>> from contextlib import suppress
+>>> def block(callback, *args, **kwargs):
+...     while True:
+...         with suppress(tls.WantReadError, tls.WantWriteError):
+...             return callback(*args, **kwargs)
+...
+
+The server starts in its own process in this example
+because `accept()` is blocking.
+
+>>> def server_main_loop(sock):
+...     conn, addr = sock.accept()
+...     block(conn.do_handshake)
+...     data = conn.recv(1024)
+...     if data == get_request:
+...         conn.sendall(http_response)
+...     else:
+...         conn.sendall(http_error)
+...
+
+>>> import multiprocessing as mp
+>>> srv.bind(("localhost", 8888))
+>>> srv.listen(1)
+>>> runner = mp.Process(target=server_main_loop, args=(srv, ))
+>>> runner.start()
+
+Finally, a client queries the server with the `get_request`:
+
+>>> cli = cli_ctx.wrap_socket(
+...     socket.socket(socket.AF_INET, socket.SOCK_STREAM),
+...     server_hostname=None,
+... )
+...
+>>> cli.connect(("localhost", 8888))
+>>> block(cli.do_handshake)
+>>> cli.send(get_request)
+18
+>>> response = block(cli.recv, 1024)
+>>> print(response.decode("ascii").replace("\r\n", "\n"))
+HTTP/1.0 200 OK
+Content-Type: text/html
+<BLANKLINE>
+<h2>Test Server</h2>
+<p>Successful connection.</p>
+<BLANKLINE>
+
+The last step is to stop the extra process and close the sockets.
+
+>>> cli.close()
+>>> runner.join(1.0)
+>>> srv.close()
