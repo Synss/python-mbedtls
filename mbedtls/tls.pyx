@@ -4,9 +4,6 @@ __author__ = "Mathias Laurin"
 __copyright__ = "Copyright 2018, Mathias Laurin"
 __license__ = "MIT License"
 
-cdef int __DEBUG = 0
-cdef int __DEBUG_ALL = 0
-
 from libc.stdlib cimport malloc, free
 
 cimport mbedtls._net as _net
@@ -14,9 +11,6 @@ cimport mbedtls._random as _random
 cimport mbedtls.pk as _pk
 cimport mbedtls.tls as _tls
 cimport mbedtls.x509 as _x509
-
-if __DEBUG | __DEBUG_ALL:
-    from binascii import hexlify
 
 import socket as _socket
 from collections import namedtuple
@@ -31,7 +25,6 @@ except ImportError:
     # Python 2.7
     from contextlib2 import suppress
 from enum import Enum, IntEnum
-from ipaddress import ip_address
 from itertools import tee
 
 import certifi
