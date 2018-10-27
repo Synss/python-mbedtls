@@ -383,10 +383,6 @@ cdef extern from "mbedtls/pk.h" nogil:
 
 cdef class CipherBase:
     cdef mbedtls_pk_context _ctx
-    cdef bytes _write(
-        self,
-        int (*fun)(mbedtls_pk_context*, unsigned char*, size_t),
-        size_t)
 
 
 cdef class RSA(CipherBase):
