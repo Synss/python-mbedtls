@@ -30,12 +30,12 @@ if sys.version_info < (3, ):
 
 
 def extensions(coverage=False):
-    for dirpath, dirnames, filenames in os.walk("mbedtls"):
+    for dirpath, dirnames, filenames in os.walk("src"):
         for fn in filenames:
             root, ext = os.path.splitext(fn)
             if ext != ".pyx":
                 continue
-            mod = ".".join(dirpath.split(os.sep) + [root])
+            mod = ".".join(dirpath.split(os.sep)[1:] + [root])
             extension = Extension(
                 mod,
                 [os.path.join(dirpath, fn)],
@@ -82,7 +82,8 @@ setup(
     download_url=download_url,
     ext_modules=list(extensions(COVERAGE)),
     options=options(COVERAGE),
-    packages=["mbedtls", "mbedtls.cipher"],
+    package_dir={"": "src"},
+    packages=find_packages("src"),
     setup_requires=setup_requires,
     install_requires=install_requires,
     classifiers=[
