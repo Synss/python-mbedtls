@@ -78,9 +78,11 @@ class _CommonTests(_X509Base):
 
     def test_eq_der(self, x509, der):
         assert x509 == der
+        assert der == x509
 
     def test_eq_pem(self, x509, pem):
         assert x509 == pem
+        assert pem == x509
 
 
 class _CRTWikipediaBase(_X509Base):

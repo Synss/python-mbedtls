@@ -89,14 +89,12 @@ cdef class MPI:
     @classmethod
     def from_bytes(cls, data, byteorder):
         assert byteorder in {"big", "little"}
-        order = slice(None, None, -1 if byteorder is "little" else None)
         self = cls()
-        self._read_bytes(data[order])
+        self._read_bytes(data[::-1 if byteorder == "little" else 1])
         return self
 
     def to_bytes(self, length, byteorder):
         assert byteorder in {"big", "little"}
-        order = slice(None, None, -1 if byteorder is "little" else None)
         cdef unsigned char* output = <unsigned char*>malloc(
             length * sizeof(unsigned char))
         if not output:
@@ -104,7 +102,7 @@ cdef class MPI:
         try:
             check_error(_mpi.mbedtls_mpi_write_binary(
                 &self._ctx, output, length))
-            return bytes(output[:length])[order]
+            return bytes(output[:length])[::-1 if byteorder == "little" else 1]
         except Exception as exc:
             raise OverflowError from exc
         finally:

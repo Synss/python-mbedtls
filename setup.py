@@ -57,7 +57,7 @@ def extensions(coverage=False):
                     ("CYTHON_TRACE_NOGIL", "1")
                 ] if coverage else [],
             )
-            extension.cython_directives = {"language_level": 2}
+            extension.cython_directives = {"language_level": 3}
             if coverage:
                 extension.cython_directives["linetrace"] = True
             yield extension

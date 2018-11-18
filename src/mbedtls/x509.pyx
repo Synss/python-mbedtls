@@ -90,11 +90,8 @@ cdef class Certificate:
         if type(other) is type(self):
             return self.to_DER() == other.to_DER()
         else:
-            # Python 2.7: Explicitly call `bytes()` to avoid warning.
-            with suppress(TypeError):
-                return (self.to_PEM() == str(other)
-                        or self.to_DER() == bytes(other))
-        return False
+            return other == self.to_DER() or other == self.to_PEM()
+        return NotImplemented
 
     def __str__(self):
         raise NotImplementedError

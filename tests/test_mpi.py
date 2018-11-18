@@ -160,10 +160,10 @@ def test_from_empty_bytes():
 
 
 def test_from_bytes():
-    value = unhexlify(b"DEEADBEEFF")
+    value = unhexlify(b"DEADBEEF")
     mpi = MPI.from_bytes(value, byteorder="big")
-    assert mpi.to_bytes(5, byteorder="big") == value
-    assert mpi.to_bytes(5, byteorder="little") == value[::-1]
+    assert mpi.to_bytes(4, byteorder="big") == unhexlify(b"DEADBEEF")
+    assert mpi.to_bytes(4, byteorder="little") == unhexlify(b"EFBEADDE")
     assert mpi == int(hexlify(value), 16)
 
 

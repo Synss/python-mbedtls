@@ -67,8 +67,8 @@ cdef class MDBase:
 
     """
     def __init__(self, name, buffer, hmac):
-        if not isinstance(name, (str, unicode)):
-            raise TypeError("name must be a string")
+        if not isinstance(name, str):
+            raise TypeError("name must be a string: got %r" % name)
         self._info = _md.mbedtls_md_info_from_string(
             name.upper().encode("ascii"))
         check_error(_md.mbedtls_md_setup(&self._ctx, self._info, hmac))
