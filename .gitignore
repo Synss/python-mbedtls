@@ -14,7 +14,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-build/
+build-*/
 develop-eggs/
 dist/
 downloads/
@@ -26,6 +26,7 @@ parts/
 sdist/
 var/
 venv/
+wheelhouse/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -68,3 +69,5 @@ target/
 
 # Local mbed-tls installations
 src-*/
+mbedtls-*-apache.tgz
+mbedtls-*-gpl.tgz

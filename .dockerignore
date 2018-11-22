@@ -1,0 +1,12 @@
+.git
+build-*/
+.coverage
+.coverage.*
+dist/
+eggs/
+.eggs/
+.egg-info/
+*.egg
+mbedtls-*.tgz
+.tox/
+wheelhouse/

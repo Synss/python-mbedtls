@@ -1,22 +1,38 @@
-language: python
-dist: trusty
-python:
-  - "3.6"
+# vim: et:ts=2:sw=2
+language: generic
+
+notifications:
+  email: false
+
+matrix:
+  include:
+    - sudo: required
+      services:
+        - docker
+      env: ARCH=x86_64
+    - sudo: required
+      services:
+        - docker
+      env: ARCH=i686
+           PRE_CMD=linux32
+
 before_install:
-  - ./install-mbedtls.sh 2.4.2 $HOME/mbedtls
-install:
-  - python --version
-  - python -m pip install -r requirements-tests.txt
-  - >
-    python setup.py build_ext
-    --inplace
-    --with-coverage
-    -L$HOME/mbedtls/lib
-    -I$HOME/mbedtls/include
+  - |
+    docker build -t docker .  --build-arg ARCH=$ARCH
+    docker run -it -d -v `pwd`:/home/docker --name docker docker $PRE_CMD /bin/sh
+  - |
+    function run {
+      docker exec -it docker $PRE_CMD /bin/sh -c "$*"
+    }
+  - run ./install-mbedtls.sh 2.7.0 /usr/local
+  - run python -m pip install -r requirements-tests.txt
+
 script:
-  - >
-    LD_LIBRARY_PATH=$HOME/mbedtls/lib
-    python -m coverage run -m pytest tests
-  - python -m coverage report
-after_success:
-  - coveralls
+  - PYROOT="/opt/python"
+  - TAGS="cp36-cp36m"
+  - PYBIN="$PYROOT/$TAGS/bin"
+  - run $PYBIN/python --version
+  - run $PYBIN/python setup.py bdist_wheel 1> /dev/null
+  - run auditwheel repair dist/*$TAGS*.whl
+  - run $PYBIN/python -m tox -e py36 --installpkg wheelhouse/*$TAGS*.whl
+  - ls && ls dist && ls wheelhouse

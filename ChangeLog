@@ -1,3 +1,8 @@
+[next]
+
+* Build and test on `manylinux1` to distribute linux wheels with
+Mbed TLS.  It is not necessary anymore to install mbed TLS separately.
+
 [0.13.0] - 2018-10-25
 
 Add TLS support.  Both client side and server side are implemented.
