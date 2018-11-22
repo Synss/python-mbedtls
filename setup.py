@@ -1,6 +1,6 @@
 import os
 import sys
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 
 version = "0.13.0"
 download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
@@ -19,8 +19,14 @@ setup_requires = [
     # Cython 0.28 handles const memoryviews.
     "cython>=0.28.0",
 ]
-if sys.version_info < (2, ):
-    setup_requires.append("pathlib2")
+install_requires = [
+    "certifi",
+]
+if sys.version_info < (3, ):
+    install_requires.extend([
+        "contextlib2",
+        "enum34",
+        "pathlib2"])
 
 
 def extensions(coverage=False):
@@ -33,15 +39,19 @@ def extensions(coverage=False):
             extension = Extension(
                 mod,
                 [os.path.join(dirpath, fn)],
+                library_dirs=[
+                    os.environ.get("LD_LIBRARY_PATH", ""),
+                    os.environ.get("DYLD_LIBRARY_PATH", ""),
+                ],
                 libraries=["mbedcrypto", "mbedtls", "mbedx509"],
-                include_dirs=["."],
                 define_macros=[
                     ("CYTHON_TRACE", "1"),
                     ("CYTHON_TRACE_NOGIL", "1")
                 ] if coverage else [],
             )
+            extension.cython_directives = {"language_level": 2}
             if coverage:
-                extension.cython_directives = {"linetrace": True}
+                extension.cython_directives["linetrace"] = True
             yield extension
 
 
@@ -74,6 +84,7 @@ setup(
     options=options(COVERAGE),
     packages=["mbedtls", "mbedtls.cipher"],
     setup_requires=setup_requires,
+    install_requires=install_requires,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Cython",
@@ -81,6 +92,7 @@ setup(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: MIT License",
         "Topic :: Security :: Cryptography",
     ]

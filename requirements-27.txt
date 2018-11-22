@@ -1,3 +1,0 @@
-contextlib2==0.5.5
-enum34==1.1.6
-pathlib2==2.3.2

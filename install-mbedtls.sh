@@ -3,11 +3,12 @@
 
 set -ex
 
-if [ $# -ne 3 ] && [ -n "$2" ]; then
+if [ $# -eq 1 ] || [ $# -eq 2 ]; then
 	version="$1"
-	case $2 in
-		/*) destdir=$2;;
-		*) destdir=$PWD/$2;;
+	destdir="${2:-/usr/local}"
+	case $destdir in
+		/*) ;;
+		*) destdir="$PWD/$destdir";;
 	esac
 else
 	cat <<-EOF
@@ -24,17 +25,22 @@ fi
 
 license="apache"
 name="mbedtls"
-url="https://tls.mbed.org/download/$name-$version-$license.tgz"
-src="$destdir/_src"
+filename="$name-$version-$license.tgz"
+url="https://tls.mbed.org/download/$filename"
+src="$destdir/src"
 
 mkdir -p "$src"
-wget -qO - "$url" | tar xz -C "$src" --strip-components 1
+curl -O "$url"
+tar xzf "$filename" -C "$src" --strip-components 1
 
 mkdir -p "$destdir"
 cd "$src"
-cmake . \
+mkdir build
+cd build
+cmake .. \
 	-DCMAKE_INSTALL_PREFIX=$destdir \
 	-DENABLE_TESTING=OFF \
-	-DUSE_SHARED_MBEDTLS_LIBRARY=ON
-make -j4
-make install
+	-DUSE_SHARED_MBEDTLS_LIBRARY=ON \
+	-DUSE_STATIC_MBEDTLS_LIBRARY=OFF
+make -j
+make -j install
