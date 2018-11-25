@@ -13,6 +13,22 @@ from mbedtls import hash
 from mbedtls.x509 import *
 
 
+CRL_PEM = """
+-----BEGIN X509 CRL-----
+MIIBqzCBlDANBgkqhkiG9w0BAQUFADA7MQswCQYDVQQGEwJOTDERMA8GA1UEChMI
+UG9sYXJTU0wxGTAXBgNVBAMTEFBvbGFyU1NMIFRlc3QgQ0EXDTExMDIyMDEwMjI1
+OVoXDTE5MTEyNTEwMjI1OVowKDASAgEBFw0xMTAyMTIxNDQ0MDdaMBICAQMXDTEx
+MDIxMjE0NDQwN1owDQYJKoZIhvcNAQEFBQADggEBAJYuWdKPdblMVWCnxpMnchuL
+dqWzK2BA0RelCaGjpxuwX3NmLDm+5hKja/DJxaRqTOf4RSC3kcX8CdIldsLO96dz
+//wAQdFPDhy6AFT5vKTO8ItPHDb7qFOqFqpeJi5XN1yoZGTB1ei0mgD3xBaKbp6U
+yCOZJSIFomt7piT4GcgWVHLUmpyHDDeodNhYPrN0jf2mr+ECd9fQJYdz1qm0Xx+Q
+NbKXDiPRmPX0qVleCZSeSp1JAmU4GoCO+96qQUpjgll+6xWya3UNj61f9sh0Zzr7
+5ug2LZo5uBM/LpNR1K3TLxNCcg7uUPTn9r143d7ivJhPl3tEJn4PXjv6mlLoOgU=
+-----END X509 CRL-----
+"""
+# This CRL is from mbed TLS: `tests/data_files/crl.pem`.
+
+
 @pytest.fixture(scope="module")
 def now():
     return dt.datetime.utcnow().replace(microsecond=0)
@@ -248,8 +264,7 @@ class _CRLBase(_X509Base):
 
     @pytest.fixture
     def x509(self):
-        with (Path(__file__).parent / "ca/wp_crl.pem").open() as crl:
-            return CRL.from_PEM(crl.read())
+        return CRL.from_PEM(CRL_PEM)
 
     @pytest.fixture
     def crl(self, x509):
@@ -271,25 +286,23 @@ class TestCRLAccessors(_CRLBase):
         assert crl.signature_value
 
     def test_version(self, crl):
-        assert crl.version == 2
+        assert crl.version == 1
 
     def test_issuer_name(self, crl):
-        assert crl.issuer_name == (
-            "C=US, O=DigiCert Inc, OU=www.digicert.com, "
-            "CN=DigiCert SHA2 High Assurance Server CA")
+        assert crl.issuer_name == "C=NL, O=PolarSSL, CN=PolarSSL Test CA"
 
     def test_this_update(self, crl):
-        assert crl.this_update == dt.datetime(2018, 2, 17, 17, 5, 44)
+        assert crl.this_update == dt.datetime(2011, 2, 20, 10, 22, 59)
 
     def test_next_update(self, crl):
-        assert crl.next_update == dt.datetime(2018, 2, 24, 17, 0)
+        assert crl.next_update == dt.datetime(2019, 11, 25, 10, 22, 59)
 
     def test_revoked_certificates(self, crl):
-        assert len(crl.revoked_certificates) == 1060
+        assert len(crl.revoked_certificates) == 2
         entry = crl.revoked_certificates[0]
         assert entry.revocation_date == dt.datetime(
-            2017, 10, 30, 18, 32, 28)
-        assert entry.serial == 0xaac5cafcfe310e006434867f38e22bf
+            2011, 2, 12, 14, 44, 7)
+        assert entry.serial == 1
 
 
 class TestCRL(_CRLBase):

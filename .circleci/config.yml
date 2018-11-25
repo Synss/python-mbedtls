@@ -81,22 +81,18 @@ jobs:
             - .pyenv/versions/3.6.6
 
       - run:
-          name: setup environment
+          name: install mbedtls
           command: |
-            cat << 'EOF' >> $BASH_ENV
-            export VERSION=2.4.2
-            export DESTDIR=$HOME/lib/mbedtls-$VERSION
-            export LIBRARY_PATH=$DESTDIR/lib
+            VERSION=2.14.0
+            DESTDIR=$HOME/lib/$VERSION
+            sudo apt-get install cmake
+            sudo ./install-mbedtls.sh $VERSION $DESTDIR
+            cat << EOF >> $BASH_ENV
+            export VERSION=$VERSION
+            export DESTDIR=$DESTDIR
             export LD_LIBRARY_PATH=$DESTDIR/lib
             export C_INCLUDE_PATH=$DESTDIR/include
             EOF
-      - run:
-          name: install mbedtls
-          command: |
-            echo 'deb http://deb.debian.org/debian jessie-backports main' |\
-              sudo tee /etc/apt/sources.list.d/backports.list
-            sudo apt-get update
-            sudo apt-get install libmbedtls-dev
 
       - restore_cache:
           keys:
