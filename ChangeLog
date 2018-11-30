@@ -6,6 +6,10 @@ Mbed TLS.  It is not necessary anymore to install mbed TLS separately.
 Note that this did not require changes in the library but only
 in the tests.
 
+Bugfixes
+
+* mpi: Let MPI built from an empty byte (b"") be 0 as regular ints.
+
 [0.13.0] - 2018-10-25
 
 Add TLS support.  Both client side and server side are implemented.

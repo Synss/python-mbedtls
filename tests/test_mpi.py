@@ -151,6 +151,14 @@ def test_bit_length(value):
     assert mpi.bit_length() == value.bit_length()
 
 
+def test_from_empty_bytes():
+    value = b""
+    big = MPI.from_bytes(value, byteorder="big")
+    little = MPI.from_bytes(value, byteorder="little")
+    assert big == little == 0
+    assert big.bit_length() == little.bit_length() == 0
+
+
 def test_from_bytes():
     value = unhexlify(b"DEEADBEEFF")
     mpi = MPI.from_bytes(value, byteorder="big")

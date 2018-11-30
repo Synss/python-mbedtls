@@ -48,7 +48,7 @@ cdef class MPI:
             check_error(mbedtls_mpi_copy(&self._ctx, &value_._ctx))
         else:
             value = to_bytes(value)
-            self._from_bytes(value)
+            self._read_bytes(value)
 
     def __cinit__(self):
         """Initialize one MPI."""
@@ -65,10 +65,11 @@ cdef class MPI:
         """Return the total size in bytes."""
         return _mpi.mbedtls_mpi_size(&self._ctx)
 
-    cpdef _from_bytes(self, const unsigned char[:] bytes):
+    cpdef _read_bytes(self, const unsigned char[:] data):
+        if data.size == 0:
+            return MPI(0)
         check_error(
-            _mpi.mbedtls_mpi_read_binary(&self._ctx, &bytes[0], bytes.shape[0]))
-        return self
+            _mpi.mbedtls_mpi_read_binary(&self._ctx, &data[0], data.shape[0]))
 
     def __str__(self):
         return "%i" % long(self)
@@ -86,10 +87,12 @@ cdef class MPI:
         return cls.from_bytes(to_bytes(value), byteorder="big")
 
     @classmethod
-    def from_bytes(cls, bytes, byteorder):
+    def from_bytes(cls, data, byteorder):
         assert byteorder in {"big", "little"}
         order = slice(None, None, -1 if byteorder is "little" else None)
-        return cls()._from_bytes(bytes[order])
+        self = cls()
+        self._read_bytes(data[order])
+        return self
 
     def to_bytes(self, length, byteorder):
         assert byteorder in {"big", "little"}
