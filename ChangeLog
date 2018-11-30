@@ -5,6 +5,15 @@ Mbed TLS.  It is not necessary anymore to install mbed TLS separately.
 * x509/CRL: Add support for upstream Mbed TLS version 2.7.2 and above.
 Note that this did not require changes in the library but only
 in the tests.
+* The library now internally uses a single global `Random` instance.
+This instance is not accessible from Python.
+
+API Changes
+
+* random: `Random()` now takes an optional `entropy` object
+as argument.
+* random: `Random.reseed()` now takes optional data that can be used
+to increase entropy.
 
 Bugfixes
 

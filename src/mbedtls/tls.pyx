@@ -36,7 +36,7 @@ import mbedtls.pk as _pk
 from mbedtls.exceptions import *
 
 
-cdef _rnd.Random __rng = _rnd.Random()
+cdef _rnd.Random __rng = _rnd.default_rng()
 
 
 @cython.boundscheck(False)

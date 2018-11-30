@@ -1,6 +1,7 @@
 """Unit tests for mbedtls.random."""
 
-import random as _random
+import random
+from collections import defaultdict
 
 import pytest
 
@@ -9,73 +10,78 @@ from mbedtls.exceptions import TLSError
 
 
 def sample(start, end, k=20):
-    return _random.sample(range(start, end), k)
+    return random.sample(range(start, end), k)
 
 
-@pytest.fixture
-def entropy():
-    return _drbg.Entropy()
+class TestEntropy:
+    @pytest.fixture
+    def entropy(self):
+        return _drbg.Entropy()
+
+    def test_gather(self, entropy):
+        # Only test that this does not raise.
+        entropy.gather()
+
+    @pytest.mark.parametrize("length", range(64))
+    def test_retrieve(self, entropy, length):
+        assert len(entropy.retrieve(length)) == length
+
+    @pytest.mark.parametrize("length", (100, ))
+    def test_retrieve_long_block_raises_exception(self, entropy, length):
+        with pytest.raises(TLSError):
+            entropy.retrieve(length)
+
+    def test_update(self, entropy, randbytes):
+        # Only test that this does not raise.
+        buf = randbytes(64)
+        entropy.update(buf)
+
+    def test_not_reproducible(self, entropy):
+        assert entropy.retrieve(8) != entropy.retrieve(8)
+
+    def test_random_initial_value(self, entropy):
+        size = 4
+        number = entropy.retrieve(size)
+        result = defaultdict(int)
+        for _ in range(250):
+            result[_drbg.Entropy().retrieve(size) == number] += 1
+        assert result[True] <= 1
+
+    def test_random_retrieve(self, entropy):
+        size = 4
+        number = entropy.retrieve(size)
+        result = defaultdict(int)
+        for _ in range(250):
+            result[entropy.retrieve(size) == number] += 1
+        assert result[True] <= 1
 
 
-@pytest.fixture
-def random():
-    return _drbg.Random()
+class TestRandom:
+    @pytest.fixture
+    def entropy(self):
+        return _drbg.Entropy()
 
+    @pytest.fixture
+    def random(self, entropy):
+        return _drbg.Random(entropy)
 
-def test_entropy_gather(entropy):
-    # Only test that this does not raise.
-    entropy.gather()
+    def test_reseed(self, random):
+        random.reseed()
 
+    def test_not_reproducible(self, random):
+        assert random.token_bytes(8) != random.token_bytes(8)
 
-@pytest.mark.parametrize("length", sample(0, 64))
-def test_entropy_retrieve(entropy, length):
-    assert len(entropy.retrieve(length)) == length
+    def test_update(self, random):
+        random.update(b"additional data")
 
+    def test_initial_values(self, random):
+        other = _drbg.Random()
+        assert random.token_bytes(8) != other.token_bytes(8)
 
-@pytest.mark.parametrize("length", (100, ))
-def test_entropy_retrieve_long_block_raises_exception(entropy, length):
-    with pytest.raises(TLSError):
-        entropy.retrieve(length)
+    @pytest.mark.parametrize("length", range(1024))
+    def test_token_bytes(self, random, length):
+        assert len(random.token_bytes(length)) == length
 
-
-def test_entropy_update(entropy, randbytes):
-    # Only test that this does not raise.
-    buf = randbytes(64)
-    entropy.update(buf)
-
-
-def test_entropy_not_reproducible(entropy):
-    assert entropy.retrieve(8) != entropy.retrieve(8)
-
-
-def test_entropy_random_initial_values(entropy):
-    # pylint: disable=invalid-name
-    other = _drbg.Entropy()
-    assert entropy.retrieve(8) != other.retrieve(8)
-
-
-def test_reseed(random):
-    random.reseed()
-
-
-def test_not_reproducible(random):
-    assert random.token_bytes(8) != random.token_bytes(8)
-
-
-def test_update(random):
-    random.update(b"additional data")
-
-
-def test_initial_values(random):
-    other = _drbg.Random()
-    assert random.token_bytes(8) != other.token_bytes(8)
-
-
-@pytest.mark.parametrize("length", sample(0, 1024))
-def test_token_bytes(random, length):
-    assert len(random.token_bytes(length)) == length
-
-
-@pytest.mark.parametrize("length", sample(0, 1024))
-def test_token_hex(random, length):
-    assert len(random.token_hex(length)) == 2 * length
+    @pytest.mark.parametrize("length", range(1024))
+    def test_token_hex(self, random, length):
+        assert len(random.token_hex(length)) == 2 * length

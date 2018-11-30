@@ -133,7 +133,7 @@ cdef curve_name_to_grp_id(name):
         idx += 1
 
 
-cdef _rnd.Random __rng = _rnd.Random()
+cdef _rnd.Random __rng = _rnd.default_rng()
 
 
 def _get_md_alg(digestmod):

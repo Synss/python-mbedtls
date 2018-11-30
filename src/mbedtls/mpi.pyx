@@ -21,7 +21,7 @@ except NameError:
     long = int
 
 
-cdef _rnd.Random __rng = _rnd.Random()
+cdef _rnd.Random __rng = _rnd.default_rng()
 
 
 cdef to_bytes(value):

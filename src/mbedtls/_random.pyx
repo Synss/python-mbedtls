@@ -49,22 +49,32 @@ cdef class Entropy:
 
 cdef class Random:
 
+    def __init__(self, entropy=None):
+        if entropy is None:
+            entropy = Entropy()
+        self._entropy = entropy
+        check_error(
+            _rnd.mbedtls_ctr_drbg_seed(
+                &self._ctx,
+                &_rnd.mbedtls_entropy_func,
+                &self._entropy._ctx,
+                NULL, 0))
+
     def __cinit__(self):
         """Initialize the context."""
         _rnd.mbedtls_ctr_drbg_init(&self._ctx)
-        self._entropy = Entropy()
-        check_error(_rnd.mbedtls_ctr_drbg_seed(
-            &self._ctx,
-            &_rnd.mbedtls_entropy_func, &self._entropy._ctx,
-            NULL, 0))
 
     def __dealloc__(self):
         """Free and clear the context."""
         _rnd.mbedtls_ctr_drbg_free(&self._ctx)
 
-    def reseed(self):
+    def reseed(self, const unsigned char[:] data=None):
         """Reseed the RNG."""
-        check_error(_rnd.mbedtls_ctr_drbg_reseed(&self._ctx, NULL, 0))
+        if data is None:
+            check_error(_rnd.mbedtls_ctr_drbg_reseed(&self._ctx, NULL, 0))
+        else:
+            check_error(
+                _rnd.mbedtls_ctr_drbg_reseed(&self._ctx, &data[0], data.size))
 
     def update(self, const unsigned char[:] data):
         """Update state with additional data."""
@@ -86,3 +96,10 @@ cdef class Random:
     def token_hex(self, length):
         """Same as `token_bytes` but returned as a string."""
         return binascii.hexlify(self.token_bytes(length)).decode("ascii")
+
+
+cdef Random __rng = Random()
+
+
+cdef Random default_rng():
+    return __rng
