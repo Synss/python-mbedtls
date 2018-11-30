@@ -7,7 +7,7 @@ __license__ = "MIT License"
 from libc.stdlib cimport malloc, free
 
 cimport mbedtls._net as _net
-cimport mbedtls._random as _random
+cimport mbedtls._random as _rnd
 cimport mbedtls.pk as _pk
 cimport mbedtls.tls as _tls
 cimport mbedtls.x509 as _x509
@@ -30,13 +30,13 @@ from itertools import tee
 import certifi
 import cython
 
-import mbedtls._random as _random
+import mbedtls._random as _rnd
 import mbedtls._ringbuf as _rb
 import mbedtls.pk as _pk
 from mbedtls.exceptions import *
 
 
-cdef _random.Random __rng = _random.Random()
+cdef _rnd.Random __rng = _rnd.Random()
 
 
 @cython.boundscheck(False)
@@ -257,7 +257,7 @@ cdef class TLSConfiguration:
 
         # Set random engine.
         _tls.mbedtls_ssl_conf_rng(
-            &self._ctx, &_random.mbedtls_ctr_drbg_random, &__rng._ctx)
+            &self._ctx, &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx)
 
         # Disable renegotiation.
         _tls.mbedtls_ssl_conf_renegotiation(&self._ctx, 0)

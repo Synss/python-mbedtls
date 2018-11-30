@@ -6,13 +6,13 @@ __license__ = "MIT License"
 
 
 cimport mbedtls.mpi as _mpi
-cimport mbedtls._random as _random
+cimport mbedtls._random as _rnd
 from libc.stdlib cimport malloc, free
 
 import numbers
 from binascii import hexlify, unhexlify
 
-import mbedtls._random as _random
+import mbedtls._random as _rnd
 from mbedtls.exceptions import *
 
 try:
@@ -21,7 +21,7 @@ except NameError:
     long = int
 
 
-cdef _random.Random __rng = _random.Random()
+cdef _rnd.Random __rng = _rnd.Random()
 
 
 cdef to_bytes(value):
@@ -58,7 +58,7 @@ cdef class MPI:
         """Unallocate one MPI."""
         check_error(mbedtls_mpi_fill_random(
             &self._ctx, self._len(),
-            &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
+            &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
         _mpi.mbedtls_mpi_free(&self._ctx)
 
     cdef size_t _len(self):
@@ -118,14 +118,14 @@ cdef class MPI:
         cdef MPI self_ = cls()
         check_error(mbedtls_mpi_gen_prime(
             &self_._ctx, size, 0,
-            &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
+            &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
         return self_
 
     def is_prime(self):
         """Miller-Rabin primality test."""
         return check_error(mbedtls_mpi_is_prime(
             &self._ctx,
-            &_random.mbedtls_ctr_drbg_random, &__rng._ctx)) == 0
+            &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx)) == 0
 
     def __hash__(self):
         return long(self)
