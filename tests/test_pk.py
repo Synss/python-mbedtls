@@ -226,6 +226,16 @@ class TestDH:
         self.srv = DHServer(23, 5)
         self.cli = DHClient(23, 5)
 
+    def test_srv_accessors(self):
+        assert self.srv.modulus == 23
+        assert self.srv.generator == 5
+        assert self.srv.key_size == 1
+
+    def test_cli_accessor(self):
+        assert self.cli.modulus == 23
+        assert self.cli.generator == 5
+        assert self.cli.key_size == 1
+
     def test_key_accessors_without_key(self):
         for cipher in (self.srv, self.cli):
             assert cipher.shared_secret == 0
