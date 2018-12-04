@@ -7,6 +7,8 @@ Note that this did not require changes in the library but only
 in the tests.
 * The library now internally uses a single global `Random` instance.
 This instance is not accessible from Python.
+* pk/DHServer, pk/DHClient: Increase test entropy to avoid
+flakey tests.
 
 API Changes
 

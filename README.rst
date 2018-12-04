@@ -252,9 +252,10 @@ classes have the same API as ECDHServer and ECDHClient, respectively.
 
 The key exchange is as follow::
 
+   >>> from mbedtls.mpi import MPI
    >>> from mbedtls import pk
-   >>> srv = pk.DHServer(23, 5)
-   >>> cli = pk.DHClient(23, 5)
+   >>> srv = pk.DHServer(MPI.prime(128), MPI.prime(96))
+   >>> cli = pk.DHClient(MPI.prime(128), MPI.prime(96))
 
 The values 23 and 5 are the prime modulus (P) and the generator (G).
 
