@@ -624,7 +624,7 @@ cdef class _BaseContext:
         if buffer.size == 0:
             return 0
 
-        written = 0
+        cdef size_t written = 0
         while written != buffer.size:
             ret = _tls.mbedtls_ssl_write(
                 &self._ctx, &buffer[written], buffer.size - written)
