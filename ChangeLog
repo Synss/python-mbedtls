@@ -1,4 +1,4 @@
-[next]
+[0.14.0] - 2019-01-08
 
 * Build and test on `manylinux1` (PEP 513) to distribute linux
 wheels with Mbed TLS.  It is not necessary anymore to install
