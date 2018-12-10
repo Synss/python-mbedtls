@@ -1,7 +1,8 @@
 [next]
 
-* Build and test on `manylinux1` to distribute linux wheels with
-Mbed TLS.  It is not necessary anymore to install mbed TLS separately.
+* Build and test on `manylinux1` (PEP 513) to distribute linux
+wheels with Mbed TLS.  It is not necessary anymore to install
+mbed TLS separately.
 * x509/CRL: Add support for upstream Mbed TLS version 2.7.2 and above.
 Note that this did not require changes in the library but only
 in the tests.

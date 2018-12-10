@@ -29,7 +29,6 @@ if sys.version_info < (3, ):
         "pathlib2",
     ])
 tests_require = [
-    "pytest",
     "readme_renderer",
 ]
 if sys.version_info < (3, ):

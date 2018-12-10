@@ -1,9 +1,0 @@
-coverage==4.5.2
-coveralls==1.5.1
-Cython==0.29.1
-detox==0.18
-pytest==4.0.1
-pytest-cov==2.6.0
-setuptools==40.6.2
-tox==3.5.3
-twine==1.12.1
