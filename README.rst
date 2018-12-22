@@ -264,7 +264,7 @@ The server generates the ServerKeyExchange payload::
    >>> ske = srv.generate()
    >>> cli.import_SKE(ske)
 
-The payload ends with :math:`G^X mod P` where `X` is the secret value of
+The payload ends with `G^X mod P` where `X` is the secret value of
 the server.
 
 ::
@@ -272,7 +272,7 @@ the server.
    >>> cke = cli.generate()
    >>> srv.import_CKE(cke)
 
-`cke` is :math:`G^Y mod P` (with `Y` the secret value from the client)
+`cke` is `G^Y mod P` (with `Y` the secret value from the client)
 returned as its representation in bytes so that it can be readily
 transported over the network.
 
@@ -407,7 +407,11 @@ The contexts are used to wrap TCP sockets.
 ...     socket.socket(socket.AF_INET, socket.SOCK_STREAM))
 ...
 
->>> from contextlib import suppress
+>>> try:
+...     from contextlib import suppress
+... except ImportError:
+...     # For Python 2.
+...     from contextlib2 import suppress
 >>> def block(callback, *args, **kwargs):
 ...     while True:
 ...         with suppress(tls.WantReadError, tls.WantWriteError):
@@ -427,8 +431,20 @@ because `accept()` is blocking.
 ...         conn.sendall(http_error)
 ...
 
+We only scan for free ports to `bind()` to in order to
+paralelize the tests.  This should not be needed.
+
 >>> import multiprocessing as mp
->>> srv.bind(("localhost", 8888))
+>>> for port in range(8888, 8888 + 20):
+...     try:
+...         srv.bind(("localhost", port))
+...     except OSError:
+...         pass
+...     else:
+...         break
+... else:
+...     raise OSError("No free port found")
+...
 >>> srv.listen(1)
 >>> runner = mp.Process(target=server_main_loop, args=(srv, ))
 >>> runner.start()
@@ -440,7 +456,7 @@ Finally, a client queries the server with the `get_request`:
 ...     server_hostname=None,
 ... )
 ...
->>> cli.connect(("localhost", 8888))
+>>> cli.connect(("localhost", port))
 >>> block(cli.do_handshake)
 >>> cli.send(get_request)
 18

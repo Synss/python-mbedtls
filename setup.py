@@ -26,7 +26,16 @@ if sys.version_info < (3, ):
     install_requires.extend([
         "contextlib2",
         "enum34",
-        "pathlib2"])
+        "pathlib2",
+    ])
+tests_require = [
+    "pytest",
+    "readme_renderer",
+]
+if sys.version_info < (3, ):
+    tests_require.extend([
+        "contextlib2",
+    ])
 
 
 def extensions(coverage=False):
@@ -86,6 +95,7 @@ setup(
     packages=find_packages("src"),
     setup_requires=setup_requires,
     install_requires=install_requires,
+    tests_require=tests_require,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Cython",
