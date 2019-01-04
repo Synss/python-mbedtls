@@ -94,19 +94,9 @@ jobs:
             export C_INCLUDE_PATH=$DESTDIR/include
             EOF
 
-      - restore_cache:
-          keys:
-            - py-deps-3.4-{{ checksum "requirements-tests.txt" }}
       - run:
-          name: install environment
-          command: |
-            python -m venv venv
-            . venv/bin/activate
-            pip install -r requirements-tests.txt
-      - save_cache:
-          key: py-deps-3.4-{{ checksum "requirements-tests.txt" }}
-          paths:
-            - venv
+          name: Create environment
+          command: python -m venv venv
 
       - run:
           name: run tests
@@ -114,6 +104,7 @@ jobs:
             eval "$(pyenv init -)"
             pyenv shell 2.7.15 3.4.9 3.5.6 3.6.6
             . venv/bin/activate
+            pip install detox
             detox -e py27 -e py34 -e py35 -e py36
 
       - deploy:
