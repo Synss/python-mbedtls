@@ -78,7 +78,6 @@ deploy:
   provider: script
   skip_cleanup: true
   script:
-    # devpi push python-mbedtls INDEXNAME
-    - /usr/bin/false
+    - scripts/deploy.sh
   on:
     tags: true

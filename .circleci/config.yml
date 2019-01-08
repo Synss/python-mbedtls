@@ -107,22 +107,6 @@ jobs:
             pip install detox
             detox -e py27 -e py34 -e py35 -e py36
 
-      - deploy:
-          name: Distribute
-          command: |
-            . venv/bin/activate
-            python setup.py sdist
-            mkdir -p out/dist
-            cp dist/* out/dist
-
-            if [ "$CIRCLE_BRANCH" = "master" ]; then
-              echo "[pypi]" > $HOME/.pypirc
-              echo "username = Synss" >> $HOME/.pypirc
-              echo "password = $PYPI_PASSWORD" >> $HOME/.pypirc
-              twine upload dist/*
-            fi
-          when: on_success
-
       - run:
           name: save logs
           command: |
