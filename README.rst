@@ -48,17 +48,25 @@ under which mbed TLS is distributed.
 Installation
 ============
 
-The bindings are tested with Python 2.7, 3.4, 3.5, and 3.6.
+The bindings are tested with Python 2.7, 3.4, 3.5, 3.6, and 3.7 on Linux
+and macOS.
 
-`mbedtls` is available on Debian.  Install with::
+Manylinux wheels are available for 64-bit Linux systems.  Install
+with ``pip install python-mbedtls``.
 
-   # apt-get install libmbedtls-dev
-   # apt-get install libpython-dev   # for Python 2, or
-   # apt-get install libpython3-dev  # for Python 3
+In other cases, or to bind to a different version of mbed TLS,
+clone the `python-mbedtls` repository, install mbed TLS, and install
+`python-mbedtls` with::
 
-and `pyton-mbedtls`::
+  $ git clone https://github.com/Synss/python-mbedtls.git python-mbedtls.git
+  $ cd python-mbedtls.git
+  $ sudo ./scripts/install-mbedtls.sh 2.7.8
+  $ python -m pip install python-mbedtls
 
-   $ python -m pip install python-mbedtls
+where 2.7.8 is the version of mbed TLS that will be installed.
+
+`install-mbedtl.sh` is a POSIX shell script and requires `curl`, `tar`,
+and `cmake`.
 
 Message digest with `mbedtls.hash`
 ----------------------------------
