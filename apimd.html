@@ -6,16 +6,17 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>mbedtls.hash Module API &#8212; python-mbedtls 0.7 documentation</title>
+    <title>mbedtls.hash Module API &#8212; python-mbedtls 0.14.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="mbedtls.pk Module API" href="apipk.html" />
+    <link rel="next" title="mbedtls.mpi Module API" href="apimpi.html" />
     <link rel="prev" title="mbedtls.cipher Package API" href="apicipher.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -29,6 +30,8 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="module-mbedtls.hash">
@@ -46,27 +49,51 @@ for unkeyed hashes.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>bytes</em>) – The MD name known to mbed TLS.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) – The MD name known to mbed TLS.</td>
 </tr>
 </tbody>
 </table>
 <dl class="attribute">
 <dt id="mbedtls.hash.Hash.digest_size">
 <code class="descname">digest_size</code><a class="headerlink" href="#mbedtls.hash.Hash.digest_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The size of the message digest, in bytes.</p>
+<dd><p>The size of the message digest, in bytes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="mbedtls.hash.Hash.block_size">
 <code class="descname">block_size</code><a class="headerlink" href="#mbedtls.hash.Hash.block_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The internal block size of the hash
+<dd><p>The internal block size of the hash
 algorithm in bytes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="mbedtls.hash.Hash.name">
 <code class="descname">name</code><a class="headerlink" href="#mbedtls.hash.Hash.name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bytes</em> – The name of the message digest.</p>
+<dd><p>The name of the message digest.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -208,20 +235,44 @@ call <a class="reference internal" href="#mbedtls.hmac.Hmac.digest" title="mbedt
 <dl class="attribute">
 <dt id="mbedtls.hmac.Hmac.digest_size">
 <code class="descname">digest_size</code><a class="headerlink" href="#mbedtls.hmac.Hmac.digest_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The size of the message digest, in bytes.</p>
+<dd><p>The size of the message digest, in bytes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="mbedtls.hmac.Hmac.block_size">
 <code class="descname">block_size</code><a class="headerlink" href="#mbedtls.hmac.Hmac.block_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The internal block size of the hash
+<dd><p>The internal block size of the hash
 algorithm in bytes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="mbedtls.hmac.Hmac.name">
 <code class="descname">name</code><a class="headerlink" href="#mbedtls.hmac.Hmac.name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bytes</em> – The name of the message digest.</p>
+<dd><p>The name of the message digest.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">bytes</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -339,31 +390,47 @@ parameter.</p>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
-<li><a class="reference internal" href="#module-mbedtls.hmac"><code class="docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<h1 class="logo"><a href="index.html">python-mbedtls</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.AES"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.ARC4"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Blowfish"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Camellia"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3dbl"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-mbedtls.hmac"><code class="docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimpi.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
 </ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="apicipher.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
-      <li>Next: <a href="apipk.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
+      <li>Next: <a href="apimpi.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/apimd.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <div class="searchformwrapper">
@@ -376,6 +443,14 @@ parameter.</p>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -384,8 +459,8 @@ parameter.</p>
       &copy;2016, Mathias Laurin.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/apimd.rst.txt"

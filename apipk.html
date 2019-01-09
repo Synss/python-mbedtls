@@ -6,16 +6,18 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>mbedtls.pk Module API &#8212; python-mbedtls 0.7 documentation</title>
+    <title>mbedtls.pk Module API &#8212; python-mbedtls 0.14.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="mbedtls.hash Module API" href="apimd.html" />
+    <link rel="next" title="mbedtls.cipher Package API" href="apicipher.html" />
+    <link rel="prev" title="mbedtls.x509 Module API" href="apix509.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -28,6 +30,8 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="module-mbedtls.pk">
@@ -122,29 +126,9 @@ Diffie-Hellman exchange.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="mbedtls.pk.RSA.from_DER">
-<code class="descname">from_DER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.from_DER" title="Permalink to this definition">¶</a></dt>
-<dd><p>Import a key (public or private half).</p>
-<p>The public half is generated upon importing a private key.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>bytes</em>) – The key in PEM or DER format.</li>
-<li><strong>password</strong> (<em>bytes</em><em>, </em><em>optional</em>) – The password for
-password-protected private keys.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="mbedtls.pk.RSA.from_PEM">
 <code class="descname">from_PEM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.from_PEM" title="Permalink to this definition">¶</a></dt>
-<dd><p>Import a key (public and private half).</p>
+<dd><p>Import a key (public or private half).</p>
 </dd></dl>
 
 <dl class="method">
@@ -389,29 +373,9 @@ password-protected private keys.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="mbedtls.pk.ECC.from_DER">
-<code class="descname">from_DER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECC.from_DER" title="Permalink to this definition">¶</a></dt>
-<dd><p>Import a key (public or private half).</p>
-<p>The public half is generated upon importing a private key.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>bytes</em>) – The key in PEM or DER format.</li>
-<li><strong>password</strong> (<em>bytes</em><em>, </em><em>optional</em>) – The password for
-password-protected private keys.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="mbedtls.pk.ECC.from_PEM">
 <code class="descname">from_PEM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECC.from_PEM" title="Permalink to this definition">¶</a></dt>
-<dd><p>Import a key (public and private half).</p>
+<dd><p>Import a key (public or private half).</p>
 </dd></dl>
 
 <dl class="method">
@@ -585,6 +549,126 @@ password-protected private keys.</li>
 </dd></dl>
 
 <dl class="class">
+<dt id="mbedtls.pk.DHServer">
+<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">DHServer</code><a class="headerlink" href="#mbedtls.pk.DHServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mbedtls.pk.DHBase</span></code></p>
+<p>The server side of the DH key exchange.</p>
+<dl class="method">
+<dt id="mbedtls.pk.DHServer.generate">
+<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.DHServer.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a public key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A TLS ServerKeyExchange payload.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bytes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.DHServer.generate_secret">
+<code class="descname">generate_secret</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.DHServer.generate_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the shared secret.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.DHServer.generator">
+<code class="descname">generator</code><a class="headerlink" href="#mbedtls.pk.DHServer.generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the generator, G.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.DHServer.import_CKE">
+<code class="descname">import_CKE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.DHServer.import_CKE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the ClientKeyExchange payload.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.DHServer.key_size">
+<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.pk.DHServer.key_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the size of the key, in bytes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.DHServer.modulus">
+<code class="descname">modulus</code><a class="headerlink" href="#mbedtls.pk.DHServer.modulus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the prime modulus, P.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.DHServer.shared_secret">
+<code class="descname">shared_secret</code><a class="headerlink" href="#mbedtls.pk.DHServer.shared_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>The shared secret (int).</p>
+<p>The shared secret is 0 if the TLS handshake is not finished.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mbedtls.pk.DHClient">
+<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">DHClient</code><a class="headerlink" href="#mbedtls.pk.DHClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mbedtls.pk.DHBase</span></code></p>
+<p>The client side of the DH key exchange.</p>
+<dl class="method">
+<dt id="mbedtls.pk.DHClient.generate">
+<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.DHClient.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the public key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The byte representation (big endian) of: G^X mod P.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bytes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.DHClient.generate_secret">
+<code class="descname">generate_secret</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.DHClient.generate_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the shared secret.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.DHClient.generator">
+<code class="descname">generator</code><a class="headerlink" href="#mbedtls.pk.DHClient.generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the generator, G.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.pk.DHClient.import_SKE">
+<code class="descname">import_SKE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.DHClient.import_SKE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the ServerKeyExchange payload.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.DHClient.key_size">
+<code class="descname">key_size</code><a class="headerlink" href="#mbedtls.pk.DHClient.key_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the size of the key, in bytes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.DHClient.modulus">
+<code class="descname">modulus</code><a class="headerlink" href="#mbedtls.pk.DHClient.modulus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the prime modulus, P.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.pk.DHClient.shared_secret">
+<code class="descname">shared_secret</code><a class="headerlink" href="#mbedtls.pk.DHClient.shared_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>The shared secret (int).</p>
+<p>The shared secret is 0 if the TLS handshake is not finished.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="mbedtls.pk.ECDHServer">
 <em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">ECDHServer</code><a class="headerlink" href="#mbedtls.pk.ECDHServer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mbedtls.pk.ECDHBase</span></code></p>
@@ -695,24 +779,47 @@ password-protected private keys.</li>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">python-mbedtls</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.AES"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.ARC4"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Blowfish"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Camellia"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3dbl"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hmac"><code class="docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimpi.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
+</ul>
+
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="apimd.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
+      <li>Previous: <a href="apix509.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
+      <li>Next: <a href="apicipher.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/apipk.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <div class="searchformwrapper">
@@ -725,6 +832,14 @@ password-protected private keys.</li>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -733,8 +848,8 @@ password-protected private keys.</li>
       &copy;2016, Mathias Laurin.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/apipk.rst.txt"

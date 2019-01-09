@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Python Module Index &#8212; python-mbedtls 0.14.0 documentation</title>
+    <title>mbedtls.mpi Module API &#8212; python-mbedtls 0.14.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -16,14 +16,12 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-
+    <link rel="prev" title="mbedtls.hash Module API" href="apimd.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-
 
   </head><body>
   
@@ -35,94 +33,79 @@
 
           <div class="body" role="main">
             
+  <div class="section" id="module-mbedtls.mpi">
+<span id="mbedtls-mpi-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.mpi" title="mbedtls.mpi"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.mpi" title="Permalink to this headline">¶</a></h1>
+<p>Multi-precision integer library (MPI).</p>
+<dl class="class">
+<dt id="mbedtls.mpi.MPI">
+<em class="property">class </em><code class="descclassname">mbedtls.mpi.</code><code class="descname">MPI</code><a class="headerlink" href="#mbedtls.mpi.MPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Multi-precision integer.</p>
+<p>This class implements <cite>numbers.Integral</cite>.  The representation
+of the MPI is overwritten with random bytes when the MPI is
+garbage collected.</p>
+<p>The bitwise operations are not implemented.</p>
+<dl class="method">
+<dt id="mbedtls.mpi.MPI.bit_length">
+<code class="descname">bit_length</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.bit_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of bits necessary to represent MPI in binary.</p>
+</dd></dl>
 
-   <h1>Python Module Index</h1>
+<dl class="method">
+<dt id="mbedtls.mpi.MPI.conjugate">
+<code class="descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.conjugate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-   <div class="modindex-jumpbox">
-   <a href="#cap-m"><strong>m</strong></a>
-   </div>
+<dl class="attribute">
+<dt id="mbedtls.mpi.MPI.denominator">
+<code class="descname">denominator</code><a class="headerlink" href="#mbedtls.mpi.MPI.denominator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-   <table class="indextable modindextable">
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-m"><td></td><td>
-       <strong>m</strong></td><td></td></tr>
-     <tr>
-       <td><img src="_static/minus.png" class="toggler"
-              id="toggle-1" style="display: none" alt="-" /></td>
-       <td>
-       <code class="xref">mbedtls</code></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apicipher.html#module-mbedtls.cipher"><code class="xref">mbedtls.cipher</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apicipher.html#module-mbedtls.cipher.AES"><code class="xref">mbedtls.cipher.AES</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apicipher.html#module-mbedtls.cipher.ARC4"><code class="xref">mbedtls.cipher.ARC4</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apicipher.html#module-mbedtls.cipher.Blowfish"><code class="xref">mbedtls.cipher.Blowfish</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apicipher.html#module-mbedtls.cipher.Camellia"><code class="xref">mbedtls.cipher.Camellia</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apicipher.html#module-mbedtls.cipher.DES"><code class="xref">mbedtls.cipher.DES</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apicipher.html#module-mbedtls.cipher.DES3"><code class="xref">mbedtls.cipher.DES3</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apicipher.html#module-mbedtls.cipher.DES3dbl"><code class="xref">mbedtls.cipher.DES3dbl</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apimd.html#module-mbedtls.hash"><code class="xref">mbedtls.hash</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apimd.html#module-mbedtls.hmac"><code class="xref">mbedtls.hmac</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apimpi.html#module-mbedtls.mpi"><code class="xref">mbedtls.mpi</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apipk.html#module-mbedtls.pk"><code class="xref">mbedtls.pk</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apitls.html#module-mbedtls.tls"><code class="xref">mbedtls.tls</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apix509.html#module-mbedtls.x509"><code class="xref">mbedtls.x509</code></a></td><td>
-       <em></em></td></tr>
-   </table>
+<dl class="method">
+<dt id="mbedtls.mpi.MPI.from_bytes">
+<code class="descname">from_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.from_bytes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.mpi.MPI.from_int">
+<code class="descname">from_int</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.from_int" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.mpi.MPI.imag">
+<code class="descname">imag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.imag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.mpi.MPI.is_prime">
+<code class="descname">is_prime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.is_prime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Miller-Rabin primality test.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.mpi.MPI.numerator">
+<code class="descname">numerator</code><a class="headerlink" href="#mbedtls.mpi.MPI.numerator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.mpi.MPI.prime">
+<code class="descname">prime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.prime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an MPI that is probably prime.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.mpi.MPI.real">
+<code class="descname">real</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.real" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.mpi.MPI.to_bytes">
+<code class="descname">to_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.to_bytes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 
 
           </div>
@@ -141,7 +124,7 @@
 
 
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
@@ -155,13 +138,14 @@
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hmac"><code class="docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimpi.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="apimd.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
   </ul></li>
 </ul>
 </div>
@@ -196,6 +180,9 @@
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
+      |
+      <a href="_sources/apimpi.rst.txt"
+          rel="nofollow">Page source</a>
     </div>
 
     

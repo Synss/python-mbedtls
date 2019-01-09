@@ -1,0 +1,802 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>mbedtls.tls Module API &#8212; python-mbedtls 0.14.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mbedtls.x509 Module API" href="apix509.html" />
+    <link rel="prev" title="Cryptographic library for Python with Mbed TLS back end" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-mbedtls.tls">
+<span id="mbedtls-tls-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.tls" title="mbedtls.tls"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.tls</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.tls" title="Permalink to this headline">¶</a></h1>
+<p>TLS/SSL wrapper for socket objects.</p>
+<dl class="class">
+<dt id="mbedtls.tls.ClientContext">
+<em class="property">class </em><code class="descclassname">mbedtls.tls.</code><code class="descname">ClientContext</code><a class="headerlink" href="#mbedtls.tls.ClientContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mbedtls.tls._BaseContext</span></code></p>
+<dl class="attribute">
+<dt id="mbedtls.tls.ClientContext.configuration">
+<code class="descname">configuration</code><a class="headerlink" href="#mbedtls.tls.ClientContext.configuration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.ClientContext.wrap_buffers">
+<code class="descname">wrap_buffers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.ClientContext.wrap_buffers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an in-memory stream for TLS.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.ClientContext.wrap_socket">
+<code class="descname">wrap_socket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.ClientContext.wrap_socket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrap an existing Python socket object <code class="docutils literal notranslate"><span class="pre">socket</span></code> and return a
+<code class="docutils literal notranslate"><span class="pre">TLSWrappedSocket</span></code> object. <code class="docutils literal notranslate"><span class="pre">socket</span></code> must be a <code class="docutils literal notranslate"><span class="pre">SOCK_STREAM</span></code>
+socket: all other socket types are unsupported.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket</strong> (<em>socket.socket</em>) – The socket to wrap.</li>
+<li><strong>server_hostname</strong> (<em>str</em><em>, </em><em>optional</em>) – The hostname of the service
+which we are connecting to.  Pass <code class="docutils literal notranslate"><span class="pre">None</span></code> if hostname
+validation is not desired.  This parameter has no
+default value because opting-out hostname validation is
+dangerous and should not be the default behavior.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mbedtls.tls.HandshakeStep">
+<em class="property">class </em><code class="descclassname">mbedtls.tls.</code><code class="descname">HandshakeStep</code><a class="headerlink" href="#mbedtls.tls.HandshakeStep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.CERTIFICATE_REQUEST">
+<code class="descname">CERTIFICATE_REQUEST</code><em class="property"> = 5</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.CERTIFICATE_REQUEST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.CERTIFICATE_VERIFY">
+<code class="descname">CERTIFICATE_VERIFY</code><em class="property"> = 9</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.CERTIFICATE_VERIFY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.CLIENT_CERTIFICATE">
+<code class="descname">CLIENT_CERTIFICATE</code><em class="property"> = 7</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.CLIENT_CERTIFICATE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.CLIENT_CHANGE_CIPHER_SPEC">
+<code class="descname">CLIENT_CHANGE_CIPHER_SPEC</code><em class="property"> = 10</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.CLIENT_CHANGE_CIPHER_SPEC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.CLIENT_FINISHED">
+<code class="descname">CLIENT_FINISHED</code><em class="property"> = 11</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.CLIENT_FINISHED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.CLIENT_HELLO">
+<code class="descname">CLIENT_HELLO</code><em class="property"> = 1</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.CLIENT_HELLO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.CLIENT_KEY_EXCHANGE">
+<code class="descname">CLIENT_KEY_EXCHANGE</code><em class="property"> = 8</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.CLIENT_KEY_EXCHANGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.FLUSH_BUFFERS">
+<code class="descname">FLUSH_BUFFERS</code><em class="property"> = 14</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.FLUSH_BUFFERS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.HANDSHAKE_OVER">
+<code class="descname">HANDSHAKE_OVER</code><em class="property"> = 16</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.HANDSHAKE_OVER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.HANDSHAKE_WRAPUP">
+<code class="descname">HANDSHAKE_WRAPUP</code><em class="property"> = 15</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.HANDSHAKE_WRAPUP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.HELLO_REQUEST">
+<code class="descname">HELLO_REQUEST</code><em class="property"> = 0</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.HELLO_REQUEST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.SERVER_CERTIFICATE">
+<code class="descname">SERVER_CERTIFICATE</code><em class="property"> = 3</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.SERVER_CERTIFICATE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.SERVER_CHANGE_CIPHER_SPEC">
+<code class="descname">SERVER_CHANGE_CIPHER_SPEC</code><em class="property"> = 12</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.SERVER_CHANGE_CIPHER_SPEC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.SERVER_FINISHED">
+<code class="descname">SERVER_FINISHED</code><em class="property"> = 13</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.SERVER_FINISHED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.SERVER_HELLO">
+<code class="descname">SERVER_HELLO</code><em class="property"> = 2</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.SERVER_HELLO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.SERVER_HELLO_DONE">
+<code class="descname">SERVER_HELLO_DONE</code><em class="property"> = 6</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.SERVER_HELLO_DONE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.SERVER_HELLO_VERIFY_REQUEST_SENT">
+<code class="descname">SERVER_HELLO_VERIFY_REQUEST_SENT</code><em class="property"> = 18</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.SERVER_HELLO_VERIFY_REQUEST_SENT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.SERVER_KEY_EXCHANGE">
+<code class="descname">SERVER_KEY_EXCHANGE</code><em class="property"> = 4</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.SERVER_KEY_EXCHANGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.HandshakeStep.SERVER_NEW_SESSION_TICKET">
+<code class="descname">SERVER_NEW_SESSION_TICKET</code><em class="property"> = 17</em><a class="headerlink" href="#mbedtls.tls.HandshakeStep.SERVER_NEW_SESSION_TICKET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mbedtls.tls.NextProtocol">
+<em class="property">class </em><code class="descclassname">mbedtls.tls.</code><code class="descname">NextProtocol</code><a class="headerlink" href="#mbedtls.tls.NextProtocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="mbedtls.tls.NextProtocol.C_WEBRTC">
+<code class="descname">C_WEBRTC</code><em class="property"> = b'c-webrtc'</em><a class="headerlink" href="#mbedtls.tls.NextProtocol.C_WEBRTC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.NextProtocol.FTP">
+<code class="descname">FTP</code><em class="property"> = b'ftp'</em><a class="headerlink" href="#mbedtls.tls.NextProtocol.FTP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.NextProtocol.H2">
+<code class="descname">H2</code><em class="property"> = b'h2'</em><a class="headerlink" href="#mbedtls.tls.NextProtocol.H2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.NextProtocol.H2C">
+<code class="descname">H2C</code><em class="property"> = b'h2c'</em><a class="headerlink" href="#mbedtls.tls.NextProtocol.H2C" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.NextProtocol.HTTP1">
+<code class="descname">HTTP1</code><em class="property"> = b'http/1.1'</em><a class="headerlink" href="#mbedtls.tls.NextProtocol.HTTP1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.NextProtocol.STUN">
+<code class="descname">STUN</code><em class="property"> = b'stun.nat-discovery'</em><a class="headerlink" href="#mbedtls.tls.NextProtocol.STUN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.NextProtocol.TURN">
+<code class="descname">TURN</code><em class="property"> = b'stun.turn'</em><a class="headerlink" href="#mbedtls.tls.NextProtocol.TURN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.NextProtocol.WEBRTC">
+<code class="descname">WEBRTC</code><em class="property"> = b'webrtc'</em><a class="headerlink" href="#mbedtls.tls.NextProtocol.WEBRTC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mbedtls.tls.Purpose">
+<em class="property">class </em><code class="descclassname">mbedtls.tls.</code><code class="descname">Purpose</code><a class="headerlink" href="#mbedtls.tls.Purpose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="mbedtls.tls.Purpose.CLIENT_AUTH">
+<code class="descname">CLIENT_AUTH</code><em class="property"> = 0</em><a class="headerlink" href="#mbedtls.tls.Purpose.CLIENT_AUTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.Purpose.SERVER_AUTH">
+<code class="descname">SERVER_AUTH</code><em class="property"> = 1</em><a class="headerlink" href="#mbedtls.tls.Purpose.SERVER_AUTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="mbedtls.tls.RaggedEOF">
+<em class="property">exception </em><code class="descclassname">mbedtls.tls.</code><code class="descname">RaggedEOF</code><a class="headerlink" href="#mbedtls.tls.RaggedEOF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mbedtls.exceptions.TLSError</span></code></p>
+<dl class="attribute">
+<dt id="mbedtls.tls.RaggedEOF.args">
+<code class="descname">args</code><a class="headerlink" href="#mbedtls.tls.RaggedEOF.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.RaggedEOF.msg">
+<code class="descname">msg</code><a class="headerlink" href="#mbedtls.tls.RaggedEOF.msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.RaggedEOF.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.RaggedEOF.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mbedtls.tls.ServerContext">
+<em class="property">class </em><code class="descclassname">mbedtls.tls.</code><code class="descname">ServerContext</code><a class="headerlink" href="#mbedtls.tls.ServerContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mbedtls.tls._BaseContext</span></code></p>
+<dl class="attribute">
+<dt id="mbedtls.tls.ServerContext.configuration">
+<code class="descname">configuration</code><a class="headerlink" href="#mbedtls.tls.ServerContext.configuration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.ServerContext.wrap_buffers">
+<code class="descname">wrap_buffers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.ServerContext.wrap_buffers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.ServerContext.wrap_socket">
+<code class="descname">wrap_socket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.ServerContext.wrap_socket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrap an existing Python socket object <code class="docutils literal notranslate"><span class="pre">socket</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mbedtls.tls.TLSConfiguration">
+<em class="property">class </em><code class="descclassname">mbedtls.tls.</code><code class="descname">TLSConfiguration</code><a class="headerlink" href="#mbedtls.tls.TLSConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>TLS configuration.</p>
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSConfiguration.certificate_chain">
+<code class="descname">certificate_chain</code><a class="headerlink" href="#mbedtls.tls.TLSConfiguration.certificate_chain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSConfiguration.ciphers">
+<code class="descname">ciphers</code><a class="headerlink" href="#mbedtls.tls.TLSConfiguration.ciphers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSConfiguration.highest_supported_version">
+<code class="descname">highest_supported_version</code><a class="headerlink" href="#mbedtls.tls.TLSConfiguration.highest_supported_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSConfiguration.inner_protocols">
+<code class="descname">inner_protocols</code><a class="headerlink" href="#mbedtls.tls.TLSConfiguration.inner_protocols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSConfiguration.lowest_supported_version">
+<code class="descname">lowest_supported_version</code><a class="headerlink" href="#mbedtls.tls.TLSConfiguration.lowest_supported_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSConfiguration.sni_callback">
+<code class="descname">sni_callback</code><a class="headerlink" href="#mbedtls.tls.TLSConfiguration.sni_callback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSConfiguration.trust_store">
+<code class="descname">trust_store</code><a class="headerlink" href="#mbedtls.tls.TLSConfiguration.trust_store" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSConfiguration.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSConfiguration.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new <code class="docutils literal notranslate"><span class="pre">TLSConfiguration</span></code>.</p>
+<p>Override some of the settings on the original configuration
+with the new settings.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSConfiguration.validate_certificates">
+<code class="descname">validate_certificates</code><a class="headerlink" href="#mbedtls.tls.TLSConfiguration.validate_certificates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mbedtls.tls.TLSVersion">
+<em class="property">class </em><code class="descclassname">mbedtls.tls.</code><code class="descname">TLSVersion</code><a class="headerlink" href="#mbedtls.tls.TLSVersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSVersion.MAXIMUM_SUPPORTED">
+<code class="descname">MAXIMUM_SUPPORTED</code><em class="property"> = 3</em><a class="headerlink" href="#mbedtls.tls.TLSVersion.MAXIMUM_SUPPORTED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSVersion.MINIMUM_SUPPORTED">
+<code class="descname">MINIMUM_SUPPORTED</code><em class="property"> = 0</em><a class="headerlink" href="#mbedtls.tls.TLSVersion.MINIMUM_SUPPORTED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSVersion.SSLv3">
+<code class="descname">SSLv3</code><em class="property"> = 0</em><a class="headerlink" href="#mbedtls.tls.TLSVersion.SSLv3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSVersion.TLSv1">
+<code class="descname">TLSv1</code><em class="property"> = 1</em><a class="headerlink" href="#mbedtls.tls.TLSVersion.TLSv1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSVersion.TLSv1_1">
+<code class="descname">TLSv1_1</code><em class="property"> = 2</em><a class="headerlink" href="#mbedtls.tls.TLSVersion.TLSv1_1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSVersion.TLSv1_2">
+<code class="descname">TLSv1_2</code><em class="property"> = 3</em><a class="headerlink" href="#mbedtls.tls.TLSVersion.TLSv1_2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mbedtls.tls.TLSWrappedBuffer">
+<em class="property">class </em><code class="descclassname">mbedtls.tls.</code><code class="descname">TLSWrappedBuffer</code><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedBuffer.cipher">
+<code class="descname">cipher</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer.cipher" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedBuffer.consume_outgoing">
+<code class="descname">consume_outgoing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer.consume_outgoing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Consume <cite>amt</cite> bytes from the output buffer.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSWrappedBuffer.context">
+<code class="descname">context</code><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer.context" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">Context</span></code> object this buffer is tied to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedBuffer.do_handshake">
+<code class="descname">do_handshake</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer.do_handshake" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedBuffer.negotiated_protocol">
+<code class="descname">negotiated_protocol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer.negotiated_protocol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedBuffer.negotiated_tls_version">
+<code class="descname">negotiated_tls_version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer.negotiated_tls_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedBuffer.peek_outgoing">
+<code class="descname">peek_outgoing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer.peek_outgoing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedBuffer.read">
+<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer.read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedBuffer.readinto">
+<code class="descname">readinto</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer.readinto" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedBuffer.receive_from_network">
+<code class="descname">receive_from_network</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer.receive_from_network" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedBuffer.shutdown">
+<code class="descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedBuffer.write">
+<code class="descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedBuffer.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mbedtls.tls.TLSWrappedSocket">
+<em class="property">class </em><code class="descclassname">mbedtls.tls.</code><code class="descname">TLSWrappedSocket</code><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.accept">
+<code class="descname">accept</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.accept" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.bind">
+<code class="descname">bind</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.bind" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.cipher">
+<code class="descname">cipher</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.cipher" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.connect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.connect_ex">
+<code class="descname">connect_ex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.connect_ex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSWrappedSocket.context">
+<code class="descname">context</code><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.context" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.do_handshake">
+<code class="descname">do_handshake</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.do_handshake" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSWrappedSocket.family">
+<code class="descname">family</code><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.family" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.fileno">
+<code class="descname">fileno</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.fileno" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.getpeername">
+<code class="descname">getpeername</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.getpeername" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.getsockname">
+<code class="descname">getsockname</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.getsockname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.getsockopt">
+<code class="descname">getsockopt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.getsockopt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.gettimeout">
+<code class="descname">gettimeout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.gettimeout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.listen">
+<code class="descname">listen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.listen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.makefile">
+<code class="descname">makefile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.makefile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.negotiated_protocol">
+<code class="descname">negotiated_protocol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.negotiated_protocol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.negotiated_tls_version">
+<code class="descname">negotiated_tls_version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.negotiated_tls_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSWrappedSocket.proto">
+<code class="descname">proto</code><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.proto" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.recv">
+<code class="descname">recv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.recv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.recv_into">
+<code class="descname">recv_into</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.recv_into" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.recvfrom">
+<code class="descname">recvfrom</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.recvfrom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.recvfrom_into">
+<code class="descname">recvfrom_into</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.recvfrom_into" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.send">
+<code class="descname">send</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.send" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.sendall">
+<code class="descname">sendall</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.sendall" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.sendto">
+<code class="descname">sendto</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.sendto" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.setblocking">
+<code class="descname">setblocking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.setblocking" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.setsockopt">
+<code class="descname">setsockopt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.setsockopt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.settimeout">
+<code class="descname">settimeout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.settimeout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.shutdown">
+<code class="descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.TLSWrappedSocket.type">
+<code class="descname">type</code><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TLSWrappedSocket.unwrap">
+<code class="descname">unwrap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TLSWrappedSocket.unwrap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mbedtls.tls.TrustStore">
+<em class="property">class </em><code class="descclassname">mbedtls.tls.</code><code class="descname">TrustStore</code><a class="headerlink" href="#mbedtls.tls.TrustStore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Sequence</span></code></p>
+<dl class="attribute">
+<dt id="mbedtls.tls.TrustStore.add">
+<code class="descname">add</code><a class="headerlink" href="#mbedtls.tls.TrustStore.add" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TrustStore.count">
+<code class="descname">count</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span> &#x2192; integer -- return number of occurrences of value<a class="headerlink" href="#mbedtls.tls.TrustStore.count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="mbedtls.tls.TrustStore.from_pem_file">
+<em class="property">classmethod </em><code class="descname">from_pem_file</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TrustStore.from_pem_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.TrustStore.index">
+<code class="descname">index</code><span class="sig-paren">(</span><em>value</em><span class="optional">[</span>, <em>start</em><span class="optional">[</span>, <em>stop</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; integer -- return first index of value.<a class="headerlink" href="#mbedtls.tls.TrustStore.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raises ValueError if the value is not present.</p>
+<p>Supporting start and stop arguments is optional, but
+recommended.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="mbedtls.tls.TrustStore.system">
+<em class="property">classmethod </em><code class="descname">system</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.TrustStore.system" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="mbedtls.tls.WantReadError">
+<em class="property">exception </em><code class="descclassname">mbedtls.tls.</code><code class="descname">WantReadError</code><a class="headerlink" href="#mbedtls.tls.WantReadError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mbedtls.exceptions.TLSError</span></code></p>
+<dl class="attribute">
+<dt id="mbedtls.tls.WantReadError.args">
+<code class="descname">args</code><a class="headerlink" href="#mbedtls.tls.WantReadError.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.WantReadError.msg">
+<code class="descname">msg</code><a class="headerlink" href="#mbedtls.tls.WantReadError.msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.WantReadError.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.WantReadError.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="mbedtls.tls.WantWriteError">
+<em class="property">exception </em><code class="descclassname">mbedtls.tls.</code><code class="descname">WantWriteError</code><a class="headerlink" href="#mbedtls.tls.WantWriteError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mbedtls.exceptions.TLSError</span></code></p>
+<dl class="attribute">
+<dt id="mbedtls.tls.WantWriteError.args">
+<code class="descname">args</code><a class="headerlink" href="#mbedtls.tls.WantWriteError.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mbedtls.tls.WantWriteError.msg">
+<code class="descname">msg</code><a class="headerlink" href="#mbedtls.tls.WantWriteError.msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mbedtls.tls.WantWriteError.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.WantWriteError.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.tls.ciphers_available">
+<code class="descclassname">mbedtls.tls.</code><code class="descname">ciphers_available</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.ciphers_available" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of ciphersuites supported by the SSL/TLS module.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<ul class="last simple">
+<li>hash.algorithms_available</li>
+<li>hmac.algorithms_available</li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="mbedtls.tls.pairwise">
+<code class="descclassname">mbedtls.tls.</code><code class="descname">pairwise</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.tls.pairwise" title="Permalink to this definition">¶</a></dt>
+<dd><p>s -&gt; (s0,s1), (s1,s2), (s2, s3), …</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">python-mbedtls</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.AES"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.ARC4"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Blowfish"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Camellia"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3dbl"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hmac"><code class="docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimpi.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Cryptographic library for Python with Mbed TLS back end</a></li>
+      <li>Next: <a href="apix509.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Mathias Laurin.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/apitls.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

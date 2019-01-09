@@ -6,16 +6,17 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Cryptographic library for Python with Mbed TLS back end &#8212; python-mbedtls 0.7 documentation</title>
+    <title>Cryptographic library for Python with Mbed TLS back end &#8212; python-mbedtls 0.14.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="mbedtls.cipher Package API" href="apicipher.html" />
+    <link rel="next" title="mbedtls.tls Module API" href="apitls.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -28,11 +29,14 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="cryptographic-library-for-python-with-mbed-tls-back-end">
 <h1>Cryptographic library for Python with Mbed TLS back end<a class="headerlink" href="#cryptographic-library-for-python-with-mbed-tls-back-end" title="Permalink to this headline">¶</a></h1>
 <a class="reference external image-reference" href="https://circleci.com/gh/Synss/python-mbedtls/tree/develop"><img alt="https://circleci.com/gh/Synss/python-mbedtls/tree/develop.svg?style=svg" src="https://circleci.com/gh/Synss/python-mbedtls/tree/develop.svg?style=svg" /></a>
+<a class="reference external image-reference" href="https://travis-ci.org/Synss/python-mbedtls"><img alt="https://travis-ci.org/Synss/python-mbedtls.svg?branch=develop" src="https://travis-ci.org/Synss/python-mbedtls.svg?branch=develop" /></a>
 <a class="reference external image-reference" href="https://coveralls.io/github/Synss/python-mbedtls?branch=develop"><img alt="https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=develop" src="https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=develop" /></a>
 <p><a class="reference external" href="https://synss.github.io/python-mbedtls">python-mbedtls</a> is a free cryptographic library for Python that uses
 <a class="reference external" href="https://tls.mbed.org">mbed TLS</a> for back end.</p>
@@ -54,17 +58,22 @@ under which mbed TLS is distributed.</p>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>The bindings are tested with Python 2.7, 3.4, 3.5, and 3.6.</p>
-<p><cite>mbedtls</cite> is available on Debian.  Install with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># apt-get install libmbedtls-dev</span>
-<span class="c1"># apt-get install libpython-dev   # for Python 2, or</span>
-<span class="c1"># apt-get install libpython3-dev  # for Python 3</span>
+<p>The bindings are tested with Python 2.7, 3.4, 3.5, 3.6, and 3.7 on Linux
+and macOS.</p>
+<p>Manylinux wheels are available for 64-bit Linux systems.  Install
+with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">python-mbedtls</span></code>.</p>
+<p>In other cases, or to bind to a different version of mbed TLS,
+clone the <cite>python-mbedtls</cite> repository, install mbed TLS, and install
+<cite>python-mbedtls</cite> with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/Synss/python-mbedtls.git python-mbedtls.git
+$ cd python-mbedtls.git
+$ sudo ./scripts/install-mbedtls.sh 2.7.8
+$ python -m pip install python-mbedtls
 </pre></div>
 </div>
-<p>and <cite>pyton-mbedtls</cite>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m pip install python-mbedtls
-</pre></div>
-</div>
+<p>where 2.7.8 is the version of mbed TLS that will be installed.</p>
+<p><cite>install-mbedtl.sh</cite> is a POSIX shell script and requires <cite>curl</cite>, <cite>tar</cite>,
+and <cite>cmake</cite>.</p>
 <div class="section" id="message-digest-with-mbedtls-hash">
 <h3>Message digest with <cite>mbedtls.hash</cite><a class="headerlink" href="#message-digest-with-mbedtls-hash" title="Permalink to this headline">¶</a></h3>
 <p>The <cite>mbedtls.hash</cite> module provides MD5, SHA-1, SHA-2, and RIPEMD-160 secure
@@ -180,8 +189,7 @@ formats;</li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Sorry, wrong message.&quot;</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
 <span class="go">False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pub</span> <span class="o">=</span> <span class="n">rsa</span><span class="o">.</span><span class="n">export_public_key</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;DER&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">other</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">RSA</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">other</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">other</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">RSA</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">other</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Please sign here.&quot;</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
@@ -212,8 +220,7 @@ algorithm (ECDSA):</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ecdsa</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Sorry, wrong message.&quot;</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
 <span class="go">False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pub</span> <span class="o">=</span> <span class="n">ecdsa</span><span class="o">.</span><span class="n">export_public_key</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;DER&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">other</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECC</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">other</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">other</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECC</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">other</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Please sign here.&quot;</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
@@ -245,41 +252,234 @@ passes it back to the server:</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="x-509-certificate-writing-and-parsing-with-mbedtls-x509">
-<h3>X.509 Certificate writing and parsing with <cite>mbedtls.x509</cite><a class="headerlink" href="#x-509-certificate-writing-and-parsing-with-mbedtls-x509" title="Permalink to this headline">¶</a></h3>
-<p>Create new X.509 certificates:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="nb">hash</span> <span class="k">as</span> <span class="n">hashlib</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls.pk</span> <span class="k">import</span> <span class="n">RSA</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls.x509</span> <span class="k">import</span> <span class="n">Certificate</span><span class="p">,</span> <span class="n">CSR</span><span class="p">,</span> <span class="n">CRL</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">now</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">issuer_key</span> <span class="o">=</span> <span class="n">RSA</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">issuer_key</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">subject_key</span> <span class="o">=</span> <span class="n">RSA</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">prv</span> <span class="o">=</span> <span class="n">subject_key</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">crt</span> <span class="o">=</span> <span class="n">Certificate</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">start</span><span class="o">=</span><span class="n">now</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">now</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">90</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">issuer</span><span class="o">=</span><span class="s2">&quot;C=NL,O=PolarSSL,CN=PolarSSL Test CA&quot;</span><span class="p">,</span> <span class="n">issuer_key</span><span class="o">=</span><span class="n">issuer_key</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subject_key</span><span class="o">=</span><span class="n">subject_key</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">md_alg</span><span class="o">=</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">(),</span> <span class="n">serial</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-<span class="gp">...</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">csr</span> <span class="o">=</span> <span class="n">CSR</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">subject_key</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">(),</span>
-<span class="gp">... </span>              <span class="s2">&quot;C=NL,O=PolarSSL,CN=PolarSSL Server 1&quot;</span><span class="p">)</span>
-<span class="go">&gt;&gt;&gt;</span>
+<div class="section" id="diffie-hellman-merkle-key-exchange">
+<h3>Diffie-Hellman-Merkle key exchange<a class="headerlink" href="#diffie-hellman-merkle-key-exchange" title="Permalink to this headline">¶</a></h3>
+<p>The classes DHServer and DHClient may be used for DH Key exchange.  The
+classes have the same API as ECDHServer and ECDHClient, respectively.</p>
+<p>The key exchange is as follow:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls.mpi</span> <span class="k">import</span> <span class="n">MPI</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">pk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">srv</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">DHServer</span><span class="p">(</span><span class="n">MPI</span><span class="o">.</span><span class="n">prime</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span> <span class="n">MPI</span><span class="o">.</span><span class="n">prime</span><span class="p">(</span><span class="mi">96</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cli</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">DHClient</span><span class="p">(</span><span class="n">MPI</span><span class="o">.</span><span class="n">prime</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span> <span class="n">MPI</span><span class="o">.</span><span class="n">prime</span><span class="p">(</span><span class="mi">96</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>Call <code class="docutils literal notranslate"><span class="pre">next(crt)</span></code> to obtain the next certificate in a chain.  The
-call raises <cite>StopIteration</cite> if there is no further certificate.</p>
+<p>The values 23 and 5 are the prime modulus (P) and the generator (G).</p>
+<p>The server generates the ServerKeyExchange payload:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ske</span> <span class="o">=</span> <span class="n">srv</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cli</span><span class="o">.</span><span class="n">import_SKE</span><span class="p">(</span><span class="n">ske</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The payload ends with <cite>G^X mod P</cite> where <cite>X</cite> is the secret value of
+the server.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cke</span> <span class="o">=</span> <span class="n">cli</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">srv</span><span class="o">.</span><span class="n">import_CKE</span><span class="p">(</span><span class="n">cke</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><cite>cke</cite> is <cite>G^Y mod P</cite> (with <cite>Y</cite> the secret value from the client)
+returned as its representation in bytes so that it can be readily
+transported over the network.</p>
+<p>As in ECDH, client and server may now generate their shared secret:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">secret</span> <span class="o">=</span> <span class="n">srv</span><span class="o">.</span><span class="n">generate_secret</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cli</span><span class="o">.</span><span class="n">generate_secret</span><span class="p">()</span> <span class="o">==</span> <span class="n">secret</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">srv</span><span class="o">.</span><span class="n">shared_secret</span> <span class="o">==</span> <span class="n">cli</span><span class="o">.</span><span class="n">shared_secret</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="x-509-certificate-writing-and-parsing-with-mbedtls-x509">
+<h3>X.509 Certificate writing and parsing with <cite>mbedtls.x509</cite><a class="headerlink" href="#x-509-certificate-writing-and-parsing-with-mbedtls-x509" title="Permalink to this headline">¶</a></h3>
+<p>The x509 module can be used to parse X.509 certificates or create
+and verify a certificate chain.</p>
+<p>Here, the trusted root is a self-signed CA certificate
+<cite>ca0_crt</cite> signed by <cite>ca0_key</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="nb">hash</span> <span class="k">as</span> <span class="n">hashlib</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">pk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">x509</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">now</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ca0_key</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">RSA</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ca0_key</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ca0_csr</span> <span class="o">=</span> <span class="n">x509</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ca0_key</span><span class="p">,</span> <span class="s2">&quot;CN=Trusted CA&quot;</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ca0_crt</span> <span class="o">=</span> <span class="n">x509</span><span class="o">.</span><span class="n">CRT</span><span class="o">.</span><span class="n">selfsign</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">ca0_csr</span><span class="p">,</span> <span class="n">ca0_key</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">not_before</span><span class="o">=</span><span class="n">now</span><span class="p">,</span> <span class="n">not_after</span><span class="o">=</span><span class="n">now</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">90</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">serial_number</span><span class="o">=</span><span class="mh">0x123456</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">basic_constraints</span><span class="o">=</span><span class="n">x509</span><span class="o">.</span><span class="n">BasicConstraints</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>An intermediate then issues a Certificate Singing Request (CSR) that the
+root CA signs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ca1_key</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECC</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ca1_key</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ca1_csr</span> <span class="o">=</span> <span class="n">x509</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ca1_key</span><span class="p">,</span> <span class="s2">&quot;CN=Intermediate CA&quot;</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">())</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ca1_crt</span> <span class="o">=</span> <span class="n">ca0_crt</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">ca1_csr</span><span class="p">,</span> <span class="n">ca0_key</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">now</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">90</span><span class="p">),</span> <span class="mh">0x123456</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">basic_constraints</span><span class="o">=</span><span class="n">x509</span><span class="o">.</span><span class="n">BasicConstraints</span><span class="p">(</span><span class="n">ca</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_path_length</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>And finally, the intermediate CA signs a certificate for the
+End Entity on the basis of a new CSR:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ee0_key</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECC</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ee0_key</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ee0_csr</span> <span class="o">=</span> <span class="n">x509</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ee0_key</span><span class="p">,</span> <span class="s2">&quot;CN=End Entity&quot;</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">())</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ee0_crt</span> <span class="o">=</span> <span class="n">ca1_crt</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">ee0_csr</span><span class="p">,</span> <span class="n">ca1_key</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">now</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">90</span><span class="p">),</span> <span class="mh">0x987654</span><span class="p">)</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>The emitting certificate can be used to verify the next certificate in
+the chain:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ca1_crt</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">ee0_crt</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ca0_crt</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">ca1_crt</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Note, however, that this verification is only one step in a private key
+infrastructure and does not take CRLs, path length, etc. into account.</p>
+</div>
+<div class="section" id="tls-client-and-server">
+<h3>TLS client and server<a class="headerlink" href="#tls-client-and-server" title="Permalink to this headline">¶</a></h3>
+<p>The <cite>mbedtls.tls</cite> module provides TLS clients and servers.  The API
+follows the recommendations of <a class="reference external" href="https://www.python.org/dev/peps/pep-0543/">PEP 543</a>.  Note, however, that the
+Python standard SSL library does not follow the PEP so that this
+library may not be a drop-in replacement.  Also, SSL 3 is not
+yet supported.</p>
+<p>Here are some simple HTTP messages to pass from the client to the
+server and back.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_request</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span>
+<span class="gp">... </span>    <span class="s2">&quot;GET / HTTP/1.0&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">http_response</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span>
+<span class="gp">... </span>    <span class="s2">&quot;HTTP/1.0 200 OK&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;Content-Type: text/html&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;&lt;h2&gt;Test Server&lt;/h2&gt;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;&lt;p&gt;Successful connection.&lt;/p&gt;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">http_error</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span>
+<span class="gp">... </span>    <span class="s2">&quot;HTTP/1.0 400 Bad Request&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;&quot;</span><span class="p">))</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>For this example, the trust store just consists in the root certificate
+<cite>ca0_crt</cite> from the previous section.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">tls</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">trust_store</span> <span class="o">=</span> <span class="n">tls</span><span class="o">.</span><span class="n">TrustStore</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">trust_store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ca0_crt</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The next step is to configure the TLS contexts for server and client.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">srv_ctx</span> <span class="o">=</span> <span class="n">tls</span><span class="o">.</span><span class="n">ServerContext</span><span class="p">(</span><span class="n">tls</span><span class="o">.</span><span class="n">TLSConfiguration</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">trust_store</span><span class="o">=</span><span class="n">trust_store</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">certificate_chain</span><span class="o">=</span><span class="p">([</span><span class="n">ee0_crt</span><span class="p">,</span> <span class="n">ca1_crt</span><span class="p">],</span> <span class="n">ee0_key</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">validate_certificates</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">))</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cli_ctx</span> <span class="o">=</span> <span class="n">tls</span><span class="o">.</span><span class="n">ClientContext</span><span class="p">(</span><span class="n">tls</span><span class="o">.</span><span class="n">TLSConfiguration</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">trust_store</span><span class="o">=</span><span class="n">trust_store</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">validate_certificates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">))</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>The contexts are used to wrap TCP sockets.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">socket</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">srv</span> <span class="o">=</span> <span class="n">srv_ctx</span><span class="o">.</span><span class="n">wrap_socket</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">))</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">suppress</span>
+<span class="gp">... </span><span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="c1"># For Python 2.</span>
+<span class="gp">... </span>    <span class="kn">from</span> <span class="nn">contextlib2</span> <span class="k">import</span> <span class="n">suppress</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">tls</span><span class="o">.</span><span class="n">WantReadError</span><span class="p">,</span> <span class="n">tls</span><span class="o">.</span><span class="n">WantWriteError</span><span class="p">):</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>The server starts in its own process in this example
+because <cite>accept()</cite> is blocking.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">server_main_loop</span><span class="p">(</span><span class="n">sock</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">block</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">do_handshake</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="n">get_request</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">conn</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">http_response</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">conn</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">http_error</span><span class="p">)</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>We only scan for free ports to <cite>bind()</cite> to in order to
+paralelize the tests.  This should not be needed.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8888</span><span class="p">,</span> <span class="mi">8888</span> <span class="o">+</span> <span class="mi">20</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">srv</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">pass</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">break</span>
+<span class="gp">... </span><span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;No free port found&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">srv</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">runner</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">server_main_loop</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">srv</span><span class="p">,</span> <span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">runner</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Finally, a client queries the server with the <cite>get_request</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cli</span> <span class="o">=</span> <span class="n">cli_ctx</span><span class="o">.</span><span class="n">wrap_socket</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">server_hostname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cli</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">block</span><span class="p">(</span><span class="n">cli</span><span class="o">.</span><span class="n">do_handshake</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cli</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">get_request</span><span class="p">)</span>
+<span class="go">18</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">block</span><span class="p">(</span><span class="n">cli</span><span class="o">.</span><span class="n">recv</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
+<span class="go">HTTP/1.0 200 OK</span>
+<span class="go">Content-Type: text/html</span>
+<span class="go">&lt;BLANKLINE&gt;</span>
+<span class="go">&lt;h2&gt;Test Server&lt;/h2&gt;</span>
+<span class="go">&lt;p&gt;Successful connection.&lt;/p&gt;</span>
+<span class="go">&lt;BLANKLINE&gt;</span>
+</pre></div>
+</div>
+<p>The last step is to stop the extra process and close the sockets.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cli</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">runner</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">srv</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="api-documentation">
 <h2>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.AES"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.ARC4"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
@@ -290,7 +490,7 @@ call raises <cite>StopIteration</cite> if there is no further certificate.</p>
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hmac"><code class="docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimpi.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
 </ul>
 </div>
 </div>
@@ -306,43 +506,46 @@ call raises <cite>StopIteration</cite> if there is no further certificate.</p>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="#">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Cryptographic library for Python with Mbed TLS back end</a><ul>
-<li><a class="reference internal" href="#license">License</a></li>
-<li><a class="reference internal" href="#installation">Installation</a><ul>
-<li><a class="reference internal" href="#message-digest-with-mbedtls-hash">Message digest with <cite>mbedtls.hash</cite></a></li>
-<li><a class="reference internal" href="#hmac-algorithm-with-mbedtls-hmac">HMAC algorithm with <cite>mbedtls.hmac</cite></a></li>
-<li><a class="reference internal" href="#symmetric-cipher-with-mbedtls-cipher">Symmetric cipher with <cite>mbedtls.cipher</cite></a></li>
-<li><a class="reference internal" href="#rsa-public-key-with-mbedtls-pk">RSA public key with <cite>mbedtls.pk</cite></a></li>
-<li><a class="reference internal" href="#static-and-ephemeral-elliptic-curve-diffie-hellman">Static and ephemeral Elliptic curve Diffie-Hellman</a></li>
-<li><a class="reference internal" href="#x-509-certificate-writing-and-parsing-with-mbedtls-x509">X.509 Certificate writing and parsing with <cite>mbedtls.x509</cite></a></li>
+<h1 class="logo"><a href="#">python-mbedtls</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.AES"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.ARC4"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Blowfish"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Camellia"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3dbl"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hmac"><code class="docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimpi.html"><code class="docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
 </ul>
-</li>
-<li><a class="reference internal" href="#api-documentation">API documentation</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
-</ul>
-</li>
-</ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="apicipher.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
+      <li>Next: <a href="apitls.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/index.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <div class="searchformwrapper">
@@ -355,6 +558,14 @@ call raises <cite>StopIteration</cite> if there is no further certificate.</p>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -363,8 +574,8 @@ call raises <cite>StopIteration</cite> if there is no further certificate.</p>
       &copy;2016, Mathias Laurin.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/index.rst.txt"
