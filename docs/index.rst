@@ -11,10 +11,12 @@ API documentation
 .. toctree::
    :maxdepth: 2
 
+   apitls
+   apix509
+   apipk
    apicipher
    apimd
-   apipk
-
+   apimpi
 
 
 Indices and tables
