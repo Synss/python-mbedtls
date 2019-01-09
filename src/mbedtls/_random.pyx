@@ -6,8 +6,11 @@ __license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free
-cimport mbedtls._random as random
+
+cimport mbedtls._random as _rnd
+
 import binascii
+
 from mbedtls.exceptions import check_error
 
 
@@ -15,15 +18,15 @@ cdef class Entropy:
 
     def __cinit__(self):
         """Initialize the context."""
-        random.mbedtls_entropy_init(&self._ctx)
+        _rnd.mbedtls_entropy_init(&self._ctx)
 
     def __dealloc__(self):
         """Free and clear the context."""
-        random.mbedtls_entropy_free(&self._ctx)
+        _rnd.mbedtls_entropy_free(&self._ctx)
 
     def gather(self):
         """Trigger an extra gather poll for the accumulator."""
-        random.mbedtls_entropy_gather(&self._ctx)
+        _rnd.mbedtls_entropy_gather(&self._ctx)
 
     def retrieve(self, size_t length):
         """Retrieve entropy from the accumulator."""
@@ -32,7 +35,7 @@ cdef class Entropy:
         if not output:
             raise MemoryError()
         try:
-            check_error(random.mbedtls_entropy_func(
+            check_error(_rnd.mbedtls_entropy_func(
                 &self._ctx, output, length))
             return bytes(output[:length])
         finally:
@@ -40,32 +43,42 @@ cdef class Entropy:
 
     def update(self, const unsigned char[:] data):
         """Add data to the accumulator manually."""
-        check_error(random.mbedtls_entropy_update_manual(
+        check_error(_rnd.mbedtls_entropy_update_manual(
             &self._ctx, &data[0], data.shape[0]))
 
 
 cdef class Random:
 
+    def __init__(self, entropy=None):
+        if entropy is None:
+            entropy = Entropy()
+        self._entropy = entropy
+        check_error(
+            _rnd.mbedtls_ctr_drbg_seed(
+                &self._ctx,
+                &_rnd.mbedtls_entropy_func,
+                &self._entropy._ctx,
+                NULL, 0))
+
     def __cinit__(self):
         """Initialize the context."""
-        random.mbedtls_ctr_drbg_init(&self._ctx)
-        self._entropy = Entropy()
-        check_error(random.mbedtls_ctr_drbg_seed(
-            &self._ctx,
-            &random.mbedtls_entropy_func, &self._entropy._ctx,
-            NULL, 0))
+        _rnd.mbedtls_ctr_drbg_init(&self._ctx)
 
     def __dealloc__(self):
         """Free and clear the context."""
-        random.mbedtls_ctr_drbg_free(&self._ctx)
+        _rnd.mbedtls_ctr_drbg_free(&self._ctx)
 
-    def reseed(self):
+    def reseed(self, const unsigned char[:] data=None):
         """Reseed the RNG."""
-        check_error(random.mbedtls_ctr_drbg_reseed(&self._ctx, NULL, 0))
+        if data is None:
+            check_error(_rnd.mbedtls_ctr_drbg_reseed(&self._ctx, NULL, 0))
+        else:
+            check_error(
+                _rnd.mbedtls_ctr_drbg_reseed(&self._ctx, &data[0], data.size))
 
     def update(self, const unsigned char[:] data):
         """Update state with additional data."""
-        random.mbedtls_ctr_drbg_update(&self._ctx, &data[0], data.shape[0])
+        _rnd.mbedtls_ctr_drbg_update(&self._ctx, &data[0], data.shape[0])
 
     def token_bytes(self, size_t length):
         """Returns `length` random bytes."""
@@ -74,7 +87,7 @@ cdef class Random:
         if not output:
             raise MemoryError()
         try:
-            check_error(random.mbedtls_ctr_drbg_random(
+            check_error(_rnd.mbedtls_ctr_drbg_random(
                 &self._ctx, output, length))
             return bytes(output[:length])
         finally:
@@ -83,3 +96,10 @@ cdef class Random:
     def token_hex(self, length):
         """Same as `token_bytes` but returned as a string."""
         return binascii.hexlify(self.token_bytes(length)).decode("ascii")
+
+
+cdef Random __rng = Random()
+
+
+cdef Random default_rng():
+    return __rng

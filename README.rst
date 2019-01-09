@@ -48,17 +48,25 @@ under which mbed TLS is distributed.
 Installation
 ============
 
-The bindings are tested with Python 2.7, 3.4, 3.5, and 3.6.
+The bindings are tested with Python 2.7, 3.4, 3.5, 3.6, and 3.7 on Linux
+and macOS.
 
-`mbedtls` is available on Debian.  Install with::
+Manylinux wheels are available for 64-bit Linux systems.  Install
+with ``pip install python-mbedtls``.
 
-   # apt-get install libmbedtls-dev
-   # apt-get install libpython-dev   # for Python 2, or
-   # apt-get install libpython3-dev  # for Python 3
+In other cases, or to bind to a different version of mbed TLS,
+clone the `python-mbedtls` repository, install mbed TLS, and install
+`python-mbedtls` with::
 
-and `pyton-mbedtls`::
+  $ git clone https://github.com/Synss/python-mbedtls.git python-mbedtls.git
+  $ cd python-mbedtls.git
+  $ sudo ./scripts/install-mbedtls.sh 2.7.8
+  $ python -m pip install python-mbedtls
 
-   $ python -m pip install python-mbedtls
+where 2.7.8 is the version of mbed TLS that will be installed.
+
+`install-mbedtl.sh` is a POSIX shell script and requires `curl`, `tar`,
+and `cmake`.
 
 Message digest with `mbedtls.hash`
 ----------------------------------
@@ -252,9 +260,10 @@ classes have the same API as ECDHServer and ECDHClient, respectively.
 
 The key exchange is as follow::
 
+   >>> from mbedtls.mpi import MPI
    >>> from mbedtls import pk
-   >>> srv = pk.DHServer(23, 5)
-   >>> cli = pk.DHClient(23, 5)
+   >>> srv = pk.DHServer(MPI.prime(128), MPI.prime(96))
+   >>> cli = pk.DHClient(MPI.prime(128), MPI.prime(96))
 
 The values 23 and 5 are the prime modulus (P) and the generator (G).
 
@@ -263,7 +272,7 @@ The server generates the ServerKeyExchange payload::
    >>> ske = srv.generate()
    >>> cli.import_SKE(ske)
 
-The payload ends with :math:`G^X mod P` where `X` is the secret value of
+The payload ends with `G^X mod P` where `X` is the secret value of
 the server.
 
 ::
@@ -271,7 +280,7 @@ the server.
    >>> cke = cli.generate()
    >>> srv.import_CKE(cke)
 
-`cke` is :math:`G^Y mod P` (with `Y` the secret value from the client)
+`cke` is `G^Y mod P` (with `Y` the secret value from the client)
 returned as its representation in bytes so that it can be readily
 transported over the network.
 
@@ -406,7 +415,11 @@ The contexts are used to wrap TCP sockets.
 ...     socket.socket(socket.AF_INET, socket.SOCK_STREAM))
 ...
 
->>> from contextlib import suppress
+>>> try:
+...     from contextlib import suppress
+... except ImportError:
+...     # For Python 2.
+...     from contextlib2 import suppress
 >>> def block(callback, *args, **kwargs):
 ...     while True:
 ...         with suppress(tls.WantReadError, tls.WantWriteError):
@@ -426,8 +439,20 @@ because `accept()` is blocking.
 ...         conn.sendall(http_error)
 ...
 
+We only scan for free ports to `bind()` to in order to
+paralelize the tests.  This should not be needed.
+
 >>> import multiprocessing as mp
->>> srv.bind(("localhost", 8888))
+>>> for port in range(8888, 8888 + 20):
+...     try:
+...         srv.bind(("localhost", port))
+...     except OSError:
+...         pass
+...     else:
+...         break
+... else:
+...     raise OSError("No free port found")
+...
 >>> srv.listen(1)
 >>> runner = mp.Process(target=server_main_loop, args=(srv, ))
 >>> runner.start()
@@ -439,7 +464,7 @@ Finally, a client queries the server with the `get_request`:
 ...     server_hostname=None,
 ... )
 ...
->>> cli.connect(("localhost", 8888))
+>>> cli.connect(("localhost", port))
 >>> block(cli.do_handshake)
 >>> cli.send(get_request)
 18

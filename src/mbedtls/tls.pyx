@@ -4,19 +4,13 @@ __author__ = "Mathias Laurin"
 __copyright__ = "Copyright 2018, Mathias Laurin"
 __license__ = "MIT License"
 
-cdef int __DEBUG = 0
-cdef int __DEBUG_ALL = 0
-
 from libc.stdlib cimport malloc, free
 
 cimport mbedtls._net as _net
-cimport mbedtls._random as _random
+cimport mbedtls._random as _rnd
 cimport mbedtls.pk as _pk
 cimport mbedtls.tls as _tls
 cimport mbedtls.x509 as _x509
-
-if __DEBUG | __DEBUG_ALL:
-    from binascii import hexlify
 
 import socket as _socket
 from collections import namedtuple
@@ -31,19 +25,18 @@ except ImportError:
     # Python 2.7
     from contextlib2 import suppress
 from enum import Enum, IntEnum
-from ipaddress import ip_address
 from itertools import tee
 
 import certifi
 import cython
 
-import mbedtls._random as _random
+import mbedtls._random as _rnd
 import mbedtls._ringbuf as _rb
 import mbedtls.pk as _pk
 from mbedtls.exceptions import *
 
 
-cdef _random.Random __rng = _random.Random()
+cdef _rnd.Random __rng = _rnd.default_rng()
 
 
 @cython.boundscheck(False)
@@ -264,7 +257,7 @@ cdef class TLSConfiguration:
 
         # Set random engine.
         _tls.mbedtls_ssl_conf_rng(
-            &self._ctx, &_random.mbedtls_ctr_drbg_random, &__rng._ctx)
+            &self._ctx, &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx)
 
         # Disable renegotiation.
         _tls.mbedtls_ssl_conf_renegotiation(&self._ctx, 0)
@@ -631,7 +624,7 @@ cdef class _BaseContext:
         if buffer.size == 0:
             return 0
 
-        written = 0
+        cdef size_t written = 0
         while written != buffer.size:
             ret = _tls.mbedtls_ssl_write(
                 &self._ctx, &buffer[written], buffer.size - written)

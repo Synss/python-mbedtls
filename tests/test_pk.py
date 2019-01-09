@@ -9,6 +9,7 @@ import pytest
 
 import mbedtls.hash as _hash
 from mbedtls.exceptions import *
+from mbedtls.mpi import MPI
 from mbedtls.pk import _type_from_name, _get_md_alg, CipherBase
 from mbedtls.pk import *
 
@@ -221,26 +222,85 @@ class TestECCtoECDH:
 
 
 class TestDH:
-    @pytest.fixture(autouse=True)
-    def _setup(self):
-        self.srv = DHServer(23, 5)
-        self.cli = DHClient(23, 5)
+    @pytest.fixture
+    def modulus_size(self):
+        return 64
 
-    def test_key_accessors_without_key(self):
-        for cipher in (self.srv, self.cli):
-            assert cipher.shared_secret == 0
+    @pytest.fixture
+    def generator_size(self):
+        return 20
 
-    def test_exchange(self):
-        ske = self.srv.generate()
-        self.cli.import_SKE(ske)
-        cke = self.cli.generate()
-        self.srv.import_CKE(cke)
+    @pytest.fixture
+    def srv_modulus(self, modulus_size):
+        return MPI.prime(modulus_size)
 
-        srv_sec = self.srv.generate_secret()
-        cli_sec = self.cli.generate_secret()
+    @pytest.fixture
+    def srv_generator(self, generator_size):
+        return MPI.prime(generator_size)
+
+    @pytest.fixture
+    def cli_modulus(self, modulus_size):
+        return MPI.prime(modulus_size)
+
+    @pytest.fixture
+    def cli_generator(self, generator_size):
+        return MPI.prime(generator_size)
+
+    @pytest.fixture
+    def srv(self, srv_modulus, srv_generator):
+        return DHServer(srv_modulus, srv_generator)
+
+    @pytest.fixture
+    def cli(self, cli_modulus, cli_generator):
+        return DHClient(cli_modulus, cli_generator)
+
+    def test_srv_modulus(self, srv):
+        assert srv.modulus.is_prime()
+
+    def test_srv_generator(self, srv):
+        assert srv.generator.is_prime()
+
+    def test_srv_modulus_accessor(self, srv, srv_modulus):
+        assert srv.modulus == srv_modulus
+
+    def test_srv_generator_accessor(self, srv, srv_generator):
+        assert srv.generator == srv_generator
+
+    def test_srv_key_size_accessor(self, srv):
+        assert srv.key_size == 8
+
+    def test_cli_modulus(self, cli):
+        assert cli.modulus.is_prime()
+
+    def test_cli_generator(self, cli):
+        assert cli.generator.is_prime()
+
+    def test_cli_modulus_accessor(self, cli, cli_modulus):
+        assert cli.modulus == cli_modulus
+
+    def test_cli_generator_accessor(self, cli, cli_generator):
+        assert cli.generator == cli_generator
+
+    def test_cli_key_size_accessor(self, cli):
+        assert cli.key_size == 8
+
+    def test_srv_access_shared_secret_without_key(self, srv):
+        assert srv.shared_secret == 0
+
+    def test_cli_access_shared_secret_without_key(self, cli):
+        assert cli.shared_secret == 0
+
+    def test_exchange(self, srv, cli):
+        ske = srv.generate()
+        cli.import_SKE(ske)
+        cke = cli.generate()
+        srv.import_CKE(cke)
+
+        srv_sec = srv.generate_secret()
+        cli_sec = cli.generate_secret()
         assert srv_sec == cli_sec
-        assert srv_sec == self.srv.shared_secret
-        assert cli_sec == self.cli.shared_secret
+        assert srv_sec == srv.shared_secret
+        assert cli_sec == cli.shared_secret
 
 
 class TestECDH:

@@ -79,3 +79,7 @@ cdef class Entropy:
 cdef class Random:
     cdef mbedtls_ctr_drbg_context _ctx
     cdef Entropy _entropy
+
+
+# RNG for internal use only.
+cdef Random default_rng()

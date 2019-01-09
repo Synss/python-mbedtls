@@ -1,3 +1,27 @@
+[0.14.0] - 2019-01-08
+
+* Build and test on `manylinux1` (PEP 513) to distribute linux
+wheels with Mbed TLS.  It is not necessary anymore to install
+mbed TLS separately.
+* x509/CRL: Add support for upstream Mbed TLS version 2.7.2 and above.
+Note that this did not require changes in the library but only
+in the tests.
+* The library now internally uses a single global `Random` instance.
+This instance is not accessible from Python.
+* pk/DHServer, pk/DHClient: Increase test entropy to avoid
+flakey tests.
+
+API Changes
+
+* random: `Random()` now takes an optional `entropy` object
+as argument.
+* random: `Random.reseed()` now takes optional data that can be used
+to increase entropy.
+
+Bugfixes
+
+* mpi: Let MPI built from an empty byte (b"") be 0 as regular ints.
+
 [0.13.0] - 2018-10-25
 
 Add TLS support.  Both client side and server side are implemented.

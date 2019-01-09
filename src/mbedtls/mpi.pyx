@@ -6,13 +6,13 @@ __license__ = "MIT License"
 
 
 cimport mbedtls.mpi as _mpi
-cimport mbedtls._random as _random
+cimport mbedtls._random as _rnd
 from libc.stdlib cimport malloc, free
 
 import numbers
 from binascii import hexlify, unhexlify
 
-import mbedtls._random as _random
+import mbedtls._random as _rnd
 from mbedtls.exceptions import *
 
 try:
@@ -21,7 +21,7 @@ except NameError:
     long = int
 
 
-cdef _random.Random __rng = _random.Random()
+cdef _rnd.Random __rng = _rnd.default_rng()
 
 
 cdef to_bytes(value):
@@ -48,7 +48,7 @@ cdef class MPI:
             check_error(mbedtls_mpi_copy(&self._ctx, &value_._ctx))
         else:
             value = to_bytes(value)
-            self._from_bytes(value)
+            self._read_bytes(value)
 
     def __cinit__(self):
         """Initialize one MPI."""
@@ -58,17 +58,18 @@ cdef class MPI:
         """Unallocate one MPI."""
         check_error(mbedtls_mpi_fill_random(
             &self._ctx, self._len(),
-            &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
+            &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
         _mpi.mbedtls_mpi_free(&self._ctx)
 
     cdef size_t _len(self):
         """Return the total size in bytes."""
         return _mpi.mbedtls_mpi_size(&self._ctx)
 
-    cpdef _from_bytes(self, const unsigned char[:] bytes):
+    cpdef _read_bytes(self, const unsigned char[:] data):
+        if data.size == 0:
+            return MPI(0)
         check_error(
-            _mpi.mbedtls_mpi_read_binary(&self._ctx, &bytes[0], bytes.shape[0]))
-        return self
+            _mpi.mbedtls_mpi_read_binary(&self._ctx, &data[0], data.shape[0]))
 
     def __str__(self):
         return "%i" % long(self)
@@ -86,10 +87,12 @@ cdef class MPI:
         return cls.from_bytes(to_bytes(value), byteorder="big")
 
     @classmethod
-    def from_bytes(cls, bytes, byteorder):
+    def from_bytes(cls, data, byteorder):
         assert byteorder in {"big", "little"}
         order = slice(None, None, -1 if byteorder is "little" else None)
-        return cls()._from_bytes(bytes[order])
+        self = cls()
+        self._read_bytes(data[order])
+        return self
 
     def to_bytes(self, length, byteorder):
         assert byteorder in {"big", "little"}
@@ -115,14 +118,14 @@ cdef class MPI:
         cdef MPI self_ = cls()
         check_error(mbedtls_mpi_gen_prime(
             &self_._ctx, size, 0,
-            &_random.mbedtls_ctr_drbg_random, &__rng._ctx))
+            &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
         return self_
 
     def is_prime(self):
         """Miller-Rabin primality test."""
         return check_error(mbedtls_mpi_is_prime(
             &self._ctx,
-            &_random.mbedtls_ctr_drbg_random, &__rng._ctx)) == 0
+            &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx)) == 0
 
     def __hash__(self):
         return long(self)

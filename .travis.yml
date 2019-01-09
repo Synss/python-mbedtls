@@ -1,22 +1,83 @@
-language: python
-dist: trusty
-python:
-  - "3.6"
+# vim: et:ts=2:sw=2
+language: generic
+
+matrix:
+  include:
+    - sudo: required
+      services:
+        - docker
+      env: ARCH=x86_64
+
 before_install:
-  - ./install-mbedtls.sh 2.4.2 $HOME/mbedtls
+  - |
+    IMAGE="synss/python-mbedtls_$ARCH"
+    CONTAINER="manylinux"
+  - docker pull $IMAGE:builder || true
+  - |
+    docker build \
+      --target builder \
+      --cache-from $IMAGE:builder \
+      --tag $IMAGE:builder \
+      . \
+      --build-arg ARCH=$ARCH
+  - docker pull $IMAGE:latest || true
+  - |
+    docker build \
+      --cache-from $IMAGE:builder \
+      --cache-from $IMAGE:latest \
+      --tag $IMAGE:$TRAVIS_BUILD_NUMBER \
+      --tag $IMAGE:latest \
+      . \
+      --build-arg ARCH=$ARCH
+  - |
+    docker run \
+      --rm \
+      --interactive \
+      --tty \
+      --detach \
+      --name $CONTAINER \
+      --network=host \
+      $IMAGE:latest \
+      $PRE_CMD /bin/sh
+
 install:
-  - python --version
-  - python -m pip install -r requirements-tests.txt
-  - >
-    python setup.py build_ext
-    --inplace
-    --with-coverage
-    -L$HOME/mbedtls/lib
-    -I$HOME/mbedtls/include
+  - pip install --user -r requirements-dev.txt
+  - scripts/start-devpi.sh -u user -x dev http://localhost:3141
+  - export PIP_INDEX_URL=http://localhost:3141/user/dev/+simple/
+
 script:
-  - >
-    LD_LIBRARY_PATH=$HOME/mbedtls/lib
-    python -m coverage run -m pytest tests
-  - python -m coverage report
+  - docker cp $CONTAINER:/root/wheelhouse/ .
+  - ls -A wheelhouse | grep -q . && ls -A wheelhouse
+  - twine check wheelhouse/*
+  - python setup.py sdist -d sdist
+  - devpi upload wheelhouse/* sdist/*
+  - devpi list python-mbedtls
+  - |
+    docker exec \
+      --interactive \
+      --tty \
+      --env PIP_INDEX_URL \
+      $CONTAINER \
+      $PRE_CMD /bin/sh -c \
+      scripts/run-tests.sh
+
+after_script:
+  - scripts/stop-devpi.sh
+
 after_success:
-  - coveralls
+  - |
+    if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+      echo "$DOCKER_PASSWORD" \
+      | docker login -u "$DOCKER_USERNAME" --password-stdin
+      docker push $IMAGE:builder
+      docker push $IMAGE:$TRAVIS_BUILD_NUMBER
+      docker push $IMAGE:latest
+    fi
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  script:
+    - scripts/deploy.sh
+  on:
+    tags: true

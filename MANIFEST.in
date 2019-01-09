@@ -1,1 +1,2 @@
-recursive-include mbedtls *.pxd
+recursive-include src *.pxd
+include LICENSE*
