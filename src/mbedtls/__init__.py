@@ -13,4 +13,4 @@ import mbedtls.pk as pk
 import mbedtls.tls as tls
 
 
-__all__ = ("cipher", "exceptions", "hash", "hmac", "pk", "tls")
+__all__ = ("cipher", "exceptions", "hash", "hmac", "pk", "tls", "version")

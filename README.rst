@@ -68,6 +68,16 @@ where 2.7.8 is the version of mbed TLS that will be installed.
 `install-mbedtl.sh` is a POSIX shell script and requires `curl`, `tar`,
 and `cmake`.
 
+Check which version of mbed TLS is being used by python-mbedtls
+---------------------------------------------------------------
+
+The `version` module shows the run-time version information to mbed TLS::
+
+    >>> from mbedtls import version
+    >>> _ = version.version  # "mbed TLS 2.7.9"
+    >>> _ = version.version_info  # (2, 7, 9)
+
+
 Message digest with `mbedtls.hash`
 ----------------------------------
 

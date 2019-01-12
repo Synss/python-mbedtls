@@ -1,3 +1,7 @@
+[next]
+
+* version: Add accessors to the version of mbed TLS in use.
+
 [0.14.1] - 2019-01-10
 
 Update wheels with mbedtls 2.7.9.
