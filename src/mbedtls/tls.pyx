@@ -4,6 +4,8 @@ __author__ = "Mathias Laurin"
 __copyright__ = "Copyright 2018, Mathias Laurin"
 __license__ = "MIT License"
 
+
+cimport libc.stdio as c_stdio
 from libc.stdlib cimport malloc, free
 
 cimport mbedtls._net as _net
@@ -40,6 +42,17 @@ cdef _rnd.Random __rng = _rnd.default_rng()
 
 
 @cython.boundscheck(False)
+cdef void _my_debug(void *ctx, int level,
+                    const char *file, int line, const char *str) nogil:
+    c_stdio.fprintf(<c_stdio.FILE *> ctx, "%s:%04d: %s", file, line, str)
+    c_stdio.fflush(<c_stdio.FILE *> ctx)
+
+
+def _enable_debug_output(_BaseConfiguration conf):
+    _tls.mbedtls_ssl_conf_dbg(&conf._ctx, _my_debug, c_stdio.stdout)
+
+
+@cython.boundscheck(False)
 cdef int buffer_write(void *ctx, const unsigned char *buf, size_t len) nogil:
     """Copy `buf` to internal buffer."""
     c_ctx = <_rb.ring_buffer_ctx *>ctx
@@ -60,6 +73,11 @@ cdef int buffer_read(void *ctx, unsigned char *buf, const size_t len) nogil:
     if _rb.c_len(c_ctx) < len:
         return MBEDTLS_ERR_SSL_WANT_READ
     return _rb.c_readinto(c_ctx, buf, len)
+
+
+def _set_debug_level(int level):
+    """Set debug level for logging."""
+    _tls.mbedtls_debug_set_threshold(level)
 
 
 def __get_ciphersuite_name(ciphersuite_id):

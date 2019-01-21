@@ -75,6 +75,10 @@ cdef:
         MBEDTLS_ERR_SSL_BAD_INPUT_DATA = -0x7100
 
 
+cdef extern from "mbedtls/debug.h" nogil:
+    void mbedtls_debug_set_threshold(int threshold)
+
+
 cdef extern from "mbedtls/ssl_internal.h" nogil:
     ctypedef struct mbedtls_ssl_transform:
         pass
