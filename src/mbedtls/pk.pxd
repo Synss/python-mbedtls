@@ -76,6 +76,7 @@ cdef extern from "mbedtls/ecp.h" nogil:
         MBEDTLS_ECP_DP_SECP192K1
         MBEDTLS_ECP_DP_SECP224K1
         MBEDTLS_ECP_DP_SECP256K1
+        MBEDTLS_ECP_DP_CURVE448
 
     ctypedef struct mbedtls_ecp_curve_info:
         mbedtls_ecp_group_id grp_id
@@ -184,8 +185,19 @@ cdef extern from "mbedtls/ecdh.h" nogil:
 
     # mbedtls_ecp_group
     # -----------------
-    # mbedtls_ecdh_gen_public
-    # mbedtls_ecdh_compute_shared
+    int mbedtls_ecdh_gen_public(
+        mbedtls_ecp_group *grp,
+        mbedtls_mpi *d,
+        mbedtls_ecp_point *Q,
+        int (*f_rng)(void *, unsigned char *, size_t),
+        void *p_rng)
+    int mbedtls_ecdh_compute_shared(
+        mbedtls_ecp_group *grp,
+        mbedtls_mpi *z,
+        const mbedtls_ecp_point *Q,
+        const mbedtls_mpi *d,
+        int (*f_rng)(void *, unsigned char *, size_t),
+        void *p_rng)
 
     # mbedtls_ecdh_context
     # --------------------

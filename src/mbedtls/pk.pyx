@@ -41,7 +41,7 @@ import mbedtls.hash as _hash
 
 __all__ = ("check_pair", "get_supported_ciphers", "get_supported_curves",
            "Curve", "RSA", "ECC", "DHServer", "DHClient",
-           "ECDHServer", "ECDHClient")
+           "ECDHServer", "ECDHClient", "ECDHNaive")
 
 
 CIPHER_NAME = (
@@ -81,9 +81,10 @@ class Curve(bytes, enum.Enum):
     BRAINPOOLP384R1 = b'brainpoolP384r1'
     BRAINPOOLP512R1 = b'brainpoolP512r1'
     CURVE25519 = b'curve25519'
-    SECP256K1 = b'secp256k1'
-    SECP224K1 = b'secp224k1'
     SECP192K1 = b'secp192k1'
+    SECP224K1 = b'secp224k1'
+    SECP256K1 = b'secp256k1'
+    CURVE448 = b'curve448'
 
 
 # The following calculations come from mbedtls/library/pkwrite.c.
@@ -1036,3 +1037,76 @@ cdef class ECDHClient(ECDHBase):
         cdef const unsigned char* end = &buffer[-1] + 1
         check_error(_pk.mbedtls_ecdh_read_params(
             &self._ctx, &first, end))
+
+
+cdef class ECDHNaive(ECDHBase):
+
+    """Naive ECDH key exchange.
+
+    Args:
+        (Curve, optional): b'curve25519' or b'curve448'.
+
+    """
+    def __init__(self, curve=None):
+        super().__init__()
+        self.curve = curve or b'curve25519'
+        if self.curve == b'curve25519':
+            check_error(mbedtls_ecp_group_load(
+                &self._ctx.grp, _pk.MBEDTLS_ECP_DP_CURVE25519))
+        elif self.curve == b'curve448':
+            check_error(mbedtls_ecp_group_load(
+                &self._ctx.grp, _pk.MBEDTLS_ECP_DP_CURVE448))
+        else:
+            raise ValueError(
+                'ECDHNaive only supports curve25519 and curve448')
+
+    def generate(self):
+        """Generate a public key.
+
+        Return:
+            bytes: public key.
+
+        """
+        cdef unsigned char* output = <unsigned char*>malloc(
+            _mpi.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
+        cdef size_t olen = 0
+        if not output:
+            raise MemoryError()
+        try:
+            check_error(_pk.mbedtls_ecdh_gen_public(
+                &self._ctx.grp, &self._ctx.d, &self._ctx.Q,
+                &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
+            n = (_mpi.mbedtls_mpi_bitlen(&self._ctx.Q.X)+7)//8
+            check_error(_mpi.mbedtls_mpi_write_binary(
+                &self._ctx.Q.X, output, n));
+            return bytes(output[:n])
+        finally:
+            free(output)
+
+    def import_peer(self, pubkey):
+        """Read peer public key."""
+        check_error(_mpi.mbedtls_mpi_read_binary(
+            &self._ctx.Qp.Z, b'\x01', 1))
+        check_error(_mpi.mbedtls_mpi_read_binary(
+            &self._ctx.Qp.X, pubkey, len(pubkey)))
+        check_error(_pk.mbedtls_ecdh_compute_shared(
+            &self._ctx.grp, &self._ctx.z, &self._ctx.Qp, &self._ctx.d,
+            &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
+
+    @property
+    def _private_key(self):
+        try:
+            return _mpi.from_mpi(&self._ctx.d)
+        except ValueError:
+            return _mpi.MPI()
+
+    @property
+    def _public_key(self):
+        try:
+            return _mpi.from_mpi(&self._ctx.Q.X)
+        except ValueError:
+            return _mpi.MPI()
+
+    def generate_secret(self):
+        """Override base class method"""
+        pass
