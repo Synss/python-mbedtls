@@ -1,4 +1,4 @@
-[next]
+[0.15.0]
 
 Add DTLS support.  Both client side and server side are implemented.
 Setting the cookie on the server side is *not* optional in `python-mbedtls`.
