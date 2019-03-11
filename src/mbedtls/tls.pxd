@@ -141,7 +141,7 @@ cdef extern from "mbedtls/ssl.h" nogil:
     ctypedef int(*mbedtls_ssl_send_p)(void*, const unsigned char*, size_t)
     ctypedef int(*mbedtls_ssl_recv_p)(void*, unsigned char*, size_t)
     ctypedef int(*mbedtls_ssl_recv_timeout_p)(
-        void*, unsigned char* size_t, int)
+        void*, unsigned char*, size_t, int)
 
     # mbedtls_ssl_set_timer_t
     # mbedtls_ssl_get_timer_t
