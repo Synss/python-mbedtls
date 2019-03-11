@@ -60,10 +60,10 @@ clone the `python-mbedtls` repository, install mbed TLS, and install
 
   $ git clone https://github.com/Synss/python-mbedtls.git python-mbedtls.git
   $ cd python-mbedtls.git
-  $ sudo ./scripts/install-mbedtls.sh 2.7.8
+  $ sudo ./scripts/install-mbedtls.sh 2.7.9
   $ python -m pip install python-mbedtls
 
-where 2.7.8 is the version of mbed TLS that will be installed.
+where 2.7.9 is the version of mbed TLS that will be installed.
 
 `install-mbedtl.sh` is a POSIX shell script and requires `curl`, `tar`,
 and `cmake`.
@@ -84,7 +84,7 @@ Message digest with `mbedtls.hash`
 The `mbedtls.hash` module provides MD5, SHA-1, SHA-2, and RIPEMD-160 secure
 hashes and message digests.  The API follows the recommendations from PEP 452
 so that it can be used as a drop-in replacement to e.g. `hashlib` or
-`PyCrypto`.
+other cryptography libraries.
 
 Here are the examples from `hashlib` ported to `python-mbedtls`::
 
@@ -139,13 +139,13 @@ Symmetric cipher with `mbedtls.cipher`
 
 The `mbedtls.cipher` module provides symmetric encryption.  The API follows the
 recommendations from PEP 272 so that it can be used as a drop-in replacement to
-e.g. `PyCrypto`.
+other libraries.
 
 mbedtls provides the following algorithms:
 
-- Aes encryption/decryption (128, 192, and 256 bits) in ECB, CBC, CFB128,
+- AES encryption/decryption (128, 192, and 256 bits) in ECB, CBC, CFB128,
   CTR, GCM, or CCM mode;
-- Arc4 encryption/decryption;
+- ARC4 encryption/decryption;
 - Blowfish encryption/decryption in ECB, CBC, CFB64, or CTR mode;
 - Camellia encryption/decryption (128, 192, and 256 bits) in ECB, CBC,
   CFB128, CTR, GCM, or CCM mode;
@@ -238,27 +238,27 @@ algorithm (ECDSA)::
 The classes ECDHServer and ECDHClient may be used for ephemeral ECDH.
 The key exchange is as follows::
 
-   >>> srv = pk.ECDHServer()
-   >>> cli = pk.ECDHClient()
+   >>> ecdh_srv = pk.ECDHServer()
+   >>> ecdh_cli = pk.ECDHClient()
 
 The server generates the ServerKeyExchange encrypted payload and
 passes it to the client::
 
-   >>> ske = srv.generate()
-   >>> cli.import_SKE(ske)
+   >>> ske = ecdh_srv.generate()
+   >>> ecdh_cli.import_SKE(ske)
 
 then the client generates the ClientKeyExchange encrypted payload and
 passes it back to the server::
 
-   >>> cke = cli.generate()
-   >>> srv.import_CKE(cke)
+   >>> cke = ecdh_cli.generate()
+   >>> ecdh_srv.import_CKE(cke)
 
 Now, client and server may generate their shared secret::
 
-   >>> secret = srv.generate_secret()
-   >>> cli.generate_secret() == secret
+   >>> secret = ecdh_srv.generate_secret()
+   >>> ecdh_cli.generate_secret() == secret
    True
-   >>> srv.shared_secret == cli.shared_secret
+   >>> ecdh_srv.shared_secret == ecdh_cli.shared_secret
    True
 
 
@@ -272,23 +272,23 @@ The key exchange is as follow::
 
    >>> from mbedtls.mpi import MPI
    >>> from mbedtls import pk
-   >>> srv = pk.DHServer(MPI.prime(128), MPI.prime(96))
-   >>> cli = pk.DHClient(MPI.prime(128), MPI.prime(96))
+   >>> dh_srv = pk.DHServer(MPI.prime(128), MPI.prime(96))
+   >>> dh_cli = pk.DHClient(MPI.prime(128), MPI.prime(96))
 
 The values 23 and 5 are the prime modulus (P) and the generator (G).
 
 The server generates the ServerKeyExchange payload::
 
-   >>> ske = srv.generate()
-   >>> cli.import_SKE(ske)
+   >>> ske = dh_srv.generate()
+   >>> dh_cli.import_SKE(ske)
 
 The payload ends with `G^X mod P` where `X` is the secret value of
 the server.
 
 ::
 
-   >>> cke = cli.generate()
-   >>> srv.import_CKE(cke)
+   >>> cke = dh_cli.generate()
+   >>> dh_srv.import_CKE(cke)
 
 `cke` is `G^Y mod P` (with `Y` the secret value from the client)
 returned as its representation in bytes so that it can be readily
@@ -296,10 +296,10 @@ transported over the network.
 
 As in ECDH, client and server may now generate their shared secret::
 
-   >>> secret = srv.generate_secret()
-   >>> cli.generate_secret() == secret
+   >>> secret = dh_srv.generate_secret()
+   >>> dh_cli.generate_secret() == secret
    True
-   >>> srv.shared_secret == cli.shared_secret
+   >>> dh_srv.shared_secret == dh_cli.shared_secret
    True
 
 
@@ -406,13 +406,13 @@ For this example, the trust store just consists in the root certificate
 
 The next step is to configure the TLS contexts for server and client.
 
->>> srv_ctx = tls.ServerContext(tls.TLSConfiguration(
+>>> tls_srv_ctx = tls.ServerContext(tls.TLSConfiguration(
 ...     trust_store=trust_store,
 ...     certificate_chain=([ee0_crt, ca1_crt], ee0_key),
 ...     validate_certificates=False,
 ... ))
 ...
->>> cli_ctx = tls.ClientContext(tls.TLSConfiguration(
+>>> tls_cli_ctx = tls.ClientContext(tls.TLSConfiguration(
 ...     trust_store=trust_store,
 ...     validate_certificates=True,
 ... ))
@@ -421,8 +421,9 @@ The next step is to configure the TLS contexts for server and client.
 The contexts are used to wrap TCP sockets.
 
 >>> import socket
->>> srv = srv_ctx.wrap_socket(
-...     socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+>>> tls_srv = tls_srv_ctx.wrap_socket(
+...     socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+... )
 ...
 
 >>> try:
@@ -449,36 +450,27 @@ because `accept()` is blocking.
 ...         conn.sendall(http_error)
 ...
 
-We only scan for free ports to `bind()` to in order to
-paralelize the tests.  This should not be needed.
+>>> import random
+>>> port = random.randint(10000, 60000)
+>>> tls_srv.bind(("0.0.0.0", port))
+>>> tls_srv.listen(1)
 
 >>> import multiprocessing as mp
->>> for port in range(8888, 8888 + 20):
-...     try:
-...         srv.bind(("localhost", port))
-...     except OSError:
-...         pass
-...     else:
-...         break
-... else:
-...     raise OSError("No free port found")
-...
->>> srv.listen(1)
->>> runner = mp.Process(target=server_main_loop, args=(srv, ))
+>>> runner = mp.Process(target=server_main_loop, args=(tls_srv, ))
 >>> runner.start()
 
 Finally, a client queries the server with the `get_request`:
 
->>> cli = cli_ctx.wrap_socket(
+>>> tls_cli = tls_cli_ctx.wrap_socket(
 ...     socket.socket(socket.AF_INET, socket.SOCK_STREAM),
 ...     server_hostname=None,
 ... )
 ...
->>> cli.connect(("localhost", port))
->>> block(cli.do_handshake)
->>> cli.send(get_request)
+>>> tls_cli.connect(("localhost", port))
+>>> block(tls_cli.do_handshake)
+>>> tls_cli.send(get_request)
 18
->>> response = block(cli.recv, 1024)
+>>> response = block(tls_cli.recv, 1024)
 >>> print(response.decode("ascii").replace("\r\n", "\n"))
 HTTP/1.0 200 OK
 Content-Type: text/html
@@ -489,6 +481,6 @@ Content-Type: text/html
 
 The last step is to stop the extra process and close the sockets.
 
->>> cli.close()
+>>> tls_cli.close()
 >>> runner.join(1.0)
->>> srv.close()
+>>> tls_srv.close()
