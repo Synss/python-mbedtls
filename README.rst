@@ -450,8 +450,8 @@ because `accept()` is blocking.
 ...         conn.sendall(http_error)
 ...
 
->>> import random
->>> port = random.randint(10000, 60000)
+>>> port = 4433
+>>> tls_srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 >>> tls_srv.bind(("0.0.0.0", port))
 >>> tls_srv.listen(1)
 
@@ -484,3 +484,84 @@ The last step is to stop the extra process and close the sockets.
 >>> tls_cli.close()
 >>> runner.join(1.0)
 >>> tls_srv.close()
+
+
+DTLS client and server
+----------------------
+
+The `mbedtls.tls` module further provides DTLS (encrypted UDP
+traffic).  Client and server must be bound and connected for
+the handshake so that DTLS should use `recv()` and `send()`
+as well.
+
+The example reuses the certificate and trust store from the TLS
+example.  However server and client are now initialized with
+`DTLSConfiguration` instances instead of `TLSConfiguration`.
+
+>>> dtls_srv_ctx = tls.ServerContext(tls.DTLSConfiguration(
+...     trust_store=trust_store,
+...     certificate_chain=([ee0_crt, ca1_crt], ee0_key),
+...     validate_certificates=False,
+... ))
+...
+>>> dtls_cli_ctx = tls.ClientContext(tls.DTLSConfiguration(
+...     trust_store=trust_store,
+...     validate_certificates=True,
+... ))
+
+The DTLS contexts can now wrap UDP sockets.
+
+>>> dtls_srv = dtls_srv_ctx.wrap_socket(
+...     socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+... )
+...
+
+Here again, the `accept()` method blocks until the server
+receives a datagram.  The DTLS server handshake is performed in
+two steps.  The first handshake is interrupted by an
+`HelloVerifyRequest` exception.  The server should then set a
+client-specific cookie and resume the handshake.  The second
+step of the handshake should succeed.
+
+>>> def dtls_server_main_loop(sock):
+...     """A simple DTLS echo server."""
+...     conn, addr = sock.accept()
+...     conn.setcookieparam(addr[0].encode())
+...     with suppress(tls.HelloVerifyRequest):
+...        block(conn.do_handshake)
+...     conn, addr = conn.accept()
+...     conn.setcookieparam(addr[0].encode())
+...     block(conn.do_handshake)
+...     data = conn.recv(4096)
+...     conn.send(data)
+...
+
+>>> port = 4443
+>>> dtls_srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+>>> dtls_srv.bind(("0.0.0.0", port))
+
+In contrast with TCP (TLS), there is not call
+to `listen()` for UDP.
+
+>>> runner = mp.Process(target=dtls_server_main_loop, args=(dtls_srv, ))
+>>> runner.start()
+
+The DTLS client is mostly identical to the TLS client:
+
+>>> dtls_cli = dtls_cli_ctx.wrap_socket(
+...     socket.socket(socket.AF_INET, socket.SOCK_DGRAM),
+...     server_hostname=None,
+... )
+>>> dtls_cli.connect(("localhost", port))
+>>> block(dtls_cli.do_handshake)
+>>> DATAGRAM = b"hello datagram"
+>>> block(dtls_cli.send, DATAGRAM)
+14
+>>> block(dtls_cli.recv, 4096)
+b'hello datagram'
+
+Now, the DTLS communication is complete.
+
+>>> dtls_cli.close()
+>>> runner.join(0.1)
+>>> dtls_srv.close()

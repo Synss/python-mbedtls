@@ -1,7 +1,13 @@
 [next]
 
-* Update wheels with mbedtls 2.14.1.
+Add DTLS support.  Both client side and server side are implemented.
+Setting the cookie on the server side is *not* optional in `python-mbedtls`.
+
 * pk: Add support for curves 448 and 25519 (Stephen.Y).
+
+Misc.
+
+* Update wheels with mbedtls 2.14.1.
 * version: Add accessors to the version of mbed TLS in use.
 * tls: Allow configuration of libmbedtls debug level.
 

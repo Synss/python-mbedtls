@@ -68,10 +68,6 @@ cdef int buffer_write(void *ctx, const unsigned char *buf, size_t len) nogil:
 cdef int buffer_read(void *ctx, unsigned char *buf, const size_t len) nogil:
     """Copy internal buffer to `buf`."""
     c_ctx = <_rb.ring_buffer_ctx *>ctx
-    if len > _rb.c_capacity(c_ctx):
-        return _tls.MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL
-    if _rb.c_len(c_ctx) < len:
-        return MBEDTLS_ERR_SSL_WANT_READ
     return _rb.c_readinto(c_ctx, buf, len)
 
 
@@ -138,17 +134,25 @@ class NextProtocol(Enum):
     TURN = b'stun.turn'
 
 
-class TLSVersion(IntEnum):
+class TLSVersion(Enum):
     # PEP 543
-    MINIMUM_SUPPORTED = _tls.MBEDTLS_SSL_MINOR_VERSION_0
-    SSLv3 = _tls.MBEDTLS_SSL_MINOR_VERSION_0
+    # SSLv3 is not safe and is disabled by default.
+    # SSLv3 = _tls.MBEDTLS_SSL_MINOR_VERSION_0
     TLSv1 = _tls.MBEDTLS_SSL_MINOR_VERSION_1
     TLSv1_1 = _tls.MBEDTLS_SSL_MINOR_VERSION_2
     TLSv1_2 = _tls.MBEDTLS_SSL_MINOR_VERSION_3
-    MAXIMUM_SUPPORTED = _tls.MBEDTLS_SSL_MINOR_VERSION_3
+    MINIMUM_SUPPORTED = TLSv1
+    MAXIMUM_SUPPORTED = TLSv1_2
 
 
-class HandshakeStep(IntEnum):
+class DTLSVersion(Enum):
+    DTLSv1_0 = _tls.MBEDTLS_SSL_MINOR_VERSION_2
+    DTLSv1_2 = _tls.MBEDTLS_SSL_MINOR_VERSION_3
+    MINIMUM_SUPPORTED = DTLSv1_0
+    MAXIMUM_SUPPORTED = DTLSv1_2
+
+
+class HandshakeStep(Enum):
     HELLO_REQUEST = _tls.MBEDTLS_SSL_HELLO_REQUEST
     CLIENT_HELLO = _tls.MBEDTLS_SSL_CLIENT_HELLO
     SERVER_HELLO = _tls.MBEDTLS_SSL_SERVER_HELLO
@@ -183,6 +187,10 @@ class WantReadError(TLSError):
 
 
 class RaggedEOF(TLSError):
+    pass
+
+
+class HelloVerifyRequest(TLSError):
     pass
 
 
@@ -246,22 +254,49 @@ class Purpose(IntEnum):
 _DEFAULT_VALUE = object()
 
 
-cdef class TLSConfiguration:
-    """TLS configuration."""
+cdef class _DTLSCookie:
+    """DTLS cookie."""
+
+    def __cinit__(self):
+        _tls.mbedtls_ssl_cookie_init(&self._ctx)
+
+    def __dealloc__(self):
+        _tls.mbedtls_ssl_cookie_free(&self._ctx)
+
+    @property
+    def timeout(self):
+        return self._ctx.timeout
+
+    @timeout.setter
+    def timeout(self, unsigned long timeout):
+        _tls.mbedtls_ssl_cookie_set_timeout(&self._ctx, timeout)
+
+    def generate(self):
+        """Generate keys."""
+        _tls.mbedtls_ssl_cookie_setup(
+            &self._ctx, _rnd.mbedtls_ctr_drbg_random, &__rng._ctx)
+
+
+cdef class _BaseConfiguration:
+
+    """(D)TLS configuration."""
+
     def __init__(
-            self,
-            validate_certificates=None,
-            certificate_chain=None,
-            ciphers=None,
-            inner_protocols=None,
-            lowest_supported_version=None,
-            highest_supported_version=None,
-            trust_store=None,
-            sni_callback=None):
+        self,
+        validate_certificates=None,
+        certificate_chain=None,
+        ciphers=None,
+        inner_protocols=None,
+        lowest_supported_version=None,
+        highest_supported_version=None,
+        trust_store=None,
+        sni_callback=None,
+        _transport=None,
+    ):
         check_error(_tls.mbedtls_ssl_config_defaults(
             &self._ctx,
             endpoint=0,  # server / client is not known here...
-            transport=_tls.MBEDTLS_SSL_TRANSPORT_STREAM,
+            transport=_transport,
             preset=_tls.MBEDTLS_SSL_PRESET_DEFAULT))
 
         self._set_validate_certificates(validate_certificates)
@@ -330,12 +365,12 @@ cdef class TLSConfiguration:
             return
         _tls.mbedtls_ssl_conf_authmode(
             &self._ctx,
-            _tls.MBEDTLS_SSL_VERIFY_NONE if validate is False else
+            _tls.MBEDTLS_SSL_VERIFY_OPTIONAL if validate is False else
             _tls.MBEDTLS_SSL_VERIFY_REQUIRED)
 
     @property
     def validate_certificates(self):
-        return self._ctx.authmode != _tls.MBEDTLS_SSL_VERIFY_NONE
+        return self._ctx.authmode == _tls.MBEDTLS_SSL_VERIFY_REQUIRED
 
     cdef _set_certificate_chain(self, chain):
         """The certificate, intermediate certificate, and
@@ -454,7 +489,7 @@ cdef class TLSConfiguration:
         """The minimum version of TLS that should be allowed.
 
         Args:
-            version (TLSVersion): The minimum version.
+            version (TLSVersion, or DTLSVersion): The minimum version.
 
         """  # PEP 543
         if version is None:
@@ -462,17 +497,17 @@ cdef class TLSConfiguration:
         _tls.mbedtls_ssl_conf_min_version(
             &self._ctx,
             _tls.MBEDTLS_SSL_MAJOR_VERSION_3,
-            int(version))
+            version.value)
 
     @property
     def lowest_supported_version(self):
-        return TLSVersion(self._ctx.min_minor_ver)
+        raise NotImplementedError
 
     cdef _set_highest_supported_version(self, version):
         """The maximum version of TLS that should be allowed.
 
         Args:
-            version (TLSVersion): The maximum version.
+            version (TLSVersion, or DTLSVersion): The maximum version.
 
         """  # PEP 543
         if version is None:
@@ -480,11 +515,11 @@ cdef class TLSConfiguration:
         _tls.mbedtls_ssl_conf_max_version(
             &self._ctx,
             _tls.MBEDTLS_SSL_MAJOR_VERSION_3,
-            int(version))
+            version.value)
 
     @property
     def highest_supported_version(self):
-        return TLSVersion(self._ctx.max_minor_ver)
+        raise NotImplementedError
 
     cdef _set_trust_store(self, store):
         """The trust store that connections will use.
@@ -521,15 +556,54 @@ cdef class TLSConfiguration:
     def sni_callback(self):
         return None
 
-    def update(self,
-               validate_certificates=_DEFAULT_VALUE,
-               certificate_chain=_DEFAULT_VALUE,
-               ciphers=_DEFAULT_VALUE,
-               inner_protocols=_DEFAULT_VALUE,
-               lowest_supported_version=_DEFAULT_VALUE,
-               highest_supported_version=_DEFAULT_VALUE,
-               trust_store=_DEFAULT_VALUE,
-               sni_callback=_DEFAULT_VALUE):
+    def update(self, *args):
+        raise NotImplementedError
+
+
+cdef class TLSConfiguration(_BaseConfiguration):
+    """TLS configuration."""
+    def __init__(
+        self,
+        validate_certificates=None,
+        certificate_chain=None,
+        ciphers=None,
+        inner_protocols=None,
+        lowest_supported_version=None,
+        highest_supported_version=None,
+        trust_store=None,
+        sni_callback=None,
+    ):
+        super().__init__(
+            validate_certificates=validate_certificates,
+            certificate_chain=certificate_chain,
+            ciphers=ciphers,
+            inner_protocols=inner_protocols,
+            lowest_supported_version=lowest_supported_version,
+            highest_supported_version=highest_supported_version,
+            trust_store=trust_store,
+            sni_callback=sni_callback,
+            _transport=_tls.MBEDTLS_SSL_TRANSPORT_STREAM,
+        )
+
+    @property
+    def lowest_supported_version(self):
+        return TLSVersion(self._ctx.min_minor_ver)
+
+    @property
+    def highest_supported_version(self):
+        return TLSVersion(self._ctx.max_minor_ver)
+
+    def update(
+        self,
+        validate_certificates=_DEFAULT_VALUE,
+        certificate_chain=_DEFAULT_VALUE,
+        ciphers=_DEFAULT_VALUE,
+        inner_protocols=_DEFAULT_VALUE,
+        lowest_supported_version=_DEFAULT_VALUE,
+        highest_supported_version=_DEFAULT_VALUE,
+        trust_store=_DEFAULT_VALUE,
+        sni_callback=_DEFAULT_VALUE,
+    ):
         """Create a new ``TLSConfiguration``.
 
         Override some of the settings on the original configuration
@@ -561,9 +635,147 @@ cdef class TLSConfiguration:
             sni_callback = self.sni_callback
 
         return self.__class__(
-            validate_certificates, certificate_chain, ciphers, inner_protocols,
-            lowest_supported_version, highest_supported_version, trust_store,
-            sni_callback)
+            validate_certificates=validate_certificates,
+            certificate_chain=certificate_chain,
+            ciphers=ciphers,
+            inner_protocols=inner_protocols,
+            lowest_supported_version=lowest_supported_version,
+            highest_supported_version=highest_supported_version,
+            trust_store=trust_store,
+            sni_callback=sni_callback,
+        )
+
+
+cdef class DTLSConfiguration(_BaseConfiguration):
+    """DTLS configuration."""
+    def __init__(
+        self,
+        validate_certificates=None,
+        certificate_chain=None,
+        ciphers=None,
+        inner_protocols=None,
+        lowest_supported_version=None,
+        highest_supported_version=None,
+        trust_store=None,
+        anti_replay=None,
+        # badmac_limit
+        # handshake_timeout
+        sni_callback=None,
+    ):
+        super().__init__(
+            validate_certificates=validate_certificates,
+            certificate_chain=certificate_chain,
+            ciphers=ciphers,
+            inner_protocols=inner_protocols,
+            lowest_supported_version=lowest_supported_version,
+            highest_supported_version=highest_supported_version,
+            trust_store=trust_store,
+            sni_callback=sni_callback,
+            _transport=_tls.MBEDTLS_SSL_TRANSPORT_DATAGRAM,
+        )
+        self._set_anti_replay(anti_replay)
+        # For security reasons, we do not make cookie optional here.
+        cdef _tls._DTLSCookie cookie = _tls._DTLSCookie()
+        cookie.generate()
+        self._set_cookie(cookie)
+
+    @property
+    def lowest_supported_version(self):
+        return DTLSVersion(self._ctx.min_minor_ver)
+
+    @property
+    def highest_supported_version(self):
+        return DTLSVersion(self._ctx.max_minor_ver)
+
+    cdef _set_anti_replay(self, anti_replay):
+        """Set anti replay."""
+        if anti_replay is None:
+            return
+        _tls.mbedtls_ssl_conf_dtls_anti_replay(
+            &self._ctx,
+            _tls.MBEDTLS_SSL_ANTI_REPLAY_ENABLED
+            if anti_replay else
+            _tls.MBEDTLS_SSL_ANTI_REPLAY_DISABLED)
+
+    @property
+    def anti_replay(self):
+        cdef unsigned int enabled = _tls.MBEDTLS_SSL_ANTI_REPLAY_ENABLED
+        return True if self._ctx.anti_replay == enabled else False
+
+    cdef _set_cookie(self, _tls._DTLSCookie cookie):
+        """Register callbacks for DTLS cookies (server only)."""
+        self._cookie = cookie
+        if cookie is None:
+            _tls.mbedtls_ssl_conf_dtls_cookies(
+                &self._ctx,
+                NULL,
+                NULL,
+                NULL,
+            )
+        else:
+            _tls.mbedtls_ssl_conf_dtls_cookies(
+                &self._ctx,
+                _tls.mbedtls_ssl_cookie_write,
+                _tls.mbedtls_ssl_cookie_check,
+                &self._cookie._ctx,
+            )
+
+    def update(
+        self,
+        validate_certificates=_DEFAULT_VALUE,
+        certificate_chain=_DEFAULT_VALUE,
+        ciphers=_DEFAULT_VALUE,
+        inner_protocols=_DEFAULT_VALUE,
+        lowest_supported_version=_DEFAULT_VALUE,
+        highest_supported_version=_DEFAULT_VALUE,
+        trust_store=_DEFAULT_VALUE,
+        sni_callback=_DEFAULT_VALUE,
+        anti_replay=_DEFAULT_VALUE,
+    ):
+        """Create a new ``DTLSConfiguration``.
+
+        Override some of the settings on the original configuration
+        with the new settings.
+
+        """
+        if validate_certificates is _DEFAULT_VALUE:
+            validate_certificates = self.validate_certificates
+
+        if certificate_chain is _DEFAULT_VALUE:
+            certificate_chain = self.certificate_chain
+
+        if ciphers is _DEFAULT_VALUE:
+            ciphers = self.ciphers
+
+        if inner_protocols is _DEFAULT_VALUE:
+            inner_protocols = self.inner_protocols
+
+        if lowest_supported_version is _DEFAULT_VALUE:
+            lowest_supported_version = self.lowest_supported_version
+
+        if highest_supported_version is _DEFAULT_VALUE:
+            highest_supported_version = self.highest_supported_version
+
+        if trust_store is _DEFAULT_VALUE:
+            trust_store = self.trust_store
+
+        if sni_callback is _DEFAULT_VALUE:
+            sni_callback = self.sni_callback
+
+        if anti_replay is _DEFAULT_VALUE:
+            anti_replay = self.anti_replay
+
+        return self.__class__(
+            validate_certificates=validate_certificates,
+            certificate_chain=certificate_chain,
+            ciphers=ciphers,
+            inner_protocols=inner_protocols,
+            lowest_supported_version=lowest_supported_version,
+            highest_supported_version=highest_supported_version,
+            trust_store=trust_store,
+            sni_callback=sni_callback,
+            anti_replay=anti_replay,
+        )
 
 
 DEFAULT_CIPHER_LIST = None
@@ -587,13 +799,18 @@ cdef class _BaseContext:
         configuration (TLSConfiguration): The configuration.
 
     """
-    def __init__(self, TLSConfiguration configuration not None):
+    def __init__(self, _BaseConfiguration configuration not None):
         self._conf = configuration
         check_error(_tls.mbedtls_ssl_setup(&self._ctx, &self._conf._ctx))
 
     def __cinit__(self):
         """Initialize an `ssl_context`."""
         _tls.mbedtls_ssl_init(&self._ctx)
+        _tls.mbedtls_ssl_set_timer_cb(
+            &self._ctx,
+            &self._timer,
+            _tls.mbedtls_timing_set_delay,
+            _tls.mbedtls_timing_get_delay)
 
     def __dealloc__(self):
         """Free and clear the internal structures of ctx."""
@@ -632,7 +849,6 @@ cdef class _BaseContext:
         elif read == _tls.MBEDTLS_ERR_SSL_WANT_WRITE:
             raise WantWriteError()
         elif read == _tls.MBEDTLS_ERR_SSL_CLIENT_RECONNECT:
-            # XXX Handle that properly.
             check_error(read)
         else:
             self._reset()
@@ -693,6 +909,7 @@ cdef class _BaseContext:
         else:
             self._reset()
             check_error(ret)
+            return self._state
 
     def _do_handshake(self):
         """Start the SSL/TLS handshake."""
@@ -703,6 +920,9 @@ cdef class _BaseContext:
             raise WantReadError()
         elif ret == _tls.MBEDTLS_ERR_SSL_WANT_WRITE:
             raise WantWriteError()
+        elif ret == _tls.MBEDTLS_ERR_SSL_HELLO_VERIFY_REQUIRED:
+            self._reset()
+            raise HelloVerifyRequest()
         else:
             assert ret < 0
             self._reset()
@@ -727,23 +947,20 @@ cdef class _BaseContext:
 
     def _negotiated_tls_version(self):
         # Strings from `ssl_tls.c`.
-        # DTLS:
-        #   "DTLSv1.0"
-        #   "DTLSv1.2"
-        #   "unknown (DTLS)"
         return {
-            "SSLv3.0": TLSVersion.SSLv3,
+            "DTLSv1.0": DTLSVersion.DTLSv1_0,
+            "DTLSv1.2": DTLSVersion.DTLSv1_2,
+            # "SSLv3.0": TLSVersion.SSLv3,
             "TLSv1.0": TLSVersion.TLSv1,
             "TLSv1.1": TLSVersion.TLSv1_1,
             "TLSv1.2": TLSVersion.TLSv1_2,
-        }.get(_tls.mbedtls_ssl_get_version(&self._ctx).decode("ascii"),
-              "unknown")
+        }.get(_tls.mbedtls_ssl_get_version(&self._ctx).decode("ascii"))
 
 
 cdef class ClientContext(_BaseContext):
     # _pep543.ClientContext
 
-    def __init__(self, TLSConfiguration configuration not None):
+    def __init__(self, _BaseConfiguration configuration not None):
         _tls.mbedtls_ssl_conf_endpoint(
             &configuration._ctx, _tls.MBEDTLS_SSL_IS_CLIENT)
         super(ClientContext, self).__init__(configuration)
@@ -792,7 +1009,7 @@ cdef class ClientContext(_BaseContext):
 cdef class ServerContext(_BaseContext):
     # _pep543.ServerContext
 
-    def __init__(self, TLSConfiguration configuration not None):
+    def __init__(self, _BaseConfiguration configuration not None):
         _tls.mbedtls_ssl_conf_endpoint(
             &configuration._ctx, _tls.MBEDTLS_SSL_IS_SERVER)
         super(ServerContext, self).__init__(configuration)
@@ -805,6 +1022,24 @@ cdef class ServerContext(_BaseContext):
     def wrap_buffers(self):
         # PEP 543
         return TLSWrappedBuffer(self)
+
+    def _setcookieparam(self, const unsigned char[:] info):
+        _tls.mbedtls_ssl_set_client_transport_id(
+            &self._ctx,
+            &info[0],
+            info.size,
+        )
+
+    @property
+    def _cookieparam(self):
+        """Client ID for the HelloVerifyRequest.
+
+        Notes:
+            DTLS only.
+
+        """
+        client_id = bytes(self._ctx.cli_id[0:self._ctx.cli_id_len])
+        return client_id if client_id else None
 
 
 cdef class TLSWrappedBuffer:
@@ -843,14 +1078,20 @@ cdef class TLSWrappedBuffer:
 
     def write(self, const unsigned char[:] buffer):
         # PEP 543
-        assert self._buffer.empty()
+        assert self._buffer.empty(), "%i bytes in buffer" % len(self._buffer)
         amt = self.context._write(buffer)
         assert amt == buffer.size
         return len(self._buffer)
 
+    def _do_handshake_step(self):
+        return self.context._do_handshake_step()
+
     def do_handshake(self):
         # PEP 543
         self.context._do_handshake()
+
+    def _setcookieparam(self, param):
+        self.context._setcookieparam(param)
 
     def cipher(self):
         # PEP 543
@@ -902,10 +1143,12 @@ cdef class TLSWrappedSocket:
         super().__init__()
         self._socket = socket
         self._buffer = buffer
+        # Default to pass-through BIO.
+        self._ctx.fd = <int>socket.fileno()
+        self._as_bio()
 
     def __cinit__(self, socket, TLSWrappedBuffer buffer):
         _net.mbedtls_net_init(&self._ctx)
-        self._ctx.fd = socket.fileno()
 
     def __dealloc__(self):
         _net.mbedtls_net_free(&self._ctx)
@@ -916,7 +1159,7 @@ cdef class TLSWrappedSocket:
             &self._ctx,
             _net.mbedtls_net_send,
             _net.mbedtls_net_recv,
-            NULL)
+            _net.mbedtls_net_recv_timeout)
 
     def __str__(self):
         return str(self._socket)
@@ -936,7 +1179,22 @@ cdef class TLSWrappedSocket:
         return self._socket.type
 
     def accept(self):
-        conn, address = self._socket.accept()
+        if self.type == _socket.SOCK_STREAM:
+            conn, address = self._socket.accept()
+        else:
+            data, address = self._socket.recvfrom(1, _socket.MSG_PEEK)
+            assert data, "no data"
+
+            # Use this socket to communicate with the client and bind
+            # another one for the next connection.  This procedure is
+            # adapted from `mbedtls_net_accept()`.
+            sockname = self.getsockname()
+            conn = _socket.fromfd(self.fileno(), self.family, self.type)
+            conn.connect(address)
+            self.close()
+            self._socket = _socket.socket(self.family, self.type, self.proto)
+            self.setsockopt(_socket.SOL_SOCKET, _socket.SO_REUSEADDR, 1)
+            self.bind(sockname)
         return self.context.wrap_socket(conn), address
 
     def bind(self, address):
@@ -980,16 +1238,22 @@ cdef class TLSWrappedSocket:
         self._buffer.receive_from_network(encrypted)
         return self._buffer.read(bufsize)
 
-    def recvfrom(self, bufsize, flags=0):
-        # Not for streaming socket.
-        raise NotImplementedError
-
-    def recvfrom_into(self, buffer, nbytes=None, flags=0):
-        # Not for streaming socket.
-        raise NotImplementedError
-
     def recv_into(self, buffer, nbytes=None, flags=0):
         raise NotImplementedError
+
+    def recvfrom(self, bufsize, flags=0):
+        encrypted, addr = self._socket.recvfrom(bufsize, flags)
+        if not encrypted:
+            return b"", addr
+        self._buffer.receive_from_network(encrypted)
+        return self._buffer.read(bufsize), addr
+
+    def recvfrom_into(self, unsigned char[:] buffer, nbytes=None, flags=0):
+        encrypted, addr = self._socker.recvfrom(bufsize, flags)
+        if not encrypted:
+            return buffer, addr
+        self._buffer.receive_from_network(encrypted)
+        return self._buffer.readinto(buffer, nbytes), addr
 
     def send(self, const unsigned char[:] message, flags=0):
         # Maximum size supported by TLS is 16K (encrypted).
@@ -1007,11 +1271,15 @@ cdef class TLSWrappedSocket:
         self._buffer.consume_outgoing(amt)
         self._socket.sendall(encrypted)
 
-    def sendto(self, message, flags, address=None):
-        # Not for streaming socket.
-        if address is None:
-            address = flags
-        raise NotImplementedError
+    def sendto(self, message, flags=0, address=None):
+        amt = self._buffer.write(message)
+        encrypted = self._buffer.peek_outgoing(amt)
+        if address:
+            self._socket.sendto(encrypted, flags, address)
+        else:
+            self._socket.sendto(encrypted, flags)
+        self._buffer.consume_outgoing(amt)
+        return len(message)
 
     def setblocking(self, flag):
         self._socket.setblocking(flag)
@@ -1031,10 +1299,20 @@ cdef class TLSWrappedSocket:
 
     # PEP 543 adds the following methods.
 
+    def _do_handshake_step(self):
+        self._as_bio()
+        state = self._buffer._do_handshake_step()
+        if state is HandshakeStep.HANDSHAKE_OVER:
+            self._buffer._as_bio()
+        return state
+
     def do_handshake(self):
         self._as_bio()
         self._buffer.do_handshake()
         self._buffer._as_bio()
+
+    def setcookieparam(self, param):
+        self._buffer._setcookieparam(param)
 
     def cipher(self):
         return self._buffer.cipher()
