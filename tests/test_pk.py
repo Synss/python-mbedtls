@@ -334,3 +334,49 @@ class TestECDH:
         assert srv_sec == cli_sec
         assert srv_sec == self.srv.shared_secret
         assert cli_sec == self.cli.shared_secret
+
+
+class TestECDHNaive:
+    @pytest.fixture(autouse=True, params=(Curve.CURVE25519, Curve.CURVE448))
+    def _setup(self, request):
+        curve = request.param
+        self.alice = ECDHNaive(curve)
+        self.bob = ECDHNaive(curve)
+
+    def test_key_accessors_without_key(self):
+        for peer in (self.alice, self.bob):
+            assert not peer._has_private()
+            assert not peer._has_public()
+            assert peer.shared_secret == 0
+            assert peer._private_key == 0
+            assert peer._public_key == 0
+            assert peer._peer_public_key == 0
+
+    def test_exchange(self):
+        alice_to_bob = self.alice.generate()
+        assert self.alice._has_public()
+
+        bob_to_alice = self.bob.generate()
+        assert self.bob._has_public()
+
+        assert self.alice._private_key != 0
+        assert self.bob._private_key != 0
+        assert self.alice._private_key != self.bob._private_key
+
+        assert self.alice._public_key != 0
+        assert self.bob._public_key != 0
+        assert self.alice._public_key != self.bob._public_key
+
+        self.alice.import_peer_public(bob_to_alice)
+        assert self.alice._has_peers_public() is True
+        assert self.alice._peer_public_key == self.bob._public_key
+
+        self.bob.import_peer_public(alice_to_bob)
+        assert self.bob._has_peers_public() is True
+        assert self.bob._peer_public_key == self.alice._public_key
+
+        alice_secret = self.alice.generate_secret()
+        bob_secret = self.bob.generate_secret()
+        assert alice_secret == bob_secret
+        assert alice_secret == self.alice.shared_secret
+        assert bob_secret == self.bob.shared_secret
