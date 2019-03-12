@@ -264,7 +264,11 @@ cdef class MPI:
         return self
 
     def __int__(self):
-        return from_bytes(self.to_bytes(self._len(), byteorder="big"))
+        n = self._len()
+        if n:
+            return from_bytes(self.to_bytes(n, byteorder="big"))
+        else:
+            return 0
 
     def __index__(self):
         return long(self)
