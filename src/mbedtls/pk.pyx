@@ -966,6 +966,25 @@ cdef class ECDHBase:
         except ValueError:
             return _mpi.MPI()
 
+    @property
+    def _private_key(self):
+        """The private key (int)"""
+        return _mpi.from_mpi(&self._ctx.d)
+
+    @property
+    def _public_key(self):
+        """The public key (ECPoint)"""
+        ecp = ECPoint()
+        check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Q))
+        return ecp
+
+    @property
+    def _peer_public_key(self):
+        """Peer's public key (ECPoint)"""
+        ecp = ECPoint()
+        check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Qp))
+        return ecp
+
 
 cdef class ECDHServer(ECDHBase):
 
@@ -1048,7 +1067,6 @@ cdef class ECDHNaive(ECDHBase):
 
     """
     def __init__(self, curve=None):
-        super().__init__()
         self.curve = curve or b'curve25519'
         if self.curve == b'curve25519':
             check_error(mbedtls_ecp_group_load(
@@ -1064,48 +1082,27 @@ cdef class ECDHNaive(ECDHBase):
         """Generate a public key.
 
         Return:
-            bytes: public key.
+            MPI: public key.
 
         """
-        cdef unsigned char* output = <unsigned char*>malloc(
-            _mpi.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
-        cdef size_t olen = 0
-        if not output:
-            raise MemoryError()
-        try:
-            check_error(_pk.mbedtls_ecdh_gen_public(
-                &self._ctx.grp, &self._ctx.d, &self._ctx.Q,
-                &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
-            n = (_mpi.mbedtls_mpi_bitlen(&self._ctx.Q.X)+7)//8
-            check_error(_mpi.mbedtls_mpi_write_binary(
-                &self._ctx.Q.X, output, n));
-            return bytes(output[:n])
-        finally:
-            free(output)
+        check_error(_pk.mbedtls_ecdh_gen_public(
+            &self._ctx.grp, &self._ctx.d, &self._ctx.Q,
+            &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
+        return self._public_key.x
 
-    def import_peer(self, pubkey):
+    def import_peer_public(self, pubkey):
         """Read peer public key."""
+        buf = pubkey.to_bytes((pubkey.bit_length()+7)//8, 'big')
+        if not buf:
+            raise ValueError('Invalid peer public key')
+
         check_error(_mpi.mbedtls_mpi_read_binary(
             &self._ctx.Qp.Z, b'\x01', 1))
         check_error(_mpi.mbedtls_mpi_read_binary(
-            &self._ctx.Qp.X, pubkey, len(pubkey)))
+            &self._ctx.Qp.X, buf, len(buf)))
         check_error(_pk.mbedtls_ecdh_compute_shared(
             &self._ctx.grp, &self._ctx.z, &self._ctx.Qp, &self._ctx.d,
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
-
-    @property
-    def _private_key(self):
-        try:
-            return _mpi.from_mpi(&self._ctx.d)
-        except ValueError:
-            return _mpi.MPI()
-
-    @property
-    def _public_key(self):
-        try:
-            return _mpi.from_mpi(&self._ctx.Q.X)
-        except ValueError:
-            return _mpi.MPI()
 
     def generate_secret(self):
         """Override base class method"""
