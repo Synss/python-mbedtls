@@ -612,7 +612,7 @@ cdef class ECPoint:
             return _pk.mbedtls_ecp_is_zero(&self._ctx) == 1
         elif type(other) is type(self):
             c_other = <ECPoint> other
-            return _pk.mbedtls_ecp_point_cmp(&self._ctx, &c_other._ctx)
+            return _pk.mbedtls_ecp_point_cmp(&self._ctx, &c_other._ctx) == 0
         elif isinstance(other, Sequence):
             return self._tuple() == other
         return NotImplemented
