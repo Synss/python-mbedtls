@@ -1100,10 +1100,10 @@ cdef class ECDHNaive(ECDHBase):
             &self._ctx.Qp.Z, b'\x01', 1))
         check_error(_mpi.mbedtls_mpi_read_binary(
             &self._ctx.Qp.X, buf, len(buf)))
+
+    def generate_secret(self):
+        """Generate the shared secret."""
         check_error(_pk.mbedtls_ecdh_compute_shared(
             &self._ctx.grp, &self._ctx.z, &self._ctx.Qp, &self._ctx.d,
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
-
-    def generate_secret(self):
-        """Override base class method"""
-        pass
+        return _mpi.from_mpi(&self._ctx.z)
