@@ -1,5 +1,7 @@
 [next]
 
+* Update wheels with mbedtls 2.14.1.
+* pk: Add support for curves 448 and 25519 (Stephen.Y).
 * version: Add accessors to the version of mbed TLS in use.
 
 [0.14.1] - 2019-01-10
