@@ -41,7 +41,7 @@ import mbedtls.hash as _hash
 
 __all__ = ("check_pair", "get_supported_ciphers", "get_supported_curves",
            "Curve", "RSA", "ECC", "DHServer", "DHClient",
-           "ECDHServer", "ECDHClient")
+           "ECDHServer", "ECDHClient", "ECDHNaive")
 
 
 CIPHER_NAME = (
@@ -81,9 +81,10 @@ class Curve(bytes, enum.Enum):
     BRAINPOOLP384R1 = b'brainpoolP384r1'
     BRAINPOOLP512R1 = b'brainpoolP512r1'
     CURVE25519 = b'curve25519'
-    SECP256K1 = b'secp256k1'
-    SECP224K1 = b'secp224k1'
     SECP192K1 = b'secp192k1'
+    SECP224K1 = b'secp224k1'
+    SECP256K1 = b'secp256k1'
+    CURVE448 = b'curve448'
 
 
 # The following calculations come from mbedtls/library/pkwrite.c.
@@ -611,7 +612,7 @@ cdef class ECPoint:
             return _pk.mbedtls_ecp_is_zero(&self._ctx) == 1
         elif type(other) is type(self):
             c_other = <ECPoint> other
-            return _pk.mbedtls_ecp_point_cmp(&self._ctx, &c_other._ctx)
+            return _pk.mbedtls_ecp_point_cmp(&self._ctx, &c_other._ctx) == 0
         elif isinstance(other, Sequence):
             return self._tuple() == other
         return NotImplemented
@@ -965,6 +966,25 @@ cdef class ECDHBase:
         except ValueError:
             return _mpi.MPI()
 
+    @property
+    def _private_key(self):
+        """The private key (int)"""
+        return _mpi.from_mpi(&self._ctx.d)
+
+    @property
+    def _public_key(self):
+        """The public key (ECPoint)"""
+        ecp = ECPoint()
+        check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Q))
+        return ecp
+
+    @property
+    def _peer_public_key(self):
+        """Peer's public key (ECPoint)"""
+        ecp = ECPoint()
+        check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Qp))
+        return ecp
+
 
 cdef class ECDHServer(ECDHBase):
 
@@ -1036,3 +1056,54 @@ cdef class ECDHClient(ECDHBase):
         cdef const unsigned char* end = &buffer[-1] + 1
         check_error(_pk.mbedtls_ecdh_read_params(
             &self._ctx, &first, end))
+
+
+cdef class ECDHNaive(ECDHBase):
+
+    """Naive ECDH key exchange.
+
+    Args:
+        (Curve, optional): b'curve25519' or b'curve448'.
+
+    """
+    def __init__(self, curve=None):
+        self.curve = curve or b'curve25519'
+        if self.curve == b'curve25519':
+            check_error(mbedtls_ecp_group_load(
+                &self._ctx.grp, _pk.MBEDTLS_ECP_DP_CURVE25519))
+        elif self.curve == b'curve448':
+            check_error(mbedtls_ecp_group_load(
+                &self._ctx.grp, _pk.MBEDTLS_ECP_DP_CURVE448))
+        else:
+            raise ValueError(
+                'ECDHNaive only supports curve25519 and curve448')
+
+    def generate(self):
+        """Generate a public key.
+
+        Return:
+            MPI: public key.
+
+        """
+        check_error(_pk.mbedtls_ecdh_gen_public(
+            &self._ctx.grp, &self._ctx.d, &self._ctx.Q,
+            &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
+        return self._public_key.x
+
+    def import_peer_public(self, pubkey):
+        """Read peer public key."""
+        buf = pubkey.to_bytes((pubkey.bit_length()+7)//8, 'big')
+        if not buf:
+            raise ValueError('Invalid peer public key')
+
+        check_error(_mpi.mbedtls_mpi_read_binary(
+            &self._ctx.Qp.Z, b'\x01', 1))
+        check_error(_mpi.mbedtls_mpi_read_binary(
+            &self._ctx.Qp.X, buf, len(buf)))
+
+    def generate_secret(self):
+        """Generate the shared secret."""
+        check_error(_pk.mbedtls_ecdh_compute_shared(
+            &self._ctx.grp, &self._ctx.z, &self._ctx.Qp, &self._ctx.d,
+            &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
+        return _mpi.from_mpi(&self._ctx.z)

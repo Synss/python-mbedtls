@@ -25,6 +25,10 @@ cdef:
         MBEDTLS_SSL_VERIFY_OPTIONAL = 1
         MBEDTLS_SSL_VERIFY_REQUIRED = 2
 
+    enum:
+        MBEDTLS_SSL_ANTI_REPLAY_DISABLED = 0
+        MBEDTLS_SSL_ANTI_REPLAY_ENABLED = 1
+
     enum: MBEDTLS_SSL_MAJOR_VERSION_3 = 3
 
     enum:
@@ -72,7 +76,38 @@ cdef:
         MBEDTLS_ERR_SSL_CLIENT_RECONNECT = -0x6780
         MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY = -0x7880
         MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL = -0x6a00
+        MBEDTLS_ERR_SSL_HELLO_VERIFY_REQUIRED = -0x6a80
         MBEDTLS_ERR_SSL_BAD_INPUT_DATA = -0x7100
+
+
+cdef extern from "mbedtls/debug.h" nogil:
+    void mbedtls_debug_set_threshold(int threshold)
+
+
+cdef extern from "mbedtls/timing.h" nogil:
+    # This provides callbacks for DTLS with blocking IO.
+
+    ctypedef struct mbedtls_timing_hr_time:
+        pass
+
+    ctypedef struct mbedtls_timing_delay_context:
+        mbedtls_timing_hr_time timer
+        int int_ms
+        int fin_ms
+
+    # extern volatile int mbedtls_timing_alarmed
+
+    # unsigned long mbedtls_timing_hardclock()
+    # unsigned long mbedtls_timing_get_timer(
+    #     mbedtls_timing_hr_time *,
+    #     int reset,
+    # )
+    # void mbedtls_set_alarm(int seconds)
+
+    # mbedtls_ssl_set_timer_t callback
+    void mbedtls_timing_set_delay(void *data, int int_ms, int fin_ms)
+    # mbedtls_ssl_get_timer_t callback
+    int mbedtls_timing_get_delay(void *data)
 
 
 cdef extern from "mbedtls/ssl_internal.h" nogil:
@@ -115,6 +150,9 @@ cdef extern from "mbedtls/ssl.h" nogil:
         unsigned char max_minor_ver
         unsigned char min_major_ver
         unsigned char min_minor_ver
+        # set_anti_replay
+        unsigned int anti_replay
+
 
         unsigned int endpoint
         unsigned int transport
@@ -131,18 +169,26 @@ cdef extern from "mbedtls/ssl.h" nogil:
         const mbedtls_ssl_config *conf
         int state
         char *hostname
+        unsigned char *cli_id
+        size_t cli_id_len
 
     # Callback types
     # --------------
     ctypedef int(*mbedtls_ssl_send_p)(void*, const unsigned char*, size_t)
     ctypedef int(*mbedtls_ssl_recv_p)(void*, unsigned char*, size_t)
     ctypedef int(*mbedtls_ssl_recv_timeout_p)(
-        void*, unsigned char* size_t, int)
+        void*, unsigned char*, size_t, int)
 
-    # mbedtls_ssl_set_timer_t
-    # mbedtls_ssl_get_timer_t
-    # mbedtls_ssl_cookie_write_t
-    # mbedtls_ssl_cookie_check_t
+    ctypedef void(*mbedtls_ssl_set_timer_t)(void *ctx, int int_ms, int fin_ms)
+    ctypedef int(*mbedtls_ssl_get_timer_t)(void *ctx)
+    ctypedef int(*mbedtls_ssl_cookie_write_t)(
+        void *ctx,
+        unsigned char **p, unsigned char *end,
+        const unsigned char *info, size_t ilen)
+    ctypedef int(*mbedtls_ssl_cookie_check_t)(
+        void *ctx,
+        const unsigned char *cookie, size_t clen,
+        const unsigned char *info, size_t ilen)
     # mbedtls_ssl_ticket_write_t
     # mbedtls_ssl_ticket_parse_t
     # mbedtls_ssl_export_keys_t
@@ -163,12 +209,18 @@ cdef extern from "mbedtls/ssl.h" nogil:
         mbedtls_ssl_config *conf,
         const int* ciphersuites)
 
-    # mbedtls_ssl_conf_dtls_anti_replay
+    # DTLS only
+    # ---------
+    void mbedtls_ssl_conf_dtls_anti_replay(
+        mbedtls_ssl_config *conf,
+        char mode)
     # mbedtls_ssl_conf_dtls_badmac_limit
     # mbedtls_ssl_conf_handshake_timeout
     # mbedtls_ssl_conf_ciphersuites_for_version
     # mbedtls_ssl_conf_cert_profile
 
+    # TLS + DTLS
+    # ----------
     void mbedtls_ssl_conf_ca_chain(
         mbedtls_ssl_config *conf,
         _x509.mbedtls_x509_crt *ca_chain,
@@ -210,7 +262,14 @@ cdef extern from "mbedtls/ssl.h" nogil:
     # mbedtls_ssl_conf_read_timeout
     # mbedtls_ssl_conf_session_tickets_cb
     # mbedtls_ssl_conf_export_keys_cb
-    # mbedtls_ssl_conf_dtls_cookies
+
+    void mbedtls_ssl_conf_dtls_cookies(
+        mbedtls_ssl_config *conf,
+        mbedtls_ssl_cookie_write_t f_cookie_write,
+        mbedtls_ssl_cookie_check_t f_cookie_check,
+        void *p_cookie,
+    )
+
     # mbedtls_ssl_conf_session_cache
     # mbedtls_ssl_conf_psk_cb
     void mbedtls_ssl_conf_sni(
@@ -255,8 +314,17 @@ cdef extern from "mbedtls/ssl.h" nogil:
         mbedtls_ssl_recv_p f_recv,
         mbedtls_ssl_recv_timeout_p f_recv_timeout)
 
-    # mbedtls_ssl_set_timer_cb
-    # mbedtls_ssl_set_client_transport_id
+    void mbedtls_ssl_set_timer_cb(
+        # DTLS
+        mbedtls_ssl_context *ssl,
+        void *p_timer,
+        mbedtls_ssl_set_timer_t f_set_timer,
+        mbedtls_ssl_get_timer_t f_get_timer)
+    int mbedtls_ssl_set_client_transport_id(
+        # DTLS
+        mbedtls_ssl_context *ssl,
+        const unsigned char *info,
+        size_t ilen)
     int mbedtls_ssl_set_session(
         const mbedtls_ssl_context *ssl,
         mbedtls_ssl_session *session)
@@ -301,7 +369,33 @@ cdef extern from "mbedtls/ssl.h" nogil:
     void mbedtls_ssl_session_free(mbedtls_ssl_session *session)
 
 
-cdef class TLSConfiguration:
+cdef extern from "mbedtls/ssl_cookie.h" nogil:
+    # This provides callbacks for DTLS.
+
+    ctypedef struct mbedtls_ssl_cookie_ctx:
+        # mbedtls_md_context_t hmac_ctx
+        unsigned long timeout
+        # mbedtls_threading_mutex_t mutex
+
+    void mbedtls_ssl_cookie_init(mbedtls_ssl_cookie_ctx *ctx)
+    int mbedtls_ssl_cookie_setup(
+        mbedtls_ssl_cookie_ctx *ctx,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
+    )
+    void mbedtls_ssl_cookie_set_timeout(
+        mbedtls_ssl_cookie_ctx *ctx,
+        unsigned long delay,
+    )
+    void mbedtls_ssl_cookie_free(mbedtls_ssl_cookie_ctx *ctx)
+    mbedtls_ssl_cookie_write_t mbedtls_ssl_cookie_write
+    mbedtls_ssl_cookie_check_t mbedtls_ssl_cookie_check
+
+
+cdef class _DTLSCookie:
+    cdef mbedtls_ssl_cookie_ctx _ctx
+
+
+cdef class _BaseConfiguration:
     cdef mbedtls_ssl_config _ctx
     cdef int *_ciphers
     cdef char **_protos
@@ -316,13 +410,25 @@ cdef class TLSConfiguration:
     cdef _set_sni_callback(self, callback)
 
 
+cdef class TLSConfiguration(_BaseConfiguration):
+    pass
+
+
+cdef class DTLSConfiguration(_BaseConfiguration):
+    cdef _DTLSCookie _cookie
+    cdef _set_anti_replay(self, mode)
+    cdef _set_cookie(self, _DTLSCookie cookie)
+
+
 cdef class _TLSSession:
     cdef mbedtls_ssl_session _ctx
 
 
 cdef class _BaseContext:
     cdef mbedtls_ssl_context _ctx
-    cdef TLSConfiguration _conf
+    cdef _BaseConfiguration _conf
+    # DTLS only:
+    cdef mbedtls_timing_delay_context _timer
 
 
 cdef class ClientContext(_BaseContext):
@@ -335,7 +441,7 @@ cdef class ServerContext(_BaseContext):
 
 cdef enum:
     # 16K (tls default)
-    TLS_BUFFER_CAPACITY = 16384 + 100
+    TLS_BUFFER_CAPACITY = 16384 + 1024
 
 
 cdef class TLSWrappedBuffer:

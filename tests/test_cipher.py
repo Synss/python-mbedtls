@@ -5,7 +5,6 @@
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=invalid-name, redefined-outer-name
 
-from collections import namedtuple
 from functools import partial
 
 import pytest

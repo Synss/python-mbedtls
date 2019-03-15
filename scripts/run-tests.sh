@@ -12,3 +12,5 @@ for pydir in /opt/python/*; do
 		python-mbedtls
 	$pydir/bin/python -B -m pytest
 done
+
+/opt/python/*36*/bin/python -B -m doctest README.rst

@@ -10,7 +10,7 @@ cdef:
     enum: MBEDTLS_NET_PROTO_UDP = 1
 
 
-cdef extern from "mbedtls/net_sockets.h":
+cdef extern from "mbedtls/net_sockets.h" nogil:
     ctypedef struct mbedtls_net_context:
         int fd
 
@@ -32,8 +32,8 @@ cdef extern from "mbedtls/net_sockets.h":
     int mbedtls_net_set_block(mbedtls_net_context *ctx)
     int mbedtls_net_set_nonblock(mbedtls_net_context *ctx)
     # mbedtls_net_usleep
-    int mbedtls_net_recv(void *ctx, unsigned char *buf, size_t len) nogil
-    int mbedtls_net_send(void *ctx, const unsigned char *buf, size_t len) nogil
+    int mbedtls_net_recv(void *ctx, unsigned char *buf, size_t len)
+    int mbedtls_net_send(void *ctx, const unsigned char *buf, size_t len)
     int mbedtls_net_recv_timeout(
         void *ctx,
         unsigned char *buf, size_t len,
