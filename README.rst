@@ -426,11 +426,7 @@ The contexts are used to wrap TCP sockets.
 ... )
 ...
 
->>> try:
-...     from contextlib import suppress
-... except ImportError:
-...     # For Python 2.
-...     from contextlib2 import suppress
+>>> from contextlib import suppress
 >>> def block(callback, *args, **kwargs):
 ...     while True:
 ...         with suppress(tls.WantReadError, tls.WantWriteError):

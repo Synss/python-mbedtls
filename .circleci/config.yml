@@ -106,6 +106,7 @@ jobs:
             . venv/bin/activate
             pip install tox
             tox -p auto -e py27,py34,py35,py36
+            tox -e py36-doctest
 
       - run:
           name: save logs
