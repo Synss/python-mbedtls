@@ -607,6 +607,10 @@ cdef class ECPoint:
     def __str__(self):
         return self._tuple().__str__()
 
+    def __repr__(self):
+        return "{}({})".format(self.__class__.__name__,
+                               ", ".join(repr(x) for x in self._tuple()))
+
     def __eq__(self, other):
         if other == 0:
             return _pk.mbedtls_ecp_is_zero(&self._ctx) == 1
@@ -616,6 +620,9 @@ cdef class ECPoint:
         elif isinstance(other, Sequence):
             return self._tuple() == other
         return NotImplemented
+
+    def __bool__(self):
+        return _pk.mbedtls_ecp_is_zero(&self._ctx) == 0
 
     def __len__(self):
         return self._tuple().__len__()
