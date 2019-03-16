@@ -10,7 +10,7 @@ import pytest
 import mbedtls.hash as _hash
 from mbedtls.exceptions import *
 from mbedtls.mpi import MPI
-from mbedtls.pk import _type_from_name, _get_md_alg, CipherBase
+from mbedtls.pk import _type_from_name, _get_md_alg, CipherBase, ECPoint
 from mbedtls.pk import *
 
 try:
@@ -33,6 +33,48 @@ def test_digestmod_from_ctor(md_algorithm):
     assert callable(md_algorithm)
     algorithm = _get_md_alg(md_algorithm)
     assert isinstance(algorithm(), _hash.Hash)
+
+
+class TestECPoint:
+    @pytest.fixture(params=[(MPI(1), MPI(2), MPI(3)), (1, 2, 3)])
+    def xyz(self, request):
+        return request.param
+
+    @pytest.fixture
+    def point(self, xyz):
+        return ECPoint(*xyz)
+
+    def test_accessors(self, point, xyz):
+        x, y, z = xyz
+        assert point.x == x
+        assert point.y == y
+        assert point.z == z
+
+    def test_str(self, point):
+        assert str(point) == "ECPoint(1, 2, 3)"
+
+    def test_repr(self, point):
+        assert repr(point) == "ECPoint(MPI(1), MPI(2), MPI(3))"
+
+    def test_eq_point(self, point, xyz):
+        assert (point == ECPoint(*xyz)) is True
+        assert (point == ECPoint(0, 0, 0)) is False
+
+    def test_eq_zero(self):
+        zero = ECPoint(0, 0, 0)
+        assert (zero == 1) is False
+        assert (zero == 0) is True
+        assert (zero == ECPoint(0, 0, 0)) is True
+
+    def test_hash(self, point):
+        zero = ECPoint(0, 0, 0)
+        assert hash(zero) == hash(zero)
+        assert hash(point) == hash(point)
+        assert hash(zero) != hash(point)
+
+    def test_bool(self, point):
+        assert bool(point) is True
+        assert bool(ECPoint(0, 0, 0)) is False
 
 
 class _TestCipherBase(object):
@@ -175,7 +217,7 @@ class TestECC(_TestCipherBase):
     def test_cipher_without_key(self):
         assert self.cipher.export_key("NUM") == 0
         assert self.cipher.export_public_key("POINT") == 0
-        assert self.cipher.export_public_key("POINT") == (0, 0)
+        assert self.cipher.export_public_key("POINT") == ECPoint(0, 0, 0)
 
     @pytest.mark.usefixtures("key")
     def test_public_value_accessor(self):
