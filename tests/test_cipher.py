@@ -53,80 +53,149 @@ def test_cfb_raises_value_error_without_iv():
         Cipher(b"AES-512-CFB", b"", MODE_CFB, b"")
 
 
-def module_from_name(name):
-    for cipher, mod in (
-            (b"AES", mb.AES),
-            (b"ARC4", mb.ARC4),
-            (b"BLOWFISH", mb.Blowfish),
-            (b"CAMELLIA", mb.Camellia),
-            (b"DES-EDE3", mb.DES3),
-            (b"DES-EDE", mb.DES3dbl),
-            (b"DES", mb.DES)):
-        if name.startswith(cipher):
-            return mod
-    raise NotImplementedError
+class _TestCipher:
+    @pytest.fixture(params=[
+        MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR, MODE_GCM, MODE_CCM,
+    ])
+    def mode(self, request):
+        return request.param
+
+    @pytest.fixture
+    def iv(self, mode, randbytes):
+        return randbytes(16)
+
+    @pytest.fixture
+    def key_size(self):
+        raise NotImplementedError
+
+    @pytest.fixture
+    def module(self):
+        raise NotImplementedError
+
+    @pytest.fixture
+    def cipher(self):
+        raise NotImplementedError
+
+    @pytest.fixture
+    def key(self, key_size, randbytes):
+        return randbytes(key_size)
+
+    @pytest.fixture
+    def cipher(self, module, key, mode, iv):
+        return module.new(key, mode, iv)
+
+    @pytest.fixture
+    def data(self, cipher, mode, randbytes):
+        # `block_size` is limited for ECB because it is a block cipher.
+        return randbytes(cipher.block_size if mode == MODE_ECB else 20000)
+
+    def test_encrypt_decrypt(self, cipher, data):
+        assert cipher.decrypt(cipher.encrypt(data)) == data
+
+    def test_module_level_block_size(self, module, cipher):
+        assert module.block_size == cipher.block_size
+
+    def test_module_level_key_size(self, module, cipher):
+        assert module.key_size in {module.key_size, None}
 
 
-@pytest.fixture(params=(name for name in sorted(get_supported_ciphers())
-                        if not name.endswith(b"CCM")))  # Not compiled by default.
-def cipher(request, randbytes):
-    name = request.param
-    cipher = Cipher(name, key=None, mode=None, iv=b"\x00")
-    key = randbytes(cipher.key_size)
-    iv = randbytes(cipher.iv_size)
-    return module_from_name(name).new(key, cipher.mode, iv)
+class TestAES(_TestCipher):
+    @pytest.fixture(params=[
+        # CCM is not available.
+        MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR, MODE_GCM,
+    ])
+    def mode(self, request):
+        return request.param
+
+    @pytest.fixture(params=[16, 24, 32])
+    def key_size(self, request):
+        return request.param
+
+    @pytest.fixture
+    def module(self):
+        return mb.AES
 
 
-def is_streaming(cipher):
-    return cipher.name.startswith(b"ARC") or cipher.mode is not MODE_ECB
+class TestARC4(_TestCipher):
+    @pytest.fixture(params=[16])
+    def key_size(self, request):
+        return request.param
+
+    @pytest.fixture
+    def module(self):
+        return mb.ARC4
 
 
-def test_encrypt_decrypt(cipher, randbytes):
-    block = randbytes(cipher.block_size)
-    assert cipher.decrypt(cipher.encrypt(block)) == block
+class TestBlowfish(_TestCipher):
+    @pytest.fixture(params=[
+        MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR,
+    ])
+    def mode(self, request):
+        return request.param
+
+    @pytest.fixture(params=range(4, 57))
+    def key_size(self, request):
+        return request.param
+
+    @pytest.fixture
+    def module(self):
+        return mb.Blowfish
 
 
-def test_module_level_block_size_variable(cipher):
-    mod = module_from_name(cipher.name)
-    assert cipher.block_size == mod.block_size
+class TestCamellia(_TestCipher):
+    @pytest.fixture(params=[
+        # CCM is not available.
+        MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR, MODE_GCM,
+    ])
+    def mode(self, request):
+        return request.param
+
+    @pytest.fixture(params=[16, 24, 32])
+    def key_size(self, request):
+        return request.param
+
+    @pytest.fixture
+    def module(self):
+        return mb.Camellia
 
 
-def test_module_level_key_size_variable(cipher):
-    mod = module_from_name(cipher.name)
-    if mod.key_size is None:
-        pytest.skip("module defines variable-length key")
-    assert cipher.key_size == mod.key_size
+class TestDES(_TestCipher):
+    @pytest.fixture(params=[MODE_ECB, MODE_CBC])
+    def mode(self, request):
+        return request.param
+
+    @pytest.fixture(params=[8])
+    def key_size(self, request):
+        return request.param
+
+    @pytest.fixture
+    def module(self):
+        return mb.DES
 
 
-def test_wrong_key_size_raises_exception(cipher, randbytes):
-    mod = module_from_name(cipher.name)
-    if mod.key_size is None:
-        pytest.skip("module defines variable-length key")
-    with pytest.raises(TLSError):
-        mod.new(randbytes(cipher.key_size) + b"\x00",
-                cipher.mode, randbytes(cipher.iv_size))
+class TestDES3(_TestCipher):
+    @pytest.fixture(params=[MODE_ECB, MODE_CBC])
+    def mode(self, request):
+        return request.param
+
+    @pytest.fixture(params=[24])
+    def key_size(self, request):
+        return request.param
+
+    @pytest.fixture
+    def module(self):
+        return mb.DES3
 
 
-def test_streaming_ciphers(cipher, randbytes):
-    if not is_streaming(cipher):
-        pytest.skip("not a streaming cipher")
-    block = randbytes(20000)
-    assert cipher.decrypt(cipher.encrypt(block)) == block
+class TestDES3dbl(_TestCipher):
+    @pytest.fixture(params=[MODE_ECB, MODE_CBC])
+    def mode(self, request):
+        return request.param
 
+    @pytest.fixture(params=[16])
+    def key_size(self, request):
+        return request.param
 
-def test_fixed_block_size_ciphers_long_block_raise_exception(
-        cipher, randbytes):
-    if is_streaming(cipher):
-        pytest.skip("streaming cipher")
-    with pytest.raises(TLSError):
-        block = randbytes(cipher.block_size) + randbytes(1)
-        cipher.encrypt(block)
-
-
-def test_fixed_block_size_ciphers_short_block_raise_exception(
-        cipher, randbytes):
-    if is_streaming(cipher):
-        pytest.skip("streaming cipher")
-    with pytest.raises(TLSError):
-        block = randbytes(cipher.block_size)[1:]
-        cipher.encrypt(block)
+    @pytest.fixture
+    def module(self):
+        return mb.DES3dbl
