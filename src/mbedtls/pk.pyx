@@ -976,13 +976,18 @@ cdef class ECDHBase:
     @property
     def _private_key(self):
         """The private key (int)"""
-        return _mpi.from_mpi(&self._ctx.d)
+        val = _mpi.from_mpi(&self._ctx.d)
+        if not val:
+            raise KeyError('no private key')
+        return val
 
     @property
     def _public_key(self):
         """The public key (ECPoint)"""
         ecp = ECPoint()
         check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Q))
+        if not ecp:
+            raise KeyError('no public key')
         return ecp
 
     @property
@@ -990,6 +995,8 @@ cdef class ECDHBase:
         """Peer's public key (ECPoint)"""
         ecp = ECPoint()
         check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Qp))
+        if not ecp:
+            raise KeyError('no peer public key')
         return ecp
 
 

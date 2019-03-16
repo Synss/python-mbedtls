@@ -348,9 +348,12 @@ class TestECDHNaive:
             assert not peer._has_private()
             assert not peer._has_public()
             assert peer.shared_secret == 0
-            assert peer._private_key == 0
-            assert peer._public_key == 0
-            assert peer._peer_public_key == 0
+            with pytest.raises(KeyError):
+                assert peer._private_key == 0
+            with pytest.raises(KeyError):
+                assert peer._public_key == 0
+            with pytest.raises(KeyError):
+                assert peer._peer_public_key == 0
 
     def test_exchange(self):
         alice_to_bob = self.alice.generate()
