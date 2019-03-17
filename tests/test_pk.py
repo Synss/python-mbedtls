@@ -263,7 +263,7 @@ class TestECCtoECDH:
         assert srv_sec == cli_sec
 
 
-class TestDH:
+class _TestDHBase:
     @pytest.fixture
     def modulus_size(self):
         return 64
@@ -273,64 +273,58 @@ class TestDH:
         return 20
 
     @pytest.fixture
-    def srv_modulus(self, modulus_size):
+    def modulus(self, modulus_size):
         return MPI.prime(modulus_size)
 
     @pytest.fixture
-    def srv_generator(self, generator_size):
+    def generator(self, generator_size):
         return MPI.prime(generator_size)
 
     @pytest.fixture
-    def cli_modulus(self, modulus_size):
-        return MPI.prime(modulus_size)
+    def dhentity(self, modulus, generator):
+        raise NotImplementedError
+
+    def test_modulus(self, dhentity, modulus):
+        assert dhentity.modulus == modulus
+
+    def test_generator(self, dhentity, generator):
+        assert dhentity.generator == generator
+
+    def test_key_size_accessor(self, dhentity):
+        assert dhentity.key_size == 8
+
+    def test_share_secret_accessor_default(self, dhentity):
+        assert dhentity.shared_secret == 0
+
+
+class TestDHServer(_TestDHBase):
+    @pytest.fixture
+    def dhentity(self, modulus, generator):
+        return DHServer(modulus, generator)
+
+
+class TestDHClient(_TestDHBase):
+    @pytest.fixture
+    def dhentity(self, modulus, generator):
+        return DHClient(modulus, generator)
+
+
+class TestDHExchange:
+    @pytest.fixture
+    def modulus_size(self):
+        return 64
 
     @pytest.fixture
-    def cli_generator(self, generator_size):
-        return MPI.prime(generator_size)
+    def generator_size(self):
+        return 20
 
     @pytest.fixture
-    def srv(self, srv_modulus, srv_generator):
-        return DHServer(srv_modulus, srv_generator)
+    def cli(self, modulus_size, generator_size):
+        return DHClient(MPI.prime(modulus_size), MPI.prime(generator_size))
 
     @pytest.fixture
-    def cli(self, cli_modulus, cli_generator):
-        return DHClient(cli_modulus, cli_generator)
-
-    def test_srv_modulus(self, srv):
-        assert srv.modulus.is_prime()
-
-    def test_srv_generator(self, srv):
-        assert srv.generator.is_prime()
-
-    def test_srv_modulus_accessor(self, srv, srv_modulus):
-        assert srv.modulus == srv_modulus
-
-    def test_srv_generator_accessor(self, srv, srv_generator):
-        assert srv.generator == srv_generator
-
-    def test_srv_key_size_accessor(self, srv):
-        assert srv.key_size == 8
-
-    def test_cli_modulus(self, cli):
-        assert cli.modulus.is_prime()
-
-    def test_cli_generator(self, cli):
-        assert cli.generator.is_prime()
-
-    def test_cli_modulus_accessor(self, cli, cli_modulus):
-        assert cli.modulus == cli_modulus
-
-    def test_cli_generator_accessor(self, cli, cli_generator):
-        assert cli.generator == cli_generator
-
-    def test_cli_key_size_accessor(self, cli):
-        assert cli.key_size == 8
-
-    def test_srv_access_shared_secret_without_key(self, srv):
-        assert srv.shared_secret == 0
-
-    def test_cli_access_shared_secret_without_key(self, cli):
-        assert cli.shared_secret == 0
+    def srv(self, modulus_size, generator_size):
+        return DHServer(MPI.prime(modulus_size), MPI.prime(generator_size))
 
     def test_exchange(self, srv, cli):
         ske = srv.generate()
