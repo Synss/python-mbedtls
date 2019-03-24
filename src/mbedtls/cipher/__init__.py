@@ -16,7 +16,9 @@ from . import Camellia
 from . import DES
 from . import DES3
 from . import DES3dbl
+from . import CHACHA20
 
 
 __all__ = _cipher.__all__ + (
-    "AES", "ARC4", "Blowfish", "Camellia", "DES", "DES3", "DES3dbl")
+    "AES", "ARC4", "Blowfish", "Camellia", "DES", "DES3", "DES3dbl",
+    "CHACHA20")
