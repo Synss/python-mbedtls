@@ -20,7 +20,7 @@ import mbedtls.cipher as mb
 
 
 def test_cipher_list():
-    assert len(CIPHER_NAME) == 49
+    assert len(CIPHER_NAME) == 74
 
 
 def test_get_supported_ciphers():
@@ -97,6 +97,20 @@ class _TestCipher:
 
     def test_module_level_key_size(self, module, cipher):
         assert module.key_size in {module.key_size, None}
+
+
+class _TestAEADCipher(_TestCipher):
+    @pytest.fixture
+    def cipher(self, module, key, mode, iv, ad):
+        return module.new(key, mode, iv, ad)
+
+    @pytest.fixture
+    def ad(self, mode, randbytes):
+        return randbytes(64)
+
+    def test_encrypt_decrypt(self, cipher, data):
+        msg, tag = cipher.encrypt(data)
+        assert cipher.decrypt(msg, tag) == data
 
 
 class TestAES(_TestCipher):
@@ -199,3 +213,35 @@ class TestDES3dbl(_TestCipher):
     @pytest.fixture
     def module(self):
         return mb.DES3dbl
+
+
+class TestCHACHA20(_TestCipher):
+    @pytest.fixture(params=[MODE_STREAM])
+    def mode(self, request):
+        return request.param
+
+    @pytest.fixture(params=[32])
+    def key_size(self, request):
+        return request.param
+
+    @pytest.fixture
+    def module(self):
+        return mb.CHACHA20
+
+
+class TestCHACHA20AEAD(_TestAEADCipher):
+    @pytest.fixture
+    def iv(self, mode, randbytes):
+        return randbytes(12)
+
+    @pytest.fixture(params=[MODE_CHACHAPOLY])
+    def mode(self, request):
+        return request.param
+
+    @pytest.fixture(params=[32])
+    def key_size(self, request):
+        return request.param
+
+    @pytest.fixture
+    def module(self):
+        return mb.CHACHA20

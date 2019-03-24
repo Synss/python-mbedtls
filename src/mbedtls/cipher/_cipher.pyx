@@ -69,6 +69,31 @@ CIPHER_NAME = (
     b"CAMELLIA-128-CCM",
     b"CAMELLIA-192-CCM",
     b"CAMELLIA-256-CCM",
+    b"ARIA-128-ECB",
+    b"ARIA-192-ECB",
+    b"ARIA-256-ECB",
+    b"ARIA-128-CBC",
+    b"ARIA-192-CBC",
+    b"ARIA-256-CBC",
+    b"ARIA-128-CFB128",
+    b"ARIA-192-CFB128",
+    b"ARIA-256-CFB128",
+    b"ARIA-128-CTR",
+    b"ARIA-192-CTR",
+    b"ARIA-256-CTR",
+    b"ARIA-128-GCM",
+    b"ARIA-192-GCM",
+    b"ARIA-256-GCM",
+    b"ARIA-128-CCM",
+    b"ARIA-192-CCM",
+    b"ARIA-256-CCM",
+    b"AES-128-OFB",
+    b"AES-192-OFB",
+    b"AES-256-OFB",
+    b"AES-128-XTS",
+    b"AES-256-XTS",
+    b"CHACHA20",
+    b"CHACHA20-POLY1305",
 )
 
 
@@ -80,6 +105,8 @@ MODE_CTR = _cipher.MBEDTLS_MODE_CTR
 MODE_GCM = _cipher.MBEDTLS_MODE_GCM
 MODE_STREAM = _cipher.MBEDTLS_MODE_STREAM
 MODE_CCM = _cipher.MBEDTLS_MODE_CCM
+MODE_XTS = _cipher.MBEDTLS_MODE_XTS
+MODE_CHACHAPOLY = _cipher.MBEDTLS_MODE_CHACHAPOLY
 
 
 __supported_modes = {
@@ -101,13 +128,15 @@ cpdef _get_mode_name(mode):
         5: "CTR",
         6: "GCM",
         7: "STREAM",
-        8: "CCM"
+        8: "CCM",
+        9: "XTS",
+        10: "CHACHAPOLY"
     }[mode]
 
 
 __all__ = (
-    "MODE_ECB", "MODE_CBC", "MODE_CFB", "MODE_CTR", "MODE_GCM", "MODE_CCM",
-    "Cipher"
+    "MODE_ECB", "MODE_CBC", "MODE_CFB", "MODE_CTR", "MODE_GCM", "MODE_STREAM",
+    "MODE_CCM", "MODE_XTS", "MODE_CHACHAPOLY", "Cipher", "AEADCipher"
 )
 
 
@@ -256,3 +285,79 @@ cdef class Cipher:
 
     def decrypt(self, const unsigned char[:] message not None):
         return self._crypt(self._iv, message, _cipher.MBEDTLS_DECRYPT)
+
+
+cdef class AEADCipher(Cipher):
+    def __init__(self,
+                 cipher_name,
+                 const unsigned char[:] key,
+                 mode,
+                 const unsigned char[:] iv not None,
+                 const unsigned char[:] ad):
+        super().__init__(cipher_name, key, mode, iv)
+        self._ad = ad
+
+    cdef _aead_encrypt(self,
+                const unsigned char[:] iv,
+                const unsigned char[:] ad,
+                const unsigned char[:] input):
+        if input.size == 0:
+            check_error(-0x6280)  # Raise full block expected error.
+        assert iv.size != 0
+        cdef size_t olen
+        cdef size_t sz = input.size + self.block_size
+        cdef unsigned char tag[16];
+        assert sizeof(tag) == 16
+        cdef unsigned char* output = <unsigned char*>malloc(
+            sz * sizeof(unsigned char))
+        if not output:
+            raise MemoryError()
+        try:
+            if ad.size:
+                pad = <const unsigned char*> &ad[0]
+            else:
+                pad = NULL
+            check_error(_cipher.mbedtls_cipher_auth_encrypt(
+                &self._enc_ctx,
+                &iv[0], iv.size, pad, ad.size,
+                &input[0], input.size, output, &olen,
+                tag, sizeof(tag)))
+            return bytes(output[:olen]), bytes(tag[:16])
+        finally:
+            free(output)
+
+    cdef _aead_decrypt(self,
+                const unsigned char[:] iv,
+                const unsigned char[:] ad,
+                const unsigned char[:] input,
+                const unsigned char[:] tag):
+        if input.size == 0:
+            check_error(-0x6280)  # Raise full block expected error.
+        assert iv.size != 0
+        assert tag.size == 16
+        cdef size_t olen
+        cdef size_t sz = input.size + self.block_size
+        cdef unsigned char* output = <unsigned char*>malloc(
+            sz * sizeof(unsigned char))
+        if not output:
+            raise MemoryError()
+        try:
+            if ad.size:
+                pad = <const unsigned char*> &ad[0]
+            else:
+                pad = NULL
+            check_error(_cipher.mbedtls_cipher_auth_decrypt(
+                &self._dec_ctx,
+                &iv[0], iv.size, pad, ad.size,
+                &input[0], input.size, output, &olen,
+                &tag[0], tag.size))
+            return bytes(output[:olen])
+        finally:
+            free(output)
+
+    def encrypt(self, const unsigned char[:] message not None):
+        return self._aead_encrypt(self._iv, self._ad, message)
+
+    def decrypt(self, const unsigned char[:] message not None,
+                const unsigned char[:] tag not None):
+        return self._aead_decrypt(self._iv, self._ad, message, tag)
