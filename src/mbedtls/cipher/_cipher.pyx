@@ -135,8 +135,9 @@ cpdef _get_mode_name(mode):
 
 
 __all__ = (
-    "MODE_ECB", "MODE_CBC", "MODE_CFB", "MODE_CTR", "MODE_GCM", "MODE_STREAM",
-    "MODE_CCM", "MODE_XTS", "MODE_CHACHAPOLY", "Cipher", "AEADCipher"
+    "MODE_ECB", "MODE_CBC", "MODE_CFB", "MODE_OFB", "MODE_CTR", "MODE_GCM",
+    "MODE_STREAM", "MODE_CCM", "MODE_XTS", "MODE_CHACHAPOLY", "Cipher",
+    "AEADCipher"
 )
 
 
@@ -293,7 +294,7 @@ cdef class AEADCipher(Cipher):
                  const unsigned char[:] key,
                  mode,
                  const unsigned char[:] iv not None,
-                 const unsigned char[:] ad):
+                 const unsigned char[:] ad not None):
         super().__init__(cipher_name, key, mode, iv)
         self._ad = ad
 

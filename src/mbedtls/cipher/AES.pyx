@@ -17,7 +17,7 @@ block_size = 16
 key_size = None
 
 
-def new(key, mode, iv=None):
+def new(key, mode, iv=None, ad=None):
     """Return a `Cipher` object that can perform AES encryption and
     decryption.
 
@@ -34,20 +34,32 @@ def new(key, mode, iv=None):
             be used for encryption.
 
     """
-    if len(key) not in {16, 24, 32}:
-        raise TLSError(
-            msg="key size must 16, 24, or 32 bytes, got %i" % len(key))
-    if mode not in {
-        _cipher.MODE_ECB, 
-        _cipher.MODE_CBC, 
-        _cipher.MODE_CFB, 
+    if mode in {
+        _cipher.MODE_ECB,
+        _cipher.MODE_CBC,
+        _cipher.MODE_CFB,
+        _cipher.MODE_OFB,
         _cipher.MODE_CTR,
-        _cipher.MODE_GCM, 
+        _cipher.MODE_GCM,
         _cipher.MODE_CCM
     }:
+        if len(key) not in {16, 24, 32}:
+            raise TLSError(
+                msg="key size must 16, 24, or 32 bytes, got %i" % len(key))
+    elif mode is _cipher.MODE_XTS:
+        if len(key) not in {32, 64}:
+            raise TLSError(
+                msg="key size must 32, or 64 bytes, got %i" % len(key))
+    else:
         raise TLSError(msg="unsupported mode %r" % mode)
     mode_name = _cipher._get_mode_name(mode)
     if mode is _cipher.MODE_CFB:
         mode_name += "128"
-    name = ("AES-%i-%s" % (len(key) * 8, mode_name)).encode("ascii")
-    return _cipher.Cipher(name, key, mode, iv)
+    if mode is _cipher.MODE_XTS:
+        name = ("AES-%i-%s" % (len(key) * 4, mode_name)).encode("ascii")
+    else:
+        name = ("AES-%i-%s" % (len(key) * 8, mode_name)).encode("ascii")
+    if mode in {_cipher.MODE_GCM, _cipher.MODE_CCM}:
+        return _cipher.AEADCipher(name, key, mode, iv, ad)
+    else:
+        return _cipher.Cipher(name, key, mode, iv)
