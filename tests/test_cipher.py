@@ -104,9 +104,9 @@ class _TestAEADCipher(_TestCipher):
     def cipher(self, module, key, mode, iv, ad):
         return module.new(key, mode, iv, ad)
 
-    @pytest.fixture
-    def ad(self, mode, randbytes):
-        return randbytes(64)
+    @pytest.fixture(params=[0, 1, 16, 256])
+    def ad(self, mode, randbytes, request):
+        return randbytes(request.param)
 
     def test_encrypt_decrypt(self, cipher, data):
         msg, tag = cipher.encrypt(data)
@@ -115,8 +115,7 @@ class _TestAEADCipher(_TestCipher):
 
 class TestAES(_TestCipher):
     @pytest.fixture(params=[
-        # CCM is not available.
-        MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR, MODE_GCM,
+        MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR, MODE_OFB
     ])
     def mode(self, request):
         return request.param
@@ -124,6 +123,34 @@ class TestAES(_TestCipher):
     @pytest.fixture(params=[16, 24, 32])
     def key_size(self, request):
         return request.param
+
+    @pytest.fixture
+    def module(self):
+        return mb.AES
+
+
+class TestAESXTS(TestAES):
+    @pytest.fixture(params=[MODE_XTS])
+    def mode(self, request):
+        return request.param
+
+    @pytest.fixture(params=[32, 64])
+    def key_size(self, request):
+        return request.param
+
+
+class TestAESAEAD(_TestAEADCipher):
+    @pytest.fixture(params=[MODE_GCM, MODE_CCM])
+    def mode(self, request):
+        return request.param
+
+    @pytest.fixture(params=[16, 24, 32])
+    def key_size(self, request):
+        return request.param
+
+    @pytest.fixture(params=range(7, 14))
+    def iv(self, mode, randbytes, request):
+        return randbytes(request.param)
 
     @pytest.fixture
     def module(self):
