@@ -956,6 +956,11 @@ cdef class ECDHBase:
         """The private key (int)"""
         return _mpi.from_mpi(&self._ctx.d)
 
+    @_private_key.setter
+    def _private_key(self, d):
+        cdef _mpi.MPI _d = _mpi.MPI(d)
+        _mpi.mbedtls_mpi_copy(&self._ctx.d, &_d._ctx)
+
     @property
     def _public_key(self):
         """The public key (ECPoint)"""
@@ -963,12 +968,26 @@ cdef class ECDHBase:
         check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Q))
         return ecp
 
+    @_public_key.setter
+    def _public_key(self, Q):
+        if not isinstance(Q, ECPoint):
+            raise TypeError("an ECPoint is required, got %r", Q)
+        cdef ECPoint ecp = <ECPoint> Q
+        check_error(_pk.mbedtls_ecp_copy(&self._ctx.Q, &ecp._ctx))
+
     @property
     def _peer_public_key(self):
         """Peer's public key (ECPoint)"""
         ecp = ECPoint(0, 0, 0)
         check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Qp))
         return ecp
+
+    @_peer_public_key.setter
+    def _peer_public_key(self, Qp):
+        if not isinstance(Qp, ECPoint):
+            raise TypeError("an ECPoint is required, got %r", Qp)
+        cdef ECPoint ecp = <ECPoint> Qp
+        check_error(_pk.mbedtls_ecp_copy(&self._ctx.Qp, &ecp._ctx))
 
 
 cdef class ECDHServer(ECDHBase):
