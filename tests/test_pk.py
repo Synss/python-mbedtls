@@ -378,6 +378,7 @@ class TestECDHNaive:
         curve = request.param
         self.alice = ECDHNaive(curve)
         self.bob = ECDHNaive(curve)
+        self.eve = ECDHNaive(curve)
 
     def test_key_accessors_without_key(self):
         for peer in (self.alice, self.bob):
@@ -416,3 +417,11 @@ class TestECDHNaive:
         assert alice_secret == bob_secret
         assert alice_secret == self.alice.shared_secret
         assert bob_secret == self.bob.shared_secret
+
+        self.eve._public_key = self.alice._public_key
+        self.eve._peer_public_key = self.bob._public_key
+        with pytest.raises(TLSError):
+            self.eve.generate_secret()
+        self.eve._public_key = ECPoint(0, 0, 0)
+        self.eve._private_key = self.alice._private_key
+        assert self.eve.generate_secret() == alice_secret
