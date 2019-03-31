@@ -167,6 +167,22 @@ class TestARC4(_TestCipher):
         return mb.ARC4
 
 
+class TestARIA(_TestCipher):
+    @pytest.fixture(params=[
+        MODE_ECB, MODE_CBC, MODE_CTR, MODE_GCM,
+    ])
+    def mode(self, request):
+        return request.param
+
+    @pytest.fixture(params=[16, 24, 32])
+    def key_size(self, request):
+        return request.param
+
+    @pytest.fixture
+    def module(self):
+        return mb.ARIA
+
+
 class TestBlowfish(_TestCipher):
     @pytest.fixture(params=[
         MODE_ECB, MODE_CBC, MODE_CFB, MODE_CTR,

@@ -37,6 +37,8 @@ mkdir -p "$destdir"
 cd "$src"
 mkdir build
 cd build
+
+CFLAGS="-DMBEDTLS_ARIA_C=ON" \
 cmake .. \
 	-DCMAKE_INSTALL_PREFIX=$destdir \
 	-DENABLE_TESTING=OFF \

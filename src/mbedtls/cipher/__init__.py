@@ -11,6 +11,7 @@ __license__ = "MIT License"
 from ._cipher import *
 from . import AES
 from . import ARC4
+from . import ARIA
 from . import Blowfish
 from . import Camellia
 from . import DES

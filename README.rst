@@ -146,6 +146,7 @@ mbedtls provides the following algorithms:
 - AES encryption/decryption (128, 192, and 256 bits) in ECB, CBC, CFB128,
   CTR, GCM, or CCM mode;
 - ARC4 encryption/decryption;
+- ARIA encryption/decryption;
 - Blowfish encryption/decryption in ECB, CBC, CFB64, or CTR mode;
 - Camellia encryption/decryption (128, 192, and 256 bits) in ECB, CBC,
   CFB128, CTR, GCM, or CCM mode;
