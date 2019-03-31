@@ -1,3 +1,10 @@
+[next]
+
+Add Chacha20/Poly1305 support (Stephen.Y).
+
+* cipher: Add OFB, XFB, and CHACHA/POLY modes and support for
+AEAD ciphers (Stephen.Y).
+
 [0.15.0]
 
 Add DTLS support.  Both client side and server side are implemented.
