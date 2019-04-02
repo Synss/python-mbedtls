@@ -144,13 +144,16 @@ other libraries.
 mbedtls provides the following algorithms:
 
 - AES encryption/decryption (128, 192, and 256 bits) in ECB, CBC, CFB128,
-  CTR, GCM, or CCM mode;
+  CTR, OFB, or XTS mode;
+- AES AEAD (128, 192, and 256 bits) in GCM, or CCM mode;
 - ARC4 encryption/decryption;
-- ARIA encryption/decryption;
+- ARIA encryption/decryption (128, 192, and 256 bits) in ECB, CBC,
+  CTR, or GCM modes;
 - Blowfish encryption/decryption in ECB, CBC, CFB64, or CTR mode;
 - Camellia encryption/decryption (128, 192, and 256 bits) in ECB, CBC,
-  CFB128, CTR, GCM, or CCM mode;
-- DES encryption/decryption in ECB, or CBC mode;
+  CFB128, CTR, or GCM mode;
+- DES, DES3, and double DES3 encryption/decryption in ECB, or CBC mode;
+- CHACHA20 and CHACHA0/POLY1305 encryption/decryption.
 
 Notes:
    - Tagging and padding are not wrapped.
@@ -276,7 +279,8 @@ The key exchange is as follow::
    >>> dh_srv = pk.DHServer(MPI.prime(128), MPI.prime(96))
    >>> dh_cli = pk.DHClient(MPI.prime(128), MPI.prime(96))
 
-The values 23 and 5 are the prime modulus (P) and the generator (G).
+The 128-bytes prime and the 96-bytes prime are the modulus (P) and
+the generator (G).
 
 The server generates the ServerKeyExchange payload::
 
