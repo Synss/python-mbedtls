@@ -5,6 +5,7 @@ Add Chacha20/Poly1305 support (Stephen.Y).
 * cipher: Add support for the ARIA family.
 * cipher: Add OFB, XFB, and CHACHA/POLY modes and support for
 AEAD ciphers (Stephen.Y).
+* Update wheels with mbedtls 2.16.1.
 
 [0.15.0]
 
