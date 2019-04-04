@@ -1,3 +1,10 @@
+[next]
+
+Misc.
+
+* Change branching model to fast-forward merge on the master branch.
+
+
 [0.16.0] - 2019-04-04
 
 Add Chacha20/Poly1305 support (Stephen.Y).
