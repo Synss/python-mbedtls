@@ -27,13 +27,22 @@ cdef extern from "mbedtls/cipher.h" nogil:
         MBEDTLS_MODE_CTR,
         MBEDTLS_MODE_GCM,
         MBEDTLS_MODE_STREAM,
-        MBEDTLS_MODE_CCM
+        MBEDTLS_MODE_CCM,
+        MBEDTLS_MODE_XTS,
+        MBEDTLS_MODE_CHACHAPOLY
 
     ctypedef struct mbedtls_cipher_base_t:
         pass
 
     ctypedef struct mbedtls_cipher_info_t:
-        pass
+        mbedtls_cipher_type_t type
+        mbedtls_cipher_mode_t mode
+        unsigned int key_bitlen
+        const char* name
+        unsigned int iv_size
+        int flags
+        unsigned int block_size
+        const mbedtls_cipher_base_t *base
 
     ctypedef struct mbedtls_cipher_context_t:
         pass
@@ -41,7 +50,8 @@ cdef extern from "mbedtls/cipher.h" nogil:
     const int* mbedtls_cipher_list()
     const mbedtls_cipher_info_t* mbedtls_cipher_info_from_string(
         const char* cipher_name)
-    # mbedtls_cipher_info_from_type
+    const mbedtls_cipher_info_t* mbedtls_cipher_info_from_type(
+        const mbedtls_cipher_type_t)
     # mbedtls_cipher_info_from_values
 
     void mbedtls_cipher_init(mbedtls_cipher_context_t* ctx)
@@ -86,8 +96,21 @@ cdef extern from "mbedtls/cipher.h" nogil:
         const unsigned char* input, size_t ilen,
         unsigned char* output, size_t* olen)
 
-    # mbedtls_cipher_auth_encrypt
-    # mbedtls_cipher_auth_decrypt
+    int mbedtls_cipher_auth_encrypt(
+        mbedtls_cipher_context_t* ctx,
+        const unsigned char* iv, size_t iv_len,
+        const unsigned char* ad, size_t ad_len,
+        const unsigned char* input, size_t ilen,
+        unsigned char* output, size_t* olen,
+        unsigned char* tag, size_t tag_len)
+
+    int mbedtls_cipher_auth_decrypt(
+        mbedtls_cipher_context_t* ctx,
+        const unsigned char* iv, size_t iv_len,
+        const unsigned char* ad, size_t ad_len,
+        const unsigned char* input, size_t ilen,
+        unsigned char* output, size_t* olen,
+        const unsigned char* tag, size_t tag_len)
 
 
 cdef class Cipher:
@@ -99,3 +122,15 @@ cdef class Cipher:
                 const unsigned char[:] iv,
                 const unsigned char[:] input,
                 const mbedtls_operation_t operation)
+
+cdef class AEADCipher(Cipher):
+    cdef const unsigned char[:] _ad
+    cdef _aead_encrypt(self,
+                const unsigned char[:] iv,
+                const unsigned char[:] ad,
+                const unsigned char[:] input)
+    cdef _aead_decrypt(self,
+                const unsigned char[:] iv,
+                const unsigned char[:] ad,
+                const unsigned char[:] input,
+                const unsigned char[:] tag)

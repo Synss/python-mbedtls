@@ -18,12 +18,6 @@ import mbedtls.hmac as md_hmac
 # pylint: enable=import-error
 
 
-@pytest.fixture(params=md_hash.algorithms_available)
-def algorithm(request):
-    name = request.param
-    return md_hash.new(name)
-
-
 def make_chunks(buffer, size):
     for i in range(0, len(buffer), size):
         yield buffer[i:i+size]
@@ -43,103 +37,291 @@ def test_algorithms():
         md_hash.algorithms_available)
 
 
-def test_type_accessor(algorithm):
-    # pylint: disable=protected-access
-    assert 0 <= algorithm._type < len(MD_NAME)
+class _TestMDBase:
+    @pytest.fixture
+    def algorithm(self):
+        raise NotImplementedError
+
+    @pytest.fixture
+    def digest_size(self):
+        raise NotImplementedError
+
+    @pytest.fixture
+    def block_size(self):
+        raise NotImplementedError
+
+    def test_digest_size_accessor(self, algorithm, digest_size):
+        assert algorithm.digest_size == digest_size
+
+    def test_digest_size(self, algorithm, digest_size):
+        assert len(algorithm.digest()) == digest_size
+
+    def test_block_size_accessor(self, algorithm, block_size):
+        assert algorithm.block_size == block_size
 
 
-def test_block_size_accessor(algorithm):
-    assert algorithm.block_size in {16, 32, 64, 128, 256}
+class _TestHash(_TestMDBase):
+    @pytest.fixture
+    def buffer(self, randbytes):
+        return randbytes(512)
+
+    def test_new(self, algorithm, buffer):
+        copy = md_hash.new(algorithm.name, buffer)
+        algorithm.update(buffer)
+        assert algorithm.digest() == copy.digest()
+        assert algorithm.hexdigest() == copy.hexdigest()
+
+    def test_copy_and_update(self, algorithm, buffer):
+        copy = algorithm.copy()
+        algorithm.update(buffer)
+        copy.update(buffer)
+        assert algorithm.digest() == copy.digest()
+        assert algorithm.hexdigest() == copy.hexdigest()
 
 
-def test_copy_hash(algorithm, randbytes):
-    buf0 = randbytes(512)
-    buf1 = randbytes(512)
-    copy = algorithm.copy()
-    algorithm.update(buf1)
-    copy.update(buf1)
-    assert algorithm.digest() == copy.digest()
+@pytest.mark.skip
+class TestHashMD2(_TestHash):
+    @pytest.fixture
+    def algorithm(self):
+        return md_hash.md2()
 
 
-def test_check_hexdigest_against_hashlib(algorithm, randbytes):
-    buf = randbytes(1024)
-    try:
-        alg = md_hash.new(algorithm.name, buf)
-        ref = hashlib.new(algorithm.name, buf)
-    except ValueError as exc:
-        # Unsupported hash type.
-        pytest.skip(str(exc))
-    assert alg.hexdigest() == ref.hexdigest()
+@pytest.mark.skip
+class TestHashMD4(_TestHash):
+    @pytest.fixture
+    def algorithm(self):
+        return md_hash.md4()
 
 
-def test_check_against_hashlib_nobuf(algorithm, randbytes):
-    buf = randbytes(1024)
-    try:
-        alg = md_hash.new(algorithm.name, buf)
-        ref = hashlib.new(algorithm.name, buf)
-    except ValueError as exc:
-        # Unsupported hash type.
-        pytest.skip(str(exc))
-    assert alg.digest() == ref.digest()
+class TestHashMD5(_TestHash):
+    @pytest.fixture
+    def algorithm(self):
+        return md_hash.md5()
+
+    @pytest.fixture
+    def type_(self):
+        return 3
+
+    @pytest.fixture
+    def digest_size(self):
+        return 16
+
+    @pytest.fixture
+    def block_size(self):
+        return 64
 
 
-def test_check_against_hashlib_buf(algorithm, randbytes):
-    buf = randbytes(4096)
-    try:
-        alg = md_hash.new(algorithm.name)
-        ref = hashlib.new(algorithm.name)
-    except ValueError as exc:
-        # Unsupported hash type.
-        pytest.skip(str(exc))
-    for chunk in make_chunks(buf, 500):
-        alg.update(chunk)
-        ref.update(chunk)
-    assert alg.digest() == ref.digest()
+class TestHashSHA1(_TestHash):
+    @pytest.fixture
+    def algorithm(self):
+        return md_hash.sha1()
+
+    @pytest.fixture
+    def digest_size(self):
+        return 20
+
+    @pytest.fixture
+    def block_size(self):
+        return 64
 
 
-def test_check_against_hmac_nobuf(algorithm, randbytes):
-    buf = randbytes(1024)
-    key = randbytes(16)
-    try:
-        alg = md_hmac.new(key, buf, digestmod=algorithm.name)
-        ref = hmac.new(key, buf, digestmod=partial(hashlib.new, algorithm.name))
-    except ValueError as exc:
-        # Unsupported hash type.
-        pytest.skip(str(exc))
-    assert alg.digest() == ref.digest()
+class TestHashSHA224(_TestHash):
+    @pytest.fixture
+    def algorithm(self):
+        return md_hash.sha224()
+
+    @pytest.fixture
+    def digest_size(self):
+        return 28
+
+    @pytest.fixture
+    def block_size(self):
+        return 64
 
 
-def test_check_against_hmac_buf(algorithm, randbytes):
-    buf = randbytes(4096)
-    key = randbytes(16)
-    try:
-        alg = md_hmac.new(key, digestmod=algorithm.name)
-        ref = hmac.new(key, digestmod=partial(hashlib.new, algorithm.name))
-    except ValueError as exc:
-        # Unsupported hash type.
-        pytest.skip(str(exc))
-    for chunk in make_chunks(buf, 500):
-        alg.update(chunk)
-        ref.update(chunk)
-    assert alg.digest() == ref.digest()
+class TestHashSHA256(_TestHash):
+    @pytest.fixture
+    def algorithm(self):
+        return md_hash.sha256()
+
+    @pytest.fixture
+    def digest_size(self):
+        return 32
+
+    @pytest.fixture
+    def block_size(self):
+        return 64
 
 
-@pytest.mark.parametrize("name, algcls", inspect.getmembers(md_hash))
-def test_hash_instantiation(name, algcls):
-    if name not in md_hash.algorithms_available:
-        pytest.skip("not a hash algorithm")
-    alg1 = algcls()
-    alg2 = md_hash.new(name)
-    assert type(alg1) is type(alg2)
-    assert alg1.name == alg2.name
+class TestHashSHA384(_TestHash):
+    @pytest.fixture
+    def algorithm(self):
+        return md_hash.sha384()
+
+    @pytest.fixture
+    def digest_size(self):
+        return 48
+
+    @pytest.fixture
+    def block_size(self):
+        return 128
 
 
-@pytest.mark.parametrize("name, algcls", inspect.getmembers(md_hmac))
-def test_hmac_instantiation(name, algcls, randbytes):
-    if name not in md_hash.algorithms_available:
-        pytest.skip("not an hmac algorithm")
-    key = randbytes(16)
-    alg1 = algcls(key)
-    alg2 = md_hmac.new(key, digestmod=name)
-    assert type(alg1) is type(alg2)
-    assert alg1.name == alg2.name
+class TestHashSHA512(_TestHash):
+    @pytest.fixture
+    def algorithm(self):
+        return md_hash.sha512()
+
+    @pytest.fixture
+    def digest_size(self):
+        return 64
+
+    @pytest.fixture
+    def block_size(self):
+        return 128
+
+
+class TestHashRIPEMD160(_TestHash):
+    @pytest.fixture
+    def algorithm(self):
+        return md_hash.ripemd160()
+
+    @pytest.fixture
+    def digest_size(self):
+        return 20
+
+    @pytest.fixture
+    def block_size(self):
+        return 64
+
+
+class _TestHmac(_TestMDBase):
+    @pytest.fixture
+    def key(self, randbytes):
+        return randbytes(16)
+
+    @pytest.fixture
+    def buffer(self, randbytes):
+        return randbytes(512)
+
+    def test_new(self, algorithm, key, buffer):
+        copy = md_hmac.new(key, buffer, algorithm.name)
+        algorithm.update(buffer)
+        assert algorithm.digest() == copy.digest()
+        assert algorithm.hexdigest() == copy.hexdigest()
+
+
+@pytest.mark.skip
+class TestHmacMD2(_TestHmac):
+    @pytest.fixture
+    def algorithm(self, key):
+        return md_hmac.md2(key)
+
+
+@pytest.mark.skip
+class TestHmacMD4(_TestHmac):
+    @pytest.fixture
+    def algorithm(self, key):
+        return md_hmac.md4(key)
+
+
+class TestHmacMD5(_TestHmac):
+    @pytest.fixture
+    def algorithm(self, key):
+        return md_hmac.md5(key)
+
+    @pytest.fixture
+    def type_(self):
+        return 3
+
+    @pytest.fixture
+    def digest_size(self):
+        return 16
+
+    @pytest.fixture
+    def block_size(self):
+        return 64
+
+
+class TestHmacSHA1(_TestHmac):
+    @pytest.fixture
+    def algorithm(self, key):
+        return md_hmac.sha1(key)
+
+    @pytest.fixture
+    def digest_size(self):
+        return 20
+
+    @pytest.fixture
+    def block_size(self):
+        return 64
+
+
+class TestHmacSHA224(_TestHmac):
+    @pytest.fixture
+    def algorithm(self, key):
+        return md_hmac.sha224(key)
+
+    @pytest.fixture
+    def digest_size(self):
+        return 28
+
+    @pytest.fixture
+    def block_size(self):
+        return 64
+
+
+class TestHmacSHA256(_TestHmac):
+    @pytest.fixture
+    def algorithm(self, key):
+        return md_hmac.sha256(key)
+
+    @pytest.fixture
+    def digest_size(self):
+        return 32
+
+    @pytest.fixture
+    def block_size(self):
+        return 64
+
+
+class TestHmacSHA384(_TestHmac):
+    @pytest.fixture
+    def algorithm(self, key):
+        return md_hmac.sha384(key)
+
+    @pytest.fixture
+    def digest_size(self):
+        return 48
+
+    @pytest.fixture
+    def block_size(self):
+        return 128
+
+
+class TestHmacSHA512(_TestHmac):
+    @pytest.fixture
+    def algorithm(self, key):
+        return md_hmac.sha512(key)
+
+    @pytest.fixture
+    def digest_size(self):
+        return 64
+
+    @pytest.fixture
+    def block_size(self):
+        return 128
+
+
+class TestHmacRIPEMD160(_TestHmac):
+    @pytest.fixture
+    def algorithm(self, key):
+        return md_hmac.ripemd160(key)
+
+    @pytest.fixture
+    def digest_size(self):
+        return 20
+
+    @pytest.fixture
+    def block_size(self):
+        return 64

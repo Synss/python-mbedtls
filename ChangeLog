@@ -1,4 +1,13 @@
-[0.15.0]
+[0.16.0] - 2019-04-04
+
+Add Chacha20/Poly1305 support (Stephen.Y).
+
+* cipher: Add support for the ARIA family.
+* cipher: Add OFB, XFB, and CHACHA/POLY modes and support for
+AEAD ciphers (Stephen.Y).
+* Update wheels with mbedtls 2.16.1.
+
+[0.15.0] - 2019-03-15
 
 Add DTLS support.  Both client side and server side are implemented.
 Setting the cookie on the server side is *not* optional in `python-mbedtls`.

@@ -35,12 +35,17 @@ tar xzf "$filename" -C "$src" --strip-components 1
 
 mkdir -p "$destdir"
 cd "$src"
+uname -s
+if [ "$(uname -s)" == "Linux" ]; then
+	sed -i.bk -re "s (^DESTDIR=).* \1$destdir g" Makefile
+else
+	sed -i.bk -E "s (^DESTDIR=).* \1$destdir g" Makefile
+fi
+
 mkdir build
 cd build
-cmake .. \
-	-DCMAKE_INSTALL_PREFIX=$destdir \
-	-DENABLE_TESTING=OFF \
-	-DUSE_SHARED_MBEDTLS_LIBRARY=ON \
-	-DUSE_STATIC_MBEDTLS_LIBRARY=OFF
-make -j
-make -j install
+
+CFLAGS="-DMBEDTLS_ARIA_C=ON" \
+SHARED="ON" \
+make -C .. -j lib
+make -C .. -j install

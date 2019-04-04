@@ -10,7 +10,7 @@ import pytest
 import mbedtls.hash as _hash
 from mbedtls.exceptions import *
 from mbedtls.mpi import MPI
-from mbedtls.pk import _type_from_name, _get_md_alg, CipherBase
+from mbedtls.pk import _type_from_name, _get_md_alg, CipherBase, ECPoint
 from mbedtls.pk import *
 
 try:
@@ -33,6 +33,48 @@ def test_digestmod_from_ctor(md_algorithm):
     assert callable(md_algorithm)
     algorithm = _get_md_alg(md_algorithm)
     assert isinstance(algorithm(), _hash.Hash)
+
+
+class TestECPoint:
+    @pytest.fixture(params=[(MPI(1), MPI(2), MPI(3)), (1, 2, 3)])
+    def xyz(self, request):
+        return request.param
+
+    @pytest.fixture
+    def point(self, xyz):
+        return ECPoint(*xyz)
+
+    def test_accessors(self, point, xyz):
+        x, y, z = xyz
+        assert point.x == x
+        assert point.y == y
+        assert point.z == z
+
+    def test_str(self, point):
+        assert str(point) == "ECPoint(1, 2, 3)"
+
+    def test_repr(self, point):
+        assert repr(point) == "ECPoint(MPI(1), MPI(2), MPI(3))"
+
+    def test_eq_point(self, point, xyz):
+        assert (point == ECPoint(*xyz)) is True
+        assert (point == ECPoint(0, 0, 0)) is False
+
+    def test_eq_zero(self):
+        zero = ECPoint(0, 0, 0)
+        assert (zero == 1) is False
+        assert (zero == 0) is True
+        assert (zero == ECPoint(0, 0, 0)) is True
+
+    def test_hash(self, point):
+        zero = ECPoint(0, 0, 0)
+        assert hash(zero) == hash(zero)
+        assert hash(point) == hash(point)
+        assert hash(zero) != hash(point)
+
+    def test_bool(self, point):
+        assert bool(point) is True
+        assert bool(ECPoint(0, 0, 0)) is False
 
 
 class _TestCipherBase(object):
@@ -175,7 +217,7 @@ class TestECC(_TestCipherBase):
     def test_cipher_without_key(self):
         assert self.cipher.export_key("NUM") == 0
         assert self.cipher.export_public_key("POINT") == 0
-        assert self.cipher.export_public_key("POINT") == (0, 0)
+        assert self.cipher.export_public_key("POINT") == ECPoint(0, 0, 0)
 
     @pytest.mark.usefixtures("key")
     def test_public_value_accessor(self):
@@ -221,7 +263,7 @@ class TestECCtoECDH:
         assert srv_sec == cli_sec
 
 
-class TestDH:
+class _TestDHBase:
     @pytest.fixture
     def modulus_size(self):
         return 64
@@ -231,64 +273,58 @@ class TestDH:
         return 20
 
     @pytest.fixture
-    def srv_modulus(self, modulus_size):
+    def modulus(self, modulus_size):
         return MPI.prime(modulus_size)
 
     @pytest.fixture
-    def srv_generator(self, generator_size):
+    def generator(self, generator_size):
         return MPI.prime(generator_size)
 
     @pytest.fixture
-    def cli_modulus(self, modulus_size):
-        return MPI.prime(modulus_size)
+    def dhentity(self, modulus, generator):
+        raise NotImplementedError
+
+    def test_modulus(self, dhentity, modulus):
+        assert dhentity.modulus == modulus
+
+    def test_generator(self, dhentity, generator):
+        assert dhentity.generator == generator
+
+    def test_key_size_accessor(self, dhentity):
+        assert dhentity.key_size == 8
+
+    def test_share_secret_accessor_default(self, dhentity):
+        assert dhentity.shared_secret == 0
+
+
+class TestDHServer(_TestDHBase):
+    @pytest.fixture
+    def dhentity(self, modulus, generator):
+        return DHServer(modulus, generator)
+
+
+class TestDHClient(_TestDHBase):
+    @pytest.fixture
+    def dhentity(self, modulus, generator):
+        return DHClient(modulus, generator)
+
+
+class TestDHExchange:
+    @pytest.fixture
+    def modulus_size(self):
+        return 64
 
     @pytest.fixture
-    def cli_generator(self, generator_size):
-        return MPI.prime(generator_size)
+    def generator_size(self):
+        return 20
 
     @pytest.fixture
-    def srv(self, srv_modulus, srv_generator):
-        return DHServer(srv_modulus, srv_generator)
+    def cli(self, modulus_size, generator_size):
+        return DHClient(MPI.prime(modulus_size), MPI.prime(generator_size))
 
     @pytest.fixture
-    def cli(self, cli_modulus, cli_generator):
-        return DHClient(cli_modulus, cli_generator)
-
-    def test_srv_modulus(self, srv):
-        assert srv.modulus.is_prime()
-
-    def test_srv_generator(self, srv):
-        assert srv.generator.is_prime()
-
-    def test_srv_modulus_accessor(self, srv, srv_modulus):
-        assert srv.modulus == srv_modulus
-
-    def test_srv_generator_accessor(self, srv, srv_generator):
-        assert srv.generator == srv_generator
-
-    def test_srv_key_size_accessor(self, srv):
-        assert srv.key_size == 8
-
-    def test_cli_modulus(self, cli):
-        assert cli.modulus.is_prime()
-
-    def test_cli_generator(self, cli):
-        assert cli.generator.is_prime()
-
-    def test_cli_modulus_accessor(self, cli, cli_modulus):
-        assert cli.modulus == cli_modulus
-
-    def test_cli_generator_accessor(self, cli, cli_generator):
-        assert cli.generator == cli_generator
-
-    def test_cli_key_size_accessor(self, cli):
-        assert cli.key_size == 8
-
-    def test_srv_access_shared_secret_without_key(self, srv):
-        assert srv.shared_secret == 0
-
-    def test_cli_access_shared_secret_without_key(self, cli):
-        assert cli.shared_secret == 0
+    def srv(self, modulus_size, generator_size):
+        return DHServer(MPI.prime(modulus_size), MPI.prime(generator_size))
 
     def test_exchange(self, srv, cli):
         ske = srv.generate()
@@ -342,6 +378,7 @@ class TestECDHNaive:
         curve = request.param
         self.alice = ECDHNaive(curve)
         self.bob = ECDHNaive(curve)
+        self.eve = ECDHNaive(curve)
 
     def test_key_accessors_without_key(self):
         for peer in (self.alice, self.bob):
@@ -380,3 +417,11 @@ class TestECDHNaive:
         assert alice_secret == bob_secret
         assert alice_secret == self.alice.shared_secret
         assert bob_secret == self.bob.shared_secret
+
+        self.eve._public_key = self.alice._public_key
+        self.eve._peer_public_key = self.bob._public_key
+        with pytest.raises(TLSError):
+            self.eve.generate_secret()
+        self.eve._public_key = ECPoint(0, 0, 0)
+        self.eve._private_key = self.alice._private_key
+        assert self.eve.generate_secret() == alice_secret

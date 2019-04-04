@@ -24,12 +24,6 @@ cimport mbedtls.mpi as _mpi
 cimport mbedtls.pk as _pk
 cimport mbedtls._random as _rnd
 
-try:
-    from collections.abc import Sequence
-except ImportError:
-    # Python 2.7
-    from collections import Sequence
-
 import enum
 from collections import namedtuple
 from functools import partial
@@ -568,6 +562,13 @@ cdef class RSA(CipherBase):
 cdef class ECPoint:
 
     """A point on the elliptic curve."""
+    def __init__(self, x, y, z):
+        cdef _mpi.MPI _x = _mpi.MPI(x)
+        cdef _mpi.MPI _y = _mpi.MPI(y)
+        cdef _mpi.MPI _z = _mpi.MPI(z)
+        _mpi.mbedtls_mpi_copy(&self._ctx.X, &_x._ctx)
+        _mpi.mbedtls_mpi_copy(&self._ctx.Y, &_y._ctx)
+        _mpi.mbedtls_mpi_copy(&self._ctx.Z, &_z._ctx)
 
     def __cinit__(self):
         """Initialize the context."""
@@ -601,11 +602,15 @@ cdef class ECPoint:
         except ValueError:
             return _mpi.MPI()
 
-    def _tuple(self):
-        return (self.x, self.y)
-
     def __str__(self):
-        return self._tuple().__str__()
+        return "%s(%i, %i, %i)" % (
+            type(self).__name__, self.x, self.y, self.z
+        )
+
+    def __repr__(self):
+        return "%s(%r, %r, %r)" % (
+            type(self).__name__, self.x, self.y, self.z
+        )
 
     def __eq__(self, other):
         if other == 0:
@@ -613,33 +618,13 @@ cdef class ECPoint:
         elif type(other) is type(self):
             c_other = <ECPoint> other
             return _pk.mbedtls_ecp_point_cmp(&self._ctx, &c_other._ctx) == 0
-        elif isinstance(other, Sequence):
-            return self._tuple() == other
         return NotImplemented
 
-    def __len__(self):
-        return self._tuple().__len__()
+    def __hash__(self):
+        return hash((self.x, self.y, self.z))
 
-    def __getitem__(self, key):
-        return self._tuple().__getitem__(key)
-
-    def __contains__(self, value):
-        return self._tuple().__contains__(value)
-
-    def __iter__(self):
-        return self._tuple().__iter__()
-
-    def index(self, value):
-        return self._tuple().index(value)
-
-    def count(self, value):
-        return self._tuple().count(value)
-
-    def copy(self):
-        """Return a copy of this point."""
-        cdef ECPoint other = ECPoint()
-        check_error(_pk.mbedtls_ecp_copy(&other._ctx, &self._ctx))
-        return other
+    def __bool__(self):
+        return _pk.mbedtls_ecp_is_zero(&self._ctx) == 0
 
 
 cdef class ECC(CipherBase):
@@ -721,7 +706,7 @@ cdef class ECC(CipherBase):
         return super().export_key(format)
 
     def _public_to_point(self):
-        point = ECPoint()
+        point = ECPoint(0, 0, 0)
         _pk.mbedtls_ecp_copy(&point._ctx, &_pk.mbedtls_pk_ec(self._ctx).Q)
         return point
 
@@ -971,19 +956,32 @@ cdef class ECDHBase:
         """The private key (int)"""
         return _mpi.from_mpi(&self._ctx.d)
 
+    @_private_key.setter
+    def _private_key(self, priv):
+        cdef _mpi.MPI c_priv = _mpi.MPI(priv)
+        _mpi.mbedtls_mpi_copy(&self._ctx.d, &c_priv._ctx)
+
     @property
     def _public_key(self):
         """The public key (ECPoint)"""
-        ecp = ECPoint()
+        ecp = ECPoint(0, 0, 0)
         check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Q))
         return ecp
+
+    @_public_key.setter
+    def _public_key(self, ECPoint ecp):
+        check_error(_pk.mbedtls_ecp_copy(&self._ctx.Q, &ecp._ctx))
 
     @property
     def _peer_public_key(self):
         """Peer's public key (ECPoint)"""
-        ecp = ECPoint()
+        ecp = ECPoint(0, 0, 0)
         check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Qp))
         return ecp
+
+    @_peer_public_key.setter
+    def _peer_public_key(self, ECPoint ecp):
+        check_error(_pk.mbedtls_ecp_copy(&self._ctx.Qp, &ecp._ctx))
 
 
 cdef class ECDHServer(ECDHBase):
