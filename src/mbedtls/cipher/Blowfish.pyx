@@ -31,19 +31,19 @@ def new(key, mode, iv=None):
             be used for encryption.
 
     """
+    mode = _cipher.Mode(mode)
     if len(key) not in range(4, 57):
         raise TLSError(
             msg="key size must be 4 to 57 bytes, got %i" % (
                 key_size, len(key)))
     if mode not in {
-        _cipher.MODE_ECB,
-        _cipher.MODE_CBC,
-        _cipher.MODE_CFB,
-        _cipher.MODE_CTR,
+        _cipher.Mode.ECB,
+        _cipher.Mode.CBC,
+        _cipher.Mode.CFB,
+        _cipher.Mode.CTR,
     }:
         raise TLSError(msg="unsupported mode %r" % mode)
-    mode_name = _cipher._get_mode_name(mode)
-    if mode is _cipher.MODE_CFB:
-        mode_name += "64"
-    name = ("BLOWFISH-%s" % mode_name).encode("ascii")
+    name = ("BLOWFISH-%s%s"
+            % (mode.name, "64" if mode is _cipher.Mode.CFB else "")
+           ).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)

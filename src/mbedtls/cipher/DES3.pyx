@@ -33,14 +33,14 @@ def new(key, mode, iv=None):
             be used for encryption.
 
     """
+    mode = _cipher.Mode(mode)
     if len(key) != key_size:
         raise TLSError(
             msg="key size must be %i bytes, got %i" % (key_size, len(key)))
     if mode not in {
-        _cipher.MODE_ECB,
-        _cipher.MODE_CBC,
+        _cipher.Mode.ECB,
+        _cipher.Mode.CBC,
     }:
         raise TLSError(msg="unsupported mode %r" % mode)
-    mode_name = _cipher._get_mode_name(mode)
-    name = ("DES-EDE3-%s" % mode_name).encode("ascii")
+    name = ("DES-EDE3-%s" % mode.name).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)

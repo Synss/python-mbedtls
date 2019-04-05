@@ -21,13 +21,14 @@ key_size = None
 
 
 def new(key, mode, iv=None):
+    mode = _cipher.Mode(mode)
     if mode in {
-        _cipher.MODE_ECB,
-        _cipher.MODE_CBC,
-        # _cipher.MODE_CFB128,
-        _cipher.MODE_CTR,
-        _cipher.MODE_GCM,
-        _cipher.MODE_CCM,
+        _cipher.Mode.ECB,
+        _cipher.Mode.CBC,
+        # _cipher.Mode.CFB128,
+        _cipher.Mode.CTR,
+        _cipher.Mode.GCM,
+        _cipher.Mode.CCM,
     }:
         if len(key) * 8 not in {128, 192, 256}:
             raise TLSError(
@@ -35,6 +36,5 @@ def new(key, mode, iv=None):
             )
     else:
         raise TLSError(msg="unsupported mode %r" % mode)
-    mode_name = _cipher._get_mode_name(mode)
-    name = ("ARIA-%i-%s" % (len(key) * 8, mode_name)).encode("ascii")
+    name = ("ARIA-%i-%s" % (len(key) * 8, mode.name)).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)

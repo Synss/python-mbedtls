@@ -15,6 +15,8 @@ except ImportError:
     # Python 2.7
     from contextlib2 import suppress
 
+import enum
+
 from mbedtls.exceptions import *
 
 
@@ -97,46 +99,46 @@ CIPHER_NAME = (
 )
 
 
-MODE_ECB = _cipher.MBEDTLS_MODE_ECB
-MODE_CBC = _cipher.MBEDTLS_MODE_CBC
-MODE_CFB = _cipher.MBEDTLS_MODE_CFB
-MODE_OFB = _cipher.MBEDTLS_MODE_OFB
-MODE_CTR = _cipher.MBEDTLS_MODE_CTR
-MODE_GCM = _cipher.MBEDTLS_MODE_GCM
-MODE_STREAM = _cipher.MBEDTLS_MODE_STREAM
-MODE_CCM = _cipher.MBEDTLS_MODE_CCM
-MODE_XTS = _cipher.MBEDTLS_MODE_XTS
-MODE_CHACHAPOLY = _cipher.MBEDTLS_MODE_CHACHAPOLY
+@enum.unique
+class Mode(enum.Enum):
+    ECB = _cipher.MBEDTLS_MODE_ECB
+    CBC = _cipher.MBEDTLS_MODE_CBC
+    CFB = _cipher.MBEDTLS_MODE_CFB
+    OFB = _cipher.MBEDTLS_MODE_OFB
+    CTR = _cipher.MBEDTLS_MODE_CTR
+    GCM = _cipher.MBEDTLS_MODE_GCM
+    STREAM = _cipher.MBEDTLS_MODE_STREAM
+    CCM = _cipher.MBEDTLS_MODE_CCM
+    XTS = _cipher.MBEDTLS_MODE_XTS
+    CHACHAPOLY = _cipher.MBEDTLS_MODE_CHACHAPOLY
 
 
-__supported_modes = {
-    MODE_ECB,
-    MODE_CBC,
-    MODE_CFB,
-    MODE_CTR,
-    MODE_GCM,
-    MODE_CCM
-}
-
-
-cpdef _get_mode_name(mode):
-    return {
-        1: "ECB",
-        2: "CBC",
-        3: "CFB",
-        4: "OFB",
-        5: "CTR",
-        6: "GCM",
-        7: "STREAM",
-        8: "CCM",
-        9: "XTS",
-        10: "CHACHAPOLY"
-    }[mode]
+# Add module-level aliases to comply with PEP 272.
+MODE_ECB = Mode.ECB
+MODE_CBC = Mode.CBC
+MODE_CFB = Mode.CFB
+MODE_OFB = Mode.OFB
+MODE_CTR = Mode.CTR
+MODE_GCM = Mode.GCM
+MODE_STREAM = Mode.STREAM
+MODE_CCM = Mode.CCM
+MODE_XTS = Mode.XTS
+MODE_CHACHAPOLY = Mode.CHACHAPOLY
 
 
 __all__ = (
-    "MODE_ECB", "MODE_CBC", "MODE_CFB", "MODE_OFB", "MODE_CTR", "MODE_GCM",
-    "MODE_STREAM", "MODE_CCM", "MODE_XTS", "MODE_CHACHAPOLY", "Cipher",
+    "Mode",
+    "MODE_ECB",
+    "MODE_CBC",
+    "MODE_CFB",
+    "MODE_OFB",
+    "MODE_CTR",
+    "MODE_GCM",
+    "MODE_STREAM",
+    "MODE_CCM",
+    "MODE_XTS",
+    "MODE_CHACHAPOLY",
+    "Cipher",
     "AEADCipher"
 )
 
@@ -178,12 +180,15 @@ cdef class Cipher:
             key_size (int): The size of the cipher's key, in bytes.
 
     """
-    def __init__(self,
-                 cipher_name,
-                 const unsigned char[:] key,
-                 mode,
-                 const unsigned char[:] iv not None):
-        if mode in {MODE_CBC, MODE_CFB} and iv.size == 0:
+    def __init__(
+        self,
+        cipher_name,
+        const unsigned char[:] key,
+        mode,
+        const unsigned char[:] iv not None
+    ):
+        mode = Mode(mode)
+        if mode in {Mode.CBC, Mode.CFB} and iv.size == 0:
             raise ValueError("mode requires an IV")
         if cipher_name not in get_supported_ciphers():
             raise TLSError(msg="unsupported cipher: %r" % cipher_name)
@@ -232,7 +237,7 @@ cdef class Cipher:
     @property
     def mode(self):
         """Return the mode of operation of the cipher."""
-        return _cipher.mbedtls_cipher_get_cipher_mode(&self._enc_ctx)
+        return Mode(_cipher.mbedtls_cipher_get_cipher_mode(&self._enc_ctx))
 
     @property
     def iv_size(self):

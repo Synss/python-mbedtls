@@ -30,20 +30,20 @@ def new(key, mode, iv=None):
             be used for encryption.
 
     """
+    mode = _cipher.Mode(mode)
     if len(key) not in {16, 24, 32}:
         raise TLSError(
             msg="key size must 16, 24, or 32 bytes, got %r" % len(key))
     if mode not in {
-        _cipher.MODE_ECB,
-        _cipher.MODE_CBC,
-        _cipher.MODE_CFB,
-        _cipher.MODE_CTR,
-        _cipher.MODE_GCM,
-        _cipher.MODE_CCM,
+        _cipher.Mode.ECB,
+        _cipher.Mode.CBC,
+        _cipher.Mode.CFB,
+        _cipher.Mode.CTR,
+        _cipher.Mode.GCM,
+        _cipher.Mode.CCM,
     }:
         raise TLSError(msg="unsupported mode %r" % mode)
-    mode_name = _cipher._get_mode_name(mode)
-    if mode is _cipher.MODE_CFB:
-        mode_name += "128"
-    name = ("CAMELLIA-%i-%s" % (len(key) * 8, mode_name)).encode("ascii")
+    name = ("CAMELLIA-%i-%s%s"
+            % (len(key) * 8, mode.name, "128" if mode is _cipher.Mode.CFB else "")
+           ).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)

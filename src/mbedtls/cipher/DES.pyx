@@ -12,16 +12,6 @@ import mbedtls.cipher._cipher as _cipher
 from mbedtls.exceptions import *
 
 
-MODE_ECB = _cipher.MODE_ECB
-MODE_CBC = _cipher.MODE_CBC
-# MODE_CFB = _cipher.MODE_CFB
-# MODE_OFB = _cipher.MODE_OFB
-# MODE_CTR = _cipher.MODE_CTR
-# MODE_GCM = _cipher.MODE_GCM
-# MODE_STREAM = _cipher.MODE_STREAM
-# MODE_CCM = _cipher.MODE_CCM
-
-
 block_size = 8
 key_size = 8
 
@@ -42,13 +32,13 @@ def new(key, mode, iv=None):
             be used for encryption.
 
     """
+    mode = _cipher.Mode(mode)
     if len(key) != key_size:
         raise TLSError(msg="key size must be 16 bytes, got %r" % len(key))
     if mode not in {
-        _cipher.MODE_ECB,
-        _cipher.MODE_CBC,
+        _cipher.Mode.ECB,
+        _cipher.Mode.CBC,
     }:
         raise TLSError(msg="unsupported mode %r" % mode)
-    mode_name = _cipher._get_mode_name(mode)
-    name = ("DES-%s" % mode_name).encode("ascii")
+    name = ("DES-%s" % mode.name).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)

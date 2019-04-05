@@ -34,32 +34,34 @@ def new(key, mode, iv=None, ad=None):
             be used for encryption.
 
     """
+    mode = _cipher.Mode(mode)
     if mode in {
-        _cipher.MODE_ECB,
-        _cipher.MODE_CBC,
-        _cipher.MODE_CFB,
-        _cipher.MODE_OFB,
-        _cipher.MODE_CTR,
-        _cipher.MODE_GCM,
-        _cipher.MODE_CCM
+        _cipher.Mode.ECB,
+        _cipher.Mode.CBC,
+        _cipher.Mode.CFB,
+        _cipher.Mode.OFB,
+        _cipher.Mode.CTR,
+        _cipher.Mode.GCM,
+        _cipher.Mode.CCM
     }:
         if len(key) not in {16, 24, 32}:
             raise TLSError(
                 msg="key size must 16, 24, or 32 bytes, got %i" % len(key))
-    elif mode is _cipher.MODE_XTS:
+    elif mode is _cipher.Mode.XTS:
         if len(key) not in {32, 64}:
             raise TLSError(
                 msg="key size must 32, or 64 bytes, got %i" % len(key))
     else:
         raise TLSError(msg="unsupported mode %r" % mode)
-    mode_name = _cipher._get_mode_name(mode)
-    if mode is _cipher.MODE_CFB:
-        mode_name += "128"
-    if mode is _cipher.MODE_XTS:
-        name = ("AES-%i-%s" % (len(key) * 4, mode_name)).encode("ascii")
+    if mode is _cipher.Mode.XTS:
+        name = ("AES-%i-%s" % (len(key) * 4, mode.name)).encode("ascii")
     else:
-        name = ("AES-%i-%s" % (len(key) * 8, mode_name)).encode("ascii")
-    if mode in {_cipher.MODE_GCM, _cipher.MODE_CCM}:
+        name = ("AES-%i-%s%s"
+                % (len(key) * 8,
+                   mode.name,
+                   "128" if mode is _cipher.Mode.CFB else "",
+                  )).encode("ascii")
+    if mode in {_cipher.Mode.GCM, _cipher.Mode.CCM}:
         return _cipher.AEADCipher(name, key, mode, iv, ad)
     else:
         return _cipher.Cipher(name, key, mode, iv)
