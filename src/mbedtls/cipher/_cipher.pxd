@@ -113,17 +113,23 @@ cdef extern from "mbedtls/cipher.h" nogil:
         const unsigned char* tag, size_t tag_len)
 
 
-cdef class Cipher:
+cdef class _CipherBase:
     # Encapsulate two contexts to push the keys into mbedtls ASAP.
     cdef mbedtls_cipher_context_t _enc_ctx
     cdef mbedtls_cipher_context_t _dec_ctx
     cdef const unsigned char[:] _iv
-    cdef _crypt(self,
-                const unsigned char[:] iv,
-                const unsigned char[:] input,
-                const mbedtls_operation_t operation)
 
-cdef class AEADCipher(Cipher):
+
+cdef class Cipher(_CipherBase):
+    cdef _crypt(
+        self,
+        const unsigned char[:] iv,
+        const unsigned char[:] input,
+        const mbedtls_operation_t operation
+    )
+
+
+cdef class AEADCipher(_CipherBase):
     cdef const unsigned char[:] _ad
     cdef _aead_encrypt(self,
                 const unsigned char[:] iv,

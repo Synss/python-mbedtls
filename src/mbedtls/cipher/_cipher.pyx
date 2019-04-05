@@ -159,7 +159,7 @@ cpdef get_supported_ciphers():
     return ciphers
 
 
-cdef class Cipher:
+cdef class _CipherBase:
 
     """Wrap and encapsulate the cipher library from mbed TLS.
 
@@ -260,6 +260,14 @@ cdef class Cipher:
         """Return the size of the ciphers' key."""
         return _cipher.mbedtls_cipher_get_key_bitlen(&self._enc_ctx) // 8
 
+    def encrypt(self, const unsigned char[:] message not None):
+        raise NotImplementedError
+
+    def decrypt(self, const unsigned char[:] message not None):
+        raise NotImplementedError
+
+
+cdef class Cipher(_CipherBase):
     cdef _crypt(self, 
                 const unsigned char[:] iv,
                 const unsigned char[:] input,
@@ -293,7 +301,7 @@ cdef class Cipher:
         return self._crypt(self._iv, message, _cipher.MBEDTLS_DECRYPT)
 
 
-cdef class AEADCipher(Cipher):
+cdef class AEADCipher(_CipherBase):
     def __init__(self,
                  cipher_name,
                  const unsigned char[:] key,
