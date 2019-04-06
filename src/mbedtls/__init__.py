@@ -11,6 +11,16 @@ import mbedtls.hash as hash
 import mbedtls.hmac as hmac
 import mbedtls.pk as pk
 import mbedtls.tls as tls
+import mbedtls.x509 as x509
 
 
-__all__ = ("cipher", "exceptions", "hash", "hmac", "pk", "tls", "version")
+__all__ = (
+    "cipher",
+    "exceptions",
+    "hash",
+    "hmac",
+    "pk",
+    "tls",
+    "version",
+    "x509",
+)
