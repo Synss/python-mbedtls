@@ -134,6 +134,29 @@ Warning:
    per message.
 
 
+HMAC-based key derivation functino (HKDF) with `mbedtls.hkdf`
+-------------------------------------------------------------
+
+The `mbedtls.hkdf` module exposes extract-and-expand key derivation functions.
+The main function is `hkdf()` but `extract()` and `expand()` may be used
+as well.
+
+Example::
+
+   >>> from mbedtls import hkdf
+   >>> hkdf.hkdf(
+   ...     b"my secret key",
+   ...     length=42,
+   ...     info=b"my cool app",
+   ...     salt=b"and pepper",
+   ...     digestmod=hmac.sha256
+   ... )
+   b'v,\xef\x90\xccU\x1d\x1b\xd7\\a\xaf\x92\xac\n\x90\xf9q\xf4)\xcd"\xf7\x1a\x94p\x03.\xa8e\x1e\xfb\x92\xe8l\x0cc\xf8e\rvj'
+
+where `info`, `salt`, and `digestmod` are optional, although providing
+(at least) `info` is largely recommended.
+
+
 Symmetric cipher with `mbedtls.cipher`
 --------------------------------------
 

@@ -21,5 +21,12 @@ from . import CHACHA20
 
 
 __all__ = _cipher.__all__ + (
-    "AES", "ARC4", "Blowfish", "Camellia", "DES", "DES3", "DES3dbl",
-    "CHACHA20")
+    "AES",
+    "ARC4",
+    "Blowfish",
+    "Camellia",
+    "DES",
+    "DES3",
+    "DES3dbl",
+    "CHACHA20",
+)

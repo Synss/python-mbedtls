@@ -1,5 +1,7 @@
 [next]
 
+* hkdf: Add support to HKDF (HMAC key derivation function).
+
 Misc.
 
 * Change branching model to fast-forward merge on the master branch.
