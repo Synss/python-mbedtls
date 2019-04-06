@@ -196,9 +196,9 @@ class TestHashRIPEMD160(_TestHash):
 
 
 class _TestHmac(_TestMDBase):
-    @pytest.fixture
-    def key(self, randbytes):
-        return randbytes(16)
+    @pytest.fixture(params=[0, 16])
+    def key(self, request, randbytes):
+        return randbytes(request.param)
 
     @pytest.fixture
     def buffer(self, randbytes):

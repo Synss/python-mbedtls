@@ -4,6 +4,10 @@ Misc.
 
 * Change branching model to fast-forward merge on the master branch.
 
+Bugfixes
+
+* hmac: Hmac now accepts the empty key (b"").
+
 
 [0.16.0] - 2019-04-04
 

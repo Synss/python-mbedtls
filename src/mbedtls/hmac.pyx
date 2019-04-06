@@ -41,6 +41,8 @@ cdef class Hmac(_md.MDBase):
     def __init__(
             self, const unsigned char[:] key not None, name, buffer=None):
         super().__init__(name, buffer, 1)
+        if not key.size:
+            key = b"\0"
         check_error(_md.mbedtls_md_hmac_starts(&self._ctx, &key[0], key.size))
         self.update(buffer)
 
