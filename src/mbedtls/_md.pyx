@@ -111,7 +111,7 @@ cdef class MDBase:
     def update(self, const unsigned char[:] buffer):
         return -0x5100  # Bad input data error.
 
-    cpdef digest(self):
+    def digest(self):
         """Return the digest output of `message`."""
         cdef size_t sz = self.digest_size
         cdef unsigned char* output = <unsigned char*>malloc(
@@ -130,3 +130,7 @@ cdef class MDBase:
 
         """
         return binascii.hexlify(self.digest()).decode("ascii")
+
+    def copy(self):
+        """Return a copy ("clone") of the MD object."""
+        raise NotImplementedError

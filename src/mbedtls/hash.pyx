@@ -49,7 +49,7 @@ cdef class Hash(_md.MDBase):
         """Return the digest output of `message`."""
         return _md.mbedtls_md_finish(&self._ctx, output)
 
-    cpdef copy(self):
+    def copy(self):
         """Return a copy ("clone") of the hash object."""
         obj = Hash(self.name)
         check_error(_md.mbedtls_md_clone(&obj._ctx, &self._ctx))

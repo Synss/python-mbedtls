@@ -66,4 +66,3 @@ cdef class MDBase:
     cdef const mbedtls_md_info_t* _info
     cdef mbedtls_md_context_t _ctx
     cdef _finish(self, const unsigned char *output)
-    cpdef digest(self)

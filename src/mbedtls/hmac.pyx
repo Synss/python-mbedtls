@@ -58,7 +58,7 @@ cdef class Hmac(_md.MDBase):
             return ret
         return _md.mbedtls_md_hmac_reset(&self._ctx)
 
-    cpdef copy(self):
+    def copy(self):
         """Return a copy ("clone") of the HMAC object.
 
         Warning:
