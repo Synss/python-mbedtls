@@ -7,6 +7,11 @@ matrix:
       services:
         - docker
       env: ARCH=x86_64
+    - sudo: required
+      services:
+        - docker
+      env: ARCH=i686
+           PRE_CMD=linux32
 
 before_install:
   - |
