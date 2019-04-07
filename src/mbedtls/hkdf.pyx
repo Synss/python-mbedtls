@@ -24,7 +24,7 @@ __all__ = ("hkdf", "extract", "expand")
 def hkdf(
     const unsigned char[:] key not None,
     length,
-    const unsigned char[:] info=b"",
+    const unsigned char[:] info not None,
     const unsigned char[:] salt=None,
     digestmod=None,
 ):
@@ -33,8 +33,7 @@ def hkdf(
     Arguments:
         key (bytes): The input keying material.
         length (int): The length of the output keying material in bytes.
-        info (bytes, optional): Additional context and application
-            specific information.
+        info (bytes): Additional context and application specific information.
         salt (bytes, optional): A non-secret random value.
         digestmod (hmac function, optional): The HMAC function to use for
             the extraction, defaults to SHA256.
@@ -54,7 +53,7 @@ def hkdf(
             NULL if salt is None or not salt.size else &salt[0],
             0 if salt is None else salt.size,
             &key[0], key.size,
-            NULL if info is None or not info.size else &info[0],
+            NULL if not info.size else &info[0],
             0 if info is None else info.size,
             okm, length
         ))
@@ -108,7 +107,7 @@ def extract(
 def expand(
     const unsigned char[:] prk not None,
     length,
-    const unsigned char[:] info=b"",
+    const unsigned char[:] info not None,
     digestmod=None,
 ):
     """Expand the pseudorandom key `prk` into additional pseudorandom keys.
@@ -121,8 +120,7 @@ def expand(
         prk (bytes): The pseudorandom key to expand, usually the
             output of `extract()`.
         length (int): The length of the output keying material in bytes.
-        info (bytes, optional): Additional context and application
-            specific information.
+        info (bytes): Additional context and application specific information.
         digestmod (hmac function, optional): The HMAC function to use for
             the extraction, defaults to SHA256.
 
@@ -140,7 +138,7 @@ def expand(
         check_error(_hkdf.mbedtls_hkdf_expand(
             hmac._info,
             &prk[0], prk.size,
-            NULL if info is None or not info.size else &info[0],
+            NULL if not info.size else &info[0],
             0 if info is None else info.size,
             okm, length
         ))

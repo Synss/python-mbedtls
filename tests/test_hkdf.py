@@ -38,7 +38,7 @@ class TestHKDF:
         return request.param
 
     def test_hkdf(self, key):
-        okm = _hkdf.hkdf(key, 32)
+        okm = _hkdf.hkdf(key, 32, b"")
         assert len(okm) == 32
 
     def test_hkdf_with_options(
@@ -51,7 +51,7 @@ class TestHKDF:
         prk = _hkdf.extract(key)
         assert len(prk) == _hmac.sha256(b"").digest_size
 
-        okm = _hkdf.expand(prk, 32)
+        okm = _hkdf.expand(prk, 32, b"")
         assert len(okm) == 32
 
     def test_extract_and_expand_with_options(
