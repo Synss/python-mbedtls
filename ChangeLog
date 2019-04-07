@@ -1,6 +1,7 @@
 [next]
 
-* hkdf: Add support to HKDF (HMAC key derivation function).
+* Add support to HKDF (HMAC key derivation function).
+* Build and distribute `manylinux1` 32-bit wheels.
 
 Misc.
 
