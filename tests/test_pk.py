@@ -77,25 +77,28 @@ class TestECPoint:
         assert bool(ECPoint(0, 0, 0)) is False
 
 
-class _TestCipherBase(object):
+class _TestCipherBase:
 
     @pytest.fixture
-    def key(self):
+    def cipher(self):
         raise NotImplementedError
 
     @pytest.fixture
-    def pub(self, key):
-        return type(self.cipher).from_buffer(
-            self.cipher.export_public_key())
+    def key(self, cipher):
+        raise NotImplementedError
+
+    @pytest.fixture
+    def pub(self, cipher, key):
+        return type(cipher).from_buffer(cipher.export_public_key())
 
     @pytest.mark.usefixtures("key")
-    def test_cmp_eq(self):
-        assert self.cipher == self.cipher
+    def test_cmp_eq(self, cipher):
+        assert cipher == cipher
 
     @pytest.mark.parametrize("format", ["DER", "PEM"])
     @pytest.mark.usefixtures("key")
-    def test_cmp_eq_prv(self, format):
-        assert self.cipher == self.cipher.export_key(format)
+    def test_cmp_eq_prv(self, cipher, format):
+        assert cipher == cipher.export_key(format)
 
     @pytest.mark.parametrize("format", ["DER", "PEM"])
     def test_cmp_eq_pub(self, pub, format):
@@ -103,125 +106,121 @@ class _TestCipherBase(object):
 
     @pytest.mark.parametrize("invalid", [b"", "", b"\1\2\3", "123"])
     @pytest.mark.userfixtures("key")
-    def test_cmp_neq(self, invalid):
-        assert self.cipher != invalid
+    def test_cmp_neq(self, cipher, invalid):
+        assert cipher != invalid
 
-    def test_key_accessors_without_key(self):
-        assert not self.cipher.export_key()
-        assert not self.cipher.export_public_key()
+    def test_key_accessors_without_key(self, cipher):
+        assert not cipher.export_key()
+        assert not cipher.export_public_key()
 
-    def test_generate(self, key):
-        assert self.cipher.export_key()
-        assert self.cipher.export_key() == key
-        assert self.cipher.export_public_key()
-
-    @pytest.mark.usefixtures("key")
-    def test_type_accessor(self):
-        assert self.cipher._type == _type_from_name(self.cipher.name)
-
-    def test_key_size_accessor(self):
-        assert self.cipher.key_size == 0
+    def test_generate(self, cipher, key):
+        assert cipher.export_key()
+        assert cipher.export_key() == key
+        assert cipher.export_public_key()
 
     @pytest.mark.usefixtures("key")
-    def test_key_size_accessor_with_key(self):
-        assert self.cipher.key_size != 0
+    def test_type_accessor(self, cipher):
+        assert cipher._type == _type_from_name(cipher.name)
+
+    def test_key_size_accessor(self, cipher):
+        assert cipher.key_size == 0
 
     @pytest.mark.usefixtures("key")
-    def test_check_pair(self):
-        assert check_pair(self.cipher, self.cipher) is True
+    def test_key_size_accessor_with_key(self, cipher):
+        assert cipher.key_size != 0
+
+    @pytest.mark.usefixtures("key")
+    def test_check_pair(self, cipher):
+        assert check_pair(cipher, cipher) is True
 
     @pytest.mark.parametrize(
         "digestmod",
         [_get_md_alg(name) for name in _hash.algorithms_guaranteed],
         ids=lambda dm: dm().name)
-    def test_sign_without_key_returns_none(self, digestmod, randbytes):
+    def test_sign_without_key_returns_none(self, cipher, digestmod, randbytes):
         message = randbytes(4096)
-        assert self.cipher.sign(message, digestmod) is None
+        assert cipher.sign(message, digestmod) is None
 
     @pytest.mark.usefixtures("key")
     @pytest.mark.parametrize(
         "digestmod",
         [_get_md_alg(name) for name in _hash.algorithms_guaranteed],
         ids=lambda dm: dm().name)
-    def test_sign_verify(self, digestmod, randbytes):
+    def test_sign_verify(self, cipher, digestmod, randbytes):
         msg = randbytes(4096)
-        sig = self.cipher.sign(msg, digestmod)
+        sig = cipher.sign(msg, digestmod)
         assert sig is not None
-        assert self.cipher.verify(msg, sig, digestmod) is True
-        assert self.cipher.verify(msg + b"\0", sig, digestmod) is False
+        assert cipher.verify(msg, sig, digestmod) is True
+        assert cipher.verify(msg + b"\0", sig, digestmod) is False
 
     @pytest.mark.usefixtures("key")
-    def test_import_public_key(self):
-        pub = self.cipher.export_public_key()
-        other = type(self.cipher).from_buffer(pub)
+    def test_import_public_key(self, cipher):
+        pub = cipher.export_public_key()
+        other = type(cipher).from_buffer(pub)
         assert not other.export_key()
         assert other.export_public_key()
-        assert check_pair(self.cipher, other) is False  # Test private half.
-        assert check_pair(other, self.cipher) is True  # Test public half.
+        assert check_pair(cipher, other) is False  # Test private half.
+        assert check_pair(other, cipher) is True  # Test public half.
         assert check_pair(other, other) is False
-        assert self.cipher != other
+        assert cipher != other
 
-    def test_import_private_key(self, key):
-        other = type(self.cipher).from_buffer(key)
+    def test_import_private_key(self, cipher, key):
+        other = type(cipher).from_buffer(key)
         assert other.export_key()
         assert other.export_public_key()
-        assert check_pair(self.cipher, other) is True  # Test private half.
-        assert check_pair(other, self.cipher) is True  # Test public half.
+        assert check_pair(cipher, other) is True  # Test private half.
+        assert check_pair(other, cipher) is True  # Test public half.
         assert check_pair(other, other) is True
-        assert self.cipher == other
+        assert cipher == other
 
     @pytest.mark.usefixtures("key")
-    def test_export_to_PEM(self):
-        prv = self.cipher.export_key(format="PEM")
-        other = type(self.cipher).from_PEM(prv)
-        assert self.cipher == other
+    def test_export_to_PEM(self, cipher):
+        prv = cipher.export_key(format="PEM")
+        other = type(cipher).from_PEM(prv)
+        assert cipher == other
 
 
 class TestRSA(_TestCipherBase):
 
-    @pytest.fixture(autouse=True)
-    def rsa(self):
-        self.cipher = RSA()
-        yield
-        self.cipher = None
+    @pytest.fixture
+    def cipher(self):
+        return RSA()
 
     @pytest.fixture
-    def key(self):
+    def key(self, cipher):
         key_size = 1024
-        return self.cipher.generate(key_size)
+        return cipher.generate(key_size)
 
     @pytest.mark.usefixtures("key")
-    def test_encrypt_decrypt(self, randbytes):
-        msg = randbytes(self.cipher.key_size - 11)
-        assert self.cipher.decrypt(self.cipher.encrypt(msg)) == msg
+    def test_encrypt_decrypt(self, cipher, randbytes):
+        msg = randbytes(cipher.key_size - 11)
+        assert cipher.decrypt(cipher.encrypt(msg)) == msg
 
     @pytest.mark.userfixtures("key")
-    def test_ecc_from_rsa_raises_valueerror(self):
+    def test_ecc_from_rsa_raises_valueerror(self, cipher):
         with pytest.raises(ValueError):
-            ECC.from_buffer(self.cipher.export_key("DER"))
+            ECC.from_buffer(cipher.export_key("DER"))
 
 
 class TestECC(_TestCipherBase):
 
     @pytest.fixture(autouse=True, params=get_supported_curves())
-    def ecp(self, request):
+    def cipher(self, request):
         curve = request.param
-        self.cipher = ECC(curve)
-        yield
-        self.cipher = None
+        return ECC(curve)
 
     @pytest.fixture
-    def key(self):
-        return self.cipher.generate()
+    def key(self, cipher):
+        return cipher.generate()
 
-    def test_cipher_without_key(self):
-        assert self.cipher.export_key("NUM") == 0
-        assert self.cipher.export_public_key("POINT") == 0
-        assert self.cipher.export_public_key("POINT") == ECPoint(0, 0, 0)
+    def test_cipher_without_key(self, cipher):
+        assert cipher.export_key("NUM") == 0
+        assert cipher.export_public_key("POINT") == 0
+        assert cipher.export_public_key("POINT") == ECPoint(0, 0, 0)
 
     @pytest.mark.usefixtures("key")
-    def test_public_value_accessor(self):
-        pub = self.cipher.export_public_key("POINT")
+    def test_public_value_accessor(self, cipher):
+        pub = cipher.export_public_key("POINT")
         assert isinstance(pub.x, numbers.Integral)
         assert isinstance(pub.y, numbers.Integral)
         assert isinstance(pub.z, numbers.Integral)
@@ -230,15 +229,15 @@ class TestECC(_TestCipherBase):
         assert pub.z in (0, 1)
 
     @pytest.mark.usefixtures("key")
-    def test_private_value_accessor(self):
-        prv = self.cipher.export_key("NUM")
+    def test_private_value_accessor(self, cipher):
+        prv = cipher.export_key("NUM")
         assert isinstance(prv, numbers.Integral)
         assert prv != 0
 
     @pytest.mark.userfixtures("key")
-    def test_rsa_from_ecc_raises_valueerror(self):
+    def test_rsa_from_ecc_raises_valueerror(self, cipher):
         with pytest.raises(ValueError):
-            RSA.from_buffer(self.cipher.export_key("DER"))
+            RSA.from_buffer(cipher.export_key("DER"))
 
 
 class TestECCtoECDH:
