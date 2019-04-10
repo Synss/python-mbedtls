@@ -835,7 +835,9 @@ cdef class _BaseContext:
     def _close(self):
         self._shutdown()
 
-    def _readinto(self, unsigned char[:] buffer, size_t amt):
+    def _readinto(self, unsigned char[:] buffer not None, size_t amt):
+        if buffer.size == 0:
+            return 0
         if amt <= 0:
             return 0
         # cdef size_t avail = _tls.mbedtls_ssl_get_bytes_avail(&self._ctx)
@@ -854,10 +856,9 @@ cdef class _BaseContext:
             self._reset()
             check_error(read)
 
-    def _write(self, const unsigned char[:] buffer):
+    def _write(self, const unsigned char[:] buffer not None):
         if buffer.size == 0:
             return 0
-
         cdef size_t written = 0
         while written != buffer.size:
             ret = _tls.mbedtls_ssl_write(
@@ -1023,7 +1024,9 @@ cdef class ServerContext(_BaseContext):
         # PEP 543
         return TLSWrappedBuffer(self)
 
-    def _setcookieparam(self, const unsigned char[:] info):
+    def _setcookieparam(self, const unsigned char[:] info not None):
+        if info.size == 0:
+            info = b"\0"
         _tls.mbedtls_ssl_set_client_transport_id(
             &self._ctx,
             &info[0],
@@ -1070,13 +1073,11 @@ cdef class TLSWrappedBuffer:
         buffer = bytearray(amt)
         return bytes(buffer[:self.readinto(buffer, amt)])
 
-    def readinto(self, unsigned char[:] buffer, size_t amt):
+    def readinto(self, unsigned char[:] buffer not None, size_t amt):
         # PEP 543
-        if buffer.size == 0:
-            return 0
         return self.context._readinto(buffer, amt)
 
-    def write(self, const unsigned char[:] buffer):
+    def write(self, const unsigned char[:] buffer not None):
         # PEP 543
         assert self._buffer.empty(), "%i bytes in buffer" % len(self._buffer)
         amt = self.context._write(buffer)
@@ -1248,14 +1249,18 @@ cdef class TLSWrappedSocket:
         self._buffer.receive_from_network(encrypted)
         return self._buffer.read(bufsize), addr
 
-    def recvfrom_into(self, unsigned char[:] buffer, nbytes=None, flags=0):
+    def recvfrom_into(
+        self, unsigned char[:] buffer not None, nbytes=None, flags=0
+    ):
         encrypted, addr = self._socker.recvfrom(bufsize, flags)
         if not encrypted:
             return buffer, addr
         self._buffer.receive_from_network(encrypted)
         return self._buffer.readinto(buffer, nbytes), addr
 
-    def send(self, const unsigned char[:] message, flags=0):
+    def send(
+        self, const unsigned char[:] message not None, flags=0
+    ):
         # Maximum size supported by TLS is 16K (encrypted).
         # mbedTLS defines it in MBEDTLS_SSL_MAX_CONTENT_LEN and
         # MBEDTLS_SSL_IN_CONTENT_LEN/MBEDTLS_SSL_OUT_CONTENT_LEN.
@@ -1265,7 +1270,9 @@ cdef class TLSWrappedSocket:
         self._buffer.consume_outgoing(amt)
         return len(message)
 
-    def sendall(self, const unsigned char[:] message, flags=0):
+    def sendall(
+        self, const unsigned char[:] message not None, flags=0
+    ):
         amt = self._buffer.write(message)
         encrypted = self._buffer.peek_outgoing(amt)
         self._buffer.consume_outgoing(amt)

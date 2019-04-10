@@ -78,6 +78,12 @@ class _TestHash(_TestMDBase):
         assert algorithm.digest() == copy.digest()
         assert algorithm.hexdigest() == copy.hexdigest()
 
+    def test_copy_and_update_nothing(self, algorithm, buffer):
+        copy = algorithm.copy()
+        algorithm.update(b"")
+        assert algorithm.digest() == copy.digest()
+        assert algorithm.hexdigest() == copy.hexdigest()
+
 
 @pytest.mark.skip
 class TestHashMD2(_TestHash):

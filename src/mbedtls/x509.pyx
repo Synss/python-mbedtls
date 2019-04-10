@@ -91,7 +91,6 @@ cdef class Certificate:
             return self.to_DER() == other.to_DER()
         else:
             return other == self.to_DER() or other == self.to_PEM()
-        return NotImplemented
 
     def __str__(self):
         raise NotImplementedError
@@ -130,7 +129,7 @@ cdef class CRT(Certificate):
     def __init__(self, const unsigned char[:] buffer):
         super(CRT, self).__init__()
         self._next = None
-        if buffer is None:
+        if buffer is None or buffer.size == 0:
             return
         check_error(x509.mbedtls_x509_crt_parse(
             &self._ctx, &buffer[0], buffer.size))
@@ -400,7 +399,10 @@ cdef class CRT(Certificate):
         return self
 
     @classmethod
-    def from_DER(cls, const unsigned char[:] buffer):
+    def from_DER(cls, const unsigned char[:] buffer not None):
+        if buffer.size == 0:
+            raise ValueError("Cannot create %s from an empty buffer"
+                             % cls.__name__)
         cdef CRT self = cls(None)
         check_error(x509.mbedtls_x509_crt_parse_der(
             &self._ctx, &buffer[0], buffer.size))
@@ -641,7 +643,7 @@ cdef class CSR(Certificate):
 
     def __init__(self, const unsigned char[:] buffer):
         super(CSR, self).__init__()
-        if buffer is None:
+        if buffer is None or buffer.size == 0:
             return
         check_error(x509.mbedtls_x509_csr_parse(
             &self._ctx, &buffer[0], buffer.size))
@@ -744,7 +746,10 @@ cdef class CSR(Certificate):
         return self
 
     @classmethod
-    def from_DER(cls, const unsigned char[:] buffer):
+    def from_DER(cls, const unsigned char[:] buffer not None):
+        if buffer.size == 0:
+            raise ValueError("Cannot create %s from an empty buffer"
+                             % cls.__name__)
         cdef CSR self = cls(None)
         check_error(x509.mbedtls_x509_csr_parse_der(
             &self._ctx, &buffer[0], buffer.size))
@@ -858,7 +863,7 @@ cdef class CRL(Certificate):
     def __init__(self, const unsigned char[:] buffer):
         super(CRL, self).__init__()
         self._next = None
-        if buffer is None:
+        if buffer is None or buffer.size == 0:
             return
         check_error(x509.mbedtls_x509_crl_parse(
             &self._ctx, &buffer[0], buffer.size))
@@ -1007,7 +1012,10 @@ cdef class CRL(Certificate):
         return self
 
     @classmethod
-    def from_DER(cls, const unsigned char[:] buffer):
+    def from_DER(cls, const unsigned char[:] buffer not None):
+        if buffer.size == 0:
+            raise ValueError("Cannot create %s from an empty buffer"
+                             % cls.__name__)
         cdef CRL self = cls(None)
         check_error(x509.mbedtls_x509_crl_parse_der(
             &self._ctx, &buffer[0], buffer.size))

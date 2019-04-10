@@ -65,7 +65,7 @@ cdef class MPI:
         """Return the total size in bytes."""
         return _mpi.mbedtls_mpi_size(&self._ctx)
 
-    cpdef _read_bytes(self, const unsigned char[:] data):
+    def _read_bytes(self, const unsigned char[:] data not None):
         if data.size == 0:
             return MPI(0)
         check_error(

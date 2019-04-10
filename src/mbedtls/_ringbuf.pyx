@@ -198,7 +198,7 @@ cdef class RingBuffer:
     def consume(self, size_t amt):
         return c_consume(&self._ctx, amt)
 
-    def write(self, const unsigned char[:] src, amt=None):
+    def write(self, const unsigned char[:] src not None, amt=None):
         if src.size == 0:
             return 0
         if amt is None:

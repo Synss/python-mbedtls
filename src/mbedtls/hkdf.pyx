@@ -39,6 +39,8 @@ def hkdf(
             the extraction, defaults to SHA256.
 
     """
+    if key.size == 0:
+        key = b"\0"
     if digestmod is None:
         digestmod = _hmac.sha256
     cdef _hmac.Hmac hmac = digestmod(key)
@@ -50,10 +52,10 @@ def hkdf(
     try:
         check_error(_hkdf.mbedtls_hkdf(
             hmac._info,
-            NULL if salt is None or not salt.size else &salt[0],
+            NULL if salt is None or salt.size == 0 else &salt[0],
             0 if salt is None else salt.size,
             &key[0], key.size,
-            NULL if not info.size else &info[0],
+            NULL if info.size == 0 else &info[0],
             0 if info is None else info.size,
             okm, length
         ))
@@ -83,6 +85,8 @@ def extract(
             the extraction, defaults to SHA256.
 
     """
+    if key.size == 0:
+        key = b"\0"
     if digestmod is None:
         digestmod = _hmac.sha256
     cdef _hmac.Hmac hmac = digestmod(key)
@@ -125,6 +129,8 @@ def expand(
             the extraction, defaults to SHA256.
 
     """
+    if prk.size == 0:
+        prk = b"\0"
     if digestmod is None:
         digestmod = _hmac.sha256
     cdef _hmac.Hmac hmac = digestmod(prk)

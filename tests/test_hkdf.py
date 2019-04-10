@@ -7,9 +7,9 @@ import mbedtls.hmac as _hmac
 
 
 class TestHKDF:
-    @pytest.fixture
-    def key(self, randbytes):
-        return randbytes(128)
+    @pytest.fixture(params=[0, 128])
+    def key(self, request, randbytes):
+        return randbytes(request.param)
 
     @pytest.fixture(params=[
         # _hmac.md2,

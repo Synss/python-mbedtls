@@ -112,7 +112,6 @@ cdef extern from "mbedtls/bignum.h" nogil:
 cdef class MPI:
     cdef mbedtls_mpi _ctx
     cdef size_t _len(self)
-    cpdef _read_bytes(self, const unsigned char[:] data)
 
 
 cdef inline from_mpi(mbedtls_mpi *c_mpi):

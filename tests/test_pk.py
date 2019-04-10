@@ -105,13 +105,45 @@ class _TestCipherBase:
         assert pub == pub.export_public_key(format)
 
     @pytest.mark.parametrize("invalid", [b"", "", b"\1\2\3", "123"])
-    @pytest.mark.userfixtures("key")
+    @pytest.mark.usefixtures("key")
     def test_cmp_neq(self, cipher, invalid):
         assert cipher != invalid
 
-    def test_key_accessors_without_key(self, cipher):
-        assert not cipher.export_key()
-        assert not cipher.export_public_key()
+    def test_export_key_without_key(self, cipher):
+        assert cipher.export_key("DER") == b""
+        assert cipher.export_key("PEM") == ""
+
+    def test_export_public_key_without_key(self, cipher):
+        assert cipher.export_public_key("DER") == b""
+        assert cipher.export_public_key("PEM") == ""
+
+    @pytest.mark.usefixtures("key")
+    def test_export_key_to_PEM(self, cipher):
+        der = cipher.export_key("DER")
+        other = type(cipher).from_DER(der)
+        assert der != b""
+        assert cipher == other
+
+    @pytest.mark.usefixtures("key")
+    def test_export_key_to_DER(self, cipher):
+        pem = cipher.export_key("PEM")
+        other = type(cipher).from_PEM(pem)
+        assert pem != ""
+        assert cipher == other
+
+    @pytest.mark.usefixtures("key")
+    def test_export_public_key_to_DER(self, cipher):
+        der = cipher.export_public_key("DER")
+        other = type(cipher).from_DER(der)
+        assert der != b""
+        assert other == cipher.export_public_key("DER")
+
+    @pytest.mark.usefixtures("key")
+    def test_export_public_key_to_PEM(self, cipher):
+        pem = cipher.export_public_key("PEM")
+        other = type(cipher).from_PEM(pem)
+        assert pem != ""
+        assert other == cipher.export_public_key("PEM")
 
     def test_generate(self, cipher, key):
         assert cipher.export_key()
@@ -173,12 +205,6 @@ class _TestCipherBase:
         assert check_pair(other, other) is True
         assert cipher == other
 
-    @pytest.mark.usefixtures("key")
-    def test_export_to_PEM(self, cipher):
-        prv = cipher.export_key(format="PEM")
-        other = type(cipher).from_PEM(prv)
-        assert cipher == other
-
 
 class TestRSA(_TestCipherBase):
 
@@ -196,11 +222,6 @@ class TestRSA(_TestCipherBase):
         msg = randbytes(cipher.key_size - 11)
         assert cipher.decrypt(cipher.encrypt(msg)) == msg
 
-    @pytest.mark.userfixtures("key")
-    def test_ecc_from_rsa_raises_valueerror(self, cipher):
-        with pytest.raises(ValueError):
-            ECC.from_buffer(cipher.export_key("DER"))
-
 
 class TestECC(_TestCipherBase):
 
@@ -213,8 +234,14 @@ class TestECC(_TestCipherBase):
     def key(self, cipher):
         return cipher.generate()
 
-    def test_cipher_without_key(self, cipher):
+    def test_export_key_to_num_without_key(self, cipher):
         assert cipher.export_key("NUM") == 0
+
+    @pytest.mark.usefixtures("key")
+    def test_export_key_to_num_with_key(self, cipher):
+        assert cipher.export_key("NUM") != 0
+
+    def test_export_public_key_to_point_without_key(self, cipher):
         assert cipher.export_public_key("POINT") == 0
         assert cipher.export_public_key("POINT") == ECPoint(0, 0, 0)
 
@@ -233,11 +260,6 @@ class TestECC(_TestCipherBase):
         prv = cipher.export_key("NUM")
         assert isinstance(prv, numbers.Integral)
         assert prv != 0
-
-    @pytest.mark.userfixtures("key")
-    def test_rsa_from_ecc_raises_valueerror(self, cipher):
-        with pytest.raises(ValueError):
-            RSA.from_buffer(cipher.export_key("DER"))
 
 
 class TestECCtoECDH:

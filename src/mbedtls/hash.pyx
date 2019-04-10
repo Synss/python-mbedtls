@@ -40,7 +40,7 @@ cdef class Hash(_md.MDBase):
 
     def update(self, const unsigned char[:] buffer):
         """Update the hash object with the `buffer`."""
-        if buffer is None:
+        if buffer is None or buffer.size == 0:
             return
         check_error(
             _md.mbedtls_md_update(&self._ctx, &buffer[0], buffer.size))

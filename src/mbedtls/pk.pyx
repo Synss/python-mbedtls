@@ -169,20 +169,18 @@ cdef class CipherBase:
                 _type_from_name(name)
             )
         ))
-        if key is None:
+        if key is None or key.size == 0:
             return
         mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
         try:
-            try:
-                check_error(_pk.mbedtls_pk_parse_key(
-                    &self._ctx, &key[0], key.size,
-                    NULL if password is None else &password[0],
-                    0 if password is None else password.size))
-            except TLSError:
-                check_error(_pk.mbedtls_pk_parse_public_key(
-                    &self._ctx, &key[0], key.size))
-        except IndexError:
-            raise ValueError("wrong key format")
+            check_error(_pk.mbedtls_pk_parse_key(
+                &self._ctx, &key[0], key.size,
+                NULL if password is None
+                or password.size == 0 else &password[0],
+                0 if password is None else password.size))
+        except TLSError:
+            check_error(_pk.mbedtls_pk_parse_public_key(
+                &self._ctx, &key[0], key.size))
 
     def __cinit__(self):
         """Initialize the context."""
@@ -212,10 +210,9 @@ cdef class CipherBase:
             return other.export_key() == self.export_key()
         elif not (self._has_private() and other._has_private()):
             return other.export_public_key() == self.export_public_key()
-        return False
 
     @classmethod
-    def from_buffer(cls, const unsigned char[:] key):
+    def from_buffer(cls, const unsigned char[:] key not None):
         """Import a key (public or private half).
 
         The public half is generated upon importing a private key.
@@ -229,7 +226,7 @@ cdef class CipherBase:
         raise NotImplementedError
 
     @classmethod
-    def from_DER(cls, const unsigned char[:] key):
+    def from_DER(cls, const unsigned char[:] key not None):
         return cls.from_buffer(key)
 
     @classmethod
@@ -316,6 +313,8 @@ cdef class CipherBase:
             bool: True if the verification passed, False otherwise.
 
         """
+        if signature.size == 0:
+            return False
         if digestmod is None:
             digestmod = 'sha256'
         md_alg = _get_md_alg(digestmod)(message)
@@ -332,6 +331,8 @@ cdef class CipherBase:
             message (bytes): Message to encrypt.
 
         """
+        if message.size == 0:
+            message = b"\0"
         cdef size_t olen = 0
         cdef unsigned char* output = <unsigned char*>malloc(
             _mpi.MBEDTLS_MPI_MAX_SIZE // 2 * sizeof(unsigned char))
@@ -353,6 +354,8 @@ cdef class CipherBase:
             message (bytes): Message to decrypt.
 
         """
+        if message.size == 0:
+            message = b"\0"
         cdef size_t olen = 0
         cdef unsigned char* output = <unsigned char*>malloc(
             _mpi.MBEDTLS_MPI_MAX_SIZE // 2 * sizeof(unsigned char))
@@ -648,7 +651,7 @@ cdef class ECC(CipherBase):
         self.curve = curve
 
     @classmethod
-    def from_buffer(cls, const unsigned char[:] key):
+    def from_buffer(cls, const unsigned char[:] key not None):
         """Import a key (public or private half).
 
         The public half is generated upon importing a private key.
@@ -841,8 +844,10 @@ cdef class DHServer(DHBase):
         finally:
             free(output)
 
-    def import_CKE(self, const unsigned char[:] buffer):
+    def import_CKE(self, const unsigned char[:] buffer not None):
         """Read the ClientKeyExchange payload."""
+        if buffer.size == 0:
+            buffer = b"\0"
         check_error(_pk.mbedtls_dhm_read_public(
             &self._ctx, &buffer[0], buffer.size))
 
@@ -873,8 +878,10 @@ cdef class DHClient(DHBase):
         finally:
             free(output)
 
-    def import_SKE(self, const unsigned char[:] buffer):
+    def import_SKE(self, const unsigned char[:] buffer not None):
         """Read the ServerKeyExchange payload."""
+        if buffer.size == 0:
+            buffer = b"\0"
         cdef const unsigned char* first = &buffer[0]
         cdef const unsigned char* end = &buffer[-1] + 1
         check_error(_pk.mbedtls_dhm_read_params(
@@ -1013,8 +1020,10 @@ cdef class ECDHServer(ECDHBase):
         finally:
             free(output)
 
-    def import_CKE(self, const unsigned char[:] buffer):
+    def import_CKE(self, const unsigned char[:] buffer not None):
         """Read the ClientKeyExchange payload."""
+        if buffer.size == 0:
+            buffer = b"\0"
         check_error(_pk.mbedtls_ecdh_read_public(
             &self._ctx, &buffer[0], buffer.size))
 
@@ -1048,8 +1057,10 @@ cdef class ECDHClient(ECDHBase):
         finally:
             free(output)
 
-    def import_SKE(self, const unsigned char[:] buffer):
+    def import_SKE(self, const unsigned char[:] buffer not None):
         """Read the ServerKeyExchange payload."""
+        if buffer.size == 0:
+            buffer = b"\0"
         cdef const unsigned char* first = &buffer[0]
         cdef const unsigned char* end = &buffer[-1] + 1
         check_error(_pk.mbedtls_ecdh_read_params(

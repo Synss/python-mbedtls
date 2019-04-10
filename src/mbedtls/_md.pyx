@@ -108,7 +108,7 @@ cdef class MDBase:
     cdef _finish(self, const unsigned char *output):
         return -0x5100  # Bad input data error.
 
-    def update(self, const unsigned char[:] buffer):
+    def update(self, const unsigned char[:] buffer not None):
         return -0x5100  # Bad input data error.
 
     def digest(self):

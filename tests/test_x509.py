@@ -70,8 +70,16 @@ class _CommonTests(_X509Base):
         path.write_binary(der)
         assert type(x509).from_file(path) == x509
 
+    def test_from_PEM_empty_buffer_raises_valueerror(self, x509):
+        with pytest.raises(ValueError):
+            type(x509).from_PEM("")
+
     def test_from_DER(self, x509, der):
         assert type(x509).from_DER(der) == x509
+
+    def test_from_DER_empty_buffer_raises_valueerror(self, x509):
+        with pytest.raises(ValueError):
+            type(x509).from_DER(b"")
 
     def test_eq(self, x509):
         assert x509 == x509
