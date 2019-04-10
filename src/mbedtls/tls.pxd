@@ -397,6 +397,7 @@ cdef class _DTLSCookie:
 
 cdef class _BaseConfiguration:
     cdef mbedtls_ssl_config _ctx
+    cdef _chain
     cdef int *_ciphers
     cdef char **_protos
     # cdef'd because we aim at a non-writable structure.

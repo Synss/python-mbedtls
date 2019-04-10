@@ -384,6 +384,7 @@ cdef class _BaseConfiguration:
         # PEP 543
         if not chain:
             return
+        self._chain = chain
         certs, pk_key = chain
         if not certs or not pk_key:
             return

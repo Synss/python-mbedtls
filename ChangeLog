@@ -9,6 +9,7 @@ Misc.
 
 Bugfixes
 
+* *: Fixup handling of empty and `None` buffers (#20: Roman (inpos)).
 * hmac: Hmac now accepts the empty key (b"").
 
 
