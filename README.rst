@@ -54,19 +54,6 @@ and macOS.
 Manylinux wheels are available for 64-bit Linux systems.  Install
 with ``pip install python-mbedtls``.
 
-In other cases, or to bind to a different version of mbed TLS,
-clone the `python-mbedtls` repository, install mbed TLS, and install
-`python-mbedtls` with::
-
-  $ git clone https://github.com/Synss/python-mbedtls.git python-mbedtls.git
-  $ cd python-mbedtls.git
-  $ sudo ./scripts/install-mbedtls.sh 2.7.9
-  $ python -m pip install python-mbedtls
-
-where 2.7.9 is the version of mbed TLS that will be installed.
-
-`install-mbedtl.sh` is a POSIX shell script and requires `curl`, `tar`,
-and `cmake`.
 
 Check which version of mbed TLS is being used by python-mbedtls
 ---------------------------------------------------------------

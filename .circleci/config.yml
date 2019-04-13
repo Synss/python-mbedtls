@@ -86,7 +86,8 @@ jobs:
             VERSION=2.16.1
             DESTDIR=$HOME/lib/$VERSION
             sudo apt-get install cmake
-            sudo ./scripts/install-mbedtls.sh $VERSION $DESTDIR
+            sudo ./scripts/download-mbedtls.sh $VERSION $DESTDIR/src
+            sudo ./scripts/install-mbedtls.sh $DESTDIR/src $DESTDIR
             cat << EOF >> $BASH_ENV
             export VERSION=$VERSION
             export DESTDIR=$DESTDIR

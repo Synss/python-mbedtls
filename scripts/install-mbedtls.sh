@@ -3,8 +3,8 @@
 
 set -ex
 
-if [ $# -eq 1 ] || [ $# -eq 2 ]; then
-	version="$1"
+if [ $# -le 2 ]; then
+	srcdir="${1:-/usr/local/src}"
 	destdir="${2:-/usr/local}"
 	case $destdir in
 		/*) ;;
@@ -14,34 +14,25 @@ else
 	cat <<-EOF
 
 	usage:
-	  $0 VERSION DESTDIR
+	  $0 [SRCDIR [DESTDIR]]
 	
-	Download and install a local copy mbedtls at VERSION.
+	Install a mbedtls from the sources in SRCDIR to DESTDIR.
 
 	EOF
 	exit 1
 fi
 
 
-license="apache"
-name="mbedtls"
-filename="$name-$version-$license.tgz"
-url="https://tls.mbed.org/download/$filename"
-src="$destdir/src"
-
-mkdir -p "$src"
-curl -O "$url"
-tar xzf "$filename" -C "$src" --strip-components 1
-
 mkdir -p "$destdir"
-cd "$src"
+cd "$srcdir"
 uname -s
-if [ "$(uname -s)" == "Linux" ]; then
-	sed -i.bk -re "s (^DESTDIR=).* \1$destdir g" Makefile
+if [ "$(uname -s)" = "Linux" ]; then
+	sed -i.bk -re "s (^DESTDIR=).* \\1$destdir g" Makefile
 else
-	sed -i.bk -E "s (^DESTDIR=).* \1$destdir g" Makefile
+	sed -i.bk -E "s (^DESTDIR=).* \\1$destdir g" Makefile
 fi
 
+[ -d "build" ] && rm -ri build
 mkdir build
 cd build
 
