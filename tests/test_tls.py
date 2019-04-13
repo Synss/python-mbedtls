@@ -343,7 +343,8 @@ class _TestCommunicationBase(Chain):
         runner.start()
         yield sock
         runner.join(0.1)
-        sock.close()
+        with suppress(OSError):
+            sock.close()
         runner.terminate()
 
     @pytest.fixture
@@ -355,9 +356,9 @@ class _TestCommunicationBase(Chain):
         sock.connect(address)
         block(sock.do_handshake)
         yield sock
-        with suppress(Exception):
+        with suppress(OSError):
             block(sock.send, self.CLOSE_MESSAGE)
-        sock.close()
+            sock.close()
 
     def test_srv_conf(self, srv_conf, ca1_crt, ee0_crt, ee0_key, trust_store):
         assert srv_conf.trust_store == trust_store
@@ -375,7 +376,7 @@ class TestTLSCommunication(_TestCommunicationBase):
 
     @pytest.fixture(scope="class",
                     params=[
-                        # TLSVersion.TLSv1,
+                        TLSVersion.TLSv1,
                         TLSVersion.TLSv1_1,
                         TLSVersion.TLSv1_2,
                     ])
@@ -403,7 +404,7 @@ class TestTLSCommunication(_TestCommunicationBase):
             highest_supported_version=version,
             validate_certificates=True)
 
-    @pytest.fixture(params=[10, 100, 1000, 10000, 16384 - 1])
+    @pytest.fixture(params=[1, 10, 100, 1000, 10000, 16384 - 1])
     def step(self, request):
         return request.param
 
@@ -414,8 +415,9 @@ class TestTLSCommunication(_TestCommunicationBase):
             data = block(conn.recv, 20 * 1024)
             if data == self.CLOSE_MESSAGE:
                 break
+
             amt = block(conn.send, data)
-            assert len(data) == amt
+            assert amt == len(data)
 
     def test_server_hostname_fails_verification(
             self, server, cli_conf, address):
@@ -433,8 +435,7 @@ class TestTLSCommunication(_TestCommunicationBase):
             view = memoryview(buffer[idx:idx + step])
             amt = block(client.send, view)
             assert amt == len(view)
-            data = block(client.recv, 20 * 1024)
-            assert data == view
+            assert block(client.recv, 20 * 1024) == view
 
 
 class TestDTLSCommunication(_TestCommunicationBase):
@@ -482,7 +483,8 @@ class TestDTLSCommunication(_TestCommunicationBase):
             data = block(cli.recv, 4096)
             if data == self.CLOSE_MESSAGE:
                 break
+
             # We must use `send()` instead of `sendto()` because the
             # DTLS socket is connected.
             amt = block(cli.send, data)
-            assert len(data) == amt
+            assert amt == len(data)

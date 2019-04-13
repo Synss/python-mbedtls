@@ -1072,7 +1072,11 @@ cdef class TLSWrappedBuffer:
         if amt <= 0:
             return b""
         buffer = bytearray(amt)
-        return bytes(buffer[:self.readinto(buffer, amt)])
+        cdef unsigned char[:] c_buffer = buffer
+        cdef size_t nread = 0
+        while nread != amt and not self._buffer.empty():
+            nread += self.readinto(c_buffer[nread:], amt - nread)
+        return bytes(buffer[:nread])
 
     def readinto(self, unsigned char[:] buffer not None, size_t amt):
         # PEP 543
