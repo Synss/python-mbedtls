@@ -445,8 +445,15 @@ cdef enum:
     TLS_BUFFER_CAPACITY = 16384 + 1024
 
 
+cdef struct _C_Buffers:
+    _rb.ring_buffer_ctx *send_ctx
+    _rb.ring_buffer_ctx *recv_ctx
+
+
 cdef class TLSWrappedBuffer:
-    cdef _rb.RingBuffer _buffer
+    cdef _rb.RingBuffer _send_buf
+    cdef _rb.RingBuffer _recv_buf
+    cdef _C_Buffers _c_buffers
     cdef _BaseContext _context
     cdef void _as_bio(self)
 

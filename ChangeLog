@@ -6,6 +6,7 @@ Misc.
 
 Bugfixes
 
+* tls: Split input and output buffers for TLS/TCP.
 * tls: Fixes issue with TLSv1 by reading greedily from the buffer.
 
 
