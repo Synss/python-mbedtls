@@ -8,3 +8,9 @@
 ==============================
 
 .. automodule:: mbedtls.hmac
+
+
+:mod:`mbedtls.hkdf` Module API
+==============================
+
+.. automodule:: mbedtls.hkdf

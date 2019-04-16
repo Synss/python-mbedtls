@@ -19,6 +19,7 @@ __all__ = (
     "cipher",
     "exceptions",
     "hash",
+    "hkdf",
     "hmac",
     "pk",
     "tls",
