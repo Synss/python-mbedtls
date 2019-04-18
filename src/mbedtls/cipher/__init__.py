@@ -23,6 +23,7 @@ from . import CHACHA20
 __all__ = _cipher.__all__ + (
     "AES",
     "ARC4",
+    "ARIA",
     "Blowfish",
     "Camellia",
     "DES",
