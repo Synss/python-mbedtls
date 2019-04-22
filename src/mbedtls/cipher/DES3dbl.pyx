@@ -27,7 +27,7 @@ def new(key, mode, iv=None):
     Parameters:
         key (bytes or None): The key to encrypt decrypt.  If None,
             encryption and decryption are unavailable.
-        mode (int): The mode of operation of the cipher.
+        mode (Mode): The mode of operation of the cipher.
         iv (bytes or None): The initialization vector (IV).  The IV is
             required for every mode but ECB and CTR where it is ignored.
             If not set, the IV is initialized to all 0, which should not
