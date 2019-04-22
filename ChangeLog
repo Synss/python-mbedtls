@@ -1,3 +1,8 @@
+[next]
+
+* cipher: Make package pure-Python.
+
+
 [0.17.1] - 2019-04-16
 
 This is a bugfix release fixing several TLS issues.
