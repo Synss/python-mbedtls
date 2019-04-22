@@ -10,12 +10,12 @@ from functools import partial
 import pytest
 
 # pylint: disable=import-error
-from mbedtls.cipher._cipher import *
 from mbedtls.cipher._cipher import CIPHER_NAME, get_supported_ciphers
 from mbedtls.cipher._cipher import Cipher
 from mbedtls.exceptions import *
 
 import mbedtls.cipher as mb
+
 # pylint: enable=import-error
 
 
@@ -30,35 +30,42 @@ def test_get_supported_ciphers():
 
 def test_wrong_size_raises_exception():
     with pytest.raises(TLSError):
-        Cipher(b"AES-512-ECB", b"", Mode.ECB, b"")
+        Cipher(b"AES-512-ECB", b"", mb.Mode.ECB, b"")
 
 
 def test_random_name_raises_exception():
     with pytest.raises(TLSError):
-        Cipher(b"RANDOM TEXT IS NOT A CIPHER", b"", Mode.ECB, b"")
+        Cipher(b"RANDOM TEXT IS NOT A CIPHER", b"", mb.Mode.ECB, b"")
 
 
 def test_zero_length_raises_exception():
     with pytest.raises(TLSError):
-        Cipher(b"", b"", Mode.ECB, b"")
+        Cipher(b"", b"", mb.Mode.ECB, b"")
 
 
-@pytest.mark.parametrize("mode", [MODE_CBC, Mode.CBC])
+@pytest.mark.parametrize("mode", [mb.MODE_CBC, mb.Mode.CBC])
 def test_cbc_raises_value_error_without_iv(mode):
     with pytest.raises(ValueError):
         Cipher(b"AES-512-CBC", b"", mode, b"")
 
 
-@pytest.mark.parametrize("mode", [MODE_CFB, Mode.CFB])
+@pytest.mark.parametrize("mode", [mb.MODE_CFB, mb.Mode.CFB])
 def test_cfb_raises_value_error_without_iv(mode):
     with pytest.raises(ValueError):
         Cipher(b"AES-512-CFB", b"", mode, b"")
 
 
 class _TestCipher:
-    @pytest.fixture(params=[
-        Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR, Mode.GCM, Mode.CCM,
-    ])
+    @pytest.fixture(
+        params=[
+            mb.Mode.ECB,
+            mb.Mode.CBC,
+            mb.Mode.CFB,
+            mb.Mode.CTR,
+            mb.Mode.GCM,
+            mb.Mode.CCM,
+        ]
+    )
     def mode(self, request):
         return request.param
 
@@ -89,7 +96,7 @@ class _TestCipher:
     @pytest.fixture
     def data(self, cipher, mode, randbytes):
         # `block_size` is limited for ECB because it is a block cipher.
-        return randbytes(cipher.block_size if mode is Mode.ECB else 20000)
+        return randbytes(cipher.block_size if mode is mb.Mode.ECB else 20000)
 
     def test_encrypt_decrypt(self, cipher, data):
         assert cipher.decrypt(cipher.encrypt(data)) == data
@@ -116,9 +123,15 @@ class _TestAEADCipher(_TestCipher):
 
 
 class TestAES(_TestCipher):
-    @pytest.fixture(params=[
-        Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR, Mode.OFB
-    ])
+    @pytest.fixture(
+        params=[
+            mb.Mode.ECB,
+            mb.Mode.CBC,
+            mb.Mode.CFB,
+            mb.Mode.CTR,
+            mb.Mode.OFB,
+        ]
+    )
     def mode(self, request):
         return request.param
 
@@ -132,7 +145,7 @@ class TestAES(_TestCipher):
 
 
 class TestAES_XTS(TestAES):
-    @pytest.fixture(params=[Mode.XTS])
+    @pytest.fixture(params=[mb.Mode.XTS])
     def mode(self, request):
         return request.param
 
@@ -142,7 +155,7 @@ class TestAES_XTS(TestAES):
 
 
 class TestAES_AEAD(_TestAEADCipher):
-    @pytest.fixture(params=[Mode.GCM, Mode.CCM])
+    @pytest.fixture(params=[mb.Mode.GCM, mb.Mode.CCM])
     def mode(self, request):
         return request.param
 
@@ -170,9 +183,9 @@ class TestARC4(_TestCipher):
 
 
 class TestARIA(_TestCipher):
-    @pytest.fixture(params=[
-        Mode.ECB, Mode.CBC, Mode.CTR, Mode.GCM,
-    ])
+    @pytest.fixture(
+        params=[mb.Mode.ECB, mb.Mode.CBC, mb.Mode.CTR, mb.Mode.GCM]
+    )
     def mode(self, request):
         return request.param
 
@@ -186,9 +199,9 @@ class TestARIA(_TestCipher):
 
 
 class TestBlowfish(_TestCipher):
-    @pytest.fixture(params=[
-        Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR,
-    ])
+    @pytest.fixture(
+        params=[mb.Mode.ECB, mb.Mode.CBC, mb.Mode.CFB, mb.Mode.CTR]
+    )
     def mode(self, request):
         return request.param
 
@@ -202,10 +215,16 @@ class TestBlowfish(_TestCipher):
 
 
 class TestCamellia(_TestCipher):
-    @pytest.fixture(params=[
-        # CCM is not available.
-        Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR, Mode.GCM,
-    ])
+    @pytest.fixture(
+        params=[
+            # CCM is not available.
+            mb.Mode.ECB,
+            mb.Mode.CBC,
+            mb.Mode.CFB,
+            mb.Mode.CTR,
+            mb.Mode.GCM,
+        ]
+    )
     def mode(self, request):
         return request.param
 
@@ -219,7 +238,7 @@ class TestCamellia(_TestCipher):
 
 
 class TestDES(_TestCipher):
-    @pytest.fixture(params=[Mode.ECB, Mode.CBC])
+    @pytest.fixture(params=[mb.Mode.ECB, mb.Mode.CBC])
     def mode(self, request):
         return request.param
 
@@ -233,7 +252,7 @@ class TestDES(_TestCipher):
 
 
 class TestDES3(_TestCipher):
-    @pytest.fixture(params=[Mode.ECB, Mode.CBC])
+    @pytest.fixture(params=[mb.Mode.ECB, mb.Mode.CBC])
     def mode(self, request):
         return request.param
 
@@ -247,7 +266,7 @@ class TestDES3(_TestCipher):
 
 
 class TestDES3dbl(_TestCipher):
-    @pytest.fixture(params=[Mode.ECB, Mode.CBC])
+    @pytest.fixture(params=[mb.Mode.ECB, mb.Mode.CBC])
     def mode(self, request):
         return request.param
 
@@ -261,7 +280,7 @@ class TestDES3dbl(_TestCipher):
 
 
 class TestCHACHA20(_TestCipher):
-    @pytest.fixture(params=[Mode.STREAM])
+    @pytest.fixture(params=[mb.Mode.STREAM])
     def mode(self, request):
         return request.param
 
@@ -279,7 +298,7 @@ class TestCHACHA20AEAD(_TestAEADCipher):
     def iv(self, mode, randbytes):
         return randbytes(12)
 
-    @pytest.fixture(params=[Mode.CHACHAPOLY])
+    @pytest.fixture(params=[mb.Mode.CHACHAPOLY])
     def mode(self, request):
         return request.param
 
