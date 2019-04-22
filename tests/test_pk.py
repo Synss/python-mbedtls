@@ -28,7 +28,8 @@ def test_get_supported_ciphers():
 
 
 @pytest.mark.parametrize(
-    "md_algorithm", [vars(_hash)[name] for name in _hash.algorithms_available])
+    "md_algorithm", [vars(_hash)[name] for name in _hash.algorithms_available]
+)
 def test_digestmod_from_ctor(md_algorithm):
     assert callable(md_algorithm)
     algorithm = _get_md_alg(md_algorithm)
@@ -78,7 +79,6 @@ class TestECPoint:
 
 
 class _TestCipherBase:
-
     @pytest.fixture
     def cipher(self):
         raise NotImplementedError
@@ -168,7 +168,8 @@ class _TestCipherBase:
     @pytest.mark.parametrize(
         "digestmod",
         [_get_md_alg(name) for name in _hash.algorithms_guaranteed],
-        ids=lambda dm: dm().name)
+        ids=lambda dm: dm().name,
+    )
     def test_sign_without_key_returns_none(self, cipher, digestmod, randbytes):
         message = randbytes(4096)
         assert cipher.sign(message, digestmod) is None
@@ -177,7 +178,8 @@ class _TestCipherBase:
     @pytest.mark.parametrize(
         "digestmod",
         [_get_md_alg(name) for name in _hash.algorithms_guaranteed],
-        ids=lambda dm: dm().name)
+        ids=lambda dm: dm().name,
+    )
     def test_sign_verify(self, cipher, digestmod, randbytes):
         msg = randbytes(4096)
         sig = cipher.sign(msg, digestmod)
@@ -207,7 +209,6 @@ class _TestCipherBase:
 
 
 class TestRSA(_TestCipherBase):
-
     @pytest.fixture
     def cipher(self):
         return RSA()
@@ -224,7 +225,6 @@ class TestRSA(_TestCipherBase):
 
 
 class TestECC(_TestCipherBase):
-
     @pytest.fixture(autouse=True, params=get_supported_curves())
     def cipher(self, request):
         curve = request.param
@@ -263,7 +263,6 @@ class TestECC(_TestCipherBase):
 
 
 class TestECCtoECDH:
-
     @pytest.fixture(autouse=True, params=get_supported_curves())
     def _setup(self, request):
         curve = request.param

@@ -19,22 +19,12 @@ setup_requires = [
     # Cython 0.28 handles const memoryviews.
     "cython>=0.28.0",
 ]
-install_requires = [
-    "certifi",
-]
-if sys.version_info < (3, ):
-    install_requires.extend([
-        "contextlib2",
-        "enum34",
-        "pathlib2",
-    ])
-tests_require = [
-    "readme_renderer",
-]
-if sys.version_info < (3, ):
-    tests_require.extend([
-        "contextlib2",
-    ])
+install_requires = ["certifi"]
+if sys.version_info < (3,):
+    install_requires.extend(["contextlib2", "enum34", "pathlib2"])
+tests_require = ["readme_renderer"]
+if sys.version_info < (3,):
+    tests_require.extend(["contextlib2"])
 
 
 def extensions(coverage=False):
@@ -54,8 +44,10 @@ def extensions(coverage=False):
                 libraries=["mbedcrypto", "mbedtls", "mbedx509"],
                 define_macros=[
                     ("CYTHON_TRACE", "1"),
-                    ("CYTHON_TRACE_NOGIL", "1")
-                ] if coverage else [],
+                    ("CYTHON_TRACE_NOGIL", "1"),
+                ]
+                if coverage
+                else [],
             )
             extension.cython_directives = {"language_level": 3}
             if coverage:
@@ -105,5 +97,5 @@ setup(
         "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: MIT License",
         "Topic :: Security :: Cryptography",
-    ]
+    ],
 )

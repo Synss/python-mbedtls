@@ -32,6 +32,7 @@ def new(key, mode=None, iv=None):
     """
     if len(key) != key_size:
         raise TLSError(
-            msg="key size must be %i bytes, got %i" % (key_size, len(key)))
+            msg="key size must be %i bytes, got %i" % (key_size, len(key))
+        )
     name = ("ARC4-%i" % (len(key) * 8)).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)

@@ -15,12 +15,13 @@ import pytest
 from mbedtls._md import MD_NAME
 import mbedtls.hash as md_hash
 import mbedtls.hmac as md_hmac
+
 # pylint: enable=import-error
 
 
 def make_chunks(buffer, size):
     for i in range(0, len(buffer), size):
-        yield buffer[i:i+size]
+        yield buffer[i : i + size]
 
 
 def test_make_chunks(randbytes):
@@ -34,7 +35,8 @@ def test_md_list():
 
 def test_algorithms():
     assert set(md_hash.algorithms_guaranteed).issubset(
-        md_hash.algorithms_available)
+        md_hash.algorithms_available
+    )
 
 
 class _TestMDBase:

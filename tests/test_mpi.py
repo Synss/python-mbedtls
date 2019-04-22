@@ -6,7 +6,7 @@ import pytest
 from mbedtls.mpi import MPI
 
 
-@pytest.mark.parametrize("value", (12, 2**32 - 1, 10**100))
+@pytest.mark.parametrize("value", (12, 2 ** 32 - 1, 10 ** 100))
 def test_from_int(value):
     mpi = MPI.from_int(value)
     assert mpi == value
@@ -144,7 +144,7 @@ def test_mod():
     assert 12 % MPI(10) == 2
 
 
-@pytest.mark.parametrize("value", (12, 2**32 - 1, 10**100))
+@pytest.mark.parametrize("value", (12, 2 ** 32 - 1, 10 ** 100))
 def test_bit_length(value):
     mpi = MPI(value)
     assert mpi == value

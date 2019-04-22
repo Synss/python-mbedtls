@@ -108,7 +108,7 @@ class TestRingBuf:
         data = randbytes(maxlen)
         written = 0
         for index in range(0, maxlen, chunk_size):
-            written += buffer.write(data[index:index + chunk_size])
+            written += buffer.write(data[index : index + chunk_size])
 
         assert written == maxlen
         assert buffer.full()
@@ -130,13 +130,14 @@ class TestRingBuf:
         written = buffer.write(data)
         for index in range(0, maxlen, chunk_size):
             assert len(buffer) == maxlen - index
-            assert buffer.read(chunk_size) == data[index:index + chunk_size]
+            assert buffer.read(chunk_size) == data[index : index + chunk_size]
         assert written == maxlen
         assert buffer.empty()
 
     @pytest.mark.usefixtures("randomize_start")
     def test_read_write_with_wraparound(
-            self, buffer, maxlen, chunk_size, randbytes):
+        self, buffer, maxlen, chunk_size, randbytes
+    ):
         wraparound = 5
         written = 0
         for _ in range(wraparound * maxlen // chunk_size):
@@ -162,7 +163,9 @@ class TestRingBuf:
             assert buffer.empty()
 
     @pytest.mark.usefixtures("randomize_start")
-    def test_write_overflow_raises_buffererror(self, buffer, maxlen, randbytes):
+    def test_write_overflow_raises_buffererror(
+        self, buffer, maxlen, randbytes
+    ):
         data = randbytes(maxlen + 1)
         with pytest.raises(BufferError):
             buffer.write(data)

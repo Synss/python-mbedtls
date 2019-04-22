@@ -2,6 +2,10 @@
 
 * cipher: Make package pure-Python.
 
+Misc.
+
+* *: Format Python files with `black`
+
 
 [0.17.1] - 2019-04-16
 

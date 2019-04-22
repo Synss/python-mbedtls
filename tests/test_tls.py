@@ -7,6 +7,7 @@ import struct
 import sys
 import time
 from functools import partial
+
 try:
     from contextlib import suppress
 except ImportError:
@@ -71,23 +72,32 @@ class Chain:
     def ca0_crt(self, ca0_key, digestmod, now):
         ca0_csr = CSR.new(ca0_key, "CN=Trusted CA", digestmod())
         return CRT.selfsign(
-            ca0_csr, ca0_key,
-            not_before=now, not_after=now + dt.timedelta(days=90),
+            ca0_csr,
+            ca0_key,
+            not_before=now,
+            not_after=now + dt.timedelta(days=90),
             serial_number=0x123456,
-            basic_constraints=BasicConstraints(True, -1))
+            basic_constraints=BasicConstraints(True, -1),
+        )
 
     @pytest.fixture(scope="class")
     def ca1_crt(self, ca1_key, ca0_crt, ca0_key, digestmod, now):
         ca1_csr = CSR.new(ca1_key, "CN=Intermediate CA", digestmod())
         return ca0_crt.sign(
-            ca1_csr, ca0_key, now, now + dt.timedelta(days=90), 0x234567,
-            basic_constraints=BasicConstraints(True, -1))
+            ca1_csr,
+            ca0_key,
+            now,
+            now + dt.timedelta(days=90),
+            0x234567,
+            basic_constraints=BasicConstraints(True, -1),
+        )
 
     @pytest.fixture(scope="class")
     def ee0_crt(self, ee0_key, ca1_crt, ca1_key, digestmod, now):
         ee0_csr = CSR.new(ee0_key, "CN=End Entity", digestmod())
         return ca1_crt.sign(
-            ee0_csr, ca1_key, now, now + dt.timedelta(days=90), 0x345678)
+            ee0_csr, ca1_key, now, now + dt.timedelta(days=90), 0x345678
+        )
 
 
 class TestTrustStore(Chain):
@@ -125,7 +135,6 @@ class TestTrustStore(Chain):
 
 
 class TestDTLSCookie:
-
     @pytest.fixture
     def cookie(self):
         return DTLSCookie()
@@ -151,7 +160,8 @@ class _TestBaseConfiguration(Chain):
 
     @pytest.mark.parametrize("chain", [((), None), None])
     def test_set_certificate_chain(
-            self, conf, chain, ee0_crt, ca1_crt, ee0_key):
+        self, conf, chain, ee0_crt, ca1_crt, ee0_key
+    ):
         if chain is None:
             chain = (ee0_crt, ca1_crt), ee0_key
         conf_ = conf.update(certificate_chain=chain)
@@ -164,12 +174,13 @@ class _TestBaseConfiguration(Chain):
 
     @pytest.mark.parametrize(
         "inner_protocols",
-        [[], (), [NextProtocol.H2, NextProtocol.H2C],
-         [b'h2', b'h2c', b'ftp']])
+        [[], (), [NextProtocol.H2, NextProtocol.H2C], [b"h2", b"h2c", b"ftp"]],
+    )
     def test_set_inner_protocols(self, conf, inner_protocols):
         conf_ = conf.update(inner_protocols=inner_protocols)
         assert conf_.inner_protocols == tuple(
-            NextProtocol(_) for _ in inner_protocols)
+            NextProtocol(_) for _ in inner_protocols
+        )
 
     @pytest.mark.parametrize("store", [TrustStore.system()])
     def test_trust_store(self, conf, store):
@@ -183,7 +194,6 @@ class _TestBaseConfiguration(Chain):
 
 
 class TestTLSConfiguration(_TestBaseConfiguration):
-
     @pytest.fixture
     def conf(self):
         return TLSConfiguration()
@@ -200,7 +210,6 @@ class TestTLSConfiguration(_TestBaseConfiguration):
 
 
 class TestDTLSConfiguration(_TestBaseConfiguration):
-
     @pytest.fixture
     def conf(self):
         return DTLSConfiguration()
@@ -313,8 +322,7 @@ class _TestCommunicationBase(Chain):
         yield buffer
         if request.node.rep_call.failed and request.param:
             with open(
-                "/tmp/dump.%s" % dt.datetime.utcnow().isoformat(),
-                "wb",
+                "/tmp/dump.%s" % dt.datetime.utcnow().isoformat(), "wb"
             ) as dump:
                 dump.write(buffer)
 
@@ -332,14 +340,13 @@ class _TestCommunicationBase(Chain):
     @pytest.fixture
     def server(self, srv_conf, address, version):
         ctx = ServerContext(srv_conf)
-        sock = ctx.wrap_socket(
-            socket.socket(socket.AF_INET, self.proto))
+        sock = ctx.wrap_socket(socket.socket(socket.AF_INET, self.proto))
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind(address)
         if self.proto == socket.SOCK_STREAM:
             sock.listen(1)
 
-        runner = mp.Process(target=self.echo, args=(sock, ))
+        runner = mp.Process(target=self.echo, args=(sock,))
         runner.start()
         yield sock
         runner.join(0.1)
@@ -352,7 +359,8 @@ class _TestCommunicationBase(Chain):
         ctx = ClientContext(cli_conf)
         sock = ctx.wrap_socket(
             socket.socket(socket.AF_INET, self.proto),
-            server_hostname="End Entity")
+            server_hostname="End Entity",
+        )
         sock.connect(address)
         block(sock.do_handshake)
         yield sock
@@ -374,27 +382,24 @@ class _TestCommunicationBase(Chain):
 class TestTLSCommunication(_TestCommunicationBase):
     proto = socket.SOCK_STREAM
 
-    @pytest.fixture(scope="class",
-                    params=[
-                        TLSVersion.TLSv1,
-                        TLSVersion.TLSv1_1,
-                        TLSVersion.TLSv1_2,
-                    ])
+    @pytest.fixture(
+        scope="class",
+        params=[TLSVersion.TLSv1, TLSVersion.TLSv1_1, TLSVersion.TLSv1_2],
+    )
     def version(self, request):
         return request.param
 
     @pytest.fixture(scope="class")
     def srv_conf(
-            self,
-            version,
-            ca0_crt, ca1_crt, ee0_crt, ee0_key,
-            trust_store):
+        self, version, ca0_crt, ca1_crt, ee0_crt, ee0_key, trust_store
+    ):
         return TLSConfiguration(
             trust_store=trust_store,
             certificate_chain=([ee0_crt, ca1_crt], ee0_key),
             lowest_supported_version=TLSVersion.MINIMUM_SUPPORTED,
             highest_supported_version=version,
-            validate_certificates=False)
+            validate_certificates=False,
+        )
 
     @pytest.fixture(scope="class")
     def cli_conf(self, version, trust_store):
@@ -402,7 +407,8 @@ class TestTLSCommunication(_TestCommunicationBase):
             trust_store=trust_store,
             lowest_supported_version=TLSVersion.MINIMUM_SUPPORTED,
             highest_supported_version=version,
-            validate_certificates=True)
+            validate_certificates=True,
+        )
 
     @pytest.fixture(params=[1, 10, 100, 1000, 10000, 16384 - 1])
     def step(self, request):
@@ -420,11 +426,13 @@ class TestTLSCommunication(_TestCommunicationBase):
             assert amt == len(data)
 
     def test_server_hostname_fails_verification(
-            self, server, cli_conf, address):
+        self, server, cli_conf, address
+    ):
         ctx = ClientContext(cli_conf)
         sock = ctx.wrap_socket(
             socket.socket(socket.AF_INET, self.proto),
-            server_hostname="Wrong End Entity")
+            server_hostname="Wrong End Entity",
+        )
         sock.connect(address)
         with pytest.raises(TLSError):
             block(sock.do_handshake)
@@ -432,7 +440,7 @@ class TestTLSCommunication(_TestCommunicationBase):
     def test_client_server(self, client, buffer, step):
         received = bytearray()
         for idx in range(0, len(buffer), step):
-            view = memoryview(buffer[idx:idx + step])
+            view = memoryview(buffer[idx : idx + step])
             amt = block(client.send, view)
             assert amt == len(view)
             assert block(client.recv, 20 * 1024) == view
@@ -447,16 +455,15 @@ class TestDTLSCommunication(_TestCommunicationBase):
 
     @pytest.fixture(scope="class")
     def srv_conf(
-            self,
-            version,
-            ca0_crt, ca1_crt, ee0_crt, ee0_key,
-            trust_store):
+        self, version, ca0_crt, ca1_crt, ee0_crt, ee0_key, trust_store
+    ):
         return DTLSConfiguration(
             trust_store=trust_store,
             certificate_chain=([ee0_crt, ca1_crt], ee0_key),
             lowest_supported_version=TLSVersion.MINIMUM_SUPPORTED,
             highest_supported_version=version,
-            validate_certificates=False)
+            validate_certificates=False,
+        )
 
     @pytest.fixture(scope="class")
     def cli_conf(self, version, trust_store):
@@ -464,7 +471,8 @@ class TestDTLSCommunication(_TestCommunicationBase):
             trust_store=trust_store,
             lowest_supported_version=TLSVersion.MINIMUM_SUPPORTED,
             highest_supported_version=version,
-            validate_certificates=True)
+            validate_certificates=True,
+        )
 
     @pytest.fixture(params=[10, 100, 1000, 5000])
     def step(self, request):

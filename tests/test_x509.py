@@ -1,5 +1,6 @@
 import base64
 import datetime as dt
+
 try:
     from pathlib import Path
 except ImportError:
@@ -36,7 +37,7 @@ def now():
 
 @pytest.fixture
 def issuer_key():
-    issuer_key  = RSA()
+    issuer_key = RSA()
     issuer_key.generate(key_size=1024)
     return issuer_key
 
@@ -61,7 +62,6 @@ class _X509Base:
 
 
 class _CommonTests(_X509Base):
-
     def test_from_buffer(self, x509, der):
         assert type(x509).from_buffer(der) == x509
 
@@ -94,7 +94,6 @@ class _CommonTests(_X509Base):
 
 
 class _CRTWikipediaBase(_X509Base):
-
     @pytest.fixture
     def x509(self):
         with (Path(__file__).parent / "ca/wikipedia.pem").open() as crt:
@@ -110,16 +109,26 @@ class TestCRTWikipediaBase(_CommonTests, _CRTWikipediaBase):
 
 
 class TestCRTWikipediaAccessors(_CRTWikipediaBase):
-
     def test_issuer(self, crt):
-        assert crt.issuer == ", ".join((
-            "C=US", "O=DigiCert Inc", "OU=www.digicert.com",
-            "CN=DigiCert SHA2 High Assurance Server CA"))
+        assert crt.issuer == ", ".join(
+            (
+                "C=US",
+                "O=DigiCert Inc",
+                "OU=www.digicert.com",
+                "CN=DigiCert SHA2 High Assurance Server CA",
+            )
+        )
 
     def test_subject(self, crt):
-        assert crt.subject == ", ".join((
-            "C=US", "ST=California", "L=San Francisco",
-            "O=Wikimedia Foundation, Inc.", "CN=*.wikipedia.org"))
+        assert crt.subject == ", ".join(
+            (
+                "C=US",
+                "ST=California",
+                "L=San Francisco",
+                "O=Wikimedia Foundation, Inc.",
+                "CN=*.wikipedia.org",
+            )
+        )
 
     def test_subject_alternative_names(self, crt):
         assert "*.m.wikidata.org" in crt.subject_alternative_names
@@ -130,7 +139,6 @@ class TestCRTWikipediaAccessors(_CRTWikipediaBase):
 
 
 class _CRTBase(_X509Base):
-
     @pytest.fixture
     def issuer(self):
         return "C=NL, O=PolarSSL, CN=PolarSSL Test CA"
@@ -152,14 +160,17 @@ class _CRTBase(_X509Base):
         return BasicConstraints(False, 0)
 
     @pytest.fixture
-    def x509(self,
-             now,
-             issuer, issuer_key,
-             subject, subject_key,
-             serial_number,
-             digestmod,
-             basic_constraints
-            ):
+    def x509(
+        self,
+        now,
+        issuer,
+        issuer_key,
+        subject,
+        subject_key,
+        serial_number,
+        digestmod,
+        basic_constraints,
+    ):
         return CRT.new(
             not_before=now,
             not_after=now + dt.timedelta(days=90),
@@ -169,7 +180,8 @@ class _CRTBase(_X509Base):
             subject_key=subject_key,
             serial_number=serial_number,
             digestmod=digestmod,
-            basic_constraints=basic_constraints)
+            basic_constraints=basic_constraints,
+        )
 
     @pytest.fixture
     def crt(self, x509):
@@ -181,7 +193,6 @@ class TestCRTBase(_CommonTests, _CRTBase):
 
 
 class TestCRTAccessors(_CRTBase):
-
     def test_version(self, crt):
         assert crt.version == 3
 
@@ -218,7 +229,6 @@ class TestCRTAccessors(_CRTBase):
 
 
 class TestCRTMDAlg(_CRTBase):
-
     @pytest.fixture(params=[hash.sha1, hash.sha256])
     def digestmod(self, request):
         return request.param()
@@ -228,7 +238,6 @@ class TestCRTMDAlg(_CRTBase):
 
 
 class TestCRTCAPath(_CRTBase):
-
     @pytest.fixture(params=[(True, 0), (True, 2), (False, 0), None])
     def basic_constraints(self, request):
         return request.param
@@ -240,7 +249,6 @@ class TestCRTCAPath(_CRTBase):
 
 
 class _CSRBase(_X509Base):
-
     @pytest.fixture
     def subject(self):
         return "C=NL, O=PolarSSL, CN=PolarSSL Server 1"
@@ -259,7 +267,6 @@ class TestCSRBase(_CommonTests, _CSRBase):
 
 
 class TestCSRAccessors(_CSRBase):
-
     def test_version(self, csr):
         assert csr.version == 1
 
@@ -271,7 +278,6 @@ class TestCSRAccessors(_CSRBase):
 
 
 class _CRLBase(_X509Base):
-
     @pytest.fixture
     def x509(self):
         return CRL.from_PEM(CRL_PEM)
@@ -286,7 +292,6 @@ class TestCRLBase(_CommonTests, _CRLBase):
 
 
 class TestCRLAccessors(_CRLBase):
-
     def test_tbs_certificate(self, crl):
         assert isinstance(crl.tbs_certificate, bytes)
         assert crl.tbs_certificate
@@ -310,13 +315,11 @@ class TestCRLAccessors(_CRLBase):
     def test_revoked_certificates(self, crl):
         assert len(crl.revoked_certificates) == 2
         entry = crl.revoked_certificates[0]
-        assert entry.revocation_date == dt.datetime(
-            2011, 2, 12, 14, 44, 7)
+        assert entry.revocation_date == dt.datetime(2011, 2, 12, 14, 44, 7)
         assert entry.serial == 1
 
 
 class TestCRL(_CRLBase):
-
     @pytest.mark.skip("not implemented")
     def test_revocation_false(self, der):
         pass
@@ -352,23 +355,32 @@ class TestVerifyCertificateChain:
     def ca0_crt(self, ca0_key, now):
         ca0_csr = CSR.new(ca0_key, "CN=Trusted CA", hash.sha256())
         return CRT.selfsign(
-            ca0_csr, ca0_key,
-            not_before=now, not_after=now + dt.timedelta(days=90),
+            ca0_csr,
+            ca0_key,
+            not_before=now,
+            not_after=now + dt.timedelta(days=90),
             serial_number=0x123456,
-            basic_constraints=BasicConstraints(True, -1))
+            basic_constraints=BasicConstraints(True, -1),
+        )
 
     @pytest.fixture
     def ca1_crt(self, ca1_key, ca0_crt, ca0_key, now):
         ca1_csr = CSR.new(ca1_key, "CN=Intermediate CA", hash.sha256())
         return ca0_crt.sign(
-            ca1_csr, ca0_key, now, now + dt.timedelta(days=90), 0x234567,
-            basic_constraints=BasicConstraints(True, 1))
+            ca1_csr,
+            ca0_key,
+            now,
+            now + dt.timedelta(days=90),
+            0x234567,
+            basic_constraints=BasicConstraints(True, 1),
+        )
 
     @pytest.fixture
     def ee0_crt(self, ee0_key, ca1_crt, ca1_key, now):
         ee0_csr = CSR.new(ee0_key, "CN=End Entity", hash.sha256())
         return ca1_crt.sign(
-            ee0_csr, ca1_key, now, now + dt.timedelta(days=90), 0x345678)
+            ee0_csr, ca1_key, now, now + dt.timedelta(days=90), 0x345678
+        )
 
     def test_verify_chain(self, ca0_crt, ca1_crt, ee0_crt):
         assert all((ca1_crt.verify(ee0_crt), ca0_crt.verify(ca0_crt)))

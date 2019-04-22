@@ -34,8 +34,8 @@ def new(key, mode, iv=None):
     mode = _cipher.Mode(mode)
     if len(key) not in range(4, 57):
         raise TLSError(
-            msg="key size must be 4 to 57 bytes, got %i" % (
-                key_size, len(key)))
+            msg="key size must be 4 to 57 bytes, got %i" % (key_size, len(key))
+        )
     if mode not in {
         _cipher.Mode.ECB,
         _cipher.Mode.CBC,
@@ -43,7 +43,7 @@ def new(key, mode, iv=None):
         _cipher.Mode.CTR,
     }:
         raise TLSError(msg="unsupported mode %r" % mode)
-    name = ("BLOWFISH-%s%s"
-            % (mode.name, "64" if mode is _cipher.Mode.CFB else "")
-           ).encode("ascii")
+    name = (
+        "BLOWFISH-%s%s" % (mode.name, "64" if mode is _cipher.Mode.CFB else "")
+    ).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)

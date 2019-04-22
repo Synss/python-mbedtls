@@ -12,10 +12,13 @@ def test_version():
     assert version.version == "mbed TLS %i.%i.%i" % version.version_info
 
 
-@pytest.mark.parametrize("feature, present", (
-    ("havege", False),
-    ("MBEDTLS_SSL_RENEGOTIATION", True),
-    ("ssl_renegotiation", True),
-))
+@pytest.mark.parametrize(
+    "feature, present",
+    (
+        ("havege", False),
+        ("MBEDTLS_SSL_RENEGOTIATION", True),
+        ("ssl_renegotiation", True),
+    ),
+)
 def test_feature(feature, present):
     assert version._has_feature(feature) is present

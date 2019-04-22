@@ -36,10 +36,7 @@ def new(key, mode, iv=None):
     mode = _cipher.Mode(mode)
     if len(key) != key_size:
         raise TLSError(msg="key size must be 16 bytes, got %r" % len(key))
-    if mode not in {
-        _cipher.Mode.ECB,
-        _cipher.Mode.CBC,
-    }:
+    if mode not in {_cipher.Mode.ECB, _cipher.Mode.CBC}:
         raise TLSError(msg="unsupported mode %r" % mode)
     name = ("DES-%s" % mode.name).encode("ascii")
     return _cipher.Cipher(name, key, mode, iv)
