@@ -89,7 +89,21 @@ cdef extern from "mbedtls/ecp.h" nogil:
         mbedtls_mpi Z
 
     ctypedef struct mbedtls_ecp_group:
-        pass
+        mbedtls_ecp_group_id id;
+        mbedtls_mpi P
+        mbedtls_mpi A
+        mbedtls_mpi B
+        mbedtls_ecp_point G
+        mbedtls_mpi N
+        size_t pbits
+        size_t nbits
+        unsigned int h
+        int (*modp)(mbedtls_mpi *)
+        int (*t_pre)(mbedtls_ecp_point *, void *)
+        int (*t_post)(mbedtls_ecp_point *, void *)
+        void *t_data
+        mbedtls_ecp_point *T
+        size_t T_size
 
     ctypedef struct mbedtls_ecp_keypair:
         mbedtls_ecp_group grp
@@ -147,7 +161,13 @@ cdef extern from "mbedtls/ecp.h" nogil:
 
     # mbedtls_ecp_tls_read_group
     # mbedtls_ecp_tls_write_group
-    # mbedtls_ecp_mul
+    int mbedtls_ecp_mul(
+        mbedtls_ecp_group *grp,
+        mbedtls_ecp_point *R,
+        const mbedtls_mpi *m,
+        const mbedtls_ecp_point *P,
+        int (*f_rng)(void *, unsigned char *, size_t),
+        void *p_rng)
     # mbedtls_ecp_muladd
     # mbedtls_ecp_check_pubkey
     # mbedtls_ecp_check_privkey

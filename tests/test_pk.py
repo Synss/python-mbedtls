@@ -392,6 +392,13 @@ class TestECDH:
         assert srv_sec == self.srv.shared_secret
         assert cli_sec == self.cli.shared_secret
 
+    def test_generate_public(self):
+        self.srv.generate()
+        self.cli._private_key = self.srv._private_key
+        assert self.cli._public_key != self.srv._public_key
+        self.cli.generate_public_key()
+        assert self.cli._public_key == self.srv._public_key
+
 
 class TestECDHNaive:
     @pytest.fixture(autouse=True, params=(Curve.CURVE25519, Curve.CURVE448))

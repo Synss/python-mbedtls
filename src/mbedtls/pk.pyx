@@ -958,6 +958,12 @@ cdef class ECDHBase:
         except ValueError:
             return _mpi.MPI()
 
+    def generate_public_key(self):
+        """Generate public key from a private key."""
+        check_error(_pk.mbedtls_ecp_mul(
+            &self._ctx.grp, &self._ctx.Q, &self._ctx.d, &self._ctx.grp.G,
+            &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
+
     @property
     def _private_key(self):
         """The private key (int)"""
