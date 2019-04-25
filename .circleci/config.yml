@@ -107,14 +107,29 @@ jobs:
             . venv/bin/activate
             pip install tox
             tox -p auto -e py27,py34,py35,py36
-            tox -e py36-doctest
+            tox -e doctest
+
+      - run:
+          name: build API documentation
+          command: |
+            eval "$(pyenv init -)"
+            pyenv shell 3.6.6
+            . venv/bin/activate
+            tox -e docs
+
+      - run:
+          name: save docs
+          when: on_success
+          command: |
+            mkdir -p out/
+            cp -R .tox/docs_out out/docs
 
       - run:
           name: save logs
+          when: on_fail
           command: |
             mkdir -p out/log
             cp .tox/*/log/py*.log out/log || true
-          when: on_fail
 
       - store_artifacts:
           path: out
