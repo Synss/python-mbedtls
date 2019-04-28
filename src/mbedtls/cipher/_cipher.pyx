@@ -138,8 +138,6 @@ __all__ = (
     "MODE_CCM",
     "MODE_XTS",
     "MODE_CHACHAPOLY",
-    "Cipher",
-    "AEADCipher"
 )
 
 

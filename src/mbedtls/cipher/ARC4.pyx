@@ -7,10 +7,10 @@ __copyright__ = "Copyright 2016, Elaborated Networks GmbH"
 __license__ = "MIT License"
 
 
-cimport mbedtls.cipher._cipher as _cipher
-import mbedtls.cipher._cipher as _cipher
+from . import _cipher
 from mbedtls.exceptions import *
 
+__all__ = ["block_size", "key_size", "new"]
 
 block_size = 1
 key_size = 16
