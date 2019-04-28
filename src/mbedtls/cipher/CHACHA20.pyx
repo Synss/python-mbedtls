@@ -11,10 +11,10 @@ key_size = 32
 def new(key, mode, iv=None, ad=None):
     if len(key) != 32:
         raise TLSError(msg="key size must 32 bytes, got %r" % len(key))
-    if mode == _cipher.MODE_STREAM:
+    if mode == _cipher.Mode.STREAM:
         assert ad is None
         cipher = _cipher.Cipher(b"CHACHA20", key, mode, iv)
-    elif mode == _cipher.MODE_CHACHAPOLY:
+    elif mode == _cipher.Mode.CHACHAPOLY:
         ad = b"" if ad is None else ad
         cipher = _cipher.AEADCipher(b"CHACHA20-POLY1305", key, mode, iv, ad)
     else:
