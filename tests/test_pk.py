@@ -386,18 +386,18 @@ class TestECDH:
         assert not srv._has_private()
         assert not srv._has_public()
         assert not srv._has_peers_public()
-        assert srv._private_key == 0
-        assert srv._public_key == 0
-        assert srv._peer_public_key == 0
+        assert srv.private_key == 0
+        assert srv.public_key == 0
+        assert srv.peers_public_key == 0
         assert srv.shared_secret == 0
 
     def test_cli_key_accessors_without_key(self, cli):
         assert not cli._has_private()
         assert not cli._has_public()
         assert not cli._has_peers_public()
-        assert cli._private_key == 0
-        assert cli._public_key == 0
-        assert cli._peer_public_key == 0
+        assert cli.private_key == 0
+        assert cli.public_key == 0
+        assert cli.peers_public_key == 0
         assert cli.shared_secret == 0
 
     def test_exchange(self, srv, cli):
@@ -422,10 +422,10 @@ class TestECDH:
 
     def test_generate_public(self, srv, cli):
         srv.generate()
-        cli._private_key = srv._private_key
-        assert cli._public_key != srv._public_key
+        cli._private_key = srv.private_key
+        assert cli.public_key != srv.public_key
         cli.generate_public_key()
-        assert cli._public_key == srv._public_key
+        assert cli.public_key == srv.public_key
 
 
 class TestECDHNaive:
@@ -446,9 +446,9 @@ class TestECDHNaive:
             assert not peer._has_private()
             assert not peer._has_public()
             assert peer.shared_secret == 0
-            assert peer._private_key == 0
-            assert peer._public_key == 0
-            assert peer._peer_public_key == 0
+            assert peer.private_key == 0
+            assert peer.public_key == 0
+            assert peer.peers_public_key == 0
 
     def test_exchange(self, alice, bob):
         alice_to_bob = alice.generate()
@@ -457,21 +457,21 @@ class TestECDHNaive:
         bob_to_alice = bob.generate()
         assert bob._has_public()
 
-        assert alice._private_key != 0
-        assert bob._private_key != 0
-        assert alice._private_key != bob._private_key
+        assert alice.private_key != 0
+        assert bob.private_key != 0
+        assert alice.private_key != bob.private_key
 
-        assert alice._public_key != 0
-        assert bob._public_key != 0
-        assert alice._public_key != bob._public_key
+        assert alice.public_key != 0
+        assert bob.public_key != 0
+        assert alice.public_key != bob.public_key
 
-        alice.import_peer_public(bob_to_alice)
+        alice.import_peers_public(bob_to_alice)
         assert alice._has_peers_public() is True
-        assert alice._peer_public_key == bob._public_key
+        assert alice.peers_public_key == bob.public_key
 
-        bob.import_peer_public(alice_to_bob)
+        bob.import_peers_public(alice_to_bob)
         assert bob._has_peers_public() is True
-        assert bob._peer_public_key == alice._public_key
+        assert bob.peers_public_key == alice.public_key
 
         alice_secret = alice.generate_secret()
         bob_secret = bob.generate_secret()
@@ -501,18 +501,18 @@ class TestECDHNaiveAttacks:
     def authenticate_alice_and_bob(self, alice, bob):
         alice_to_bob = alice.generate()
         bob_to_alice = bob.generate()
-        alice.import_peer_public(bob_to_alice)
-        bob.import_peer_public(alice_to_bob)
+        alice.import_peers_public(bob_to_alice)
+        bob.import_peers_public(alice_to_bob)
         alice_secret = alice.generate_secret()
         bob_secret = bob.generate_secret()
 
     def test_attacker_fails_with_public_keys(self, alice, bob, eve):
-        eve._public_key = alice._public_key
-        eve._peer_public_key = bob._public_key
+        eve._public_key = alice.public_key
+        eve._peer_public_key = bob.public_key
         with pytest.raises(TLSError):
             eve.generate_secret()
 
     def test_attacker_succeeds_with_private_key(self, alice, bob, eve):
-        eve._peer_public_key = bob._public_key
-        eve._private_key = alice._private_key
+        eve._peer_public_key = bob.public_key
+        eve._private_key = alice.private_key
         assert eve.generate_secret() == alice.shared_secret

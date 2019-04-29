@@ -2,6 +2,16 @@
 
 * cipher: Make package pure-Python.
 
+API Changes
+
+* pk.ECDHNaive: `generate()` returns the public key as an ECPoint and
+`import_peers_public()` now takes an ECPoint.  `import_peer_public(MPI)`
+is deprecated and will be removed in a future release.  Further note
+the `s` in `import_peers_public()`.
+* pk: Make `ECDH*.{public_key,private_key,peers_public_key}` public.  The
+private equivalents with a `_*` prefix are deprecated and will be removed in a
+future release.  Further note the `s` in `peers_public_key`.
+
 Misc.
 
 * *: Format Python files with `black`
