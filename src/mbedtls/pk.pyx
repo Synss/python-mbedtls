@@ -111,7 +111,7 @@ cpdef get_supported_ciphers():
 
 def get_supported_curves():
     """Return the list of supported curves in order of preference."""
-    cdef const mbedtls_ecp_curve_info* info = mbedtls_ecp_curve_list()
+    cdef const mbedtls_ecp_curve_info* info = _pk.mbedtls_ecp_curve_list()
     names, idx = [], 0
     while info[idx].name != NULL:
         names.append(Curve(bytes(info[idx].name)))
@@ -119,11 +119,16 @@ def get_supported_curves():
     return names
 
 
-cdef curve_name_to_grp_id(name):
-    cdef const mbedtls_ecp_curve_info* info = mbedtls_ecp_curve_list()
+cdef curve_name_to_grp_id(curve):
+    if curve is Curve.CURVE25519:
+        return _pk.MBEDTLS_ECP_DP_CURVE25519
+    elif curve is Curve.CURVE448:
+        return _pk.MBEDTLS_ECP_DP_CURVE448
+
+    cdef const mbedtls_ecp_curve_info* info = _pk.mbedtls_ecp_curve_list()
     idx = 0
     while info[idx].name != NULL:
-        if info[idx].name == name:
+        if info[idx].name == curve:
             return info.grp_id
         idx += 1
 
@@ -904,7 +909,7 @@ cdef class ECDHBase:
         super().__init__()
         if curve is None:
             curve = get_supported_curves()[0]
-        self.curve = curve
+        self.curve = Curve(curve)
         check_error(mbedtls_ecp_group_load(
             &self._ctx.grp, curve_name_to_grp_id(self.curve)))
 
@@ -1082,16 +1087,12 @@ cdef class ECDHNaive(ECDHBase):
 
     """
     def __init__(self, curve=None):
-        self.curve = curve or b'curve25519'
-        if self.curve == b'curve25519':
-            check_error(mbedtls_ecp_group_load(
-                &self._ctx.grp, _pk.MBEDTLS_ECP_DP_CURVE25519))
-        elif self.curve == b'curve448':
-            check_error(mbedtls_ecp_group_load(
-                &self._ctx.grp, _pk.MBEDTLS_ECP_DP_CURVE448))
-        else:
-            raise ValueError(
-                'ECDHNaive only supports curve25519 and curve448')
+        if curve is None:
+            curve = Curve.CURVE25519
+        curve = Curve(curve)
+        if curve not in {Curve.CURVE25519, Curve.CURVE448}:
+            raise ValueError("ECDHNaive only supports curve25519 and curve448")
+        super().__init__(curve)
 
     def generate(self):
         """Generate a public key.
