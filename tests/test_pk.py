@@ -263,23 +263,33 @@ class TestECC(_TestCipherBase):
 
 
 class TestECCtoECDH:
-    @pytest.fixture(autouse=True, params=get_supported_curves())
-    def _setup(self, request):
-        curve = request.param
+    @pytest.fixture(params=get_supported_curves())
+    def curve(self, request):
+        return request.param
+
+    @pytest.fixture
+    def ecp(self, curve):
         ecp = ECC(curve)
         ecp.generate()
-        self.srv = ecp.to_ECDH_server()
-        self.cli = ecp.to_ECDH_client()
+        return ecp
 
-    def test_exchange(self):
-        cke = self.cli.generate()
-        assert self.cli._has_public()
+    @pytest.fixture
+    def srv(self, ecp):
+        return ecp.to_ECDH_server()
 
-        self.srv.import_CKE(cke)
-        assert self.srv._has_peers_public() is True
+    @pytest.fixture
+    def cli(self, ecp):
+        return ecp.to_ECDH_client()
 
-        srv_sec = self.srv.generate_secret()
-        cli_sec = self.cli.generate_secret()
+    def test_exchange(self, srv, cli):
+        cke = cli.generate()
+        assert cli._has_public()
+
+        srv.import_CKE(cke)
+        assert srv._has_peers_public() is True
+
+        srv_sec = srv.generate_secret()
+        cli_sec = cli.generate_secret()
         assert srv_sec == cli_sec
 
 
@@ -360,55 +370,70 @@ class TestDHExchange:
 
 
 class TestECDH:
-    @pytest.fixture(autouse=True, params=get_supported_curves())
-    def _setup(self, request):
-        curve = request.param
-        self.srv = ECDHServer(curve)
-        self.cli = ECDHClient(curve)
+    @pytest.fixture(params=get_supported_curves())
+    def curve(self, request):
+        return request.param
 
-    def test_key_accessors_without_key(self):
-        for cipher in (self.srv, self.cli):
+    @pytest.fixture
+    def srv(self, curve):
+        return ECDHServer(curve)
+
+    @pytest.fixture
+    def cli(self, curve):
+        return ECDHClient(curve)
+
+    def test_key_accessors_without_key(self, srv, cli):
+        for cipher in (srv, cli):
             assert not cipher._has_private()
             assert not cipher._has_public()
             assert cipher.shared_secret == 0
 
-    def test_exchange(self):
-        ske = self.srv.generate()
-        assert self.srv._has_public()
+    def test_exchange(self, srv, cli):
+        ske = srv.generate()
+        assert srv._has_public()
 
-        self.cli.import_SKE(ske)
-        assert self.cli._has_peers_public() is True
+        cli.import_SKE(ske)
+        assert cli._has_peers_public() is True
 
-        cke = self.cli.generate()
-        assert self.cli._has_public()
+        cke = cli.generate()
+        assert cli._has_public()
 
-        self.srv.import_CKE(cke)
-        assert self.srv._has_peers_public() is True
+        srv.import_CKE(cke)
+        assert srv._has_peers_public() is True
 
-        srv_sec = self.srv.generate_secret()
-        cli_sec = self.cli.generate_secret()
+        srv_sec = srv.generate_secret()
+        cli_sec = cli.generate_secret()
         assert srv_sec == cli_sec
-        assert srv_sec == self.srv.shared_secret
-        assert cli_sec == self.cli.shared_secret
+        assert srv_sec == srv.shared_secret
+        assert cli_sec == cli.shared_secret
 
-    def test_generate_public(self):
-        self.srv.generate()
-        self.cli._private_key = self.srv._private_key
-        assert self.cli._public_key != self.srv._public_key
-        self.cli.generate_public_key()
-        assert self.cli._public_key == self.srv._public_key
+    def test_generate_public(self, srv, cli):
+        srv.generate()
+        cli._private_key = srv._private_key
+        assert cli._public_key != srv._public_key
+        cli.generate_public_key()
+        assert cli._public_key == srv._public_key
 
 
 class TestECDHNaive:
-    @pytest.fixture(autouse=True, params=(Curve.CURVE25519, Curve.CURVE448))
-    def _setup(self, request):
-        curve = request.param
-        self.alice = ECDHNaive(curve)
-        self.bob = ECDHNaive(curve)
-        self.eve = ECDHNaive(curve)
+    @pytest.fixture(params=[Curve.CURVE448, Curve.CURVE25519])
+    def curve(self, request):
+        return request.param
 
-    def test_key_accessors_without_key(self):
-        for peer in (self.alice, self.bob):
+    @pytest.fixture
+    def alice(self, curve):
+        return ECDHNaive(curve)
+
+    @pytest.fixture
+    def bob(self, curve):
+        return ECDHNaive(curve)
+
+    @pytest.fixture
+    def eve(self, curve):
+        return ECDHNaive(curve)
+
+    def test_key_accessors_without_key(self, alice, bob):
+        for peer in (alice, bob):
             assert not peer._has_private()
             assert not peer._has_public()
             assert peer.shared_secret == 0
@@ -416,39 +441,39 @@ class TestECDHNaive:
             assert peer._public_key == 0
             assert peer._peer_public_key == 0
 
-    def test_exchange(self):
-        alice_to_bob = self.alice.generate()
-        assert self.alice._has_public()
+    def test_exchange(self, alice, bob, eve):
+        alice_to_bob = alice.generate()
+        assert alice._has_public()
 
-        bob_to_alice = self.bob.generate()
-        assert self.bob._has_public()
+        bob_to_alice = bob.generate()
+        assert bob._has_public()
 
-        assert self.alice._private_key != 0
-        assert self.bob._private_key != 0
-        assert self.alice._private_key != self.bob._private_key
+        assert alice._private_key != 0
+        assert bob._private_key != 0
+        assert alice._private_key != bob._private_key
 
-        assert self.alice._public_key != 0
-        assert self.bob._public_key != 0
-        assert self.alice._public_key != self.bob._public_key
+        assert alice._public_key != 0
+        assert bob._public_key != 0
+        assert alice._public_key != bob._public_key
 
-        self.alice.import_peer_public(bob_to_alice)
-        assert self.alice._has_peers_public() is True
-        assert self.alice._peer_public_key == self.bob._public_key
+        alice.import_peer_public(bob_to_alice)
+        assert alice._has_peers_public() is True
+        assert alice._peer_public_key == bob._public_key
 
-        self.bob.import_peer_public(alice_to_bob)
-        assert self.bob._has_peers_public() is True
-        assert self.bob._peer_public_key == self.alice._public_key
+        bob.import_peer_public(alice_to_bob)
+        assert bob._has_peers_public() is True
+        assert bob._peer_public_key == alice._public_key
 
-        alice_secret = self.alice.generate_secret()
-        bob_secret = self.bob.generate_secret()
+        alice_secret = alice.generate_secret()
+        bob_secret = bob.generate_secret()
         assert alice_secret == bob_secret
-        assert alice_secret == self.alice.shared_secret
-        assert bob_secret == self.bob.shared_secret
+        assert alice_secret == alice.shared_secret
+        assert bob_secret == bob.shared_secret
 
-        self.eve._public_key = self.alice._public_key
-        self.eve._peer_public_key = self.bob._public_key
+        eve._public_key = alice._public_key
+        eve._peer_public_key = bob._public_key
         with pytest.raises(TLSError):
-            self.eve.generate_secret()
-        self.eve._public_key = ECPoint(0, 0, 0)
-        self.eve._private_key = self.alice._private_key
-        assert self.eve.generate_secret() == alice_secret
+            eve.generate_secret()
+        eve._public_key = ECPoint(0, 0, 0)
+        eve._private_key = alice._private_key
+        assert eve.generate_secret() == alice_secret
