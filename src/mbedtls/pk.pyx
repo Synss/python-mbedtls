@@ -933,6 +933,37 @@ cdef class ECDHBase:
         """Return `True` if the peer's key is present."""
         return not _pk.mbedtls_ecp_is_zero(&self._ctx.Qp)
 
+    @property
+    def public_key(self):
+        """The public key (ECPoint)"""
+        ecp = ECPoint(0, 0, 0)
+        check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Q))
+        return ecp
+
+    @property
+    def private_key(self):
+        """The private key (int)"""
+        return _mpi.from_mpi(&self._ctx.d)
+
+    @property
+    def peers_public_key(self):
+        """Peer's public key (ECPoint)"""
+        ecp = ECPoint(0, 0, 0)
+        check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Qp))
+        return ecp
+
+    @property
+    def shared_secret(self):
+        """The shared secret (int).
+
+        The shared secret is 0 if the TLS handshake is not finished.
+
+        """
+        try:
+            return _mpi.from_mpi(&self._ctx.z)
+        except ValueError:
+            return _mpi.MPI()
+
     def generate_secret(self):
         """Generate the shared secret."""
         cdef _mpi.MPI mpi = _mpi.MPI()
@@ -951,18 +982,6 @@ cdef class ECDHBase:
         finally:
             free(output)
 
-    @property
-    def shared_secret(self):
-        """The shared secret (int).
-
-        The shared secret is 0 if the TLS handshake is not finished.
-
-        """
-        try:
-            return _mpi.from_mpi(&self._ctx.z)
-        except ValueError:
-            return _mpi.MPI()
-
     def generate_public_key(self):
         """Generate public key from a private key."""
         check_error(_pk.mbedtls_ecp_mul(
@@ -971,8 +990,7 @@ cdef class ECDHBase:
 
     @property
     def _private_key(self):
-        """The private key (int)"""
-        return _mpi.from_mpi(&self._ctx.d)
+        return self.private_key
 
     @_private_key.setter
     def _private_key(self, priv):
@@ -981,10 +999,7 @@ cdef class ECDHBase:
 
     @property
     def _public_key(self):
-        """The public key (ECPoint)"""
-        ecp = ECPoint(0, 0, 0)
-        check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Q))
-        return ecp
+        return self.public_key
 
     @_public_key.setter
     def _public_key(self, ECPoint ecp):
@@ -992,10 +1007,7 @@ cdef class ECDHBase:
 
     @property
     def _peer_public_key(self):
-        """Peer's public key (ECPoint)"""
-        ecp = ECPoint(0, 0, 0)
-        check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Qp))
-        return ecp
+        return self.peers_public_key
 
     @_peer_public_key.setter
     def _peer_public_key(self, ECPoint ecp):
@@ -1098,24 +1110,20 @@ cdef class ECDHNaive(ECDHBase):
         """Generate a public key.
 
         Return:
-            MPI: public key.
+            ECPoint: public key.
 
         """
         check_error(_pk.mbedtls_ecdh_gen_public(
             &self._ctx.grp, &self._ctx.d, &self._ctx.Q,
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
-        return self._public_key.x
+        return self.public_key
 
     def import_peer_public(self, pubkey):
-        """Read peer public key."""
-        buf = pubkey.to_bytes((pubkey.bit_length()+7)//8, 'big')
-        if not buf:
-            raise ValueError('Invalid peer public key')
+        self.import_peers_public(pubkey.x)
 
-        check_error(_mpi.mbedtls_mpi_read_binary(
-            &self._ctx.Qp.Z, b'\x01', 1))
-        check_error(_mpi.mbedtls_mpi_read_binary(
-            &self._ctx.Qp.X, buf, len(buf)))
+    def import_peers_public(self, _pk.ECPoint pubkey):
+        """Read peer public key."""
+        check_error(_pk.mbedtls_ecp_copy(&self._ctx.Qp, &pubkey._ctx))
 
     def generate_secret(self):
         """Generate the shared secret."""
