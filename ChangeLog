@@ -1,6 +1,7 @@
 [next]
 
 * cipher: Make package pure-Python.
+* mpi: Add bitwise operations.
 
 API Changes
 

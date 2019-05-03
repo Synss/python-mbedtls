@@ -132,6 +132,33 @@ def test_lshift():
     assert 12 << int(MPI(2)) == 48
 
 
+def test_and():
+    assert MPI(12) & MPI(12) == 12
+    assert MPI(12) & MPI(3) == 0
+    assert MPI(15) & MPI(4) == 4
+    assert MPI(15) & 4 == 4
+    with pytest.raises(TypeError):
+        assert 15 & MPI(4) == 4
+
+
+def test_or():
+    assert MPI(12) | MPI(12) == 12
+    assert MPI(12) | MPI(3) == 15
+    assert MPI(15) | MPI(4) == 15
+    assert MPI(15) | 4 == 15
+    with pytest.raises(TypeError):
+        assert 15 | MPI(4) == 15
+
+
+def test_xor():
+    assert MPI(12) ^ MPI(12) == 0
+    assert MPI(12) ^ MPI(3) == 15
+    assert MPI(15) ^ MPI(4) == 11
+    assert MPI(15) ^ 4 == 11
+    with pytest.raises(TypeError):
+        assert 15 ^ MPI(4) == 11
+
+
 def test_floordiv():
     assert MPI(24) // MPI(2) == 12
     assert MPI(24) // 2 == 12

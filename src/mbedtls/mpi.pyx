@@ -9,9 +9,11 @@ cimport mbedtls.mpi as _mpi
 cimport mbedtls._random as _rnd
 from libc.stdlib cimport malloc, free
 
+import math
 import numbers
 from binascii import hexlify, unhexlify
 
+import mbedtls._platform as _plt
 import mbedtls._random as _rnd
 from mbedtls.exceptions import *
 
@@ -38,8 +40,6 @@ cdef class MPI:
     This class implements `numbers.Integral`.  The representation
     of the MPI is overwritten with random bytes when the MPI is
     garbage collected.
-
-    The bitwise operations are not implemented.
 
     """
     def __init__(self, value=0):
@@ -87,13 +87,13 @@ cdef class MPI:
         return cls.from_bytes(to_bytes(value), byteorder="big")
 
     @classmethod
-    def from_bytes(cls, data, byteorder):
+    def from_bytes(cls, const unsigned char[:] data, byteorder):
         assert byteorder in {"big", "little"}
         self = cls()
         self._read_bytes(data[::-1 if byteorder == "little" else 1])
         return self
 
-    def to_bytes(self, length, byteorder):
+    def to_bytes(self, const size_t length, byteorder):
         assert byteorder in {"big", "little"}
         cdef unsigned char* output = <unsigned char*>malloc(
             length * sizeof(unsigned char))
@@ -285,17 +285,62 @@ cdef class MPI:
         check_error(mbedtls_mpi_shift_r(&self_._ctx, long(other)))
         return self_
 
-    def __and__(self, other):
-        raise NotImplementedError
+    def __and__(MPI self, other):
+        if not isinstance(other, MPI):
+            other = MPI(other)
+        cdef size_t size = long(
+            math.ceil(max(self.bit_length(), other.bit_length()) / 8)
+        )
+        self_bin = bytearray(self.to_bytes(size, "big"))
+        other_bin = bytearray(other.to_bytes(size, "big"))
+        output = bytearray(size)
+        cdef size_t ii
+        for ii in range(size):
+            output[ii] = self_bin[ii] & other_bin[ii]
+        result = MPI.from_bytes(output, "big")
+        _plt.zeroize(self_bin)
+        _plt.zeroize(other_bin)
+        _plt.zeroize(output)
+        return result
 
-    def __xor__(self, other):
-        raise NotImplementedError
+    def __xor__(MPI self, other):
+        if not isinstance(other, MPI):
+            other = MPI(other)
+        cdef size_t size = long(
+            math.ceil(max(self.bit_length(), other.bit_length()) / 8)
+        )
+        self_bin = bytearray(self.to_bytes(size, "big"))
+        other_bin = bytearray(other.to_bytes(size, "big"))
+        output = bytearray(size)
+        cdef size_t ii
+        for ii in range(size):
+            output[ii] = self_bin[ii] ^ other_bin[ii]
+        result = MPI.from_bytes(output, "big")
+        _plt.zeroize(self_bin)
+        _plt.zeroize(other_bin)
+        _plt.zeroize(output)
+        return result
 
-    def __or__(self, other):
-        raise NotImplementedError
+    def __or__(MPI self, other):
+        if not isinstance(other, MPI):
+            other = MPI(other)
+        cdef size_t size = long(
+            math.ceil(max(self.bit_length(), other.bit_length()) / 8)
+        )
+        self_bin = bytearray(self.to_bytes(size, "big"))
+        other_bin = bytearray(other.to_bytes(size, "big"))
+        output = bytearray(size)
+        cdef size_t ii
+        for ii in range(size):
+            output[ii] = self_bin[ii] | other_bin[ii]
+        result = MPI.from_bytes(output, "big")
+        _plt.zeroize(self_bin)
+        _plt.zeroize(other_bin)
+        _plt.zeroize(output)
+        return result
 
     def __invert__(self):
-        raise NotImplementedError
+        raise TypeError("negative value")
 
     @property
     def numerator(self):
