@@ -87,6 +87,21 @@ jobs:
           paths:
             - .pyenv/versions/3.6.8
 
+      - restore_cache:
+          keys:
+            - py37-3.7.3-v0-{{ arch }}
+      - run:
+          name: install python 3.7
+          command: |
+            if [ ! -d ".pyenv/versions/3.7.3" ]; then
+              eval "$(pyenv init -)"
+              pyenv install 3.7.3
+            fi
+      - save_cache:
+          key: py37-3.7.3-v0-{{ arch }}
+          paths:
+            - .pyenv/versions/3.7.3
+
       - run:
           name: install mbedtls
           command: |
@@ -110,17 +125,17 @@ jobs:
           name: run tests
           command: |
             eval "$(pyenv init -)"
-            pyenv shell 2.7.15 3.4.10 3.5.7 3.6.8
+            pyenv shell 2.7.15 3.4.10 3.5.7 3.6.8 3.7.3
             . venv/bin/activate
             pip install tox
-            tox -p auto -e py27,py34,py35,py36
+            tox -p auto -e py27,py34,py35,py36,py37
             tox -e doctest
 
       - run:
           name: build API documentation
           command: |
             eval "$(pyenv init -)"
-            pyenv shell 3.6.8
+            pyenv shell 3.7.3
             . venv/bin/activate
             tox -e docs
 
