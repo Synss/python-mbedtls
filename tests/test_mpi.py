@@ -123,13 +123,15 @@ def test_float():
 def test_rshift():
     assert MPI(12) >> MPI(2) == 3
     assert MPI(12) >> 2 == 3
-    assert 12 >> int(MPI(2)) == 3
+    with pytest.raises(TypeError):
+        assert 12 >> MPI(2) == 3
 
 
 def test_lshift():
     assert MPI(12) << MPI(2) == 48
     assert MPI(12) << 2 == 48
-    assert 12 << int(MPI(2)) == 48
+    with pytest.raises(TypeError):
+        assert 12 << MPI(2) == 48
 
 
 def test_and():

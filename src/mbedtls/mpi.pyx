@@ -271,19 +271,13 @@ cdef class MPI:
     def __index__(self):
         return long(self)
 
-    def __lshift__(self, other):
-        if not isinstance(self, MPI):
-            return NotImplemented
-        cdef MPI self_ = MPI(self)
-        check_error(mbedtls_mpi_shift_l(&self_._ctx, long(other)))
-        return self_
+    def __lshift__(MPI self, other):
+        check_error(mbedtls_mpi_shift_l(&self._ctx, long(other)))
+        return self
 
-    def __rshift__(self, other):
-        if not isinstance(self, MPI):
-            return NotImplemented
-        cdef MPI self_ = MPI(self)
-        check_error(mbedtls_mpi_shift_r(&self_._ctx, long(other)))
-        return self_
+    def __rshift__(MPI self, other):
+        check_error(mbedtls_mpi_shift_r(&self._ctx, long(other)))
+        return self
 
     def __and__(MPI self, other):
         if not isinstance(other, MPI):
