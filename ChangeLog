@@ -17,6 +17,7 @@ Misc.
 
 * *: Format Python files with `black`
 * ci: Check that the docs build in CI.
+* ci: Repair test coverage measurements on coveralls.
 
 
 [0.17.1] - 2019-04-16

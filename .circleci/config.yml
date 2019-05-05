@@ -119,7 +119,10 @@ jobs:
 
       - run:
           name: Create environment
-          command: python -m venv venv
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install -r requirements-circleci.txt
 
       - run:
           name: run tests
@@ -127,9 +130,20 @@ jobs:
             eval "$(pyenv init -)"
             pyenv shell 2.7.15 3.4.10 3.5.7 3.6.8 3.7.3
             . venv/bin/activate
-            pip install tox
-            tox -p auto -e py27,py34,py35,py36,py37
-            tox -e doctest
+            tox -q -p auto -e py27,py34,py35,py36,py37
+            tox -q -p auto -e coverage,doctest
+
+      - run:
+          name: save coverage report
+          when: on_success
+          command: |
+            mkdir -p out/
+            cp -R htmlcov/ out/htmlcov/
+
+            eval "$(pyenv init -)"
+            pyenv shell 3.7.3
+            . venv/bin/activate
+            PYTHONPATH=src coveralls
 
       - run:
           name: build API documentation

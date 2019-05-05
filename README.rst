@@ -13,8 +13,8 @@ Cryptographic library for Python with Mbed TLS back end
    :target: https://travis-ci.org/Synss/python-mbedtls
 
 .. image::
-   https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=develop
-   :target: https://coveralls.io/github/Synss/python-mbedtls?branch=develop
+   https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=master
+   :target: https://coveralls.io/github/Synss/python-mbedtls?branch=master
 
 
 `python-mbedtls`_ is a free cryptographic library for Python that uses
