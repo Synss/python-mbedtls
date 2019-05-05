@@ -11,7 +11,7 @@ __license__ = "MIT License"
 
 from libc.stdlib cimport malloc, free
 
-cimport mbedtls.hmac as _hmac
+cimport mbedtls._md as _hmac
 cimport mbedtls.hkdf as _hkdf
 
 import mbedtls.hmac as _hmac

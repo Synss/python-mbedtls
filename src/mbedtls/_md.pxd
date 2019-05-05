@@ -18,8 +18,7 @@ cdef extern from "mbedtls/md.h" nogil:
         const mbedtls_md_info_t *md_info
 
     const int *mbedtls_md_list()
-    const mbedtls_md_info_t *mbedtls_md_info_from_string(
-        const char *md_name)
+    const mbedtls_md_info_t *mbedtls_md_info_from_string(const char *md_name)
     # mbedtls_md_info_from_type
 
     void mbedtls_md_init(mbedtls_md_context_t *ctx)
@@ -66,3 +65,11 @@ cdef class MDBase:
     cdef const mbedtls_md_info_t* _info
     cdef mbedtls_md_context_t _ctx
     cdef _finish(self, const unsigned char *output)
+
+
+cdef class Hash(MDBase):
+    pass
+
+
+cdef class Hmac(MDBase):
+    pass

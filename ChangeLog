@@ -1,6 +1,6 @@
 [next]
 
-* cipher: Make package pure-Python.
+* cipher/hash/hmac: These modules and packages are now pure-Python.
 * mpi: Add bitwise operations.
 
 API Changes
