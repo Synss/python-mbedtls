@@ -72,13 +72,13 @@ cdef extern from "mbedtls/ctr_drbg.h" nogil:
     #     mbedtls_ctr_drbg_context *ctx, const char *path)
 
 
-cdef class Entropy:
+cdef class _Entropy:
     cdef mbedtls_entropy_context _ctx
 
 
 cdef class Random:
     cdef mbedtls_ctr_drbg_context _ctx
-    cdef Entropy _entropy
+    cdef _Entropy _entropy
 
 
 # RNG for internal use only.

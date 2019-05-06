@@ -1,5 +1,6 @@
 [next]
 
+* secrets: Add PEP-506 conform secrets module for generating secrets.
 * cipher/hash/hmac: These modules and packages are now pure-Python.
 * mpi: Add bitwise operations.
 
@@ -12,12 +13,19 @@ the `s` in `import_peers_public()`.
 * pk: Make `ECDH*.{public_key,private_key,peers_public_key}` public.  The
 private equivalents with a `_*` prefix are deprecated and will be removed in a
 future release.  Further note the `s` in `peers_public_key`.
+* _random: Privatize `Entropy` and refactor `Random` class.
+
+Bugfixes
+
+* mpi: Fix bug in `mpi.to_bytes()`.
 
 Misc.
 
 * *: Format Python files with `black`
 * ci: Check that the docs build in CI.
 * ci: Repair test coverage measurements on coveralls.
+* mpi: Simplify code for comparisons.
+* mpi: Add tests and better exceptions for `__pow__()`.
 
 
 [0.17.1] - 2019-04-16

@@ -7,15 +7,20 @@ __license__ = "MIT License"
 
 from libc.stdlib cimport malloc, free
 
+cimport mbedtls._platform as _plt
 cimport mbedtls._random as _rnd
 
-import binascii
+import numbers as _numbers
 
+import mbedtls.mpi as _mpi
 from mbedtls.exceptions import check_error
 
 
-cdef class Entropy:
+BPF = 53  # Number of bits in a float
+RECIP_BPF = 2**-BPF
 
+
+cdef class _Entropy:
     def __cinit__(self):
         """Initialize the context."""
         _rnd.mbedtls_entropy_init(&self._ctx)
@@ -30,35 +35,37 @@ cdef class Entropy:
 
     def retrieve(self, size_t length):
         """Retrieve entropy from the accumulator."""
-        cdef unsigned char* output = <unsigned char*>malloc(
-            length * sizeof(unsigned char))
+        cdef unsigned char *output = <unsigned char *> malloc(
+            length * sizeof(unsigned char)
+        )
         if not output:
             raise MemoryError()
         try:
-            check_error(_rnd.mbedtls_entropy_func(
-                &self._ctx, output, length))
+            check_error(_rnd.mbedtls_entropy_func(&self._ctx, output, length))
             return bytes(output[:length])
         finally:
             free(output)
 
     def update(self, const unsigned char[:] data):
         """Add data to the accumulator manually."""
-        check_error(_rnd.mbedtls_entropy_update_manual(
-            &self._ctx, &data[0], data.shape[0]))
+        check_error(
+            _rnd.mbedtls_entropy_update_manual(
+                &self._ctx, &data[0], data.shape[0]
+            )
+        )
 
 
 cdef class Random:
-
-    def __init__(self, entropy=None):
-        if entropy is None:
-            entropy = Entropy()
-        self._entropy = entropy
+    def __init__(self):
+        self._entropy = _Entropy()
         check_error(
             _rnd.mbedtls_ctr_drbg_seed(
                 &self._ctx,
                 &_rnd.mbedtls_entropy_func,
                 &self._entropy._ctx,
-                NULL, 0))
+                NULL, 0
+            )
+        )
 
     def __cinit__(self):
         """Initialize the context."""
@@ -68,38 +75,83 @@ cdef class Random:
         """Free and clear the context."""
         _rnd.mbedtls_ctr_drbg_free(&self._ctx)
 
-    def reseed(self, const unsigned char[:] data=None):
+    @property
+    def _entropy(self):
+        return self._entropy
+
+    def _urandom(self, size_t length):
+        """Returns `length` random bytes."""
+        cdef unsigned char *output = <unsigned char *> malloc(
+            length * sizeof(unsigned char)
+        )
+        if not output:
+            raise MemoryError()
+        try:
+            check_error(
+                _rnd.mbedtls_ctr_drbg_random(&self._ctx, output, length)
+            )
+            ret = bytes(output[:length])
+            _plt.mbedtls_platform_zeroize(output, length)
+            return ret
+        finally:
+            free(output)
+
+    def _reseed(self, const unsigned char[:] data=None):
         """Reseed the RNG."""
         if data is None:
             check_error(_rnd.mbedtls_ctr_drbg_reseed(&self._ctx, NULL, 0))
         else:
             check_error(
-                _rnd.mbedtls_ctr_drbg_reseed(&self._ctx, &data[0], data.size))
+                _rnd.mbedtls_ctr_drbg_reseed(&self._ctx, &data[0], data.size)
+            )
 
-    def update(self, const unsigned char[:] data):
-        """Update state with additional data."""
-        _rnd.mbedtls_ctr_drbg_update(&self._ctx, &data[0], data.shape[0])
+    def _randbelow(self, n):
+        """Return a random int in the range [0, n).
 
-    def token_bytes(self, size_t length):
-        """Returns `length` random bytes."""
-        cdef unsigned char* output = <unsigned char*>malloc(
-            length * sizeof(unsigned char))
-        if not output:
-            raise MemoryError()
+        Raises ValueError if n==0.
+
+        """
+        kk = n.bit_length()
+        rr = self.getrandbits(kk)
+        while rr >= n:
+            rr = self.getrandbits(kk)
+        return rr
+
+    def random(self):
+        """Return the next random floating point number."""
+        # Algorithm taken from Python's secrets and random libraries.
+        return float(
+            _mpi.MPI.from_bytes(self._urandom(7), "big") >> 3
+        ) * RECIP_BPF
+
+    def getrandbits(self, k):
+        """Generate an int with `k` random bits."""
+        # Algorithm adapted from Python's secrets and random libraries.
+        if k <= 0:
+            raise ValueError("number of bits must be greater than zero")
+        if not isinstance(k, _numbers.Integral):
+            raise TypeError("number of bits should be an integer")
+        numbytes = (k + 7) // 8
+        value = _mpi.MPI.from_bytes(self._urandom(numbytes), "big")
+        # Trim excess bits:
+        extra_bits = value.bit_length() - k
+        return value >> (0 if extra_bits <= 0 else extra_bits)
+
+    def choice(self, seq):
+        """Return a random element from `seq`."""
         try:
-            check_error(_rnd.mbedtls_ctr_drbg_random(
-                &self._ctx, output, length))
-            return bytes(output[:length])
-        finally:
-            free(output)
-
-    def token_hex(self, length):
-        """Same as `token_bytes` but returned as a string."""
-        return binascii.hexlify(self.token_bytes(length)).decode("ascii")
+            ii = self._randbelow(len(seq))
+        except ValueError:
+            raise IndexError("Cannot choose from an empty sequence")
+        return seq[ii]
 
 
 cdef Random __rng = Random()
 
 
 cdef Random default_rng():
+    return __rng
+
+
+def default_rng():
     return __rng

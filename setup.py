@@ -73,7 +73,10 @@ def readme():
 setup(
     name="python-mbedtls",
     version=version,
-    description="hash, hmac, RSA, and X.509 with an mbed TLS back end",
+    description=(
+        "hash, hmac, RSA, ECC, X.509, TLS, DTLS, handshakes, and secrets "
+        "with an mbed TLS back end"
+    ),
     long_description=readme(),
     author="Mathias Laurin",
     author_email="Mathias.Laurin@github.com",

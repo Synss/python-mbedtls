@@ -11,6 +11,7 @@ import mbedtls.hash as hash
 import mbedtls.hmac as hmac
 import mbedtls.hkdf as hkdf
 import mbedtls.pk as pk
+import mbedtls.secrets as secrets
 import mbedtls.tls as tls
 import mbedtls.x509 as x509
 
@@ -22,6 +23,7 @@ __all__ = (
     "hkdf",
     "hmac",
     "pk",
+    "secrets",
     "tls",
     "version",
     "x509",

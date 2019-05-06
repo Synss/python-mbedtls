@@ -27,7 +27,8 @@ cdef _rnd.Random __rng = _rnd.default_rng()
 
 
 cdef to_bytes(value):
-    return unhexlify("{0:02x}".format(value).encode("ascii"))
+    xx = "{0:02x}".format(value)
+    return unhexlify((xx if not len(xx) % 2 else "0" + xx).encode("ascii"))
 
 
 cdef from_bytes(value):
@@ -173,29 +174,32 @@ cdef class MPI:
     def __truediv__(self, other):
         return NotImplemented
 
-    def __pow__(self, exponent, modulus):
-        if exponent < 0 or not all(isinstance(_, numbers.Integral)
-                                   for _ in (self, exponent, modulus)):
-            raise TypeError("invalid argument")
+    def __pow__(MPI self, exponent, modulus):
+        if not isinstance(exponent, numbers.Integral):
+            return TypeError("exponent should be an integer")
+        if not isinstance(modulus, numbers.Integral):
+            return TypeError("modulus should be an integer")
+        if exponent < 0:
+            raise ValueError("exponent must be greater that zero")
         cdef MPI result = MPI()
-        cdef MPI self_ = MPI(self)
         cdef MPI exponent_ = MPI(exponent)
         cdef MPI modulus_ = MPI(modulus)
-        check_error(mbedtls_mpi_exp_mod(
-            &result._ctx, &self_._ctx, &exponent_._ctx, &modulus_._ctx, NULL))
+        check_error(
+            mbedtls_mpi_exp_mod(
+                &result._ctx, &self._ctx, &exponent_._ctx, &modulus_._ctx, NULL
+            )
+        )
         return result
 
     def __abs__(self):
         # Negative values are not supported.
         return self
 
-    def __eq__(self, other):
-        if not all((isinstance(self, numbers.Integral),
-                    isinstance(other, numbers.Integral))):
+    def __eq__(MPI self, other):
+        if not isinstance(other, numbers.Integral):
             return NotImplemented
-        cdef MPI self_ = MPI(self)
         cdef MPI other_ = MPI(other)
-        return mbedtls_mpi_cmp_mpi(&self_._ctx, &other_._ctx) == 0
+        return mbedtls_mpi_cmp_mpi(&self._ctx, &other_._ctx) == 0
 
     def __float__(self):
         return float(long(self))
@@ -238,16 +242,20 @@ cdef class MPI:
             &result._ctx, &self_._ctx, &other_._ctx))
         return result
 
-    def __lt__(self, other):
-        if not all((isinstance(self, numbers.Integral),
-                    isinstance(other, numbers.Integral))):
+    def __lt__(MPI self, other):
+        if not isinstance(other, numbers.Integral):
             return NotImplemented
-        cdef MPI self_ = MPI(self)
         cdef MPI other_ = MPI(other)
-        return mbedtls_mpi_cmp_mpi(&self_._ctx, &other_._ctx) == -1
+        return mbedtls_mpi_cmp_mpi(&self._ctx, &other_._ctx) == -1
 
-    def __le__(self, other):
-        return any((self < other, self == other))
+    def __le__(MPI self, other):
+        return self < other or self == other
+
+    def __gt__(MPI self, other):
+        return not self <= other
+
+    def __ge__(MPI self, other):
+        return self > other or self == other
 
     def __complex__(self):
         return complex(float(self))
@@ -343,12 +351,6 @@ cdef class MPI:
     @property
     def denominator(self):
         return 1
-
-    def __gt__(self, other):
-        return not self <= other
-
-    def __ge__(self, other):
-        return any((self > other, self == other))
 
 
 numbers.Integral.register(MPI)

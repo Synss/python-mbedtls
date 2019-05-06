@@ -29,6 +29,7 @@ Cryptographic library for Python with Mbed TLS back end
 
 * `PEP 272`_ -- API for Block Encryption Algorithms v1.0
 * `PEP 452`_ -- API for Cryptographic Hash Functions v2.0
+* `PEP 506`_ -- Adding a Secret Module to the Standard Library
 * `PEP 543`_ -- A Unified TLS API for Python
 
 and therefore plays well with the `cryptographic services`_ from the
@@ -38,6 +39,7 @@ Python standard library and many other cryptography libraries as well.
 .. _mbed TLS: https://tls.mbed.org
 .. _PEP 272: https://www.python.org/dev/peps/pep-0272/
 .. _PEP 452: https://www.python.org/dev/peps/pep-0452/
+.. _PEP 506: https://www.python.org/dev/peps/pep-0506/
 .. _PEP 543: https://www.python.org/dev/peps/pep-0543/
 .. _cryptographic services: https://docs.python.org/3/library/crypto.html
 .. _PyCrypto: https://www.dlitz.net/software/pycrypto/

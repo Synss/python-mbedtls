@@ -11,6 +11,7 @@ API documentation
 .. toctree::
    :maxdepth: 2
 
+   apisecrets
    apitls
    apix509
    apipk

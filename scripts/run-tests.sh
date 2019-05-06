@@ -6,7 +6,7 @@ echo "Index: $PIP_INDEX_URL"
 
 for pydir in /opt/python/*; do
 	$pydir/bin/python -m pip install \
-		pytest readme_renderer
+		pytest pytest-repeat readme_renderer
 	$pydir/bin/python -m pip install \
 		--only-binary=:all: \
 		python-mbedtls

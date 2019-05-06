@@ -40,6 +40,13 @@ def test_mul():
     assert 12 * MPI(2) == 24
 
 
+def test_pow():
+    assert MPI(12).__pow__(5, 12 ** 5 + 1) == 248832
+    assert pow(MPI(12), 5, 12 ** 5 + 1) == 248832
+    assert MPI(12).__pow__(5, 7) == 3
+    assert pow(MPI(12), 5, 7) == 3
+
+
 def test_eq_same_number_is_true():
     assert (MPI(12) == MPI(12)) is True
     assert (MPI(12) == 12) is True
