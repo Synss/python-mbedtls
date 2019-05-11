@@ -41,13 +41,13 @@ before_install:
       $PRE_CMD /bin/sh
 
 install:
-  - pip install --user -r requirements-travis.txt
+  - pip install --user -r requirements/travis.txt
   - scripts/start-devpi.sh -u user -x dev http://localhost:3141
   - export PIP_INDEX_URL=http://localhost:3141/user/dev/+simple/
 
 script:
   - docker cp $CONTAINER:/root/wheelhouse/ .
-  - docker cp requirements-tests.txt $CONTAINER:/root/
+  - docker cp requirements/ $CONTAINER:/root/requirements/
   - ls -A wheelhouse | grep -q . && ls -A wheelhouse
   - twine check wheelhouse/*
   - python setup.py sdist -d sdist
