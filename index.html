@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cryptographic library for Python with Mbed TLS back end &mdash; python-mbedtls 0.17.1 documentation</title>
+  <title>Cryptographic library for Python with Mbed TLS back end &mdash; python-mbedtls 0.18.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="mbedtls.tls Module API" href="apitls.html" /> 
+    <link rel="next" title="mbedtls.secrets Module" href="apisecrets.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -80,6 +80,7 @@
             
             
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="apisecrets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.secrets</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
@@ -163,7 +164,7 @@
 <h1>Cryptographic library for Python with Mbed TLS back end<a class="headerlink" href="#cryptographic-library-for-python-with-mbed-tls-back-end" title="Permalink to this headline">¶</a></h1>
 <a class="reference external image-reference" href="https://circleci.com/gh/Synss/python-mbedtls/tree/develop"><img alt="https://circleci.com/gh/Synss/python-mbedtls/tree/develop.svg?style=svg" src="https://circleci.com/gh/Synss/python-mbedtls/tree/develop.svg?style=svg" /></a>
 <a class="reference external image-reference" href="https://travis-ci.org/Synss/python-mbedtls"><img alt="https://travis-ci.org/Synss/python-mbedtls.svg?branch=develop" src="https://travis-ci.org/Synss/python-mbedtls.svg?branch=develop" /></a>
-<a class="reference external image-reference" href="https://coveralls.io/github/Synss/python-mbedtls?branch=develop"><img alt="https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=develop" src="https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=develop" /></a>
+<a class="reference external image-reference" href="https://coveralls.io/github/Synss/python-mbedtls?branch=master"><img alt="https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=master" src="https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=master" /></a>
 <p><a class="reference external" href="https://synss.github.io/python-mbedtls">python-mbedtls</a> is a free cryptographic library for Python that uses
 <a class="reference external" href="https://tls.mbed.org">mbed TLS</a> for back end.</p>
 <blockquote>
@@ -176,6 +177,7 @@ coding footprint.</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0272/">PEP 272</a> – API for Block Encryption Algorithms v1.0</p></li>
 <li><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0452/">PEP 452</a> – API for Cryptographic Hash Functions v2.0</p></li>
+<li><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0506/">PEP 506</a> – Adding a Secret Module to the Standard Library</p></li>
 <li><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0543/">PEP 543</a> – A Unified TLS API for Python</p></li>
 </ul>
 <p>and therefore plays well with the <a class="reference external" href="https://docs.python.org/3/library/crypto.html">cryptographic services</a> from the
@@ -186,6 +188,10 @@ Python standard library and many other cryptography libraries as well.</p>
 This enables the use of <em>python-mbedtls</em> in both open source and closed
 source projects.  The MIT License is compatible with both GPL and Apache
 2.0 license under which mbed TLS is distributed.</p>
+</div>
+<div class="section" id="api-documentation">
+<h2>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://synss.github.io/python-mbedtls/">https://synss.github.io/python-mbedtls/</a></p>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
@@ -688,10 +694,11 @@ step of the handshake should succeed.</p>
 </div>
 </div>
 </div>
-<div class="section" id="api-documentation">
-<h2>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h2>API documentation<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="apisecrets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.secrets</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
@@ -728,7 +735,7 @@ step of the handshake should succeed.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="apitls.html" class="btn btn-neutral float-right" title="mbedtls.tls Module API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="apisecrets.html" class="btn btn-neutral float-right" title="mbedtls.secrets Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
