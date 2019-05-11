@@ -47,6 +47,7 @@ install:
 
 script:
   - docker cp $CONTAINER:/root/wheelhouse/ .
+  - docker cp requirements-tests.txt $CONTAINER:/root/
   - ls -A wheelhouse | grep -q . && ls -A wheelhouse
   - twine check wheelhouse/*
   - python setup.py sdist -d sdist

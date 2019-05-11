@@ -1,0 +1,4 @@
+pytest
+pytest-repeat
+readme_renderer
+pygments==2.3.1  # via readme-renderer, version for Python 3.4
