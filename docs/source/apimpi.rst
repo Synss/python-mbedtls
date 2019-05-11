@@ -2,5 +2,3 @@
 =============================
 
 .. automodule:: mbedtls.mpi
-   :members:
-   :undoc-members:

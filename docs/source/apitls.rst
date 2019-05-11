@@ -2,5 +2,3 @@
 =============================
 
 .. automodule:: mbedtls.tls
-   :members:
-   :undoc-members:

@@ -2,5 +2,3 @@
 ==============================
 
 .. automodule:: mbedtls.x509
-   :members:
-   :undoc-members:
