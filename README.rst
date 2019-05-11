@@ -56,6 +56,12 @@ source projects.  The MIT License is compatible with both GPL and Apache
 2.0 license under which mbed TLS is distributed.
 
 
+API documentation
+=================
+
+https://synss.github.io/python-mbedtls/
+
+
 Installation
 ============
 
