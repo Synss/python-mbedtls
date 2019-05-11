@@ -1,4 +1,4 @@
-[next]
+[0.18.0] - 2019-05-11
 
 * secrets: Add PEP-506 conform secrets module for generating secrets.
 * cipher/hash/hmac: These modules and packages are now pure-Python.
