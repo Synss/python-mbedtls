@@ -1,2 +1,12 @@
 recursive-include src *.pxd
 include LICENSE*
+include *.md
+include *.toml
+include *.txt
+include ChangeLog
+recursive-include docs *.rst
+recursive-include requirements *.in
+recursive-include requirements *.txt
+recursive-include scripts *.sh
+recursive-include tests *.pem
+recursive-include tests *.py
