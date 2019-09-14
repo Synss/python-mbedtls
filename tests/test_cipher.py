@@ -9,6 +9,8 @@ from functools import partial
 
 import pytest
 
+import mbedtls
+
 # pylint: disable=import-error
 from mbedtls.cipher._cipher import CIPHER_NAME, get_supported_ciphers
 from mbedtls.cipher._cipher import Cipher
@@ -55,13 +57,21 @@ def test_cfb_raises_value_error_without_iv(mode):
         Cipher(b"AES-512-CFB", b"", mode, b"")
 
 
+def _mode(mode):
+    return (
+        mode
+        if mbedtls.has_feature("cipher_mode_%s" % mode.name)
+        else pytest.skip("requires %s support in libmbedtls" % mode.name)
+    )
+
+
 class _TestCipher:
     @pytest.fixture(
         params=[
             mb.Mode.ECB,
-            mb.Mode.CBC,
-            mb.Mode.CFB,
-            mb.Mode.CTR,
+            _mode(mb.Mode.CBC),
+            _mode(mb.Mode.CFB),
+            _mode(mb.Mode.CTR),
             mb.Mode.GCM,
             mb.Mode.CCM,
         ]
@@ -122,14 +132,17 @@ class _TestAEADCipher(_TestCipher):
         assert cipher.decrypt(msg, tag) == data
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("aes"), reason="requires AES support in libmbedtls"
+)
 class TestAES(_TestCipher):
     @pytest.fixture(
         params=[
             mb.Mode.ECB,
-            mb.Mode.CBC,
-            mb.Mode.CFB,
-            mb.Mode.CTR,
-            mb.Mode.OFB,
+            _mode(mb.Mode.CBC),
+            _mode(mb.Mode.CFB),
+            _mode(mb.Mode.CTR),
+            _mode(mb.Mode.OFB),
         ]
     )
     def mode(self, request):
@@ -144,8 +157,11 @@ class TestAES(_TestCipher):
         return mb.AES
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("aes"), reason="requires AES support in libmbedtls"
+)
 class TestAES_XTS(TestAES):
-    @pytest.fixture(params=[mb.Mode.XTS])
+    @pytest.fixture(params=[_mode(mb.Mode.XTS)])
     def mode(self, request):
         return request.param
 
@@ -154,6 +170,9 @@ class TestAES_XTS(TestAES):
         return request.param
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("aes"), reason="requires AES support in libmbedtls"
+)
 class TestAES_AEAD(_TestAEADCipher):
     @pytest.fixture(params=[mb.Mode.GCM, mb.Mode.CCM])
     def mode(self, request):
@@ -172,6 +191,10 @@ class TestAES_AEAD(_TestAEADCipher):
         return mb.AES
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("arc4"),
+    reason="requires ARC4 support in libmbedtls",
+)
 class TestARC4(_TestCipher):
     @pytest.fixture(params=[16])
     def key_size(self, request):
@@ -182,9 +205,18 @@ class TestARC4(_TestCipher):
         return mb.ARC4
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("aria"),
+    reason="requires Aria support in libmbedtls",
+)
 class TestARIA(_TestCipher):
     @pytest.fixture(
-        params=[mb.Mode.ECB, mb.Mode.CBC, mb.Mode.CTR, mb.Mode.GCM]
+        params=[
+            mb.Mode.ECB,
+            _mode(mb.Mode.CBC),
+            _mode(mb.Mode.CTR),
+            mb.Mode.GCM,
+        ]
     )
     def mode(self, request):
         return request.param
@@ -198,9 +230,18 @@ class TestARIA(_TestCipher):
         return mb.ARIA
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("blowfish"),
+    reason="requires Blowfish support in libmbedtls",
+)
 class TestBlowfish(_TestCipher):
     @pytest.fixture(
-        params=[mb.Mode.ECB, mb.Mode.CBC, mb.Mode.CFB, mb.Mode.CTR]
+        params=[
+            mb.Mode.ECB,
+            _mode(mb.Mode.CBC),
+            _mode(mb.Mode.CFB),
+            _mode(mb.Mode.CTR),
+        ]
     )
     def mode(self, request):
         return request.param
@@ -214,14 +255,18 @@ class TestBlowfish(_TestCipher):
         return mb.Blowfish
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("camellia"),
+    reason="requires Camellia support in libmbedtls",
+)
 class TestCamellia(_TestCipher):
     @pytest.fixture(
         params=[
             # CCM is not available.
             mb.Mode.ECB,
-            mb.Mode.CBC,
-            mb.Mode.CFB,
-            mb.Mode.CTR,
+            _mode(mb.Mode.CBC),
+            _mode(mb.Mode.CFB),
+            _mode(mb.Mode.CTR),
             mb.Mode.GCM,
         ]
     )
@@ -237,8 +282,11 @@ class TestCamellia(_TestCipher):
         return mb.Camellia
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("des"), reason="requires DES support in libmbedtls"
+)
 class TestDES(_TestCipher):
-    @pytest.fixture(params=[mb.Mode.ECB, mb.Mode.CBC])
+    @pytest.fixture(params=[mb.Mode.ECB, _mode(mb.Mode.CBC)])
     def mode(self, request):
         return request.param
 
@@ -251,8 +299,11 @@ class TestDES(_TestCipher):
         return mb.DES
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("des"), reason="requires DES support in libmbedtls"
+)
 class TestDES3(_TestCipher):
-    @pytest.fixture(params=[mb.Mode.ECB, mb.Mode.CBC])
+    @pytest.fixture(params=[mb.Mode.ECB, _mode(mb.Mode.CBC)])
     def mode(self, request):
         return request.param
 
@@ -265,8 +316,11 @@ class TestDES3(_TestCipher):
         return mb.DES3
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("des"), reason="requires DES support in libmbedtls"
+)
 class TestDES3dbl(_TestCipher):
-    @pytest.fixture(params=[mb.Mode.ECB, mb.Mode.CBC])
+    @pytest.fixture(params=[mb.Mode.ECB, _mode(mb.Mode.CBC)])
     def mode(self, request):
         return request.param
 
@@ -279,6 +333,10 @@ class TestDES3dbl(_TestCipher):
         return mb.DES3dbl
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("chacha20"),
+    reason="requires CHACHA20 support in libmbedtls",
+)
 class TestCHACHA20(_TestCipher):
     @pytest.fixture(params=[mb.Mode.STREAM])
     def mode(self, request):
@@ -293,6 +351,12 @@ class TestCHACHA20(_TestCipher):
         return mb.CHACHA20
 
 
+@pytest.mark.skipif(
+    not all(
+        (mbedtls.has_feature("chacha20"), mbedtls.has_feature("chachapoly"))
+    ),
+    reason="requires CHACHA20 support in libmbedtls",
+)
 class TestCHACHA20AEAD(_TestAEADCipher):
     @pytest.fixture
     def iv(self, mode, randbytes):

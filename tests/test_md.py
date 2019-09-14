@@ -12,9 +12,10 @@ import inspect
 import pytest
 
 # pylint: disable=import-error
-from mbedtls._md import MD_NAME
+import mbedtls
 import mbedtls.hash as md_hash
 import mbedtls.hmac as md_hmac
+from mbedtls._md import MD_NAME
 
 # pylint: enable=import-error
 
@@ -87,20 +88,27 @@ class _TestHash(_TestMDBase):
         assert algorithm.hexdigest() == copy.hexdigest()
 
 
-@pytest.mark.skip
+@pytest.mark.skipif(
+    not mbedtls.has_feature("md2"), reason="requires MD2 support in libmbedtls"
+)
 class TestHashMD2(_TestHash):
     @pytest.fixture
     def algorithm(self):
         return md_hash.md2()
 
 
-@pytest.mark.skip
+@pytest.mark.skipif(
+    not mbedtls.has_feature("md4"), reason="requires MD4 support in libmbedtls"
+)
 class TestHashMD4(_TestHash):
     @pytest.fixture
     def algorithm(self):
         return md_hash.md4()
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("md5"), reason="requires MD5 support in libmbedtls"
+)
 class TestHashMD5(_TestHash):
     @pytest.fixture
     def algorithm(self):
@@ -119,6 +127,10 @@ class TestHashMD5(_TestHash):
         return 64
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("sha1"),
+    reason="requires SHA1 support in libmbedtls",
+)
 class TestHashSHA1(_TestHash):
     @pytest.fixture
     def algorithm(self):
@@ -133,6 +145,10 @@ class TestHashSHA1(_TestHash):
         return 64
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("sha256"),
+    reason="requires SHA256 support in libmbedtls",
+)
 class TestHashSHA224(_TestHash):
     @pytest.fixture
     def algorithm(self):
@@ -147,6 +163,10 @@ class TestHashSHA224(_TestHash):
         return 64
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("sha256"),
+    reason="requires SHA256 support in libmbedtls",
+)
 class TestHashSHA256(_TestHash):
     @pytest.fixture
     def algorithm(self):
@@ -161,6 +181,10 @@ class TestHashSHA256(_TestHash):
         return 64
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("sha512"),
+    reason="requires SHA384 support in libmbedtls",
+)
 class TestHashSHA384(_TestHash):
     @pytest.fixture
     def algorithm(self):
@@ -175,6 +199,10 @@ class TestHashSHA384(_TestHash):
         return 128
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("sha512"),
+    reason="requires SHA512 support in libmbedtls",
+)
 class TestHashSHA512(_TestHash):
     @pytest.fixture
     def algorithm(self):
@@ -189,6 +217,10 @@ class TestHashSHA512(_TestHash):
         return 128
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("ripemd160"),
+    reason="requires RIPEMD160 support in libmbedtls",
+)
 class TestHashRIPEMD160(_TestHash):
     @pytest.fixture
     def algorithm(self):
@@ -219,20 +251,27 @@ class _TestHmac(_TestMDBase):
         assert algorithm.hexdigest() == copy.hexdigest()
 
 
-@pytest.mark.skip
+@pytest.mark.skipif(
+    not mbedtls.has_feature("md2"), reason="requires MD2 support in libmbedtls"
+)
 class TestHmacMD2(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
         return md_hmac.md2(key)
 
 
-@pytest.mark.skip
+@pytest.mark.skipif(
+    not mbedtls.has_feature("md4"), reason="requires MD4 support in libmbedtls"
+)
 class TestHmacMD4(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
         return md_hmac.md4(key)
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("md5"), reason="requires MD5 support in libmbedtls"
+)
 class TestHmacMD5(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
@@ -251,6 +290,10 @@ class TestHmacMD5(_TestHmac):
         return 64
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("sha1"),
+    reason="requires SHA1 support in libmbedtls",
+)
 class TestHmacSHA1(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
@@ -265,6 +308,10 @@ class TestHmacSHA1(_TestHmac):
         return 64
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("sha256"),
+    reason="requires SHA256 support in libmbedtls",
+)
 class TestHmacSHA224(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
@@ -279,6 +326,10 @@ class TestHmacSHA224(_TestHmac):
         return 64
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("sha256"),
+    reason="requires SHA256 support in libmbedtls",
+)
 class TestHmacSHA256(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
@@ -293,6 +344,10 @@ class TestHmacSHA256(_TestHmac):
         return 64
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("sha512"),
+    reason="requires SHA512 support in libmbedtls",
+)
 class TestHmacSHA384(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
@@ -307,6 +362,10 @@ class TestHmacSHA384(_TestHmac):
         return 128
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("sha512"),
+    reason="requires SHA512 support in libmbedtls",
+)
 class TestHmacSHA512(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
@@ -321,6 +380,10 @@ class TestHmacSHA512(_TestHmac):
         return 128
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("ripemd160"),
+    reason="requires RIPEMD160 support in libmbedtls",
+)
 class TestHmacRIPEMD160(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):

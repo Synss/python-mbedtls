@@ -7,6 +7,7 @@ from tempfile import TemporaryFile
 
 import pytest
 
+import mbedtls
 import mbedtls.hash as _hash
 from mbedtls.exceptions import *
 from mbedtls.mpi import MPI
@@ -208,6 +209,9 @@ class _TestCipherBase:
         assert cipher == other
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("rsa"), reason="requires RSA support in libmbedtls"
+)
 class TestRSA(_TestCipherBase):
     @pytest.fixture
     def cipher(self):

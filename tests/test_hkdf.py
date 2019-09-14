@@ -2,10 +2,15 @@ import sys
 
 import pytest
 
+import mbedtls
 import mbedtls.hkdf as _hkdf
 import mbedtls.hmac as _hmac
 
 
+@pytest.mark.skipif(
+    not mbedtls.has_feature("HKDF"),
+    reason="requires HKDF support in libmbedtls",
+)
 class TestHKDF:
     @pytest.fixture(params=[0, 128])
     def key(self, request, randbytes):
@@ -13,8 +18,8 @@ class TestHKDF:
 
     @pytest.fixture(
         params=[
-            # _hmac.md2,
-            # _hmac.md4,
+            _hmac.md2,
+            _hmac.md4,
             _hmac.md5,
             _hmac.sha1,
             _hmac.sha224,
@@ -25,6 +30,11 @@ class TestHKDF:
         ]
     )
     def hmac(self, request, key):
+        feature = request.param.__name__
+        if not mbedtls.has_feature(
+            {"sha224": "sha256", "sha384": "sha512"}.get(feature, feature)
+        ):
+            return pytest.skip("requires %s support in mbedtls" % feature)
         return request.param
 
     @pytest.fixture
