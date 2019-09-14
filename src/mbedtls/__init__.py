@@ -13,6 +13,7 @@ import mbedtls.hkdf as hkdf
 import mbedtls.pk as pk
 import mbedtls.secrets as secrets
 import mbedtls.tls as tls
+import mbedtls.version as version
 import mbedtls.x509 as x509
 
 
@@ -28,3 +29,6 @@ __all__ = (
     "version",
     "x509",
 )
+
+
+has_feature = version.has_feature

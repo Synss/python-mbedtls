@@ -39,16 +39,26 @@ cdef __version():
         free(output)
 
 
-def _has_feature(feature):
-    feature = feature.upper()
-    if not feature.startswith("MBEDTLS_"):
-        feature = "MBEDTLS_" + feature
+cdef _has_feature(feature):
     feature_ = feature.encode("ascii")
     cdef char *c_feature = feature_
     cdef int result = _ver.mbedtls_version_check_feature(&c_feature[0])
     if result == -2:
         raise ValueError("%s not supported" % feature)
     return result == 0
+
+
+def has_feature(feature):
+    feature = feature.upper()
+    if not feature.startswith("MBEDTLS_"):
+        feature = "MBEDTLS_" + feature
+    result = _has_feature(feature)
+    if result is True:
+        return result
+    elif not feature.endswith("_C"):
+        return _has_feature(feature + "_C")
+    else:
+        return False
 
 
 version_info = __version_info()

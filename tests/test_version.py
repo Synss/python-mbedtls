@@ -18,7 +18,9 @@ def test_version():
         ("havege", False),
         ("MBEDTLS_SSL_RENEGOTIATION", True),
         ("ssl_renegotiation", True),
+        ("md5", True),
+        ("MD5_C", True),
     ),
 )
 def test_feature(feature, present):
-    assert version._has_feature(feature) is present
+    assert version.has_feature(feature) is present
