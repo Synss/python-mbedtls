@@ -8,8 +8,8 @@ RUN yum -y update \
     && yum -yq install cmake \
     && yum clean all
 COPY ./scripts/ ./scripts/
-RUN  ./scripts/download-mbedtls.sh 2.16.2 \
-  && ./scripts/install-mbedtls.sh \
+RUN  ./scripts/download-mbedtls.sh 2.16.2 /usr/local/src \
+  && ./scripts/install-mbedtls.sh /usr/local/src /usr/local \
   && cp /usr/local/src/LICENSE LICENSE.mbedtls \
   && rm -r /usr/local/src
 COPY ./setup.py ./README.rst ./
