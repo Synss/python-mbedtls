@@ -19,7 +19,7 @@ jobs:
             sudo apt-get install libssl1.0-dev
 
       - run:
-          name: install pyenv
+          name: Install pyenv
           command: |
             git clone https://github.com/pyenv/pyenv.git $HOME/python-mbedtls/.pyenv
             cat << 'EOF' >> $BASH_ENV
@@ -31,7 +31,7 @@ jobs:
           keys:
             - py27-2.7.15-v3-{{ arch }}
       - run:
-          name: install python 2.7
+          name: Install python 2.7
           command: |
             if [ ! -d ".pyenv/versions/2.7.15" ]; then
               eval "$(pyenv init -)"
@@ -46,7 +46,7 @@ jobs:
           keys:
             - py34-3.4.10-v0-{{ arch }}
       - run:
-          name: install python 3.4
+          name: Install python 3.4
           command: |
             if [ ! -d ".pyenv/versions/3.4.10" ]; then
               eval "$(pyenv init -)"
@@ -61,7 +61,7 @@ jobs:
           keys:
             - py35-3.5.7-v0-{{ arch }}
       - run:
-          name: install python 3.5
+          name: Install python 3.5
           command: |
             if [ ! -d ".pyenv/versions/3.5.7" ]; then
               eval "$(pyenv init -)"
@@ -76,7 +76,7 @@ jobs:
           keys:
             - py36-3.6.8-v0-{{ arch }}
       - run:
-          name: install python 3.6
+          name: Install python 3.6
           command: |
             if [ ! -d ".pyenv/versions/3.6.8" ]; then
               eval "$(pyenv init -)"
@@ -91,7 +91,7 @@ jobs:
           keys:
             - py37-3.7.3-v0-{{ arch }}
       - run:
-          name: install python 3.7
+          name: Install python 3.7
           command: |
             if [ ! -d ".pyenv/versions/3.7.3" ]; then
               eval "$(pyenv init -)"
@@ -103,7 +103,7 @@ jobs:
             - .pyenv/versions/3.7.3
 
       - run:
-          name: install mbedtls
+          name: Install mbedtls
           command: |
             VERSION=2.16.1
             DESTDIR=$HOME/lib/$VERSION
@@ -125,28 +125,32 @@ jobs:
             pip install -r requirements/circleci.txt
 
       - run:
-          name: run tests
+          name: Run tests
           command: |
             eval "$(pyenv init -)"
             pyenv shell 2.7.15 3.4.10 3.5.7 3.6.8 3.7.3
             . venv/bin/activate
-            tox -q -p auto -e py27,py34,py35,py36,py37
-            tox -q -p auto -e coverage,doctest
+            tox -q -p auto -e py27,py34,py35,py36,py37,doctest
 
       - run:
-          name: save coverage report
+          name: Measure coverage
           when: on_success
           command: |
-            mkdir -p out/
-            cp -R htmlcov/ out/htmlcov/
-
             eval "$(pyenv init -)"
             pyenv shell 3.7.3
             . venv/bin/activate
-            PYTHONPATH=src coveralls
+            tox -q -p auto -e coverage
+
+            export PYTHONPATH=src
+            coverage report
+            coverage html
+            coveralls
+
+            mkdir -p out/
+            cp -R htmlcov/ out/htmlcov/
 
       - run:
-          name: build API documentation
+          name: Build API documentation
           command: |
             eval "$(pyenv init -)"
             pyenv shell 3.7.3
@@ -154,14 +158,14 @@ jobs:
             tox -e docs
 
       - run:
-          name: save docs
+          name: Save docs
           when: on_success
           command: |
             mkdir -p out/
             cp -R .tox/docs_out out/docs
 
       - run:
-          name: save logs
+          name: Save logs
           when: on_fail
           command: |
             mkdir -p out/log
