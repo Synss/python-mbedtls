@@ -8,7 +8,7 @@ RUN yum -y update \
     && yum -yq install cmake \
     && yum clean all
 COPY ./scripts/ ./scripts/
-RUN  ./scripts/download-mbedtls.sh 2.16.1 \
+RUN  ./scripts/download-mbedtls.sh 2.16.2 \
   && ./scripts/install-mbedtls.sh \
   && cp /usr/local/src/LICENSE LICENSE.mbedtls \
   && rm -r /usr/local/src
