@@ -29,18 +29,18 @@ jobs:
 
       - restore_cache:
           keys:
-            - py27-2.7.15-v3-{{ arch }}
+            - py27-2.7.16-v0-{{ arch }}
       - run:
           name: Install python 2.7
           command: |
-            if [ ! -d ".pyenv/versions/2.7.15" ]; then
+            if [ ! -d ".pyenv/versions/2.7.16" ]; then
               eval "$(pyenv init -)"
-              pyenv install 2.7.15
+              pyenv install 2.7.16
             fi
       - save_cache:
-          key: py27-2.7.15-v3-{{ arch }}
+          key: py27-2.7.16-v0-{{ arch }}
           paths:
-            - .pyenv/versions/2.7.15
+            - .pyenv/versions/2.7.16
 
       - restore_cache:
           keys:
@@ -74,33 +74,33 @@ jobs:
 
       - restore_cache:
           keys:
-            - py36-3.6.8-v0-{{ arch }}
+            - py36-3.6.9-v0-{{ arch }}
       - run:
           name: Install python 3.6
           command: |
-            if [ ! -d ".pyenv/versions/3.6.8" ]; then
+            if [ ! -d ".pyenv/versions/3.6.9" ]; then
               eval "$(pyenv init -)"
-              pyenv install 3.6.8
+              pyenv install 3.6.9
             fi
       - save_cache:
-          key: py36-3.6.8-v0-{{ arch }}
+          key: py36-3.6.9-v0-{{ arch }}
           paths:
-            - .pyenv/versions/3.6.8
+            - .pyenv/versions/3.6.9
 
       - restore_cache:
           keys:
-            - py37-3.7.3-v0-{{ arch }}
+            - py37-3.7.4-v0-{{ arch }}
       - run:
           name: Install python 3.7
           command: |
-            if [ ! -d ".pyenv/versions/3.7.3" ]; then
+            if [ ! -d ".pyenv/versions/3.7.4" ]; then
               eval "$(pyenv init -)"
-              pyenv install 3.7.3
+              pyenv install 3.7.4
             fi
       - save_cache:
-          key: py37-3.7.3-v0-{{ arch }}
+          key: py37-3.7.4-v0-{{ arch }}
           paths:
-            - .pyenv/versions/3.7.3
+            - .pyenv/versions/3.7.4
 
       - run:
           name: Install mbedtls
@@ -128,7 +128,7 @@ jobs:
           name: Run tests
           command: |
             eval "$(pyenv init -)"
-            pyenv shell 2.7.15 3.4.10 3.5.7 3.6.8 3.7.3
+            pyenv shell 2.7.16 3.4.10 3.5.7 3.6.9 3.7.4
             . venv/bin/activate
             tox -q -p auto -e py27,py34,py35,py36,py37,doctest
 
@@ -137,7 +137,7 @@ jobs:
           when: on_success
           command: |
             eval "$(pyenv init -)"
-            pyenv shell 3.7.3
+            pyenv shell 3.7.4
             . venv/bin/activate
             tox -q -p auto -e coverage
 
@@ -153,7 +153,7 @@ jobs:
           name: Build API documentation
           command: |
             eval "$(pyenv init -)"
-            pyenv shell 3.7.3
+            pyenv shell 3.7.4
             . venv/bin/activate
             tox -e docs
 
