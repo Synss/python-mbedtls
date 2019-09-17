@@ -52,3 +52,6 @@ webencodings==0.5.1       # via bleach
 webob==1.8.5              # via pyramid
 zope.deprecation==4.4.0   # via pyramid
 zope.interface==4.6.0     # via pyramid
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools==41.2.0        # via plaster, pyramid, tox, twine, zope.deprecation, zope.interface

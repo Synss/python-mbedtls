@@ -20,3 +20,6 @@ toml==0.10.0              # via tox
 tox==3.9.0
 urllib3==1.24.3           # via requests
 virtualenv==16.5.0        # via tox
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools==41.2.0        # via tox
