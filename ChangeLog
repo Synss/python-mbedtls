@@ -1,6 +1,6 @@
 [next]
 
-* update wheels with 2.16.2.
+* update wheels with 2.16.3.
 * version: Make `has_feature()` public.
 * tests: Skip tests to features that are not compiled in.
 * tests: Improve error reporting with memoryviews.
