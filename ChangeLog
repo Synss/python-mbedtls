@@ -1,4 +1,4 @@
-[next]
+[0.18.1]
 
 * update wheels with 2.16.3.
 * version: Make `has_feature()` public.
