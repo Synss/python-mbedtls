@@ -12,15 +12,23 @@ def test_version():
     assert version.version == "mbed TLS %i.%i.%i" % version.version_info
 
 
+@pytest.mark.parametrize("feature", ["i do not exist"])
+def test_feature_false(feature):
+    assert version.has_feature(feature) is False
+
+
 @pytest.mark.parametrize(
-    "feature, present",
+    "feature",
     (
-        ("havege", False),
-        ("MBEDTLS_SSL_RENEGOTIATION", True),
-        ("ssl_renegotiation", True),
-        ("md5", True),
-        ("MD5_C", True),
+        "md5",
+        "md5_c",
+        "mbedtls_md5",
+        "mbedtls_md5_c",
+        "MD5",
+        "MD5_C",
+        "MBEDTLS_MD5",
+        "MBEDTLS_MD5_C",
     ),
 )
-def test_feature(feature, present):
-    assert version.has_feature(feature) is present
+def test_feature_true(feature):
+    assert version.has_feature(feature) is True

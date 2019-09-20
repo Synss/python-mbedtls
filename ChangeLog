@@ -1,3 +1,8 @@
+[next]
+
+* tests: Do not assume that havege is missing as it could be included
+in some configurations.
+
 [0.18.1]
 
 * update wheels with 2.16.3.
