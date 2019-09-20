@@ -410,7 +410,7 @@ class TestTLSCommunication(_TestCommunicationBase):
             validate_certificates=True,
         )
 
-    @pytest.fixture(params=[1, 10, 100, 1000, 10000, 16384 - 1])
+    @pytest.fixture(params=[1, 1000, 5000])
     def step(self, request):
         return request.param
 
@@ -418,7 +418,7 @@ class TestTLSCommunication(_TestCommunicationBase):
         conn, addr = sock.accept()
         block(conn.do_handshake)
         while True:
-            data = block(conn.recv, 20 * 1024)
+            data = block(conn.recv, 2 << 13)
             if data == self.CLOSE_MESSAGE:
                 break
 
@@ -443,7 +443,7 @@ class TestTLSCommunication(_TestCommunicationBase):
             view = memoryview(buffer[idx : idx + step])
             amt = block(client.send, view)
             assert amt == len(view)
-            assert block(client.recv, 20 * 1024) == view
+            assert block(client.recv, 2 << 13) == view
 
 
 class TestDTLSCommunication(_TestCommunicationBase):
@@ -474,7 +474,7 @@ class TestDTLSCommunication(_TestCommunicationBase):
             validate_certificates=True,
         )
 
-    @pytest.fixture(params=[10, 100, 1000, 5000])
+    @pytest.fixture(params=[10, 1000, 5000])
     def step(self, request):
         return request.param
 

@@ -441,8 +441,8 @@ cdef class ServerContext(_BaseContext):
 
 
 cdef enum:
-    # 16K (tls default)
-    TLS_BUFFER_CAPACITY = 16384 + 1024
+    # 32K (MBEDTLS_SSL_DTLS_MAX_BUFFERING)
+    TLS_BUFFER_CAPACITY = 2 << 14
 
 
 cdef struct _C_Buffers:
