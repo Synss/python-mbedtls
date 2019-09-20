@@ -5,11 +5,11 @@ import pytest
 class TestMemoryviewAssertion:
     @pytest.fixture
     def value(self):
-        return b"a few random bytes"
+        return bytes(_ % 256 for _ in range(10000))
 
     @pytest.fixture
     def text(self, value):
-        return value.decode("ascii")
+        return value.decode("latin1")
 
     @pytest.fixture
     def memview(self, value):

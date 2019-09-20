@@ -1,37 +1,51 @@
+try:
+    from collections.abc import Sequence
+except ImportError:
+    from collections import Sequence
+try:
+    import reprlib
+except ImportError:
+    import repr as reprlib
 import random
 
 import pytest
 
 
-def _compare_memoryviews(_config, op, left, right):
-    def _repr(obj):
-        if isinstance(obj, memoryview):
-            return "%s(%s)" % (type(obj).__name__, repr(obj.tobytes()))
-        else:
-            return repr(obj)
+class _Repr(reprlib.Repr):
+    """Repr with support for memoryview."""
 
-    try:
-        _, _ = bytes(left), bytes(right)
-    except TypeError:
-        return [
-            "%s != %s" % (_repr(left), _repr(right)),
-            "-%s" % _repr(left),
-            "+%s" % _repr(right),
-        ]
+    def repr_memoryview(self, obj, level):
+        return "%s(%s)" % (type(obj).__name__, self.repr(obj.tobytes()))
 
-    dlen = len(right) - len(left)
-    if dlen > 0:
-        return [
-            "%s != %s" % (_repr(left), _repr(right)),
-            "Right contains %s more items" % dlen,
-        ]
-    elif dlen < 0:
-        return [
-            "%s != %s" % (_repr(left), _repr(right)),
-            "Left contains %d more items" % abs(dlen),
-        ]
+
+_repr_instance = _Repr()
+_repr = _repr_instance.repr
+
+
+def issequence(x):
+    # Adapted from pytest.
+    if bytes != str:
+        return isinstance(x, Sequence) and not isinstance(x, str)
     else:
-        return ["%s != %s" % (_repr(left), _repr(right))]
+        return isinstance(x, Sequence)
+
+
+def _compare_memoryviews(_config, op, left, right):
+    # Adapted from pytest.
+    summary = ["{} != {}".format(_repr(left), _repr(right))]
+    explanation = []
+    if issequence(left) and issequence(right):
+        for i in range(min(len(left), len(right))):
+            if left[i] != right[i]:
+                left_value = left[i : i + 1]
+                right_value = right[i : i + 1]
+                explanation += [
+                    "At index {} diff: {} != {}".format(
+                        i, _repr(left_value), _repr(right_value)
+                    )
+                ]
+                break
+    return summary + explanation
 
 
 def pytest_assertrepr_compare(config, op, left, right):

@@ -2,6 +2,8 @@
 
 * tests: Do not assume that havege is missing as it could be included
 in some configurations.
+* tests: Make error reporting with memoryviews closer to pytest
+reporting for bytes.
 
 [0.18.1]
 
