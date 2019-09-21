@@ -1,4 +1,4 @@
-[next]
+[0.18.2]
 
 * cipher: Increase test coverage and fix minor bugs.
 * tests: Do not assume that havege is missing as it could be included
