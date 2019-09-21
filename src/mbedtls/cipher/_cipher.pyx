@@ -166,10 +166,8 @@ cdef class _CipherBase:
         key (bytes or None): The key to encrypt decrypt.  If None,
             encryption and decryption are unavailable.
         mode (int): The mode of operation of the cipher.
-        iv (bytes or None): The initialization vector (IV).  The IV is
+        iv (bytes): The initialization vector (IV).  The IV is
             required for every mode but ECB and CTR where it is ignored.
-            If not set, the IV is initialized to all 0, which should not
-            be used for encryption.
 
         Attributes:
             block_size (int): The block size for the cipher in bytes.
@@ -205,13 +203,7 @@ cdef class _CipherBase:
             check_error(_cipher.mbedtls_cipher_setkey(
                 &self._dec_ctx, &key[0], 8 * key.size,
                 _cipher.MBEDTLS_DECRYPT))
-
-        if iv is None:
-            self._iv = b"\x00" * max(1, self.iv_size)
-        elif iv.size == 0:
-            self._iv = b"\x00" * max(1, self.iv_size)
-        else:
-            self._iv = iv
+        self._iv = iv
 
     def __cinit__(self):
         """Initialize a `cipher_context` (as NONE)."""
@@ -273,7 +265,6 @@ cdef class Cipher(_CipherBase):
         """Generic all-in-one encryption/decryption."""
         if input.size == 0:
             check_error(-0x6280)  # Raise full block expected error.
-        assert iv.size != 0
         cdef size_t olen
         cdef size_t sz = input.size + self.block_size
         cdef unsigned char* output = <unsigned char*>malloc(
@@ -286,7 +277,7 @@ cdef class Cipher(_CipherBase):
             check_error(_cipher.mbedtls_cipher_crypt(
                 &self._enc_ctx if operation is _cipher.MBEDTLS_ENCRYPT else
                 &self._dec_ctx,
-                &iv[0], iv.size,
+                &iv[0] if iv.size else NULL, iv.size,
                 &input[0], input.size, output, &olen))
             return bytes(output[:olen])
         finally:

@@ -1,5 +1,6 @@
 [next]
 
+* cipher: Increase test coverage and fix minor bugs.
 * tests: Do not assume that havege is missing as it could be included
 in some configurations.
 * tests: Make error reporting with memoryviews closer to pytest

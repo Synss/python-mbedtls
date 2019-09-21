@@ -29,7 +29,6 @@ def new(key, mode, iv=None):
         # _cipher.Mode.CFB128,
         _cipher.Mode.CTR,
         _cipher.Mode.GCM,
-        _cipher.Mode.CCM,
     }:
         if len(key) * 8 not in {128, 192, 256}:
             raise TLSError(

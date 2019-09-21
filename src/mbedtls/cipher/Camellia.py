@@ -41,7 +41,6 @@ def new(key, mode, iv=None):
         _cipher.Mode.CFB,
         _cipher.Mode.CTR,
         _cipher.Mode.GCM,
-        _cipher.Mode.CCM,
     }:
         raise TLSError(msg="unsupported mode %r" % mode)
     name = (

@@ -32,10 +32,9 @@ def new(key, mode, iv=None):
 
     """
     mode = _cipher.Mode(mode)
-    if len(key) not in range(4, 57):
-        raise TLSError(
-            msg="key size must be 4 to 57 bytes, got %i" % (key_size, len(key))
-        )
+    key_len = len(key)
+    if key_len not in range(4, 57):
+        raise TLSError(msg="key size must be 4 to 56 bytes, got %i" % key_len)
     if mode not in {
         _cipher.Mode.ECB,
         _cipher.Mode.CBC,
