@@ -328,8 +328,8 @@ class _TestCommunicationBase(Chain):
 
     @pytest.fixture
     def address(self):
-        random.seed(hash(sys.version) ^ int(time.time() * 1000000))
-        return "127.0.0.1", random.randrange(60000, 65000)
+        port = int("2{}{}{}".format(*sys.version_info))
+        return "127.0.0.1", port
 
     @pytest.fixture(scope="class")
     def trust_store(self, ca0_crt):
