@@ -180,7 +180,7 @@ cdef class MPI:
         if not isinstance(modulus, numbers.Integral):
             return TypeError("modulus should be an integer")
         if exponent < 0:
-            raise ValueError("exponent must be greater that zero")
+            raise ValueError("exponent must be greater than zero")
         cdef MPI result = MPI()
         cdef MPI exponent_ = MPI(exponent)
         cdef MPI modulus_ = MPI(modulus)
