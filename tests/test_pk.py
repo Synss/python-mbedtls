@@ -1,9 +1,6 @@
 """Unit tests for mbedtls.pk."""
 
 import numbers
-from itertools import product
-from functools import partial
-from tempfile import TemporaryFile
 
 import pytest
 
@@ -11,7 +8,7 @@ import mbedtls
 import mbedtls.hash as _hash
 from mbedtls.exceptions import *
 from mbedtls.mpi import MPI
-from mbedtls.pk import _type_from_name, _get_md_alg, CipherBase, ECPoint
+from mbedtls.pk import _type_from_name, _get_md_alg, ECPoint
 from mbedtls.pk import *
 
 try:

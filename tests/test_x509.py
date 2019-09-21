@@ -1,4 +1,3 @@
-import base64
 import datetime as dt
 
 try:

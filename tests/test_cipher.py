@@ -5,8 +5,6 @@
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=invalid-name, redefined-outer-name
 
-from functools import partial
-
 import pytest
 
 import mbedtls

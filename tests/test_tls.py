@@ -1,12 +1,7 @@
 import datetime as dt
 import multiprocessing as mp
-import os
-import random
 import socket
-import struct
 import sys
-import time
-from functools import partial
 
 try:
     from contextlib import suppress
@@ -18,7 +13,7 @@ import pytest
 
 import mbedtls.hash as hashlib
 from mbedtls.exceptions import TLSError
-from mbedtls.pk import RSA, ECC
+from mbedtls.pk import RSA
 from mbedtls.x509 import BasicConstraints, CRT, CSR
 from mbedtls.tls import _DTLSCookie as DTLSCookie
 from mbedtls.tls import *

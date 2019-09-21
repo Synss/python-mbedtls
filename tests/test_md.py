@@ -4,10 +4,6 @@
 # pylint: disable=missing-docstring
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=invalid-name
-from functools import partial
-import hashlib
-import hmac
-import inspect
 
 import pytest
 

@@ -1,5 +1,3 @@
-import base64
-
 import pytest
 
 from mbedtls import secrets
