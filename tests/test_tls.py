@@ -321,11 +321,6 @@ class _TestCommunicationBase(Chain):
             ) as dump:
                 dump.write(buffer)
 
-    @pytest.fixture
-    def address(self):
-        port = int("2{}{}{}".format(*sys.version_info))
-        return "127.0.0.1", port
-
     @pytest.fixture(scope="class")
     def trust_store(self, ca0_crt):
         store = TrustStore()
@@ -333,11 +328,11 @@ class _TestCommunicationBase(Chain):
         return store
 
     @pytest.fixture
-    def server(self, srv_conf, address, version):
+    def server(self, srv_conf, version):
         ctx = ServerContext(srv_conf)
         sock = ctx.wrap_socket(socket.socket(socket.AF_INET, self.proto))
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind(address)
+        sock.bind(("", 0))
         if self.proto == socket.SOCK_STREAM:
             sock.listen(1)
 
@@ -350,13 +345,13 @@ class _TestCommunicationBase(Chain):
         runner.terminate()
 
     @pytest.fixture
-    def client(self, server, cli_conf, address):
+    def client(self, server, cli_conf):
         ctx = ClientContext(cli_conf)
         sock = ctx.wrap_socket(
             socket.socket(socket.AF_INET, self.proto),
             server_hostname="End Entity",
         )
-        sock.connect(address)
+        sock.connect(server.getsockname())
         block(sock.do_handshake)
         yield sock
         with suppress(OSError):
@@ -420,15 +415,13 @@ class TestTLSCommunication(_TestCommunicationBase):
             amt = block(conn.send, data)
             assert amt == len(data)
 
-    def test_server_hostname_fails_verification(
-        self, server, cli_conf, address
-    ):
+    def test_server_hostname_fails_verification(self, server, cli_conf):
         ctx = ClientContext(cli_conf)
         sock = ctx.wrap_socket(
             socket.socket(socket.AF_INET, self.proto),
             server_hostname="Wrong End Entity",
         )
-        sock.connect(address)
+        sock.connect(server.getsockname())
         with pytest.raises(TLSError):
             block(sock.do_handshake)
 
