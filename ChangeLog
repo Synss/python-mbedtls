@@ -1,3 +1,7 @@
+[next]
+
+* setup.py: Refuse to build if mbedtls is too old.
+
 [0.18.2]
 
 * cipher: Increase test coverage and fix minor bugs.
