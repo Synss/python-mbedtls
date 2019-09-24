@@ -1,4 +1,4 @@
-[next]
+[0.18.3]
 
 * setup.py: Refuse to build if mbedtls is too old.
 

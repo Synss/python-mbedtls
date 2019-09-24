@@ -23,7 +23,7 @@ copyright = "2016, Mathias Laurin"
 author = "Mathias Laurin"
 
 # The full version, including alpha/beta/rc tags
-release = "0.18.2"
+release = "0.18.3"
 
 
 # -- General configuration ---------------------------------------------------
