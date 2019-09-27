@@ -1,3 +1,7 @@
+[next]
+
+* md: Support MD2 and MD4 algo.
+
 [0.18.3]
 
 * setup.py: Refuse to build if mbedtls is too old.

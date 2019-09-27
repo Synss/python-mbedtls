@@ -92,6 +92,14 @@ class TestHashMD2(_TestHash):
     def algorithm(self):
         return md_hash.md2()
 
+    @pytest.fixture
+    def digest_size(self):
+        return 16
+
+    @pytest.fixture
+    def block_size(self):
+        return 16
+
 
 @pytest.mark.skipif(
     not mbedtls.has_feature("md4"), reason="requires MD4 support in libmbedtls"
@@ -100,6 +108,14 @@ class TestHashMD4(_TestHash):
     @pytest.fixture
     def algorithm(self):
         return md_hash.md4()
+
+    @pytest.fixture
+    def digest_size(self):
+        return 16
+
+    @pytest.fixture
+    def block_size(self):
+        return 64
 
 
 @pytest.mark.skipif(
@@ -255,6 +271,14 @@ class TestHmacMD2(_TestHmac):
     def algorithm(self, key):
         return md_hmac.md2(key)
 
+    @pytest.fixture
+    def digest_size(self):
+        return 16
+
+    @pytest.fixture
+    def block_size(self):
+        return 16
+
 
 @pytest.mark.skipif(
     not mbedtls.has_feature("md4"), reason="requires MD4 support in libmbedtls"
@@ -263,6 +287,14 @@ class TestHmacMD4(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
         return md_hmac.md4(key)
+
+    @pytest.fixture
+    def digest_size(self):
+        return 16
+
+    @pytest.fixture
+    def block_size(self):
+        return 64
 
 
 @pytest.mark.skipif(
