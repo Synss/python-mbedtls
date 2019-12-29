@@ -130,24 +130,8 @@ jobs:
             eval "$(pyenv init -)"
             pyenv shell 2.7.16 3.4.10 3.5.7 3.6.9 3.7.4
             . venv/bin/activate
-            tox -q -p auto -e py27,py34,py35,py36,py37,doctest
-
-      - run:
-          name: Measure coverage
-          when: on_success
-          command: |
-            eval "$(pyenv init -)"
-            pyenv shell 3.7.4
-            . venv/bin/activate
-            tox -q -p auto -e coverage
-
-            export PYTHONPATH=src
-            coverage report
-            coverage html
-            coveralls
-
-            mkdir -p out/
-            cp -R htmlcov/ out/htmlcov/
+            tox -q --parallel auto -e py27,py34,py35,py36,py37-coveralls
+            tox -e py37 --run-command "{envpython} -m doctest {toxinidir}/README.rst"
 
       - run:
           name: Build API documentation
@@ -155,7 +139,7 @@ jobs:
             eval "$(pyenv init -)"
             pyenv shell 3.7.4
             . venv/bin/activate
-            tox -e docs
+            tox -e py37-docs
 
       - run:
           name: Save docs
