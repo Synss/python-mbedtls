@@ -28,75 +28,42 @@ jobs:
             EOF
 
       - restore_cache:
-          keys:
-            - py27-2.7.16-v0-{{ arch }}
+          key: py27-2.7.16-v0-{{ arch }}
+      - restore_cache:
+          key: py34-3.4.10-v0-{{ arch }}
+      - restore_cache:
+          key: py35-3.5.9-v0-{{ arch }}
+      - restore_cache:
+          key: py36-3.6.10-v0-{{ arch }}
+      - restore_cache:
+          key: py37-3.7.6-v0-{{ arch }}
+
       - run:
-          name: Install python 2.7
+          name: Install Python versions
           command: |
-            if [ ! -d ".pyenv/versions/2.7.16" ]; then
-              eval "$(pyenv init -)"
-              pyenv install 2.7.16
-            fi
+            eval "$(pyenv init -)"
+            test -d ".pyenv/versions/2.7.16" || pyenv install 2.7.16
+            test -d ".pyenv/versions/3.4.10" || pyenv install 3.4.10
+            test -d ".pyenv/versions/3.5.9"  || pyenv install 3.5.9
+            test -d ".pyenv/versions/3.6.10" || pyenv install 3.6.10
+            test -d ".pyenv/versions/3.7.6"  || pyenv install 3.7.6
+
       - save_cache:
           key: py27-2.7.16-v0-{{ arch }}
           paths:
             - .pyenv/versions/2.7.16
-
-      - restore_cache:
-          keys:
-            - py34-3.4.10-v0-{{ arch }}
-      - run:
-          name: Install python 3.4
-          command: |
-            if [ ! -d ".pyenv/versions/3.4.10" ]; then
-              eval "$(pyenv init -)"
-              pyenv install 3.4.10
-            fi
       - save_cache:
           key: py34-3.4.10-v0-{{ arch }}
           paths:
             - .pyenv/versions/3.4.10
-
-      - restore_cache:
-          keys:
-            - py35-3.5.9-v0-{{ arch }}
-      - run:
-          name: Install python 3.5
-          command: |
-            if [ ! -d ".pyenv/versions/3.5.9" ]; then
-              eval "$(pyenv init -)"
-              pyenv install 3.5.9
-            fi
       - save_cache:
           key: py35-3.5.9-v0-{{ arch }}
           paths:
             - .pyenv/versions/3.5.9
-
-      - restore_cache:
-          keys:
-            - py36-3.6.10-v0-{{ arch }}
-      - run:
-          name: Install python 3.6
-          command: |
-            if [ ! -d ".pyenv/versions/3.6.10" ]; then
-              eval "$(pyenv init -)"
-              pyenv install 3.6.10
-            fi
       - save_cache:
           key: py36-3.6.10-v0-{{ arch }}
           paths:
             - .pyenv/versions/3.6.10
-
-      - restore_cache:
-          keys:
-            - py37-3.7.6-v0-{{ arch }}
-      - run:
-          name: Install python 3.7
-          command: |
-            if [ ! -d ".pyenv/versions/3.7.6" ]; then
-              eval "$(pyenv init -)"
-              pyenv install 3.7.6
-            fi
       - save_cache:
           key: py37-3.7.6-v0-{{ arch }}
           paths:
