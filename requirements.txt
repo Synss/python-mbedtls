@@ -4,4 +4,4 @@
 #
 #    pip-compile setup.py
 #
-certifi==2019.3.9
+certifi==2019.11.28

@@ -1,7 +1,10 @@
 coverage < 5.0
 cython
-pytest
+pytest < 5.0.0  # For Python < 3.5
 pytest-cov
 pytest-repeat
 readme_renderer
-pygments==2.3.1  # via readme-renderer, version for Python 3.4
+
+importlib-metadata < 1.2.0  # via pluggy, pytest; for Python 3.4
+more-itertools < 6.0.0  # via pytest, zipp; for Python < 3.5
+pygments < 2.4.0        # via readme-renderer; for Python 3.4

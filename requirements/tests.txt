@@ -5,21 +5,23 @@
 #    pip-compile requirements/tests.in
 #
 atomicwrites==1.3.0       # via pytest
-attrs==19.1.0             # via pytest
+attrs==19.3.0             # via pytest
 bleach==3.1.0             # via readme-renderer
 coverage==4.5.4
 cython==0.29.14
-docutils==0.14            # via readme-renderer
-more-itertools==5.0.0     # via pytest
-pluggy==0.11.0            # via pytest
-py==1.8.0                 # via pytest
+docutils==0.15.2          # via readme-renderer
+importlib-metadata==1.1.3
+more-itertools==5.0.0
+packaging==19.2           # via pytest
+pluggy==0.13.1            # via pytest
+py==1.8.1                 # via pytest
 pygments==2.3.1
+pyparsing==2.4.6          # via packaging
 pytest-cov==2.8.1
 pytest-repeat==0.8.0
-pytest==4.4.2
+pytest==4.6.9
 readme-renderer==24.0
-six==1.12.0               # via bleach, more-itertools, pytest, readme-renderer
+six==1.13.0               # via bleach, more-itertools, packaging, pytest, readme-renderer
+wcwidth==0.1.8            # via pytest
 webencodings==0.5.1       # via bleach
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
+zipp==0.6.0               # via importlib-metadata

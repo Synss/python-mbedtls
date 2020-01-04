@@ -1,5 +1,5 @@
 # vim: et:ts=2:sw=2
-language: generic
+language: python
 
 matrix:
   include:
@@ -41,7 +41,7 @@ before_install:
       $PRE_CMD /bin/sh
 
 install:
-  - pip install --user -r requirements/travis.txt
+  - pip install -r requirements/travis.txt
   - scripts/start-devpi.sh -u user -x dev http://localhost:3141
   - export PIP_INDEX_URL=http://localhost:3141/user/dev/+simple/
 

@@ -1,6 +1,7 @@
 [next]
 
 * md: Support MD2 and MD4 algo.
+* ci: Update dependencies.
 
 [0.18.3]
 
