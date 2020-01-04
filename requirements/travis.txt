@@ -47,11 +47,11 @@ twine==1.13.0
 urllib3==1.24.3           # via requests
 venusian==1.2.0           # via pyramid
 virtualenv==16.5.0        # via tox
-waitress==1.3.0           # via devpi-server
+waitress==1.4.1           # via devpi-server
 webencodings==0.5.1       # via bleach
 webob==1.8.5              # via pyramid
 zope.deprecation==4.4.0   # via pyramid
 zope.interface==4.6.0     # via pyramid
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.2.0        # via plaster, pyramid, tox, twine, zope.deprecation, zope.interface
+# setuptools
