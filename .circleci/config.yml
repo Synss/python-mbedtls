@@ -115,6 +115,7 @@ jobs:
             export DESTDIR=$DESTDIR
             export LD_LIBRARY_PATH=$DESTDIR/lib
             export C_INCLUDE_PATH=$DESTDIR/include
+            export TOX_PARALLEL_NO_SPINNER=1
             EOF
 
       - run:
@@ -130,7 +131,7 @@ jobs:
             eval "$(pyenv init -)"
             pyenv shell 2.7.16 3.4.10 3.5.7 3.6.9 3.7.4
             . venv/bin/activate
-            tox -q --parallel auto -e py27,py34,py35,py36,py37-coveralls
+            tox --parallel auto -e py27,py34,py35,py36,py37-coveralls
             tox -e py37 --run-command "{envpython} -m doctest {toxinidir}/README.rst"
 
       - run:
