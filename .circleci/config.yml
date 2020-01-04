@@ -7,7 +7,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.7.1-stretch
+      - image: circleci/python:3.7.6-stretch
     working_directory: ~/python-mbedtls
     steps:
       - checkout
@@ -59,48 +59,48 @@ jobs:
 
       - restore_cache:
           keys:
-            - py35-3.5.7-v0-{{ arch }}
+            - py35-3.5.9-v0-{{ arch }}
       - run:
           name: Install python 3.5
           command: |
-            if [ ! -d ".pyenv/versions/3.5.7" ]; then
+            if [ ! -d ".pyenv/versions/3.5.9" ]; then
               eval "$(pyenv init -)"
-              pyenv install 3.5.7
+              pyenv install 3.5.9
             fi
       - save_cache:
-          key: py35-3.5.7-v0-{{ arch }}
+          key: py35-3.5.9-v0-{{ arch }}
           paths:
-            - .pyenv/versions/3.5.7
+            - .pyenv/versions/3.5.9
 
       - restore_cache:
           keys:
-            - py36-3.6.9-v0-{{ arch }}
+            - py36-3.6.10-v0-{{ arch }}
       - run:
           name: Install python 3.6
           command: |
-            if [ ! -d ".pyenv/versions/3.6.9" ]; then
+            if [ ! -d ".pyenv/versions/3.6.10" ]; then
               eval "$(pyenv init -)"
-              pyenv install 3.6.9
+              pyenv install 3.6.10
             fi
       - save_cache:
-          key: py36-3.6.9-v0-{{ arch }}
+          key: py36-3.6.10-v0-{{ arch }}
           paths:
-            - .pyenv/versions/3.6.9
+            - .pyenv/versions/3.6.10
 
       - restore_cache:
           keys:
-            - py37-3.7.4-v0-{{ arch }}
+            - py37-3.7.6-v0-{{ arch }}
       - run:
           name: Install python 3.7
           command: |
-            if [ ! -d ".pyenv/versions/3.7.4" ]; then
+            if [ ! -d ".pyenv/versions/3.7.6" ]; then
               eval "$(pyenv init -)"
-              pyenv install 3.7.4
+              pyenv install 3.7.6
             fi
       - save_cache:
-          key: py37-3.7.4-v0-{{ arch }}
+          key: py37-3.7.6-v0-{{ arch }}
           paths:
-            - .pyenv/versions/3.7.4
+            - .pyenv/versions/3.7.6
 
       - run:
           name: Install mbedtls
@@ -129,7 +129,7 @@ jobs:
           name: Run tests
           command: |
             eval "$(pyenv init -)"
-            pyenv shell 2.7.16 3.4.10 3.5.7 3.6.9 3.7.4
+            pyenv shell 2.7.16 3.4.10 3.5.9 3.6.10 3.7.6
             . venv/bin/activate
             tox --parallel auto -e py27,py34,py35,py36,py37-coveralls
             tox -e py37 --run-command "{envpython} -m doctest {toxinidir}/README.rst"
@@ -138,7 +138,7 @@ jobs:
           name: Build API documentation
           command: |
             eval "$(pyenv init -)"
-            pyenv shell 3.7.4
+            pyenv shell 3.7.6
             . venv/bin/activate
             tox -e py37-docs
 
