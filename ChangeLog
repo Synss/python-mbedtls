@@ -1,5 +1,6 @@
 [next]
 
+* ci: Add support to Python 3.8.
 * md: Support MD2 and MD4 algo.
 * ci: Update dependencies.
 

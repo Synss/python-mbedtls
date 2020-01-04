@@ -37,6 +37,8 @@ jobs:
           key: py36-3.6.10-v0-{{ arch }}
       - restore_cache:
           key: py37-3.7.6-v0-{{ arch }}
+      - restore_cache:
+          key: py38-3.8.1-v0-{{ arch }}
 
       - run:
           name: Install Python versions
@@ -47,6 +49,7 @@ jobs:
             test -d ".pyenv/versions/3.5.9"  || pyenv install 3.5.9
             test -d ".pyenv/versions/3.6.10" || pyenv install 3.6.10
             test -d ".pyenv/versions/3.7.6"  || pyenv install 3.7.6
+            test -d ".pyenv/versions/3.8.1"  || pyenv install 3.8.1
 
       - save_cache:
           key: py27-2.7.16-v0-{{ arch }}
@@ -68,6 +71,10 @@ jobs:
           key: py37-3.7.6-v0-{{ arch }}
           paths:
             - .pyenv/versions/3.7.6
+      - save_cache:
+          key: py38-3.8.1-v0-{{ arch }}
+          paths:
+            - .pyenv/versions/3.8.1
 
       - run:
           name: Install mbedtls
@@ -96,9 +103,9 @@ jobs:
           name: Run tests
           command: |
             eval "$(pyenv init -)"
-            pyenv shell 2.7.16 3.4.10 3.5.9 3.6.10 3.7.6
+            pyenv shell 2.7.16 3.4.10 3.5.9 3.6.10 3.7.6 3.8.1
             . venv/bin/activate
-            tox --parallel auto -e py27,py34,py35,py36,py37-coveralls
+            tox --parallel auto -e py27,py34,py35,py36,py37-coveralls,py38
             tox -e py37 --run-command "{envpython} -m doctest {toxinidir}/README.rst"
 
       - run:
