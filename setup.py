@@ -3,7 +3,7 @@ import os
 import sys
 from setuptools import setup, Extension, find_packages
 
-version = "0.18.3"
+version = "1.0.0"
 mbedtls_version = "2.16.3"
 download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
 
@@ -160,7 +160,7 @@ setup(
     install_requires=install_requires,
     tests_require=tests_require,
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Programming Language :: Cython",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.4",

@@ -1,4 +1,4 @@
-[next]
+[1.0.0] - 2020-01-05
 
 * ci: Add support to Python 3.8.
 * md: Support MD2 and MD4 algo.
