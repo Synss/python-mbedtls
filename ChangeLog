@@ -1,6 +1,9 @@
 [next]
 
+* tls: Add support to PSK for (D)TLS
 * tls: Fixup `access()` method for DTLS on Python 2.7 and 3.4.
+* tls: Ensure that the `ciphers` parameter is a tuple and let
+`ciphers` accessors return tuples.
 
 [1.0.0] - 2020-01-05
 

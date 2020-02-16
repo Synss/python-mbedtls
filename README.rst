@@ -595,3 +595,33 @@ Now, the DTLS communication is complete.
 >>> dtls_cli.close()
 >>> runner.join(0.1)
 >>> dtls_srv.close()
+
+
+Pre-shared key (PSK) for TLS and DTLS
+-------------------------------------
+
+PSK authentication is supported for TLS and DTLS, both server
+and client side.  The client configuration is a tuple with an
+identifier (UTF-8 encoded) and the secret key,
+
+>>> cli_conf = tls.DTLSConfiguration(
+...     pre_shared_key=("client42", b"the secret")
+... )
+
+and the server configuration receives the key store as a
+`Mapping[unicode, bytes]` of identifiers and keys.  For example,
+
+>>> srv_conf = tls.DTLSConfiguration(
+...     ciphers=(
+...         "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA256",
+...         "TLS-PSK-WITH-AES-128-CBC-SHA256",
+...     ),
+...     pre_shared_key_store={
+...         "client0": b"a secret",
+...         "client1": b"other secret",
+...         "client42": b"the secret",
+...         "client100": b"yet another one",
+...     },
+... )
+
+The rest of the session is the same as in the previous sections.

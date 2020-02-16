@@ -166,7 +166,7 @@ class _BaseConfiguration(Chain):
         conf_ = conf.update(certificate_chain=chain)
         assert conf_.certificate_chain == chain
 
-    @pytest.mark.parametrize("ciphers", [ciphers_available()])
+    @pytest.mark.parametrize("ciphers", (ciphers_available(),))
     def test_set_ciphers(self, conf, ciphers):
         conf_ = conf.update(ciphers=ciphers)
         assert conf_.ciphers == ciphers
@@ -198,6 +198,20 @@ class _BaseConfiguration(Chain):
     @pytest.mark.parametrize("callback", [None])
     def test_set_sni_callback(self, conf, callback):
         assert conf.sni_callback is None
+
+    @pytest.mark.parametrize("psk", [None, ("client", b"the secret key")])
+    def test_psk(self, conf, psk):
+        assert conf.pre_shared_key is None
+        conf_ = conf.update(pre_shared_key=psk)
+        assert conf_.pre_shared_key == psk
+
+    @pytest.mark.parametrize(
+        "psk_store", [None, {"client": b"the secret key"}]
+    )
+    def test_psk_store(self, conf, psk_store):
+        assert conf.pre_shared_key_store is None
+        conf_ = conf.update(pre_shared_key_store=psk_store)
+        assert conf_.pre_shared_key_store == psk_store
 
 
 class TestTLSConfiguration(_BaseConfiguration):
@@ -299,8 +313,20 @@ class _CommunicationBase(Chain):
         raise NotImplementedError
 
     @pytest.fixture(scope="class")
+    def ciphers(self):
+        return None
+
+    @pytest.fixture(scope="class")
     def srv_hostname(self):
         return "End Entity"
+
+    @pytest.fixture(scope="class")
+    def cli_psk(self):
+        return None
+
+    @pytest.fixture(scope="class")
+    def srv_psk(self):
+        return None
 
     @pytest.fixture(scope="class")
     def srv_conf(self):
@@ -357,15 +383,30 @@ class _CommunicationBase(Chain):
         with suppress(TLSError, OSError):
             sock.close()
 
-    def test_srv_conf(self, srv_conf, ca1_crt, ee0_crt, ee0_key, trust_store):
+    def test_srv_conf(
+        self,
+        srv_conf,
+        trust_store,
+        srv_psk,
+        ciphers,
+        ca1_crt,
+        ee0_crt,
+        ee0_key,
+    ):
         assert srv_conf.trust_store == trust_store
         assert srv_conf.certificate_chain[0] == (ee0_crt, ca1_crt)
         assert srv_conf.certificate_chain[1] == ee0_key
         assert srv_conf.certificate_chain == ((ee0_crt, ca1_crt), ee0_key)
+        if ciphers:
+            assert srv_conf.ciphers == ciphers
+        assert srv_conf.pre_shared_key_store == srv_psk
 
-    def test_cli_conf(self, cli_conf, trust_store):
+    def test_cli_conf(self, cli_conf, trust_store, cli_psk, ciphers):
         assert cli_conf.trust_store == trust_store
         assert cli_conf.validate_certificates == True
+        if ciphers:
+            assert cli_conf.ciphers == ciphers
+        assert cli_conf.pre_shared_key == cli_psk
 
 
 class _TLSCommunicationBase(_CommunicationBase):
@@ -382,22 +423,34 @@ class _TLSCommunicationBase(_CommunicationBase):
 
     @pytest.fixture(scope="class")
     def srv_conf(
-        self, version, ca0_crt, ca1_crt, ee0_crt, ee0_key, trust_store
+        self,
+        version,
+        trust_store,
+        srv_psk,
+        ciphers,
+        ca0_crt,
+        ca1_crt,
+        ee0_crt,
+        ee0_key,
     ):
         return TLSConfiguration(
             trust_store=trust_store,
             certificate_chain=([ee0_crt, ca1_crt], ee0_key),
             lowest_supported_version=TLSVersion.MINIMUM_SUPPORTED,
             highest_supported_version=version,
+            ciphers=ciphers,
+            pre_shared_key_store=srv_psk,
             validate_certificates=False,
         )
 
     @pytest.fixture(scope="class")
-    def cli_conf(self, version, trust_store):
+    def cli_conf(self, version, trust_store, ciphers, cli_psk):
         return TLSConfiguration(
             trust_store=trust_store,
             lowest_supported_version=TLSVersion.MINIMUM_SUPPORTED,
             highest_supported_version=version,
+            ciphers=ciphers,
+            pre_shared_key=cli_psk,
             validate_certificates=True,
         )
 
@@ -425,22 +478,34 @@ class _DTLSCommunicationBase(_CommunicationBase):
 
     @pytest.fixture(scope="class")
     def srv_conf(
-        self, version, ca0_crt, ca1_crt, ee0_crt, ee0_key, trust_store
+        self,
+        version,
+        trust_store,
+        srv_psk,
+        ciphers,
+        ca0_crt,
+        ca1_crt,
+        ee0_crt,
+        ee0_key,
     ):
         return DTLSConfiguration(
             trust_store=trust_store,
             certificate_chain=([ee0_crt, ca1_crt], ee0_key),
             lowest_supported_version=DTLSVersion.MINIMUM_SUPPORTED,
             highest_supported_version=version,
+            ciphers=ciphers,
+            pre_shared_key_store=srv_psk,
             validate_certificates=False,
         )
 
     @pytest.fixture(scope="class")
-    def cli_conf(self, version, trust_store):
+    def cli_conf(self, version, trust_store, cli_psk, ciphers):
         return DTLSConfiguration(
             trust_store=trust_store,
             lowest_supported_version=DTLSVersion.MINIMUM_SUPPORTED,
             highest_supported_version=version,
+            ciphers=ciphers,
+            pre_shared_key=cli_psk,
             validate_certificates=True,
         )
 
@@ -474,11 +539,115 @@ class TestTLSHostNameVerificationFailure(_TLSCommunicationBase):
     @pytest.mark.usefixtures("server")
     def test_handshake_raises_tlserror(self, client):
         with pytest.raises(TLSError):
+            client.do_handshake()
+
+
+class TestTLS_PSKAuthentication(_TLSCommunicationBase):
+    @pytest.fixture(scope="class")
+    def ciphers(self):
+        return (
+            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA256",
+            "TLS-RSA-PSK-WITH-ARIA-128-CBC-SHA256",
+            "TLS-PSK-WITH-AES-128-CBC-SHA256",
+        )
+
+    @pytest.fixture(scope="class")
+    def srv_psk(self):
+        return {"client": b"the secret key"}
+
+    @pytest.fixture(scope="class")
+    def cli_psk(self):
+        return ("client", b"the secret key")
+
+    @pytest.mark.usefixtures("server")
+    def test_handshake_success(self, client):
+        block(client.do_handshake)
+
+
+class TestDTLS_PSKAuthentication(_DTLSCommunicationBase):
+    @pytest.fixture(scope="class")
+    def ciphers(self):
+        return (
+            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA256",
+            "TLS-RSA-PSK-WITH-ARIA-128-CBC-SHA256",
+            "TLS-PSK-WITH-AES-128-CBC-SHA256",
+        )
+
+    @pytest.fixture(scope="class")
+    def srv_psk(self):
+        return {"client": b"the secret key"}
+
+    @pytest.fixture(scope="class")
+    def cli_psk(self):
+        return ("client", b"the secret key")
+
+    @pytest.mark.usefixtures("server")
+    def test_handshake_success(self, client):
+        block(client.do_handshake)
+
+
+class TestTLS_PSKAuthenticationFailure(_TLSCommunicationBase):
+    @pytest.fixture(scope="class")
+    def ciphers(self):
+        return (
+            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA256",
+            "TLS-RSA-PSK-WITH-ARIA-128-CBC-SHA256",
+            "TLS-PSK-WITH-AES-128-CBC-SHA256",
+        )
+
+    @pytest.fixture(
+        scope="class",
+        params=[
+            {"client": b"another key"},
+            {"another client": b"the secret key"},
+            {"another client": b"another key"},
+        ],
+    )
+    def srv_psk(self, request):
+        return request.param
+
+    @pytest.fixture(scope="class")
+    def cli_psk(self):
+        return ("client", b"the secret key")
+
+    @pytest.mark.usefixtures("server")
+    def test_handshake_raises_tlserror(self, client):
+        with pytest.raises(TLSError):
+            block(client.do_handshake)
+
+
+class TestDTLS_PSKAuthenticationFailure(_DTLSCommunicationBase):
+    @pytest.fixture(scope="class")
+    def ciphers(self):
+        return (
+            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA256",
+            "TLS-RSA-PSK-WITH-ARIA-128-CBC-SHA256",
+            "TLS-PSK-WITH-AES-128-CBC-SHA256",
+        )
+
+    @pytest.fixture(
+        scope="class",
+        params=[
+            {"client": b"another key"},
+            {"another client": b"the secret key"},
+            {"another client": b"another key"},
+        ],
+    )
+    def srv_psk(self, request):
+        return request.param
+
+    @pytest.fixture(scope="class")
+    def cli_psk(self):
+        return ("client", b"the secret key")
+
+    @pytest.mark.usefixtures("server")
+    def test_handshake_raises_tlserror(self, client):
+        with pytest.raises(TLSError):
             block(client.do_handshake)
 
 
 class TestTLSCommunication(_TLSCommunicationBase):
-    @pytest.fixture(params=[1000, 5000])
+    @pytest.fixture(params=[100, 1000, 5000])
     def step(self, request):
         return request.param
 

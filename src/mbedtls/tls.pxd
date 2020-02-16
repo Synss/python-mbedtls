@@ -153,7 +153,6 @@ cdef extern from "mbedtls/ssl.h" nogil:
         # set_anti_replay
         unsigned int anti_replay
 
-
         unsigned int endpoint
         unsigned int transport
         # set_validate_certificates
@@ -164,6 +163,12 @@ cdef extern from "mbedtls/ssl.h" nogil:
         _x509.mbedtls_x509_crt *ca_crl
         # set_sni_callback
         # f_sni / p_sni
+        # for mbedtls_ssl_conf_psk_cb
+        void *p_psk
+        unsigned char *psk
+        size_t psk_len
+        unsigned char *psk_identity
+        size_t psk_identity_len
 
     ctypedef struct mbedtls_ssl_context:
         const mbedtls_ssl_config *conf
@@ -230,7 +235,12 @@ cdef extern from "mbedtls/ssl.h" nogil:
         _x509.mbedtls_x509_crt *own_cert,
         _pk.mbedtls_pk_context *pk_key)
 
-    # mbedtls_ssl_conf_psk
+    int mbedtls_ssl_conf_psk(
+        mbedtls_ssl_config *conf,
+        const unsigned char *psk,
+        size_t psk_len,
+        const unsigned char *psk_identity,
+        size_t psk_identity_len)
     # mbedtls_ssl_conf_dh_param
     # mbedtls_ssl_conf_dh_param_ctx
     # mbedtls_ssl_conf_dhm_min_bitlen
@@ -271,7 +281,10 @@ cdef extern from "mbedtls/ssl.h" nogil:
     )
 
     # mbedtls_ssl_conf_session_cache
-    # mbedtls_ssl_conf_psk_cb
+    void mbedtls_ssl_conf_psk_cb(
+        mbedtls_ssl_config *conf,
+        int (*f_psk)(void *, mbedtls_ssl_context *, const unsigned char *, size_t),
+        void *psk_store)
     void mbedtls_ssl_conf_sni(
         mbedtls_ssl_config *conf,
         int (*f_sni)(void *, mbedtls_ssl_context *, const unsigned char*,
@@ -328,7 +341,10 @@ cdef extern from "mbedtls/ssl.h" nogil:
     int mbedtls_ssl_set_session(
         const mbedtls_ssl_context *ssl,
         mbedtls_ssl_session *session)
-    # mbedtls_ssl_set_hs_psk
+    int mbedtls_ssl_set_hs_psk(
+        mbedtls_ssl_context *ssl,
+        const unsigned char *psk,
+        size_t psk_len)
     int mbedtls_ssl_set_hostname(
         mbedtls_ssl_context *ssl,
         const char *hostname)
@@ -395,11 +411,16 @@ cdef class _DTLSCookie:
     cdef mbedtls_ssl_cookie_ctx _ctx
 
 
+cdef class _PSKSToreProxy:
+    cdef object _mapping
+
+
 cdef class _BaseConfiguration:
     cdef mbedtls_ssl_config _ctx
     cdef _chain
     cdef int *_ciphers
     cdef char **_protos
+    cdef _PSKSToreProxy _store
     # cdef'd because we aim at a non-writable structure.
     cdef _set_validate_certificates(self, validate)
     cdef _set_certificate_chain(self, chain)
@@ -409,6 +430,8 @@ cdef class _BaseConfiguration:
     cdef _set_highest_supported_version(self, version)
     cdef _set_trust_store(self, object store)
     cdef _set_sni_callback(self, callback)
+    cdef _set_pre_shared_key(self, psk)
+    cdef _set_pre_shared_key_store(self, psk_store)
 
 
 cdef class TLSConfiguration(_BaseConfiguration):

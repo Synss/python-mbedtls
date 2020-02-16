@@ -41,6 +41,35 @@ from mbedtls.exceptions import *
 cdef _rnd.Random __rng = _rnd.default_rng()
 
 
+cdef class _PSKSToreProxy:
+    def __init__(self, psk_store):
+        if not isinstance(psk_store, abc.Mapping):
+            raise TypeError("Mapping expected but got %r instead" % psk_store)
+        self._mapping = psk_store
+
+    def unwrap(self):
+        return self._mapping
+
+    def __repr__(self):
+        return self._mapping.__repr__()
+
+    def __str__(self):
+        return self._mapping.__str__()
+
+    def __getitem__(self, key):
+        return self._mapping.__getitem__(key)
+
+    def __iter__(self):
+        return self._mapping.__iter__()
+
+    def __len__(self):
+        return self._mapping.__len__()
+
+
+# Python 2.7: `register()` can be used as a decorator from 3.3.
+abc.Mapping.register(_PSKSToreProxy)
+
+
 @cython.boundscheck(False)
 cdef void _my_debug(void *ctx, int level,
                     const char *file, int line, const char *str) nogil:
@@ -68,6 +97,27 @@ cdef int buffer_read(void *ctx, unsigned char *buf, const size_t len) nogil:
     """Copy internal buffer to `buf`."""
     c_buf = <_tls._C_Buffers *> ctx
     return _rb.c_readinto(c_buf.recv_ctx, buf, len)
+
+
+@cython.boundscheck(False)
+cdef int _psk_cb(
+    void *parameter,
+    _tls.mbedtls_ssl_context *ctx,
+    const unsigned char *c_identity,
+    size_t c_identity_len
+) nogil:
+    """Wrapper for the PSK callback."""
+    # If a valid PSK identity is found, call `mbedtls_ssl_set_hs_psk()` and
+    # return 0. Otherwise, return 1.
+    with gil:
+        store = <_tls._PSKSToreProxy> parameter
+        identity = c_identity[:c_identity_len]
+        try:
+            psk = store[identity.decode("utf8")]
+            _tls.mbedtls_ssl_set_hs_psk(ctx, psk, len(psk))
+            return 0
+        except Exception:
+            return 1
 
 
 def _set_debug_level(int level):
@@ -118,7 +168,7 @@ def ciphers_available():
     while ids[n]:
         ciphersuites.append(__get_ciphersuite_name(ids[n]))
         n += 1
-    return ciphersuites
+    return tuple(ciphersuites)
 
 
 class NextProtocol(Enum):
@@ -290,6 +340,8 @@ cdef class _BaseConfiguration:
         highest_supported_version=None,
         trust_store=None,
         sni_callback=None,
+        pre_shared_key=None,
+        pre_shared_key_store=None,
         _transport=None,
     ):
         check_error(_tls.mbedtls_ssl_config_defaults(
@@ -306,6 +358,8 @@ cdef class _BaseConfiguration:
         self._set_highest_supported_version(highest_supported_version)
         self._set_trust_store(trust_store)
         self._set_sni_callback(sni_callback)
+        self._set_pre_shared_key(pre_shared_key)
+        self._set_pre_shared_key_store(pre_shared_key_store)
 
         # Set random engine.
         _tls.mbedtls_ssl_conf_rng(
@@ -345,7 +399,9 @@ cdef class _BaseConfiguration:
                 "lowest_supported_version=%r, "
                 "highest_supported_version=%r, "
                 "trust_store=%r, "
-                "sni_callback=%r)"
+                "sni_callback=%r, "
+                "pre_shared_key=%r, "
+                "pre_shared_key_store=%r)"
                 % (type(self).__name__,
                    self.validate_certificates,
                    self.certificate_chain,
@@ -354,7 +410,10 @@ cdef class _BaseConfiguration:
                    self.lowest_supported_version,
                    self.highest_supported_version,
                    self.trust_store,
-                   self.sni_callback))
+                   self.sni_callback,
+                   self.pre_shared_key,
+                   self.pre_shared_key_store,
+                  ))
 
     cdef _set_validate_certificates(self, validate):
         """Set the certificate verification mode.
@@ -446,7 +505,7 @@ cdef class _BaseConfiguration:
             if cipher_id == 0:
                 break
             ciphers.append(__get_ciphersuite_name(cipher_id))
-        return ciphers
+        return tuple(ciphers)
 
     cdef _set_inner_protocols(self, protocols):
         """
@@ -556,6 +615,49 @@ cdef class _BaseConfiguration:
     def sni_callback(self):
         return None
 
+    cdef _set_pre_shared_key(self, psk):
+        """Set a pre shared key (PSK) for the client.
+
+        Args:
+            psk ([Tuple[unicode, bytes]]): A tuple with the key and the exected
+                identity name.
+
+        """
+        if psk is None:
+            return
+        try:
+            identity, key = psk
+        except ValueError:
+            raise TypeError("expected a tuple (name, key)")
+        c_identity = identity.encode("utf8")
+        check_error(_tls.mbedtls_ssl_conf_psk(
+            &self._ctx,
+            key, len(key),
+            c_identity, len(c_identity)))
+
+    @property
+    def pre_shared_key(self):
+        if self._ctx.psk == NULL or self._ctx.psk_identity == NULL:
+            return None
+        key = self._ctx.psk[:self._ctx.psk_len]
+        c_identity = self._ctx.psk_identity[:self._ctx.psk_identity_len]
+        identity = c_identity.decode("utf8")
+        return (identity, key)
+
+    cdef _set_pre_shared_key_store(self, psk_store):
+        # server-side
+        if psk_store is None:
+            return
+        self._store = _PSKSToreProxy(psk_store)  # ownership
+        _tls.mbedtls_ssl_conf_psk_cb(&self._ctx, _psk_cb, <void *> self._store)
+
+    @property
+    def pre_shared_key_store(self):
+        if self._ctx.p_psk == NULL:
+            return None
+        psk_store = <_tls._PSKSToreProxy> self._ctx.p_psk
+        return psk_store.unwrap()
+
     def update(self, *args):
         raise NotImplementedError
 
@@ -572,6 +674,8 @@ cdef class TLSConfiguration(_BaseConfiguration):
         highest_supported_version=None,
         trust_store=None,
         sni_callback=None,
+        pre_shared_key=None,
+        pre_shared_key_store=None,
     ):
         super().__init__(
             validate_certificates=validate_certificates,
@@ -582,6 +686,8 @@ cdef class TLSConfiguration(_BaseConfiguration):
             highest_supported_version=highest_supported_version,
             trust_store=trust_store,
             sni_callback=sni_callback,
+            pre_shared_key=pre_shared_key,
+            pre_shared_key_store=pre_shared_key_store,
             _transport=_tls.MBEDTLS_SSL_TRANSPORT_STREAM,
         )
 
@@ -603,6 +709,8 @@ cdef class TLSConfiguration(_BaseConfiguration):
         highest_supported_version=_DEFAULT_VALUE,
         trust_store=_DEFAULT_VALUE,
         sni_callback=_DEFAULT_VALUE,
+        pre_shared_key=_DEFAULT_VALUE,
+        pre_shared_key_store=_DEFAULT_VALUE,
     ):
         """Create a new ``TLSConfiguration``.
 
@@ -634,6 +742,12 @@ cdef class TLSConfiguration(_BaseConfiguration):
         if sni_callback is _DEFAULT_VALUE:
             sni_callback = self.sni_callback
 
+        if pre_shared_key is _DEFAULT_VALUE:
+            pre_shared_key = self.pre_shared_key
+
+        if pre_shared_key_store is _DEFAULT_VALUE:
+            pre_shared_key_store = self.pre_shared_key_store
+
         return self.__class__(
             validate_certificates=validate_certificates,
             certificate_chain=certificate_chain,
@@ -643,6 +757,8 @@ cdef class TLSConfiguration(_BaseConfiguration):
             highest_supported_version=highest_supported_version,
             trust_store=trust_store,
             sni_callback=sni_callback,
+            pre_shared_key=pre_shared_key,
+            pre_shared_key_store=pre_shared_key_store,
         )
 
 
@@ -661,6 +777,8 @@ cdef class DTLSConfiguration(_BaseConfiguration):
         # badmac_limit
         # handshake_timeout
         sni_callback=None,
+        pre_shared_key=None,
+        pre_shared_key_store=None,
     ):
         super().__init__(
             validate_certificates=validate_certificates,
@@ -671,6 +789,8 @@ cdef class DTLSConfiguration(_BaseConfiguration):
             highest_supported_version=highest_supported_version,
             trust_store=trust_store,
             sni_callback=sni_callback,
+            pre_shared_key=pre_shared_key,
+            pre_shared_key_store=pre_shared_key_store,
             _transport=_tls.MBEDTLS_SSL_TRANSPORT_DATAGRAM,
         )
         self._set_anti_replay(anti_replay)
@@ -730,6 +850,8 @@ cdef class DTLSConfiguration(_BaseConfiguration):
         highest_supported_version=_DEFAULT_VALUE,
         trust_store=_DEFAULT_VALUE,
         sni_callback=_DEFAULT_VALUE,
+        pre_shared_key=_DEFAULT_VALUE,
+        pre_shared_key_store=_DEFAULT_VALUE,
         anti_replay=_DEFAULT_VALUE,
     ):
         """Create a new ``DTLSConfiguration``.
@@ -762,6 +884,12 @@ cdef class DTLSConfiguration(_BaseConfiguration):
         if sni_callback is _DEFAULT_VALUE:
             sni_callback = self.sni_callback
 
+        if pre_shared_key is _DEFAULT_VALUE:
+            pre_shared_key = self.pre_shared_key
+
+        if pre_shared_key_store is _DEFAULT_VALUE:
+            pre_shared_key_store = self.pre_shared_key_store
+
         if anti_replay is _DEFAULT_VALUE:
             anti_replay = self.anti_replay
 
@@ -774,6 +902,8 @@ cdef class DTLSConfiguration(_BaseConfiguration):
             highest_supported_version=highest_supported_version,
             trust_store=trust_store,
             sni_callback=sni_callback,
+            pre_shared_key=pre_shared_key,
+            pre_shared_key_store=pre_shared_key_store,
             anti_replay=anti_replay,
         )
 
