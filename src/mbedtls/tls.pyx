@@ -1201,8 +1201,11 @@ cdef class TLSWrappedSocket:
             sockname = self.getsockname()
             conn = _socket.fromfd(self.fileno(), self.family, self.type)
             conn.connect(address)
+            # Closing the socket on Python 2.7 and 3.4 invalidates
+            # the accessors.  So we should get the values first.
+            family, type_, proto = self.family, self.type, self.proto
             self.close()
-            self._socket = _socket.socket(self.family, self.type, self.proto)
+            self._socket = _socket.socket(family, type_, proto)
             self.setsockopt(_socket.SOL_SOCKET, _socket.SO_REUSEADDR, 1)
             self.bind(sockname)
         return self.context.wrap_socket(conn), address

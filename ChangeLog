@@ -1,3 +1,7 @@
+[next]
+
+* tls: Fixup `access()` method for DTLS on Python 2.7 and 3.4.
+
 [1.0.0] - 2020-01-05
 
 * ci: Add support to Python 3.8.
