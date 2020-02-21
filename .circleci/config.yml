@@ -79,7 +79,7 @@ jobs:
       - run:
           name: Install mbedtls
           command: |
-            VERSION=2.16.3
+            VERSION=2.16.5
             DESTDIR=$HOME/lib/$VERSION
             sudo apt-get install cmake
             sudo ./scripts/download-mbedtls.sh $VERSION $DESTDIR/src

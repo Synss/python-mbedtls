@@ -87,8 +87,8 @@ The *mbedtls.version* module shows the run-time version
 information to mbed TLS.
 
 >>> from mbedtls import version
->>> _ = version.version  # "mbed TLS 2.16.1"
->>> _ = version.version_info  # (2, 16, 1)
+>>> _ = version.version  # "mbed TLS 2.16.5"
+>>> _ = version.version_info  # (2, 16, 5)
 
 
 Message digest
