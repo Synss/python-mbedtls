@@ -26,7 +26,7 @@ setup_requires = [
 ]
 install_requires = ["certifi"]
 if sys.version_info < (3,):
-    install_requires.extend(["contextlib2", "enum34", "pathlib2"])
+    install_requires.extend(["contextlib2", "enum34!=1.1.8", "pathlib2"])
 tests_require = ["readme_renderer"]
 if sys.version_info < (3,):
     tests_require.extend(["contextlib2"])
