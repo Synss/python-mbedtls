@@ -613,8 +613,11 @@ and the server configuration receives the key store as a
 
 >>> srv_conf = tls.DTLSConfiguration(
 ...     ciphers=(
-...         "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA256",
-...         "TLS-PSK-WITH-AES-128-CBC-SHA256",
+...         # PSK Requires the selection PSK ciphers.
+...         "TLS-ECDHE-PSK-WITH-CHACHA20-POLY1305-SHA256",
+...         "TLS-DHE-PSK-WITH-CHACHA20-POLY1305-SHA256",
+...         "TLS-RSA-PSK-WITH-CHACHA20-POLY1305-SHA256",
+...         "TLS-PSK-WITH-CHACHA20-POLY1305-SHA256",
 ...     ),
 ...     pre_shared_key_store={
 ...         "client0": b"a secret",

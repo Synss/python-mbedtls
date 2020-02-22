@@ -546,9 +546,14 @@ class TestTLS_PSKAuthentication(_TLSCommunicationBase):
     @pytest.fixture(scope="class")
     def ciphers(self):
         return (
-            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA256",
-            "TLS-RSA-PSK-WITH-ARIA-128-CBC-SHA256",
-            "TLS-PSK-WITH-AES-128-CBC-SHA256",
+            "TLS-ECDHE-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA",
+            "TLS-DHE-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-DHE-PSK-WITH-AES-128-CBC-SHA",
+            "TLS-RSA-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-RSA-PSK-WITH-AES-128-CBC-SHA",
+            "TLS-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-PSK-WITH-AES-128-CBC-SHA",
         )
 
     @pytest.fixture(scope="class")
@@ -568,9 +573,14 @@ class TestDTLS_PSKAuthentication(_DTLSCommunicationBase):
     @pytest.fixture(scope="class")
     def ciphers(self):
         return (
-            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA256",
-            "TLS-RSA-PSK-WITH-ARIA-128-CBC-SHA256",
-            "TLS-PSK-WITH-AES-128-CBC-SHA256",
+            "TLS-ECDHE-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA",
+            "TLS-DHE-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-DHE-PSK-WITH-AES-128-CBC-SHA",
+            "TLS-RSA-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-RSA-PSK-WITH-AES-128-CBC-SHA",
+            "TLS-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-PSK-WITH-AES-128-CBC-SHA",
         )
 
     @pytest.fixture(scope="class")
@@ -590,9 +600,14 @@ class TestTLS_PSKAuthenticationFailure(_TLSCommunicationBase):
     @pytest.fixture(scope="class")
     def ciphers(self):
         return (
-            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA256",
-            "TLS-RSA-PSK-WITH-ARIA-128-CBC-SHA256",
-            "TLS-PSK-WITH-AES-128-CBC-SHA256",
+            "TLS-ECDHE-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA",
+            "TLS-DHE-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-DHE-PSK-WITH-AES-128-CBC-SHA",
+            "TLS-RSA-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-RSA-PSK-WITH-AES-128-CBC-SHA",
+            "TLS-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-PSK-WITH-AES-128-CBC-SHA",
         )
 
     @pytest.fixture(
@@ -620,9 +635,14 @@ class TestDTLS_PSKAuthenticationFailure(_DTLSCommunicationBase):
     @pytest.fixture(scope="class")
     def ciphers(self):
         return (
-            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA256",
-            "TLS-RSA-PSK-WITH-ARIA-128-CBC-SHA256",
-            "TLS-PSK-WITH-AES-128-CBC-SHA256",
+            "TLS-ECDHE-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA",
+            "TLS-DHE-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-DHE-PSK-WITH-AES-128-CBC-SHA",
+            "TLS-RSA-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-RSA-PSK-WITH-AES-128-CBC-SHA",
+            "TLS-PSK-WITH-AES-256-CBC-SHA",
+            "TLS-PSK-WITH-AES-128-CBC-SHA",
         )
 
     @pytest.fixture(
