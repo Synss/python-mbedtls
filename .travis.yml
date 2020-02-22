@@ -1,5 +1,6 @@
 # vim: et:ts=2:sw=2
 language: python
+python: "3.8"
 
 matrix:
   include:
