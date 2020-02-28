@@ -3,9 +3,9 @@
 
 set -ex
 
-if [ $# -eq 1 ] || [ $# -eq 2 ]; then
+if [ $# -eq 2 ]; then
 	version="$1"
-	destdir="${2:-/usr/local/src}"
+	destdir="$2"
 	case $destdir in
 		/*) ;;
 		*) destdir="$PWD/$destdir";;
@@ -14,7 +14,7 @@ else
 	cat <<-EOF
 
 	usage:
-	  $0 VERSION [DESTDIR]
+	  $0 VERSION DESTDIR
 
 	Download a local copy mbedtls at VERSION.
 

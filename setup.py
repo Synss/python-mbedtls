@@ -121,7 +121,11 @@ def options(coverage=False):
         return {}
     else:
         return {
-            "build": {"build_base": "build-%i.%i.%i" % sys.version_info[:3]},
+            "build": {
+                "build_base": os.sep.join(
+                    ("build", "%i.%i.%i" % sys.version_info[:3])
+                )
+            },
             "build_ext": {"cython_c_in_temp": True},
         }
 

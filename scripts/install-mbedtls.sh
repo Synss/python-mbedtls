@@ -3,23 +3,23 @@
 
 set -ex
 
-if [ $# -le 1 ]; then
-	cat <<-EOF
-
-	usage:
-	  $0 SRCDIR [DESTDIR]
-	
-	Install a mbedtls from the sources in SRCDIR to DESTDIR.
-
-	EOF
-	exit 1
-else
+if [ $# -eq 1 ] || [ $# -eq 2 ]; then
 	srcdir="$1"
 	destdir="${2:-/usr/local}"
 	case $destdir in
 		/*) ;;
 		*) destdir="$PWD/$destdir";;
 	esac
+else
+	cat <<-EOF
+
+	usage:
+	  $0 SRCDIR [DESTDIR]
+
+	Install a mbedtls from the sources in SRCDIR to DESTDIR.
+
+	EOF
+	exit 1
 fi
 
 
