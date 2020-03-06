@@ -2,5 +2,11 @@
 plugins = Cython.Coverage
 
 [report]
+exclude_lines =
+  pragma: no cover
+  def __repr__
+  raise MemoryError()
+  raise NotImplementedError
+  free(\w)
 include =
   src/*
