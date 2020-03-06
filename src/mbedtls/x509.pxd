@@ -11,6 +11,11 @@ __copyright__ = "Copyright 2018, Mathias Laurin"
 __license__ = "MIT License"
 
 
+cimport mbedtls._md as _md
+cimport mbedtls.mpi as _mpi
+cimport mbedtls.pk as _pk
+
+
 cdef extern from "mbedtls/asn1.h" nogil:
     cdef struct mbedtls_asn1_buf:
         int tag
@@ -24,20 +29,6 @@ cdef extern from "mbedtls/asn1.h" nogil:
         mbedtls_asn1_buf val
         mbedtls_asn1_named_data *next
         unsigned char next_merged
-
-
-cdef extern from "mbedtls/bignum.h" nogil:
-    ctypedef struct mbedtls_mpi:
-        pass
-
-
-cdef extern from "mbedtls/md.h" nogil:
-    ctypedef enum mbedtls_md_type_t: pass
-
-
-cdef extern from "mbedtls/pk.h" nogil:
-    ctypedef struct mbedtls_pk_context:
-        pass
 
 
 cdef extern from "mbedtls/x509.h" nogil:
@@ -64,7 +55,7 @@ cdef extern from "mbedtls/x509_crt.h" nogil:
         mbedtls_x509_name subject
         mbedtls_x509_time valid_from
         mbedtls_x509_time valid_to
-        mbedtls_pk_context pk  # public key
+        _pk.mbedtls_pk_context pk  # public key
         # mbedtls_x509_buf issuer_id
         # mbedtls_x509_buf subject_id
         # mbedtls_x509_buf v3_ext
@@ -77,7 +68,7 @@ cdef extern from "mbedtls/x509_crt.h" nogil:
         # unsigned char ns_cert_type
 
         mbedtls_x509_buf sig
-        mbedtls_md_type_t sig_md
+        _md.mbedtls_md_type_t sig_md
         # mbedtls_pk_type_t sig_pk
         # void *sig_opts
         mbedtls_x509_crt *next
@@ -132,7 +123,7 @@ cdef extern from "mbedtls/x509_crt.h" nogil:
         int version)
     int mbedtls_x509write_crt_set_serial(
         mbedtls_x509write_cert *ctx,
-        mbedtls_mpi *serial)
+        _mpi.mbedtls_mpi *serial)
 
     int mbedtls_x509write_crt_set_validity(
         mbedtls_x509write_cert *ctx,
@@ -146,13 +137,13 @@ cdef extern from "mbedtls/x509_crt.h" nogil:
         const char *subject_name)
     void mbedtls_x509write_crt_set_subject_key(
         mbedtls_x509write_cert *ctx,
-        mbedtls_pk_context *key)
+        _pk.mbedtls_pk_context *key)
     void mbedtls_x509write_crt_set_issuer_key(
         mbedtls_x509write_cert *ctx,
-        mbedtls_pk_context *key)
+        _pk.mbedtls_pk_context *key)
     void mbedtls_x509write_crt_set_md_alg(
         mbedtls_x509write_cert *ctx,
-        mbedtls_md_type_t md_alg)
+        _md.mbedtls_md_type_t md_alg)
 
     # mbedtls_x509write_crt_set_extension
     int mbedtls_x509write_crt_set_basic_constraints(
@@ -190,10 +181,10 @@ cdef extern from "mbedtls/x509_csr.h" nogil:
         int version
         # mbedtls_x509_buf subject_raw
         mbedtls_x509_name subject
-        mbedtls_pk_context pk
+        _pk.mbedtls_pk_context pk
         mbedtls_x509_buf sig_oid
         mbedtls_x509_buf sig
-        mbedtls_md_type_t sig_md
+        _md.mbedtls_md_type_t sig_md
         # mbedtls_pk_type_t sig_pk
         # void *sig_opts
 
@@ -230,10 +221,10 @@ cdef extern from "mbedtls/x509_csr.h" nogil:
         const char *subject_name)
     void mbedtls_x509write_csr_set_key(
         mbedtls_x509write_csr *ctx,
-        mbedtls_pk_context *key)
+        _pk.mbedtls_pk_context *key)
     void mbedtls_x509write_csr_set_md_alg(
         mbedtls_x509write_csr *ctx,
-        mbedtls_md_type_t md_alg)
+        _md.mbedtls_md_type_t md_alg)
 
     # mbedtls_x509write_csr_set_key_usage
     # mbedtls_x509write_csr_set_ns_cert_type
@@ -276,7 +267,7 @@ cdef extern from "mbedtls/x509_crl.h" nogil:
         mbedtls_x509_buf crl_ext
         mbedtls_x509_buf sig_oid2
         mbedtls_x509_buf sig
-        mbedtls_md_type_t sig_md
+        _md.mbedtls_md_type_t sig_md
         # mbedtls_pk_type_t sig_pk
         # void *sig_opts
         mbedtls_x509_crl *next

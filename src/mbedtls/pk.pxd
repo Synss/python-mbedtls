@@ -8,23 +8,18 @@ __copyright__ = "Copyright 2016, Mathias Laurin, Elaborated Networks GmbH"
 __license__ = "MIT License"
 
 
-cdef extern from "mbedtls/md.h" nogil:
-    ctypedef enum mbedtls_md_type_t: pass
-
-
-cdef extern from "mbedtls/bignum.h" nogil:
-    ctypedef struct mbedtls_mpi:
-        pass
+cimport mbedtls._md as _md
+cimport mbedtls.mpi as _mpi
 
 
 cdef extern from "mbedtls/dhm.h" nogil:
     ctypedef struct mbedtls_dhm_context:
-        mbedtls_mpi P
-        mbedtls_mpi G
-        mbedtls_mpi X
-        mbedtls_mpi GX
-        mbedtls_mpi GY
-        mbedtls_mpi K
+        _mpi.mbedtls_mpi P
+        _mpi.mbedtls_mpi G
+        _mpi.mbedtls_mpi X
+        _mpi.mbedtls_mpi GX
+        _mpi.mbedtls_mpi GY
+        _mpi.mbedtls_mpi K
 
     void mbedtls_dhm_init(mbedtls_dhm_context *ctx)
     void mbedtls_dhm_free(mbedtls_dhm_context *ctx)
@@ -84,21 +79,21 @@ cdef extern from "mbedtls/ecp.h" nogil:
         const char *name
 
     ctypedef struct mbedtls_ecp_point:
-        mbedtls_mpi X
-        mbedtls_mpi Y
-        mbedtls_mpi Z
+        _mpi.mbedtls_mpi X
+        _mpi.mbedtls_mpi Y
+        _mpi.mbedtls_mpi Z
 
     ctypedef struct mbedtls_ecp_group:
         mbedtls_ecp_group_id id;
-        mbedtls_mpi P
-        mbedtls_mpi A
-        mbedtls_mpi B
+        _mpi.mbedtls_mpi P
+        _mpi.mbedtls_mpi A
+        _mpi.mbedtls_mpi B
         mbedtls_ecp_point G
-        mbedtls_mpi N
+        _mpi.mbedtls_mpi N
         size_t pbits
         size_t nbits
         unsigned int h
-        int (*modp)(mbedtls_mpi *)
+        int (*modp)(_mpi.mbedtls_mpi *)
         int (*t_pre)(mbedtls_ecp_point *, void *)
         int (*t_post)(mbedtls_ecp_point *, void *)
         void *t_data
@@ -107,7 +102,7 @@ cdef extern from "mbedtls/ecp.h" nogil:
 
     ctypedef struct mbedtls_ecp_keypair:
         mbedtls_ecp_group grp
-        mbedtls_mpi d
+        _mpi.mbedtls_mpi d
         mbedtls_ecp_point Q
 
     int MBEDTLS_ECP_MAX_BYTES
@@ -164,7 +159,7 @@ cdef extern from "mbedtls/ecp.h" nogil:
     int mbedtls_ecp_mul(
         mbedtls_ecp_group *grp,
         mbedtls_ecp_point *R,
-        const mbedtls_mpi *m,
+        const _mpi.mbedtls_mpi *m,
         const mbedtls_ecp_point *P,
         int (*f_rng)(void *, unsigned char *, size_t),
         void *p_rng)
@@ -179,7 +174,7 @@ cdef extern from "mbedtls/ecp.h" nogil:
     # mbedtls_ecp_gen_keypair_base
     int mbedtls_ecp_gen_keypair(
         mbedtls_ecp_group *grp,
-        mbedtls_mpi *d,
+        _mpi.mbedtls_mpi *d,
         mbedtls_ecp_point *Q,
         int (*f_rng)(void *, unsigned char *, size_t),
         void *p_rng)
@@ -198,24 +193,24 @@ cdef extern from "mbedtls/ecdh.h" nogil:
 
     ctypedef struct mbedtls_ecdh_context:
         mbedtls_ecp_group grp
-        mbedtls_mpi d  # private key
+        _mpi.mbedtls_mpi d  # private key
         mbedtls_ecp_point Q  # public key
         mbedtls_ecp_point Qp  # peer's public key
-        mbedtls_mpi z  # shared secret
+        _mpi.mbedtls_mpi z  # shared secret
 
     # mbedtls_ecp_group
     # -----------------
     int mbedtls_ecdh_gen_public(
         mbedtls_ecp_group *grp,
-        mbedtls_mpi *d,
+        _mpi.mbedtls_mpi *d,
         mbedtls_ecp_point *Q,
         int (*f_rng)(void *, unsigned char *, size_t),
         void *p_rng)
     int mbedtls_ecdh_compute_shared(
         mbedtls_ecp_group *grp,
-        mbedtls_mpi *z,
+        _mpi.mbedtls_mpi *z,
         const mbedtls_ecp_point *Q,
-        const mbedtls_mpi *d,
+        const _mpi.mbedtls_mpi *d,
         int (*f_rng)(void *, unsigned char *, size_t),
         void *p_rng)
 
@@ -254,7 +249,7 @@ cdef extern from "mbedtls/ecdh.h" nogil:
 cdef extern from "mbedtls/ecdsa.h" nogil:
     ctypedef struct mbedtls_ecdsa_context:
         mbedtls_ecp_group grp
-        mbedtls_mpi d
+        _mpi.mbedtls_mpi d
         mbedtls_ecp_point Q
 
     int MBEDTLS_ECDSA_MAX_LEN
@@ -352,17 +347,17 @@ cdef extern from "mbedtls/pk.h" nogil:
                           mbedtls_pk_type_t type)
 
     int mbedtls_pk_verify(
-        mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg,
+        mbedtls_pk_context *ctx, _md.mbedtls_md_type_t md_alg,
         const unsigned char *hash, size_t hash_len,
         const unsigned char *sig, size_t sig_len)
     # int mbedtls_pk_verify_ext(
     #     mbedtls_pk_type_t type, const void *options,
-    #     mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg,
+    #     mbedtls_pk_context *ctx, _md.mbedtls_md_type_t md_alg,
     #     const unsigned char *hash, size_t hash_len,
     #     const unsigned char *sig, size_t sig_len)
 
     int mbedtls_pk_sign(
-        mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg,
+        mbedtls_pk_context *ctx, _md.mbedtls_md_type_t md_alg,
         const unsigned char *hash, size_t hash_len,
         unsigned char *sig, size_t *sig_len,
         int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
