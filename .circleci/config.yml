@@ -90,7 +90,20 @@ jobs:
       - image: circleci/python:3.9-rc
         environment: *env
     working_directory: ~/python-mbedtls
-    steps: *steps
+    steps:
+      - checkout
+      - run: *deps
+      - run: *python_version
+      - restore_cache: *restore_cache_ccache
+      - run: *mbedtls
+      - run:
+          name: Install cython from git
+          command: |
+            python -m pip install --user git+https://github.com/cython/cython.git@master
+      - run: *install
+      - save_cache: *save_cache_ccache
+      - run: *tests
+      - store_artifacts: *artifacts
 
   python_extra:
     docker:
@@ -152,7 +165,7 @@ workflows:
   build:
     jobs:
       - python_extra
-      # - python_39  # Requires Python 3.0
+      - python_39
       - python_38
       - python_37
       - python_36

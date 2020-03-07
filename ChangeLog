@@ -1,6 +1,6 @@
 [next]
 
-* tls: Partial support Python 3.9
+* ci: Partial support to Python 3.9
 
 [1.1.0] - 2020-02-22
 
