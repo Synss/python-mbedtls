@@ -50,13 +50,6 @@ jobs:
           path: out
           destination: artifacts
 
-  python_34:
-    docker:
-      - image: circleci/python:3.4.10
-        environment: *env
-    working_directory: ~/python-mbedtls
-    steps: *steps
-
   python_35:
     docker:
       - image: circleci/python:3.5.9
@@ -170,5 +163,4 @@ workflows:
       - python_37
       - python_36
       - python_35
-      - python_34
       - python_27
