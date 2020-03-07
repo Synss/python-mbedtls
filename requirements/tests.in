@@ -1,7 +1,5 @@
 pytest < 5.0.0  # For Python < 3.5
 readme_renderer
 
-docutils < 0.16             # via readme_renderer; for Python 3.4
-importlib-metadata < 1.2.0  # via pluggy, pytest; for Python 3.4
 more-itertools < 6.0.0      # via pytest, zipp; for Python < 3.5
 zipp < 2.0.0                # via importlib-metadata; for Python < 3.6
