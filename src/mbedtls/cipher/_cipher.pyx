@@ -279,7 +279,7 @@ cdef class Cipher(_CipherBase):
                 &self._dec_ctx,
                 &iv[0] if iv.size else NULL, iv.size,
                 &input[0], input.size, output, &olen))
-            return bytes(output[:olen])
+            return output[:olen]
         finally:
             free(output)
 
@@ -325,7 +325,7 @@ cdef class AEADCipher(_CipherBase):
                 &iv[0], iv.size, pad, ad.size,
                 &input[0], input.size, output, &olen,
                 tag, sizeof(tag)))
-            return bytes(output[:olen]), bytes(tag[:16])
+            return output[:olen], tag[:16]
         finally:
             free(output)
 
@@ -354,7 +354,7 @@ cdef class AEADCipher(_CipherBase):
                 &iv[0], iv.size, pad, ad.size,
                 &input[0], input.size, output, &olen,
                 &tag[0], tag.size))
-            return bytes(output[:olen])
+            return output[:olen]
         finally:
             free(output)
 

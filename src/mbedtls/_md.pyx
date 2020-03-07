@@ -119,7 +119,7 @@ cdef class MDBase:
             raise MemoryError()
         try:
             check_error(self._finish(output))
-            return bytes(output[:self.digest_size])
+            return output[:self.digest_size]
         finally:
             free(output)
 

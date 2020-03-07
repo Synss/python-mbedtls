@@ -299,7 +299,7 @@ cdef class CipherBase:
                 &output[0], &sig_len,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert sig_len != 0
-            return bytes(output[:sig_len])
+            return output[:sig_len]
         finally:
             free(output)
 
@@ -348,7 +348,7 @@ cdef class CipherBase:
                 &self._ctx, &message[0], message.size,
                 output, &olen, self.key_size,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
-            return bytes(output[:olen])
+            return output[:olen]
         finally:
             free(output)
 
@@ -371,7 +371,7 @@ cdef class CipherBase:
                 &self._ctx, &message[0], message.size,
                 output, &olen, self.key_size,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
-            return bytes(output[:olen])
+            return output[:olen]
         finally:
             free(output)
 
@@ -396,7 +396,7 @@ cdef class CipherBase:
         try:
             olen = check_error(
                 _pk.mbedtls_pk_write_key_der(&self._ctx, output, osize))
-            return bytes(output[osize - olen:osize])
+            return output[osize - olen:osize]
         finally:
             free(output)
 
@@ -412,7 +412,7 @@ cdef class CipherBase:
         try:
             check_error(
                 _pk.mbedtls_pk_write_key_pem(&self._ctx, output, osize))
-            return bytes(output[0:osize]).decode("ascii")
+            return output[0:osize].decode("ascii")
         finally:
             free(output)
 
@@ -443,7 +443,7 @@ cdef class CipherBase:
         try:
             olen = check_error(
                 _pk.mbedtls_pk_write_pubkey_der(&self._ctx, output, osize))
-            return bytes(output[osize - olen:osize])
+            return output[osize - olen:osize]
         finally:
             free(output)
 
@@ -459,7 +459,7 @@ cdef class CipherBase:
         try:
             check_error(
                 _pk.mbedtls_pk_write_pubkey_pem(&self._ctx, output, osize))
-            return bytes(output[0:osize]).decode("ascii")
+            return output[0:osize].decode("ascii")
         finally:
             free(output)
 
@@ -845,7 +845,7 @@ cdef class DHServer(DHBase):
                 &self._ctx, self.key_size, &output[0], &olen,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
-            return bytes(output[:olen])
+            return output[:olen]
         finally:
             free(output)
 
@@ -1039,7 +1039,7 @@ cdef class ECDHServer(ECDHBase):
                 &self._ctx, &olen, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
-            return bytes(output[:olen])
+            return output[:olen]
         finally:
             free(output)
 
@@ -1076,7 +1076,7 @@ cdef class ECDHClient(ECDHBase):
                 &self._ctx, &olen, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
-            return bytes(output[:olen])
+            return output[:olen]
         finally:
             free(output)
 

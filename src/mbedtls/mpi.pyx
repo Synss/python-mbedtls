@@ -103,7 +103,7 @@ cdef class MPI:
         try:
             check_error(_mpi.mbedtls_mpi_write_binary(
                 &self._ctx, output, length))
-            return bytes(output[:length])[::-1 if byteorder == "little" else 1]
+            return output[:length][::-1 if byteorder == "little" else 1]
         except Exception as exc:
             raise OverflowError from exc
         finally:

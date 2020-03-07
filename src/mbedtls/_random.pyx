@@ -42,7 +42,7 @@ cdef class _Entropy:
             raise MemoryError()
         try:
             check_error(_rnd.mbedtls_entropy_func(&self._ctx, output, length))
-            return bytes(output[:length])
+            return output[:length]
         finally:
             free(output)
 
@@ -90,7 +90,7 @@ cdef class Random:
             check_error(
                 _rnd.mbedtls_ctr_drbg_random(&self._ctx, output, length)
             )
-            ret = bytes(output[:length])
+            ret = output[:length]
             _plt.mbedtls_platform_zeroize(output, length)
             return ret
         finally:

@@ -59,7 +59,7 @@ def hkdf(
             0 if info is None else info.size,
             okm, length
         ))
-        return bytes(okm[:length])
+        return okm[:length]
     finally:
         free(okm)
 
@@ -103,7 +103,7 @@ def extract(
             &key[0], key.size,
             prk
         ))
-        return bytes(prk[:hmac.digest_size])
+        return prk[:hmac.digest_size]
     finally:
         free(prk)
 
@@ -148,6 +148,6 @@ def expand(
             0 if info is None else info.size,
             okm, length
         ))
-        return bytes(okm[:length])
+        return okm[:length]
     finally:
         free(okm)

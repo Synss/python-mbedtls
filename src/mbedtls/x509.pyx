@@ -157,7 +157,7 @@ cdef class CRT(Certificate):
         try:
             written = check_error(x509.mbedtls_x509_crt_info(
                 &output[0], osize, prefix, &self._ctx))
-            return bytes(output[:written]).decode("utf8")
+            return output[:written].decode("utf8")
         finally:
             free(output)
 
@@ -239,7 +239,7 @@ cdef class CRT(Certificate):
         try:
             written = x509.mbedtls_x509_dn_gets(
                 &c_buf[0], osize, &self._ctx.issuer)
-            return bytes(c_buf[:written]).decode("utf8")
+            return c_buf[:written].decode("utf8")
         finally:
             free(c_buf)
 
@@ -284,7 +284,7 @@ cdef class CRT(Certificate):
         try:
             written = x509.mbedtls_x509_dn_gets(
                 &c_buf[0], osize, &self._ctx.subject)
-            return bytes(c_buf[:written]).decode("utf8")
+            return c_buf[:written].decode("utf8")
         finally:
             free(c_buf)
 
@@ -511,7 +511,7 @@ cdef class _CRTWriter:
         try:
             written = check_error(x509.mbedtls_x509write_crt_der(
                 &self._ctx, &output[0], osize, NULL, NULL))
-            return bytes(output[osize - written:osize])
+            return output[osize - written:osize]
         finally:
             free(output)
 
@@ -665,7 +665,7 @@ cdef class CSR(Certificate):
         try:
             written = check_error(x509.mbedtls_x509_csr_info(
                 &output[0], osize, prefix, &self._ctx))
-            return bytes(output[:written]).decode("utf8")
+            return output[:written].decode("utf8")
         finally:
             free(output)
 
@@ -705,7 +705,7 @@ cdef class CSR(Certificate):
         try:
             written = x509.mbedtls_x509_dn_gets(
                 &c_buf[0], osize, &self._ctx.subject)
-            return bytes(c_buf[:written]).decode("utf8")
+            return c_buf[:written].decode("utf8")
         finally:
             free(c_buf)
 
@@ -841,7 +841,7 @@ cdef class _CSRWriter:
         try:
             written = check_error(x509.mbedtls_x509write_csr_der(
                 &self._ctx, &output[0], osize, NULL, NULL))
-            return bytes(output[osize - written:osize])
+            return output[osize - written:osize]
         finally:
             free(output)
 
@@ -891,7 +891,7 @@ cdef class CRL(Certificate):
         try:
             written = check_error(x509.mbedtls_x509_crl_info(
                 &output[0], osize, prefix, &self._ctx))
-            return bytes(output[:written]).decode("utf8")
+            return output[:written].decode("utf8")
         finally:
             free(output)
 
@@ -948,7 +948,7 @@ cdef class CRL(Certificate):
         try:
             written = x509.mbedtls_x509_dn_gets(
                 &c_buf[0], osize, &self._ctx.issuer)
-            return bytes(c_buf[:written]).decode("utf8")
+            return c_buf[:written].decode("utf8")
         finally:
             free(c_buf)
 
