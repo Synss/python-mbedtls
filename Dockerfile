@@ -1,6 +1,6 @@
 ARG ARCH=x86_64
 
-FROM quay.io/pypa/manylinux1_${ARCH} as base
+FROM quay.io/pypa/manylinux2010_${ARCH}:latest as base
 
 FROM base as builder
 WORKDIR /home/builder
