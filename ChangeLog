@@ -1,4 +1,4 @@
-[next]
+[1.2.0] - 2020-03-10
 
 * ci: Partial support to Python 3.9
 * ci: Upgrade manylinux from 1 to 2010.
