@@ -8,22 +8,23 @@ apipkg==1.5               # via execnet
 appdirs==1.4.3            # via devpi-server, virtualenv
 argon2-cffi==19.2.0       # via passlib
 attrs==19.3.0             # via devpi-server
-bleach==3.1.1             # via readme-renderer
+bleach==3.1.2             # via readme-renderer
 certifi==2019.11.28       # via requests
-cffi==1.14.0              # via argon2-cffi
+cffi==1.14.0              # via argon2-cffi, cryptography
 chardet==3.0.4            # via requests
 check-manifest==0.40      # via devpi-client
-devpi-client==5.1.1       # via -r requirements/travis.in (line 1)
+cryptography==2.8         # via secretstorage
+devpi-client==5.1.1       # via -r travis.in
 devpi-common==3.4.0       # via devpi-client, devpi-server
-devpi-server==5.4.0       # via -r requirements/travis.in (line 2)
+devpi-server==5.4.0       # via -r travis.in
 distlib==0.3.0            # via virtualenv
 docutils==0.16            # via readme-renderer
 execnet==1.7.1            # via devpi-server
 filelock==3.0.12          # via tox, virtualenv
 hupper==1.10.1            # via pyramid
 idna==2.9                 # via requests
-importlib-metadata==1.5.0  # via keyring, pluggy, tox, twine, virtualenv
 itsdangerous==1.1.0       # via devpi-server
+jeepney==0.4.3            # via keyring, secretstorage
 keyring==21.1.0           # via twine
 packaging==20.1           # via tox
 passlib[argon2]==1.7.2    # via devpi-server
@@ -44,20 +45,20 @@ requests-toolbelt==0.9.1  # via twine
 requests==2.23.0          # via devpi-common, requests-toolbelt, twine
 ruamel.yaml.clib==0.2.0   # via ruamel.yaml
 ruamel.yaml==0.16.10      # via strictyaml
-six==1.14.0               # via argon2-cffi, bleach, packaging, python-dateutil, readme-renderer, tox, virtualenv
+secretstorage==3.1.2      # via keyring
+six==1.14.0               # via argon2-cffi, bleach, cryptography, packaging, python-dateutil, readme-renderer, tox, virtualenv
 strictyaml==1.0.6         # via devpi-server
 toml==0.10.0              # via check-manifest, tox
 tox==3.14.5               # via devpi-client
 tqdm==4.43.0              # via twine
 translationstring==1.3    # via pyramid
-twine==3.1.1              # via -r requirements/travis.in (line 3)
+twine==3.1.1              # via -r travis.in
 urllib3==1.25.8           # via requests
 venusian==3.0.0           # via pyramid
 virtualenv==20.0.5        # via tox
 waitress==1.4.3           # via devpi-server
 webencodings==0.5.1       # via bleach
 webob==1.8.6              # via pyramid
-zipp==3.0.0               # via importlib-metadata
 zope.deprecation==4.4.0   # via pyramid
 zope.interface==4.7.1     # via pyramid
 
