@@ -8,7 +8,7 @@ apipkg==1.5               # via execnet
 appdirs==1.4.3            # via devpi-server, virtualenv
 argon2-cffi==19.2.0       # via passlib
 attrs==19.3.0             # via devpi-server
-bleach==3.1.2             # via readme-renderer
+bleach==3.1.4             # via readme-renderer
 certifi==2019.11.28       # via requests
 cffi==1.14.0              # via argon2-cffi, cryptography
 chardet==3.0.4            # via requests
