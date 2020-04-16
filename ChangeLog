@@ -1,3 +1,7 @@
+[next]
+
+* update wheels to mbedtls 1.16.6
+
 [1.2.0] - 2020-03-10
 
 * ci: Partial support to Python 3.9
