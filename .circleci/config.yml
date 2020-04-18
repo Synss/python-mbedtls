@@ -144,7 +144,7 @@ jobs:
           name: Build API documentation
           command: |
             python -m pip install --user sphinx sphinx_rtd_theme
-            sphinx-build docs/source docs_out/ --color -W -bhtml
+            sphinx-build docs/source docs_out/ --color -bhtml
       - run:
           name: Save docs
           when: on_success
