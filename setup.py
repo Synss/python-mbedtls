@@ -20,16 +20,20 @@ else:
 
 setup_requires = [
     # Setuptools 18.0 properly handles Cython extensions.
-    "setuptools>=18.0",
+    "setuptools >= 18.0",
     # Cython 0.28 handles const memoryviews.
-    "cython>=0.28.0",
+    "cython >= 0.28.0",
 ]
-install_requires = ["certifi"]
-if sys.version_info < (3,):
-    install_requires.extend(["contextlib2", "enum34!=1.1.8", "pathlib2"])
-tests_require = ["readme_renderer"]
-if sys.version_info < (3,):
-    tests_require.extend(["contextlib2"])
+install_requires = [
+    "certifi",
+    'contextlib2; python_version < "3.0"',
+    'enum34 != 1.1.8; python_version < "3.0"',
+    'pathlib2; python_version < "3.0"',
+]
+tests_require = [
+    "readme_renderer",
+    'contextlib2; python_version < "3.0"',
+]
 
 
 def mbedtls_version(lib):
