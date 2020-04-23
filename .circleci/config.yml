@@ -158,7 +158,7 @@ workflows:
   build:
     jobs:
       - python_extra
-      - python_39
+      # - python_39
       - python_38
       - python_37
       - python_36
