@@ -632,18 +632,19 @@ class TestTLS_PSKAuthenticationFailure(_TLSCommunicationBase):
 
 
 class TestDTLS_PSKAuthenticationFailure(_DTLSCommunicationBase):
-    @pytest.fixture(scope="class")
-    def ciphers(self):
-        return (
+    @pytest.fixture(
+        scope="class",
+        params=[
             "TLS-ECDHE-PSK-WITH-AES-256-CBC-SHA",
             "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA",
-            "TLS-DHE-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-DHE-PSK-WITH-AES-128-CBC-SHA",
             "TLS-RSA-PSK-WITH-AES-256-CBC-SHA",
             "TLS-RSA-PSK-WITH-AES-128-CBC-SHA",
             "TLS-PSK-WITH-AES-256-CBC-SHA",
             "TLS-PSK-WITH-AES-128-CBC-SHA",
-        )
+        ],
+    )
+    def ciphers(self, request):
+        return (request.param,)
 
     @pytest.fixture(
         scope="class",

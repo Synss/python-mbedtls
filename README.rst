@@ -615,7 +615,6 @@ and the server configuration receives the key store as a
 ...     ciphers=(
 ...         # PSK Requires the selection PSK ciphers.
 ...         "TLS-ECDHE-PSK-WITH-CHACHA20-POLY1305-SHA256",
-...         "TLS-DHE-PSK-WITH-CHACHA20-POLY1305-SHA256",
 ...         "TLS-RSA-PSK-WITH-CHACHA20-POLY1305-SHA256",
 ...         "TLS-PSK-WITH-CHACHA20-POLY1305-SHA256",
 ...     ),
