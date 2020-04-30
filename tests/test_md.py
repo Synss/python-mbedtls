@@ -5,13 +5,21 @@
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=invalid-name
 
+import sys
+if sys.version_info >= (3, 6):
+    from collections.abc import Collection
+elif sys.version_info >= (3, 3):
+    from collections.abc import Container as Collection
+else:
+    from collections import Container as Collection
+
 import pytest
 
 # pylint: disable=import-error
 import mbedtls
 import mbedtls.hash as md_hash
 import mbedtls.hmac as md_hmac
-from mbedtls._md import MD_NAME
+from mbedtls._md import Hash
 
 # pylint: enable=import-error
 
@@ -26,14 +34,26 @@ def test_make_chunks(randbytes):
     assert b"".join(buf for buf in make_chunks(buffer, 100)) == buffer
 
 
-def test_md_list():
-    assert len(MD_NAME) == 10
-
-
 def test_algorithms():
-    assert set(md_hash.algorithms_guaranteed).issubset(
+    assert isinstance(md_hash.algorithms_guaranteed, Collection)
+    assert md_hash.algorithms_guaranteed
+
+    assert isinstance(md_hash.algorithms_available, Collection)
+    assert md_hash.algorithms_available
+
+    assert frozenset(md_hash.algorithms_guaranteed).issubset(
         md_hash.algorithms_available
     )
+
+
+def test_invalid_name_raises_TypeError():
+    with pytest.raises(TypeError):
+        Hash(42)
+
+
+def test_unavailable_cipher_raises_ValueError():
+    with pytest.raises(ValueError):
+        Hash("unavailable")
 
 
 class _TestMDBase:

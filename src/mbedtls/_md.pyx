@@ -7,11 +7,12 @@ __license__ = "MIT License"
 
 cimport mbedtls._md as _md
 from libc.stdlib cimport malloc, free
+
 import binascii
 from mbedtls.exceptions import *
 
 
-MD_NAME = (
+__MD_NAME = (
     # Define as bytes to map to `const char*` without conversion.
     b"NONE",
     b"MD2",
@@ -34,7 +35,7 @@ def __get_supported_mds():
         mbedtls.tls.__get_supported_ciphersuites()
 
     """
-    md_lookup = {n: v for n, v in enumerate(MD_NAME)}
+    md_lookup = {n: v for n, v in enumerate(__MD_NAME)}
     cdef const int* md_types = _md.mbedtls_md_list()
     cdef size_t n = 0
     mds = set()
@@ -42,6 +43,10 @@ def __get_supported_mds():
         mds.add(md_lookup[md_types[n]])
         n += 1
     return mds
+
+
+def _digestmod(sig_md):
+    return __MD_NAME[sig_md].decode("ascii").lower()
 
 
 algorithms_guaranteed = ("md5", "sha1", "sha224", "sha256", "sha384", "sha512")
@@ -67,7 +72,13 @@ cdef class MDBase:
 
     """
     def __init__(self, name, _hmac):
-        name_ = name.upper().encode("ascii", "strict")
+        try:
+            name_ = name.encode("ascii", "strict").upper()
+        except (AttributeError, ValueError) as exc:
+            # Not `str`-like.
+            raise TypeError(name) from exc
+        if not name in algorithms_available:
+            raise ValueError("{} not available".format(name))
         cdef char *c_name = name_
         self._info = _md.mbedtls_md_info_from_string(c_name)
         check_error(_md.mbedtls_md_setup(&self._ctx, self._info, _hmac))
@@ -186,7 +197,7 @@ cdef class Hmac(_md.MDBase):
 
     Parameters:
         key (bytes): The key to use.
-        name (bytes): The MD name known to mbed TLS.
+        name (str): The MD name known to mbed TLS.
 
     Warning:
         The message is cleared after calculation of the digest.  Only
@@ -196,7 +207,7 @@ cdef class Hmac(_md.MDBase):
         digest_size (int): The size of the message digest, in bytes.
         block_size (int): The internal block size of the hash
             algorithm in bytes.
-        name (bytes): The name of the message digest.
+        name (str): The name of the message digest.
 
     """
     def __init__(

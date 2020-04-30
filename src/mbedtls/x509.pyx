@@ -221,8 +221,7 @@ cdef class CRT(Certificate):
     # RFC 4.1.2.3 Signature
     @property
     def digestmod(self):
-        return hashlib.new(
-            _md.MD_NAME[self._ctx.sig_md].decode("ascii").lower())
+        return hashlib.new(_md._digestmod(self._ctx.sig_md))
 
     @property
     def issuer(self):
@@ -677,8 +676,7 @@ cdef class CSR(Certificate):
             RFC5280, Section 4.1.1.2 Signature Algorithm.
 
         """
-        return hashlib.new(
-            _md.MD_NAME[self._ctx.sig_md].decode("ascii").lower())
+        return hashlib.new(_md._digestmod(self._ctx.sig_md))
 
     @property
     def version(self):
