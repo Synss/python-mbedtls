@@ -22,21 +22,11 @@ else
 	exit 1
 fi
 
-
-mkdir -p "$destdir"
 cd "$srcdir"
-uname -s
-if [ "$(uname -s)" = "Linux" ]; then
-	sed -i.bk -re "s (^DESTDIR=).* \\1$destdir g" Makefile
-else
-	sed -i.bk -E "s (^DESTDIR=).* \\1$destdir g" Makefile
-fi
-
-[ -d "build" ] && rm -ri build
-mkdir build
-cd build
-
+perl -p -i -e "s|(^DESTDIR=).+$|\1$destdir|g" Makefile
+make clean
 CFLAGS="-DMBEDTLS_ARIA_C=ON" \
-SHARED="ON" \
-make -C .. -j lib
-make -C .. -j install
+	SHARED="ON" \
+	make -j lib
+DESTDIR=$destir \
+	make -j install
