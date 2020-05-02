@@ -6,6 +6,7 @@
 # pylint: disable=invalid-name
 
 import sys
+
 if sys.version_info >= (3, 6):
     from collections.abc import Collection
 elif sys.version_info >= (3, 3):
