@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2018, Mathias Laurin
+
 """A ring buffer.
 
 See Also:
@@ -6,10 +9,6 @@ See Also:
     development of this module.
 
 """
-
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2018, Mathias Laurin"
-__license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free

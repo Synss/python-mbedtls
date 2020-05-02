@@ -1,10 +1,9 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2019, Stephen Y.
+
 """Salsa20 and the closely related ChaCha are stream ciphers developed by Daniel J. Bernstein.
 
 """
-
-__author__ = "Stephen.Y"
-__copyright__ = "Copyright 2019, Mathias Laurin"
-__license__ = "MIT License"
 
 
 from . import _cipher

@@ -1,13 +1,12 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2018, Mathias Laurin
+
 """A ring buffer.
 
 See Also:
     https://github.com/dhess/c-ringbuf/
 
 """
-
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2018, Mathias Laurin"
-__license__ = "MIT License"
 
 
 cdef struct ring_buffer_ctx:

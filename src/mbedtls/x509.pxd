@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2018, Mathias Laurin
+
 """Declarations from `mbedtls/x509*.h`.
 
  - CSR: Certificate signing request parsing and writing.
@@ -5,10 +8,6 @@
  - CRT: Certificate parsing and writing.
 
 """
-
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2018, Mathias Laurin"
-__license__ = "MIT License"
 
 
 cimport mbedtls._md as _md

@@ -1,8 +1,7 @@
-"""Structure and functions for parsing and writing X.509 certificates."""
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2018, Mathias Laurin
 
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2018, Mathias Laurin"
-__license__ = "MIT License"
+"""Structure and functions for parsing and writing X.509 certificates."""
 
 
 from libc.stdlib cimport malloc, free

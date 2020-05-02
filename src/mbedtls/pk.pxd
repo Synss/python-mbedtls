@@ -1,11 +1,8 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2016, Elaborated Networks GmbH
+# Copyright (c) 2018, Mathias Laurin
+
 """Declarations for `mbedtls/pk.h`."""
-
-# Copyright 2016, Mathias Laurin, Elaborated Networks GmbH
-# Copyright 2018, Mathias Laurin
-
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2016, Mathias Laurin, Elaborated Networks GmbH"
-__license__ = "MIT License"
 
 
 cimport mbedtls._md as _md

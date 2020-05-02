@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2019, Mathias Laurin
+
 """The ARIA algorithm is a symmetric block cipher that can encrypt and
 decrypt information. It is defined by the Korean Agency for Technology
 and Standards (KATS) in *KS X 1213:2004* (in Korean, but see
@@ -5,10 +8,6 @@ http://210.104.33.10/ARIA/index-e.html in English) and also described by
 the IETF in *RFC 5794*.
 
 """
-
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2019, Mathias Laurin"
-__license__ = "MIT License"
 
 
 from . import _cipher

@@ -1,8 +1,8 @@
-"""Declarations from `mbedtls/cipher.h`."""
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2015, Elaborated Networks GmbH
+# Copyright (c) 2019, Mathias Laurin
 
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2015, Elaborated Networks GmbH"
-__license__ = "MIT License"
+"""Declarations from `mbedtls/cipher.h`."""
 
 
 cdef:

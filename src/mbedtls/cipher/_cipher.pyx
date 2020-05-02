@@ -1,9 +1,8 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2015, Elaborated Networks GmbH
+# Copyright (c) 2019, Mathias Laurin
+
 """Ciphers for symmetric encryption and decryption."""
-
-
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2015, Elaborated Networks GmbH"
-__license__ = "MIT License"
 
 
 cimport mbedtls.cipher._cipher as _cipher

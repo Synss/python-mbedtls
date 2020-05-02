@@ -1,12 +1,12 @@
+# SPDX-license-identifier: MIT
+# Copyright (c) 2019, Mathias Laurin
+
 """HMAC-based key derivation function (HKDF).
 
 The HMAC-based extract-and-expand key derivation function specified
 by RFC 5869.
 
 """
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2019, Mathias Laurin"
-__license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free

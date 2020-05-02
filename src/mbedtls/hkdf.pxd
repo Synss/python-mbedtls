@@ -1,8 +1,7 @@
-"""Declarations from `mbedtls/hkdf.h`."""
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2019, Mathias Laurin
 
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2019, Mathias Laurin"
-__license__ = "MIT License"
+"""Declarations from `mbedtls/hkdf.h`."""
 
 
 cimport mbedtls._md as _md

@@ -1,12 +1,13 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2016, Elaborated Networks GmbH
+# Copyright (c) 2019, Mathias Laurin
+
 """The cipher package provide symmetric encryption and decryption.
 
 The API follows the recommendations from PEP 272 "API for Block
 Encryption Algorithms"
 
 """
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2016, Elaborated Networks GmbH"
-__license__ = "MIT License"
 
 from ._cipher import *
 from . import AES

@@ -1,8 +1,7 @@
-"""TLS/SSL wrapper for socket objects."""
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2018, Mathias Laurin
 
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2018, Mathias Laurin"
-__license__ = "MIT License"
+"""TLS/SSL wrapper for socket objects."""
 
 
 cimport libc.stdio as c_stdio

@@ -1,10 +1,9 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2016, Elaborated Networks GmbH
+# Copyright (c) 2019, Mathias Laurin
+
 """Two-key triple DES cipher (also known as DES3, 3DES, Triple DES,
 or DES-EDE)."""
-
-
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2016, Elaborated Networks GmbH"
-__license__ = "MIT License"
 
 
 from . import _cipher

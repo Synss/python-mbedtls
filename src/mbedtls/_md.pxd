@@ -1,8 +1,8 @@
-"""Declarations from `mbedtls/md.h`."""
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2015, Elaborated Networks GmbH
+# Copyright (c) 2018, Mathias Laurin
 
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2015, Elaborated Networks GmbH"
-__license__ = "MIT License"
+"""Declarations from `mbedtls/md.h`."""
 
 
 cdef extern from "mbedtls/md_internal.h" nogil:

@@ -1,8 +1,7 @@
-"""Platform utils."""
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2019, Mathias Laurin
 
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2019, Mathias Laurin"
-__license__ = "MIT License"
+"""Platform utils."""
 
 
 cimport mbedtls._platform as _plt

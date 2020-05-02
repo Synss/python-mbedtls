@@ -1,8 +1,7 @@
-"""Declaration from `mbedtls/bignum.h`."""
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2018, Mathias Laurin
 
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2018, Mathias Laurin"
-__license__ = "MIT License"
+"""Declaration from `mbedtls/bignum.h`."""
 
 
 cdef extern from "mbedtls/bignum.h" nogil:

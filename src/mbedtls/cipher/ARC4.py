@@ -1,10 +1,9 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2016, Elaborated Networks GmbH
+# Copyright (c) 2019, Mathias Laurin
+
 """Alleged River Cipher 4 cipher (ARC4 or ARCFOUR) designed in 1987
 at RSA Security."""
-
-
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2016, Elaborated Networks GmbH"
-__license__ = "MIT License"
 
 
 from . import _cipher

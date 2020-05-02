@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2016, Elaborated Networks GmbH
+# Copyright (c) 2018, Mathias Laurin
+
 """Public key (PK) library.
 
 The library handles RSA certificates and ECC (elliptic curve
@@ -10,11 +14,6 @@ ECDHServer and ECDHClient should be used for ephemeral Elliptic Curve
 Diffie-Hellman exchange.
 
 """
-
-__author__ = "Mathias Laurin"
-__copyright__ = ("Copyright 2016, Elaborated Networks GmbH, "
-                 "Copyright 2018, Mathias Laurin")
-__license__ = "MIT License"
 
 
 from libc.stdlib cimport malloc, free

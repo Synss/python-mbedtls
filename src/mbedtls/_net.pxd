@@ -1,8 +1,7 @@
-"""Declarations from `mbedtls/net_sockets.h`."""
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2018, Mathias Laurin
 
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2018, Mathias Laurin"
-__license__ = "MIT License"
+"""Declarations from `mbedtls/net_sockets.h`."""
 
 
 cdef:

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2019, Mathias Laurin
+
 """Generate secure random numbers.
 
 This is an implementation of the PEP 506 API based on a
@@ -6,9 +9,6 @@ CSPRNG (Cryptographically Strong Pseudo Random Number Generator).
 This module is compatibale with the standard `secrets` (PEP 506) module.
 
 """
-__author__ = "Mathias Laurin"
-__copyright__ = "Copyright 2019, Mathias Laurin"
-__license__ = "MIT License"
 
 import base64 as _base64
 import binascii as _binascii
