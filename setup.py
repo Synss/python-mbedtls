@@ -1,4 +1,5 @@
 import ctypes
+import ctypes.util
 import os
 import sys
 from setuptools import setup, Extension, find_packages
@@ -6,6 +7,7 @@ from setuptools import setup, Extension, find_packages
 version = "1.2.1"
 mbedtls_version = "2.16.6"
 download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
+
 
 __mbedtls_version_info__ = tuple(map(int, mbedtls_version.split(".")))
 __mbedtls_url__ = "https://tls.mbed.org"
@@ -49,36 +51,21 @@ def mbedtls_version_info(lib):
     return tuple(version >> shift & 0xFF for shift in (24, 16, 8))
 
 
-def load_mbedtls():
-    if sys.platform.startswith("linux"):
-        name = "libmbedtls.so"
-    elif sys.platform == "darwin":
-        name = "libmbedtls.dylib"
-    else:
-        return None
-    return ctypes.cdll.LoadLibrary(name)
-
-
 def check_mbedtls_support(version, url):
+    library = ctypes.util.find_library("mbedtls")
+    if not library:
+        sys.stderr.write("  Library not found{sep}".format(sep=os.linesep))
     try:
-        lib = load_mbedtls()
-        if not lib:
-            # I do not know the other platforms, so let us
-            # skip the check for now.
-            return
+        lib = ctypes.cdll.LoadLibrary(library)
         sys.stdout.write(
             "  mbedtls version: {!s}{sep}".format(
                 mbedtls_version(lib), sep=os.linesep
             )
         )
-    except OSError:
+    except OSError as exc:
         lib = None
-        sys.stderr.write(
-            "  mbedtls not found: could not load shared library{sep}".format(
-                sep=os.linesep
-            )
-        )
-    if lib is None or mbedtls_version_info(lib) < version[:2]:
+        sys.stderr.write("  {exc!s}{sep}".format(exc=exc, sep=os.linesep))
+    if lib and mbedtls_version_info(lib) < version[:2]:
         message = (
             "  python-mbedtls requires at least mbedtls {major}.{minor}".format(
                 major=version[0], minor=version[1]
@@ -102,10 +89,7 @@ def extensions(coverage=False):
             extension = Extension(
                 mod,
                 [os.path.join(dirpath, fn)],
-                library_dirs=[
-                    os.environ.get("LD_LIBRARY_PATH", ""),
-                    os.environ.get("DYLD_LIBRARY_PATH", ""),
-                ],
+                library_dirs=os.environ.get("LIBRARY_PATH", "").split(":"),
                 libraries=["mbedcrypto", "mbedtls", "mbedx509"],
                 define_macros=[
                     ("CYTHON_TRACE", "1"),
@@ -123,15 +107,15 @@ def extensions(coverage=False):
 def options(coverage=False):
     if coverage:
         return {}
-    else:
-        return {
-            "build": {
-                "build_base": os.sep.join(
-                    ("build", "%i.%i.%i" % sys.version_info[:3])
-                )
-            },
-            "build_ext": {"cython_c_in_temp": True},
-        }
+
+    return {
+        "build": {
+            "build_base": os.sep.join(
+                ("build", "%i.%i.%i" % sys.version_info[:3])
+            )
+        },
+        "build_ext": {"cython_c_in_temp": True},
+    }
 
 
 def readme():
