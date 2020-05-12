@@ -1,0 +1,6 @@
+auditwheel; sys_platform == 'linux'
+coverage
+cython
+delocate; sys_platform == 'darwin'
+pytest
+wheel
