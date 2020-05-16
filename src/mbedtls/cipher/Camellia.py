@@ -5,8 +5,9 @@
 """Camellia cipher developed by Japan's Mitsubishi an NTT in 2000."""
 
 
-from . import _cipher
 from mbedtls.exceptions import *
+
+from . import _cipher
 
 __all__ = ["block_size", "key_size", "new"]
 

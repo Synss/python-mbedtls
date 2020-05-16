@@ -8,15 +8,9 @@
 import pytest
 
 import mbedtls
-
-# pylint: disable=import-error
-from mbedtls.cipher._cipher import CIPHER_NAME, get_supported_ciphers
-from mbedtls.cipher._cipher import Cipher
-from mbedtls.exceptions import *
-
 import mbedtls.cipher as mb
-
-# pylint: enable=import-error
+from mbedtls.cipher._cipher import CIPHER_NAME, Cipher, get_supported_ciphers
+from mbedtls.exceptions import *
 
 
 def test_cipher_list():

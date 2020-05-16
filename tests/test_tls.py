@@ -3,20 +3,20 @@ import multiprocessing as mp
 import socket
 import sys
 
-try:
-    from contextlib import suppress
-except ImportError:
-    # Python 2.7
-    from contextlib2 import suppress
-
 import pytest
 
 import mbedtls.hash as hashlib
 from mbedtls.exceptions import TLSError
 from mbedtls.pk import RSA
-from mbedtls.x509 import BasicConstraints, CRT, CSR
-from mbedtls.tls import _DTLSCookie as DTLSCookie
 from mbedtls.tls import *
+from mbedtls.tls import _DTLSCookie as DTLSCookie
+from mbedtls.x509 import CRT, CSR, BasicConstraints
+
+try:
+    from contextlib import suppress
+except ImportError:
+    # Python 2.7
+    from contextlib2 import suppress
 
 
 try:

@@ -9,17 +9,8 @@ Encryption Algorithms"
 
 """
 
+from . import AES, ARC4, ARIA, CHACHA20, DES, DES3, Blowfish, Camellia, DES3dbl
 from ._cipher import *
-from . import AES
-from . import ARC4
-from . import ARIA
-from . import Blowfish
-from . import Camellia
-from . import DES
-from . import DES3
-from . import DES3dbl
-from . import CHACHA20
-
 
 __all__ = _cipher.__all__ + (
     "AES",

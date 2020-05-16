@@ -1,6 +1,8 @@
 auditwheel; sys_platform == 'linux'
+black; python_version >= '3.6'
 coverage
 cython
 delocate; sys_platform == 'darwin'
+isort
 pytest
 wheel

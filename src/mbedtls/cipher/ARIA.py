@@ -10,8 +10,9 @@ the IETF in *RFC 5794*.
 """
 
 
-from . import _cipher
 from mbedtls.exceptions import *
+
+from . import _cipher
 
 __all__ = ["block_size", "key_size", "new"]
 

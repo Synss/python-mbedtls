@@ -123,10 +123,10 @@ jobs:
           name: Run tests
           command: |
             python -m pip install --user -r requirements/tests.txt
-            python -m pip install --user cython pytest-black pytest-cov
+            python -m pip install --user cython pytest-black pytest-cov pytest-isort
             PYTHONPATH=$(pwd)/src/:$PYTHONPATH
             export PYTHONPATH
-            python -m pytest --black --cov=src/ tests/
+            python -m pytest --black --isort --cov=src/ tests/
       - run:
           name: Coverage
           command: |

@@ -6,8 +6,9 @@
 Triple DES, or DES-EDE3)."""
 
 
-from . import _cipher
 from mbedtls.exceptions import *
+
+from . import _cipher
 
 __all__ = ["block_size", "key_size", "new"]
 

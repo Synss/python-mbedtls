@@ -7,13 +7,6 @@
 
 import sys
 
-if sys.version_info >= (3, 6):
-    from collections.abc import Collection
-elif sys.version_info >= (3, 3):
-    from collections.abc import Container as Collection
-else:
-    from collections import Container as Collection
-
 import pytest
 
 # pylint: disable=import-error
@@ -21,6 +14,14 @@ import mbedtls
 import mbedtls.hash as md_hash
 import mbedtls.hmac as md_hmac
 from mbedtls._md import Hash
+
+if sys.version_info >= (3, 6):
+    from collections.abc import Collection
+elif sys.version_info >= (3, 3):
+    from collections.abc import Container as Collection
+else:
+    from collections import Container as Collection
+
 
 # pylint: enable=import-error
 

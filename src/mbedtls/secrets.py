@@ -15,7 +15,6 @@ import binascii as _binascii
 
 import mbedtls._random as _rnd
 
-
 __all__ = [
     "randbits",
     "choice",

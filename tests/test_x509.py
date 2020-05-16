@@ -1,16 +1,16 @@
 import datetime as dt
 
+import certifi
+import pytest
+
+from mbedtls import hash
+from mbedtls.pk import ECC, RSA
+from mbedtls.x509 import *
+
 try:
     from pathlib import Path
 except ImportError:
     from pathlib2 import Path
-
-import certifi
-import pytest
-
-from mbedtls.pk import RSA, ECC
-from mbedtls import hash
-from mbedtls.x509 import *
 
 
 CRL_PEM = """

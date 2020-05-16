@@ -2,7 +2,7 @@
 
 import pytest
 
-from mbedtls.exceptions import check_error, TLSError
+from mbedtls.exceptions import TLSError, check_error
 
 
 @pytest.mark.parametrize(

@@ -8,8 +8,8 @@ import mbedtls
 import mbedtls.hash as _hash
 from mbedtls.exceptions import *
 from mbedtls.mpi import MPI
-from mbedtls.pk import _type_from_name, _get_md_alg, ECPoint
 from mbedtls.pk import *
+from mbedtls.pk import ECPoint, _get_md_alg, _type_from_name
 
 try:
     long

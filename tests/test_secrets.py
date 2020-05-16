@@ -2,7 +2,6 @@ import pytest
 
 from mbedtls import secrets
 
-
 # For Python 2.7
 try:
     unicode

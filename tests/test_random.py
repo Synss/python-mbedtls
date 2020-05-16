@@ -5,8 +5,8 @@ from collections import defaultdict
 
 import pytest
 
-import mbedtls.mpi as _mpi
 import mbedtls._random as _drbg
+import mbedtls.mpi as _mpi
 from mbedtls.exceptions import TLSError
 
 
