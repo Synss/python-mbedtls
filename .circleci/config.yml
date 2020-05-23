@@ -6,7 +6,7 @@ version: 2.0
 jobs:
   python_27:
     docker:
-      - image: circleci/python:2.7.17
+      - image: circleci/python:2.7
         environment: &env
           VERSION: 2.16.6
           CC: /usr/lib/ccache/cc
@@ -52,28 +52,28 @@ jobs:
 
   python_35:
     docker:
-      - image: circleci/python:3.5.9
+      - image: circleci/python:3.5
         environment: *env
     working_directory: ~/python-mbedtls
     steps: *steps
 
   python_36:
     docker:
-      - image: circleci/python:3.6.10
+      - image: circleci/python:3.6
         environment: *env
     working_directory: ~/python-mbedtls
     steps: *steps
 
   python_37:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.7
         environment: *env
     working_directory: ~/python-mbedtls
     steps: *steps
 
   python_38:
-    docker:
-      - image: circleci/python:3.8.2
+    docker: &latest
+      - image: circleci/python:3.8
         environment: *env
     working_directory: ~/python-mbedtls
     steps: *steps
@@ -99,9 +99,7 @@ jobs:
       - store_artifacts: *artifacts
 
   python_extra:
-    docker:
-      - image: circleci/python:3.7.6
-        environment: *env
+    docker: *latest
     working_directory: ~/python-mbedtls
     steps:
       - checkout
