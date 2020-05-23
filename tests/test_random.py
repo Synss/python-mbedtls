@@ -57,15 +57,6 @@ class TestRandom:
     def test_reseed(self, random):
         random._reseed()
 
-    @pytest.mark.repeat(10)
-    @pytest.mark.parametrize("max", range(1, 300))
-    def test_randbelow(self, random, max):
-        assert 0 <= random._randbelow(max) < max
-
-    def test_randbelow_zero_raises_valueerror(self, random):
-        with pytest.raises(ValueError):
-            random._randbelow(0)
-
     @pytest.mark.repeat(100)
     def test_random(self, random):
         value = random.random()

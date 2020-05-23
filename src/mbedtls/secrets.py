@@ -33,13 +33,7 @@ __rng = _rnd.default_rng()
 
 randbits = __rng.getrandbits
 choice = __rng.choice
-
-
-def randbelow(upper_bound):
-    """Return a random int in the range [0, n)."""
-    if upper_bound <= 0:
-        raise ValueError("Upper bound must be positive.")
-    return __rng._randbelow(upper_bound)
+randbelow = __rng.randbelow
 
 
 def token_bytes(nbytes=None):
@@ -50,7 +44,7 @@ def token_bytes(nbytes=None):
     """
     if nbytes is None:
         nbytes = DEFAULT_ENTROPY
-    return __rng._urandom(nbytes)
+    return __rng.urandom(nbytes)
 
 
 def token_hex(nbytes=None):

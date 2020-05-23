@@ -79,7 +79,16 @@ cdef class Random:
     def _entropy(self):
         return self._entropy
 
-    def _urandom(self, size_t length):
+    def _reseed(self, const unsigned char[:] data=None):
+        """Reseed the RNG."""
+        if data is None:
+            check_error(_rnd.mbedtls_ctr_drbg_reseed(&self._ctx, NULL, 0))
+        else:
+            check_error(
+                _rnd.mbedtls_ctr_drbg_reseed(&self._ctx, &data[0], data.size)
+            )
+
+    def urandom(self, size_t length):
         """Returns `length` random bytes."""
         cdef unsigned char *output = <unsigned char *> malloc(
             length * sizeof(unsigned char)
@@ -96,24 +105,17 @@ cdef class Random:
         finally:
             free(output)
 
-    def _reseed(self, const unsigned char[:] data=None):
-        """Reseed the RNG."""
-        if data is None:
-            check_error(_rnd.mbedtls_ctr_drbg_reseed(&self._ctx, NULL, 0))
-        else:
-            check_error(
-                _rnd.mbedtls_ctr_drbg_reseed(&self._ctx, &data[0], data.size)
-            )
-
-    def _randbelow(self, n):
+    def randbelow(self, upper_bound):
         """Return a random int in the range [0, n).
 
-        Raises ValueError if n==0.
+        Raises ValueError if n <= 0.
 
         """
-        kk = n.bit_length()
+        if upper_bound <= 0:
+            raise ValueError("Upper bound must be positive.")
+        kk = upper_bound.bit_length()
         rr = self.getrandbits(kk)
-        while rr >= n:
+        while rr >= upper_bound:
             rr = self.getrandbits(kk)
         return rr
 
@@ -121,7 +123,7 @@ cdef class Random:
         """Return the next random floating point number."""
         # Algorithm taken from Python's secrets and random libraries.
         return float(
-            _mpi.MPI.from_bytes(self._urandom(7), "big") >> 3
+            _mpi.MPI.from_bytes(self.urandom(7), "big") >> 3
         ) * RECIP_BPF
 
     def getrandbits(self, k):
@@ -132,7 +134,7 @@ cdef class Random:
         if not isinstance(k, _numbers.Integral):
             raise TypeError("number of bits should be an integer")
         numbytes = (k + 7) // 8
-        value = _mpi.MPI.from_bytes(self._urandom(numbytes), "big")
+        value = _mpi.MPI.from_bytes(self.urandom(numbytes), "big")
         # Trim excess bits:
         extra_bits = value.bit_length() - k
         return value >> (0 if extra_bits <= 0 else extra_bits)
@@ -140,7 +142,7 @@ cdef class Random:
     def choice(self, seq):
         """Return a random element from `seq`."""
         try:
-            ii = self._randbelow(len(seq))
+            ii = self.randbelow(len(seq))
         except ValueError:
             raise IndexError("Cannot choose from an empty sequence")
         return seq[ii]

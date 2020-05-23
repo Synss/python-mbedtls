@@ -50,6 +50,12 @@ def test_randbits():
     assert 0 <= secrets.randbits(32) < (1 << 32)
 
 
+@pytest.mark.parametrize("upper_bound", [0, -1])
+def test_randbelow_zero_raises_valueerror(upper_bound):
+    with pytest.raises(ValueError):
+        secrets.randbelow(upper_bound)
+
+
 @pytest.mark.repeat(100)
 @pytest.mark.parametrize("upper_bound", [1, 1 << 32, 1 << 128, 1 << 1024])
 def test_randbelow(upper_bound):
