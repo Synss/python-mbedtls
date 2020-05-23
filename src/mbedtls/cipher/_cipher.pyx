@@ -16,7 +16,7 @@ except ImportError:
 
 import enum
 
-from mbedtls.exceptions import *
+import mbedtls.exceptions as _exc
 
 
 CIPHER_NAME = (
@@ -186,20 +186,20 @@ cdef class _CipherBase:
         if mode in {Mode.CBC, Mode.CFB} and iv.size == 0:
             raise ValueError("mode requires an IV")
         if cipher_name not in get_supported_ciphers():
-            raise TLSError(msg="unsupported cipher: %r" % cipher_name)
+            raise _exc.TLSError(msg="unsupported cipher: %r" % cipher_name)
 
-        check_error(_cipher.mbedtls_cipher_setup(
+        _exc.check_error(_cipher.mbedtls_cipher_setup(
             &self._enc_ctx,
             _cipher.mbedtls_cipher_info_from_string(cipher_name)))
-        check_error(_cipher.mbedtls_cipher_setup(
+        _exc.check_error(_cipher.mbedtls_cipher_setup(
             &self._dec_ctx,
             _cipher.mbedtls_cipher_info_from_string(cipher_name)))
 
         if key is not None:
-            check_error(_cipher.mbedtls_cipher_setkey(
+            _exc.check_error(_cipher.mbedtls_cipher_setkey(
                 &self._enc_ctx, &key[0], 8 * key.size,
                 _cipher.MBEDTLS_ENCRYPT))
-            check_error(_cipher.mbedtls_cipher_setkey(
+            _exc.check_error(_cipher.mbedtls_cipher_setkey(
                 &self._dec_ctx, &key[0], 8 * key.size,
                 _cipher.MBEDTLS_DECRYPT))
         self._iv = iv
@@ -263,7 +263,7 @@ cdef class Cipher(_CipherBase):
                 const _cipher.mbedtls_operation_t operation):
         """Generic all-in-one encryption/decryption."""
         if input.size == 0:
-            check_error(-0x6280)  # Raise full block expected error.
+            _exc.check_error(-0x6280)  # Raise full block expected error.
         cdef size_t olen
         cdef size_t sz = input.size + self.block_size
         cdef unsigned char* output = <unsigned char*>malloc(
@@ -273,7 +273,7 @@ cdef class Cipher(_CipherBase):
         try:
             # We can call `check_error` directly here because we return a
             # python object.
-            check_error(_cipher.mbedtls_cipher_crypt(
+            _exc.check_error(_cipher.mbedtls_cipher_crypt(
                 &self._enc_ctx if operation is _cipher.MBEDTLS_ENCRYPT else
                 &self._dec_ctx,
                 &iv[0] if iv.size else NULL, iv.size,
@@ -304,7 +304,7 @@ cdef class AEADCipher(_CipherBase):
                 const unsigned char[:] ad,
                 const unsigned char[:] input):
         if input.size == 0:
-            check_error(-0x6280)  # Raise full block expected error.
+            _exc.check_error(-0x6280)  # Raise full block expected error.
         assert iv.size != 0
         cdef size_t olen
         cdef size_t sz = input.size + self.block_size
@@ -319,7 +319,7 @@ cdef class AEADCipher(_CipherBase):
                 pad = <const unsigned char*> &ad[0]
             else:
                 pad = NULL
-            check_error(_cipher.mbedtls_cipher_auth_encrypt(
+            _exc.check_error(_cipher.mbedtls_cipher_auth_encrypt(
                 &self._enc_ctx,
                 &iv[0], iv.size, pad, ad.size,
                 &input[0], input.size, output, &olen,
@@ -334,7 +334,7 @@ cdef class AEADCipher(_CipherBase):
                 const unsigned char[:] input,
                 const unsigned char[:] tag):
         if input.size == 0:
-            check_error(-0x6280)  # Raise full block expected error.
+            _exc.check_error(-0x6280)  # Raise full block expected error.
         assert iv.size != 0
         assert tag.size == 16
         cdef size_t olen
@@ -348,7 +348,7 @@ cdef class AEADCipher(_CipherBase):
                 pad = <const unsigned char*> &ad[0]
             else:
                 pad = NULL
-            check_error(_cipher.mbedtls_cipher_auth_decrypt(
+            _exc.check_error(_cipher.mbedtls_cipher_auth_decrypt(
                 &self._dec_ctx,
                 &iv[0], iv.size, pad, ad.size,
                 &input[0], input.size, output, &olen,

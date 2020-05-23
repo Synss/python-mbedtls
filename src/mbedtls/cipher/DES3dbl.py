@@ -6,7 +6,7 @@
 or DES-EDE)."""
 
 
-from mbedtls.exceptions import *
+from mbedtls.exceptions import TLSError
 
 from . import _cipher
 

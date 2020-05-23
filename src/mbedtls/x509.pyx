@@ -19,11 +19,11 @@ except ImportError:
     from contextlib2 import suppress
 from collections import namedtuple
 
+import mbedtls.exceptions as _exc
 import mbedtls.hash as hashlib
 import mbedtls.mpi as _mpi
 import mbedtls.pk as _pk
 import mbedtls._md as _md
-from mbedtls.exceptions import *
 
 import enum
 
@@ -130,7 +130,7 @@ cdef class CRT(Certificate):
         self._next = None
         if buffer is None or buffer.size == 0:
             return
-        check_error(x509.mbedtls_x509_crt_parse(
+        _exc.check_error(x509.mbedtls_x509_crt_parse(
             &self._ctx, &buffer[0], buffer.size))
 
     def __cinit__(self):
@@ -154,7 +154,7 @@ cdef class CRT(Certificate):
         if not output:
             raise MemoryError()
         try:
-            written = check_error(x509.mbedtls_x509_crt_info(
+            written = _exc.check_error(x509.mbedtls_x509_crt_info(
                 &output[0], osize, prefix, &self._ctx))
             return output[:written].decode("utf8")
         finally:
@@ -308,7 +308,7 @@ cdef class CRT(Certificate):
         if not c_buf:
             raise MemoryError()
         try:
-            ret = check_error(_pk.mbedtls_pk_write_pubkey_der(
+            ret = _exc.check_error(_pk.mbedtls_pk_write_pubkey_der(
                 &self._ctx.pk, &c_buf[0], osize))
             return cipher.from_DER(c_buf[osize - ret:osize])
         finally:
@@ -393,7 +393,7 @@ cdef class CRT(Certificate):
         path_ = str(path).encode("utf8")
         cdef const char* c_path = path_
         cdef CRT self = cls(None)
-        check_error(x509.mbedtls_x509_crt_parse_file(&self._ctx, c_path))
+        _exc.check_error(x509.mbedtls_x509_crt_parse_file(&self._ctx, c_path))
         return self
 
     @classmethod
@@ -402,7 +402,7 @@ cdef class CRT(Certificate):
             raise ValueError("Cannot create %s from an empty buffer"
                              % cls.__name__)
         cdef CRT self = cls(None)
-        check_error(x509.mbedtls_x509_crt_parse_der(
+        _exc.check_error(x509.mbedtls_x509_crt_parse_der(
             &self._ctx, &buffer[0], buffer.size))
         return self
 
@@ -507,7 +507,7 @@ cdef class _CRTWriter:
         if not output:
             raise MemoryError()
         try:
-            written = check_error(x509.mbedtls_x509write_crt_der(
+            written = _exc.check_error(x509.mbedtls_x509write_crt_der(
                 &self._ctx, &output[0], osize, NULL, NULL))
             return output[osize - written:osize]
         finally:
@@ -557,7 +557,7 @@ cdef class _CRTWriter:
         not_after = not_after.strftime(fmt).encode("ascii")
         cdef const char* c_not_before = not_before
         cdef const char* c_not_after = not_after
-        check_error(x509.mbedtls_x509write_crt_set_validity(
+        _exc.check_error(x509.mbedtls_x509write_crt_set_validity(
             &self._ctx, c_not_before, c_not_after))
 
     def set_issuer(self, issuer):
@@ -571,7 +571,7 @@ cdef class _CRTWriter:
         # Keep reference to Python object.
         issuer_ = issuer.encode("utf8")
         cdef const char* c_issuer = issuer_
-        check_error(x509.mbedtls_x509write_crt_set_issuer_name(
+        _exc.check_error(x509.mbedtls_x509write_crt_set_issuer_name(
             &self._ctx, c_issuer))
 
     def set_subject(self, subject):
@@ -588,7 +588,7 @@ cdef class _CRTWriter:
         # Keep reference to Python object.
         subject_ = subject.encode("utf8")
         cdef const char* c_subject = subject_
-        check_error(x509.mbedtls_x509write_crt_set_subject_name(
+        _exc.check_error(x509.mbedtls_x509write_crt_set_subject_name(
             &self._ctx, c_subject))
 
     def set_digestmod(self, digestmod):
@@ -608,7 +608,7 @@ cdef class _CRTWriter:
 
         """
         x509.mbedtls_x509write_crt_set_subject_key(&self._ctx, &key._ctx)
-        check_error(
+        _exc.check_error(
             x509.mbedtls_x509write_crt_set_subject_key_identifier(&self._ctx))
 
     def set_issuer_key(self, _pk.CipherBase key):
@@ -620,7 +620,7 @@ cdef class _CRTWriter:
         """
         x509.mbedtls_x509write_crt_set_issuer_key(
             &self._ctx, &key._ctx)
-        check_error(
+        _exc.check_error(
             x509.mbedtls_x509write_crt_set_authority_key_identifier(&self._ctx))
 
     def set_basic_constraints(self, basic_constraints):
@@ -632,7 +632,7 @@ cdef class _CRTWriter:
         """
         if not basic_constraints:
             return
-        check_error(x509.mbedtls_x509write_crt_set_basic_constraints(
+        _exc.check_error(x509.mbedtls_x509write_crt_set_basic_constraints(
             &self._ctx, int(basic_constraints[0]), basic_constraints[1]))
 
 
@@ -643,7 +643,7 @@ cdef class CSR(Certificate):
         super(CSR, self).__init__()
         if buffer is None or buffer.size == 0:
             return
-        check_error(x509.mbedtls_x509_csr_parse(
+        _exc.check_error(x509.mbedtls_x509_csr_parse(
             &self._ctx, &buffer[0], buffer.size))
 
     def __cinit__(self):
@@ -661,7 +661,7 @@ cdef class CSR(Certificate):
         if not output:
             raise MemoryError()
         try:
-            written = check_error(x509.mbedtls_x509_csr_info(
+            written = _exc.check_error(x509.mbedtls_x509_csr_info(
                 &output[0], osize, prefix, &self._ctx))
             return output[:written].decode("utf8")
         finally:
@@ -728,7 +728,7 @@ cdef class CSR(Certificate):
         if not c_buf:
             raise MemoryError()
         try:
-            ret = check_error(_pk.mbedtls_pk_write_pubkey_der(
+            ret = _exc.check_error(_pk.mbedtls_pk_write_pubkey_der(
                 &self._ctx.pk, &c_buf[0], osize))
             return cipher.from_DER(c_buf[osize - ret:osize])
         finally:
@@ -739,7 +739,7 @@ cdef class CSR(Certificate):
         path_ = str(path).encode("utf8")
         cdef const char* c_path = path_
         cdef CSR self = cls(None)
-        check_error(x509.mbedtls_x509_csr_parse_file(&self._ctx, c_path))
+        _exc.check_error(x509.mbedtls_x509_csr_parse_file(&self._ctx, c_path))
         return self
 
     @classmethod
@@ -748,7 +748,7 @@ cdef class CSR(Certificate):
             raise ValueError("Cannot create %s from an empty buffer"
                              % cls.__name__)
         cdef CSR self = cls(None)
-        check_error(x509.mbedtls_x509_csr_parse_der(
+        _exc.check_error(x509.mbedtls_x509_csr_parse_der(
             &self._ctx, &buffer[0], buffer.size))
         return self
 
@@ -802,7 +802,7 @@ cdef class _CSRWriter:
         # Keep reference to Python object.
         subject_ = subject.encode("utf8")
         cdef const char* c_subject = subject_
-        check_error(x509.mbedtls_x509write_csr_set_subject_name(
+        _exc.check_error(x509.mbedtls_x509write_csr_set_subject_name(
             &self._ctx, c_subject))
 
     def set_subject_key(self, _pk.CipherBase key):
@@ -836,7 +836,7 @@ cdef class _CSRWriter:
         if not output:
             raise MemoryError()
         try:
-            written = check_error(x509.mbedtls_x509write_csr_der(
+            written = _exc.check_error(x509.mbedtls_x509write_csr_der(
                 &self._ctx, &output[0], osize, NULL, NULL))
             return output[osize - written:osize]
         finally:
@@ -862,7 +862,7 @@ cdef class CRL(Certificate):
         self._next = None
         if buffer is None or buffer.size == 0:
             return
-        check_error(x509.mbedtls_x509_crl_parse(
+        _exc.check_error(x509.mbedtls_x509_crl_parse(
             &self._ctx, &buffer[0], buffer.size))
 
     def __cinit__(self):
@@ -886,7 +886,7 @@ cdef class CRL(Certificate):
         if not output:
             raise MemoryError()
         try:
-            written = check_error(x509.mbedtls_x509_crl_info(
+            written = _exc.check_error(x509.mbedtls_x509_crl_info(
                 &output[0], osize, prefix, &self._ctx))
             return output[:written].decode("utf8")
         finally:
@@ -1005,7 +1005,7 @@ cdef class CRL(Certificate):
         path_ = str(path).encode("utf8")
         cdef const char* c_path = path_
         cdef CRL self = cls(None)
-        check_error(x509.mbedtls_x509_crl_parse_file(&self._ctx, c_path))
+        _exc.check_error(x509.mbedtls_x509_crl_parse_file(&self._ctx, c_path))
         return self
 
     @classmethod
@@ -1014,7 +1014,7 @@ cdef class CRL(Certificate):
             raise ValueError("Cannot create %s from an empty buffer"
                              % cls.__name__)
         cdef CRL self = cls(None)
-        check_error(x509.mbedtls_x509_crl_parse_der(
+        _exc.check_error(x509.mbedtls_x509_crl_parse_der(
             &self._ctx, &buffer[0], buffer.size))
         return self
 

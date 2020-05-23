@@ -28,7 +28,7 @@ from collections import namedtuple
 from functools import partial
 
 import mbedtls._random as _rnd
-from mbedtls.exceptions import check_error, TLSError
+import mbedtls.exceptions as _exc
 import mbedtls.hash as _hash
 
 
@@ -167,7 +167,7 @@ cdef class CipherBase:
                  name,
                  const unsigned char[:] key=None,
                  const unsigned char[:] password=None):
-        check_error(_pk.mbedtls_pk_setup(
+        _exc.check_error(_pk.mbedtls_pk_setup(
             &self._ctx,
             _pk.mbedtls_pk_info_from_type(
                 _type_from_name(name)
@@ -177,13 +177,13 @@ cdef class CipherBase:
             return
         mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
         try:
-            check_error(_pk.mbedtls_pk_parse_key(
+            _exc.check_error(_pk.mbedtls_pk_parse_key(
                 &self._ctx, &key[0], key.size,
                 NULL if password is None
                 or password.size == 0 else &password[0],
                 0 if password is None else password.size))
-        except TLSError:
-            check_error(_pk.mbedtls_pk_parse_public_key(
+        except _exc.TLSError:
+            _exc.check_error(_pk.mbedtls_pk_parse_public_key(
                 &self._ctx, &key[0], key.size))
 
     def __cinit__(self):
@@ -292,7 +292,7 @@ cdef class CipherBase:
         if not output:
             raise MemoryError()
         try:
-            check_error(_pk.mbedtls_pk_sign(
+            _exc.check_error(_pk.mbedtls_pk_sign(
                 &self._ctx, md_alg._type,
                 &hash_[0], hash_.size,
                 &output[0], &sig_len,
@@ -343,7 +343,7 @@ cdef class CipherBase:
         if not output:
             raise MemoryError()
         try:
-            check_error(_pk.mbedtls_pk_encrypt(
+            _exc.check_error(_pk.mbedtls_pk_encrypt(
                 &self._ctx, &message[0], message.size,
                 output, &olen, self.key_size,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
@@ -366,7 +366,7 @@ cdef class CipherBase:
         if not output:
             raise MemoryError()
         try:
-            check_error(_pk.mbedtls_pk_decrypt(
+            _exc.check_error(_pk.mbedtls_pk_decrypt(
                 &self._ctx, &message[0], message.size,
                 output, &olen, self.key_size,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
@@ -393,7 +393,7 @@ cdef class CipherBase:
         if not output:
             raise MemoryError()
         try:
-            olen = check_error(
+            olen = _exc.check_error(
                 _pk.mbedtls_pk_write_key_der(&self._ctx, output, osize))
             return output[osize - olen:osize]
         finally:
@@ -409,7 +409,7 @@ cdef class CipherBase:
             raise MemoryError()
         memset(output, 0, osize)
         try:
-            check_error(
+            _exc.check_error(
                 _pk.mbedtls_pk_write_key_pem(&self._ctx, output, osize))
             return output[0:osize].decode("ascii")
         finally:
@@ -440,7 +440,7 @@ cdef class CipherBase:
         if not output:
             raise MemoryError()
         try:
-            olen = check_error(
+            olen = _exc.check_error(
                 _pk.mbedtls_pk_write_pubkey_der(&self._ctx, output, osize))
             return output[osize - olen:osize]
         finally:
@@ -456,7 +456,7 @@ cdef class CipherBase:
             raise MemoryError()
         memset(output, 0, osize)
         try:
-            check_error(
+            _exc.check_error(
                 _pk.mbedtls_pk_write_pubkey_pem(&self._ctx, output, osize))
             return output[0:osize].decode("ascii")
         finally:
@@ -560,7 +560,7 @@ cdef class RSA(CipherBase):
             (bytes): The private key in DER format.
 
         """
-        check_error(_pk.mbedtls_rsa_gen_key(
+        _exc.check_error(_pk.mbedtls_rsa_gen_key(
             _pk.mbedtls_pk_rsa(self._ctx), &_rnd.mbedtls_ctr_drbg_random,
             &__rng._ctx, key_size, exponent))
         return self.export_key("DER")
@@ -688,7 +688,7 @@ cdef class ECC(CipherBase):
         grp_id = curve_name_to_grp_id(self.curve)
         if grp_id is None:
             raise ValueError(self.curve)
-        check_error(_pk.mbedtls_ecp_gen_key(
+        _exc.check_error(_pk.mbedtls_ecp_gen_key(
             grp_id, _pk.mbedtls_pk_ec(self._ctx),
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
         return self.export_key("DER")
@@ -733,14 +733,14 @@ cdef class ECC(CipherBase):
     def to_ECDH_server(self):
         """Return an ECDH server initialized with this context."""
         ecdh = ECDHServer(self.curve)
-        check_error(_pk.mbedtls_ecdh_get_params(
+        _exc.check_error(_pk.mbedtls_ecdh_get_params(
             &ecdh._ctx, _pk.mbedtls_pk_ec(self._ctx), MBEDTLS_ECDH_OURS))
         return ecdh
 
     def to_ECDH_client(self):
         """Return an ECDH client initialized with this context."""
         ecdh = ECDHClient(self.curve)
-        check_error(_pk.mbedtls_ecdh_get_params(
+        _exc.check_error(_pk.mbedtls_ecdh_get_params(
             &ecdh._ctx, _pk.mbedtls_pk_ec(self._ctx), MBEDTLS_ECDH_THEIRS))
         return ecdh
 
@@ -759,9 +759,9 @@ cdef class DHBase:
     """
     def __init__(self, modulus, generator):
         super().__init__()
-        check_error(_mpi.mbedtls_mpi_copy(
+        _exc.check_error(_mpi.mbedtls_mpi_copy(
             &self._ctx.P, &_mpi.MPI(modulus)._ctx))
-        check_error(_mpi.mbedtls_mpi_copy(
+        _exc.check_error(_mpi.mbedtls_mpi_copy(
             &self._ctx.G, &_mpi.MPI(generator)._ctx))
 
     def __cinit__(self):
@@ -813,7 +813,7 @@ cdef class DHBase:
         if not output:
             raise MemoryError()
         try:
-            check_error(mbedtls_dhm_calc_secret(
+            _exc.check_error(mbedtls_dhm_calc_secret(
                 &self._ctx, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE, &olen,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             mpi = _mpi.MPI()
@@ -840,7 +840,7 @@ cdef class DHServer(DHBase):
         if not output:
             raise MemoryError()
         try:
-            check_error(_pk.mbedtls_dhm_make_params(
+            _exc.check_error(_pk.mbedtls_dhm_make_params(
                 &self._ctx, self.key_size, &output[0], &olen,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
@@ -852,7 +852,7 @@ cdef class DHServer(DHBase):
         """Read the ClientKeyExchange payload."""
         if buffer.size == 0:
             buffer = b"\0"
-        check_error(_pk.mbedtls_dhm_read_public(
+        _exc.check_error(_pk.mbedtls_dhm_read_public(
             &self._ctx, &buffer[0], buffer.size))
 
 
@@ -873,7 +873,7 @@ cdef class DHClient(DHBase):
         if not output:
             raise MemoryError()
         try:
-            check_error(_pk.mbedtls_dhm_make_public(
+            _exc.check_error(_pk.mbedtls_dhm_make_public(
                 &self._ctx, self.key_size, &output[0], self.key_size,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             mpi = _mpi.from_mpi(&self._ctx.GX)
@@ -888,7 +888,7 @@ cdef class DHClient(DHBase):
             buffer = b"\0"
         cdef const unsigned char* first = &buffer[0]
         cdef const unsigned char* end = &buffer[-1] + 1
-        check_error(_pk.mbedtls_dhm_read_params(
+        _exc.check_error(_pk.mbedtls_dhm_read_params(
             &self._ctx, &first, end))
 
 
@@ -909,7 +909,7 @@ cdef class ECDHBase:
         if curve is None:
             curve = get_supported_curves()[0]
         self.curve = Curve(curve)
-        check_error(mbedtls_ecp_group_load(
+        _exc.check_error(mbedtls_ecp_group_load(
             &self._ctx.grp, curve_name_to_grp_id(self.curve)))
 
     def __cinit__(self):
@@ -936,7 +936,7 @@ cdef class ECDHBase:
     def public_key(self):
         """The public key (ECPoint)"""
         ecp = ECPoint(0, 0, 0)
-        check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Q))
+        _exc.check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Q))
         return ecp
 
     @property
@@ -948,7 +948,7 @@ cdef class ECDHBase:
     def peers_public_key(self):
         """Peer's public key (ECPoint)"""
         ecp = ECPoint(0, 0, 0)
-        check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Qp))
+        _exc.check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Qp))
         return ecp
 
     @property
@@ -972,7 +972,7 @@ cdef class ECDHBase:
         if not output:
             raise MemoryError()
         try:
-            check_error(mbedtls_ecdh_calc_secret(
+            _exc.check_error(mbedtls_ecdh_calc_secret(
                 &self._ctx, &olen, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
@@ -983,7 +983,7 @@ cdef class ECDHBase:
 
     def generate_public_key(self):
         """Generate public key from a private key."""
-        check_error(_pk.mbedtls_ecp_mul(
+        _exc.check_error(_pk.mbedtls_ecp_mul(
             &self._ctx.grp, &self._ctx.Q, &self._ctx.d, &self._ctx.grp.G,
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
 
@@ -1002,7 +1002,7 @@ cdef class ECDHBase:
 
     @_public_key.setter
     def _public_key(self, ECPoint ecp):
-        check_error(_pk.mbedtls_ecp_copy(&self._ctx.Q, &ecp._ctx))
+        _exc.check_error(_pk.mbedtls_ecp_copy(&self._ctx.Q, &ecp._ctx))
 
     @property
     def _peer_public_key(self):
@@ -1010,7 +1010,7 @@ cdef class ECDHBase:
 
     @_peer_public_key.setter
     def _peer_public_key(self, ECPoint ecp):
-        check_error(_pk.mbedtls_ecp_copy(&self._ctx.Qp, &ecp._ctx))
+        _exc.check_error(_pk.mbedtls_ecp_copy(&self._ctx.Qp, &ecp._ctx))
 
 
 cdef class ECDHServer(ECDHBase):
@@ -1034,7 +1034,7 @@ cdef class ECDHServer(ECDHBase):
         if not output:
             raise MemoryError()
         try:
-            check_error(_pk.mbedtls_ecdh_make_params(
+            _exc.check_error(_pk.mbedtls_ecdh_make_params(
                 &self._ctx, &olen, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
@@ -1046,7 +1046,7 @@ cdef class ECDHServer(ECDHBase):
         """Read the ClientKeyExchange payload."""
         if buffer.size == 0:
             buffer = b"\0"
-        check_error(_pk.mbedtls_ecdh_read_public(
+        _exc.check_error(_pk.mbedtls_ecdh_read_public(
             &self._ctx, &buffer[0], buffer.size))
 
 
@@ -1071,7 +1071,7 @@ cdef class ECDHClient(ECDHBase):
         if not output:
             raise MemoryError()
         try:
-            check_error(_pk.mbedtls_ecdh_make_public(
+            _exc.check_error(_pk.mbedtls_ecdh_make_public(
                 &self._ctx, &olen, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
@@ -1085,7 +1085,7 @@ cdef class ECDHClient(ECDHBase):
             buffer = b"\0"
         cdef const unsigned char* first = &buffer[0]
         cdef const unsigned char* end = &buffer[-1] + 1
-        check_error(_pk.mbedtls_ecdh_read_params(
+        _exc.check_error(_pk.mbedtls_ecdh_read_params(
             &self._ctx, &first, end))
 
 
@@ -1112,7 +1112,7 @@ cdef class ECDHNaive(ECDHBase):
             ECPoint: public key.
 
         """
-        check_error(_pk.mbedtls_ecdh_gen_public(
+        _exc.check_error(_pk.mbedtls_ecdh_gen_public(
             &self._ctx.grp, &self._ctx.d, &self._ctx.Q,
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
         return self.public_key
@@ -1122,11 +1122,11 @@ cdef class ECDHNaive(ECDHBase):
 
     def import_peers_public(self, _pk.ECPoint pubkey):
         """Read peer public key."""
-        check_error(_pk.mbedtls_ecp_copy(&self._ctx.Qp, &pubkey._ctx))
+        _exc.check_error(_pk.mbedtls_ecp_copy(&self._ctx.Qp, &pubkey._ctx))
 
     def generate_secret(self):
         """Generate the shared secret."""
-        check_error(_pk.mbedtls_ecdh_compute_shared(
+        _exc.check_error(_pk.mbedtls_ecdh_compute_shared(
             &self._ctx.grp, &self._ctx.z, &self._ctx.Qp, &self._ctx.d,
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
         return _mpi.from_mpi(&self._ctx.z)

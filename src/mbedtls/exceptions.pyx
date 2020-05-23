@@ -6,10 +6,10 @@
 
 from libc.stdlib cimport malloc, free
 
-cimport mbedtls.exceptions as _err
+cimport mbedtls.exceptions as _exc
 
 
-__all__ = ("TLSError", "check_error")
+__all__ = ("TLSError",)
 
 
 class TLSError(Exception):
@@ -33,7 +33,7 @@ class TLSError(Exception):
         if not buffer:
             raise MemoryError()
         try:
-            _err.mbedtls_strerror(self.err, &buffer[0], buflen)
+            _exc.mbedtls_strerror(self.err, &buffer[0], buflen)
             output = bytes(buffer[:buflen])
             try:
                 olen = output.index(b"\0")

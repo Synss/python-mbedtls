@@ -5,7 +5,7 @@
 """Camellia cipher developed by Japan's Mitsubishi an NTT in 2000."""
 
 
-from mbedtls.exceptions import *
+from mbedtls.exceptions import TLSError
 
 from . import _cipher
 

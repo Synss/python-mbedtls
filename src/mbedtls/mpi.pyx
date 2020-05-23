@@ -12,9 +12,9 @@ import math
 import numbers
 from binascii import hexlify, unhexlify
 
+import mbedtls.exceptions as _exc
 import mbedtls._platform as _plt
 import mbedtls._random as _rnd
-from mbedtls.exceptions import *
 
 try:
     long
@@ -45,7 +45,7 @@ cdef class MPI:
     def __init__(self, value=0):
         if isinstance(value, MPI):
             value_ = <MPI> value
-            check_error(mbedtls_mpi_copy(&self._ctx, &value_._ctx))
+            _exc.check_error(mbedtls_mpi_copy(&self._ctx, &value_._ctx))
         else:
             value = to_bytes(value)
             self._read_bytes(value)
@@ -56,7 +56,7 @@ cdef class MPI:
 
     def __dealloc__(self):
         """Unallocate one MPI."""
-        check_error(mbedtls_mpi_fill_random(
+        _exc.check_error(mbedtls_mpi_fill_random(
             &self._ctx, self._len(),
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
         _mpi.mbedtls_mpi_free(&self._ctx)
@@ -68,7 +68,7 @@ cdef class MPI:
     def _read_bytes(self, const unsigned char[:] data not None):
         if data.size == 0:
             return MPI(0)
-        check_error(
+        _exc.check_error(
             _mpi.mbedtls_mpi_read_binary(&self._ctx, &data[0], data.shape[0]))
 
     def __str__(self):
@@ -100,7 +100,7 @@ cdef class MPI:
         if not output:
             raise MemoryError()
         try:
-            check_error(_mpi.mbedtls_mpi_write_binary(
+            _exc.check_error(_mpi.mbedtls_mpi_write_binary(
                 &self._ctx, output, length))
             return output[:length][::-1 if byteorder == "little" else 1]
         except Exception as exc:
@@ -114,14 +114,14 @@ cdef class MPI:
     def prime(cls, size):
         """Return an MPI that is probably prime."""
         cdef MPI self_ = cls()
-        check_error(mbedtls_mpi_gen_prime(
+        _exc.check_error(mbedtls_mpi_gen_prime(
             &self_._ctx, size, 0,
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
         return self_
 
     def is_prime(self):
         """Miller-Rabin primality test."""
-        return check_error(mbedtls_mpi_is_prime(
+        return _exc.check_error(mbedtls_mpi_is_prime(
             &self._ctx,
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx)) == 0
 
@@ -138,7 +138,7 @@ cdef class MPI:
         cdef MPI self_ = MPI(self)
         cdef MPI other_ = MPI(other)
         cdef MPI result = MPI()
-        check_error(mbedtls_mpi_add_mpi(
+        _exc.check_error(mbedtls_mpi_add_mpi(
             &result._ctx, &self_._ctx, &other_._ctx))
         return result
 
@@ -155,7 +155,7 @@ cdef class MPI:
         cdef MPI self_ = MPI(self)
         cdef MPI other_ = MPI(other)
         cdef MPI result = MPI()
-        check_error(mbedtls_mpi_sub_mpi(
+        _exc.check_error(mbedtls_mpi_sub_mpi(
             &result._ctx, &self_._ctx, &other_._ctx))
         return result
 
@@ -166,7 +166,7 @@ cdef class MPI:
         cdef MPI self_ = MPI(self)
         cdef MPI other_ = MPI(other)
         cdef MPI result = MPI()
-        check_error(mbedtls_mpi_mul_mpi(
+        _exc.check_error(mbedtls_mpi_mul_mpi(
             &result._ctx, &self_._ctx, &other_._ctx))
         return result
 
@@ -183,7 +183,7 @@ cdef class MPI:
         cdef MPI result = MPI()
         cdef MPI exponent_ = MPI(exponent)
         cdef MPI modulus_ = MPI(modulus)
-        check_error(
+        _exc.check_error(
             mbedtls_mpi_exp_mod(
                 &result._ctx, &self._ctx, &exponent_._ctx, &modulus_._ctx, NULL
             )
@@ -223,7 +223,7 @@ cdef class MPI:
         cdef MPI other_ = MPI(other)
         cdef MPI quotient = MPI()
         cdef MPI rest = MPI()
-        check_error(mbedtls_mpi_div_mpi(
+        _exc.check_error(mbedtls_mpi_div_mpi(
             &quotient._ctx, &rest._ctx, &self_._ctx, &other_._ctx))
         return quotient, rest
 
@@ -237,7 +237,7 @@ cdef class MPI:
         cdef MPI self_ = MPI(self)
         cdef MPI other_ = MPI(other)
         cdef MPI result = MPI()
-        check_error(mbedtls_mpi_mod_mpi(
+        _exc.check_error(mbedtls_mpi_mod_mpi(
             &result._ctx, &self_._ctx, &other_._ctx))
         return result
 
@@ -279,11 +279,11 @@ cdef class MPI:
         return long(self)
 
     def __lshift__(MPI self, other):
-        check_error(mbedtls_mpi_shift_l(&self._ctx, long(other)))
+        _exc.check_error(mbedtls_mpi_shift_l(&self._ctx, long(other)))
         return self
 
     def __rshift__(MPI self, other):
-        check_error(mbedtls_mpi_shift_r(&self._ctx, long(other)))
+        _exc.check_error(mbedtls_mpi_shift_r(&self._ctx, long(other)))
         return self
 
     def __and__(MPI self, other):

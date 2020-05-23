@@ -9,7 +9,8 @@ cimport mbedtls._md as _md
 from libc.stdlib cimport malloc, free
 
 import binascii
-from mbedtls.exceptions import *
+
+import mbedtls.exceptions as _exc
 
 
 __MD_NAME = (
@@ -81,7 +82,7 @@ cdef class MDBase:
             raise ValueError("{} not available".format(name))
         cdef char *c_name = name_
         self._info = _md.mbedtls_md_info_from_string(c_name)
-        check_error(_md.mbedtls_md_setup(&self._ctx, self._info, _hmac))
+        _exc.check_error(_md.mbedtls_md_setup(&self._ctx, self._info, _hmac))
 
     def __cinit__(self):
         """Initialize an `md_context` (as NONE)."""
@@ -129,7 +130,7 @@ cdef class MDBase:
         if not output:
             raise MemoryError()
         try:
-            check_error(self._finish(output))
+            _exc.check_error(self._finish(output))
             return output[:self.digest_size]
         finally:
             free(output)
@@ -166,14 +167,14 @@ cdef class Hash(_md.MDBase):
     """
     def __init__(self, name, buffer=None):
         super().__init__(name, 0)
-        check_error(_md.mbedtls_md_starts(&self._ctx))
+        _exc.check_error(_md.mbedtls_md_starts(&self._ctx))
         self.update(buffer)
 
     def update(self, const unsigned char[:] buffer):
         """Update the hash object with the `buffer`."""
         if buffer is None or buffer.size == 0:
             return
-        check_error(
+        _exc.check_error(
             _md.mbedtls_md_update(&self._ctx, &buffer[0], buffer.size))
 
     cdef _finish(self, unsigned char *output):
@@ -183,7 +184,7 @@ cdef class Hash(_md.MDBase):
     def copy(self):
         """Return a copy ("clone") of the hash object."""
         obj = Hash(self.name)
-        check_error(_md.mbedtls_md_clone(&obj._ctx, &self._ctx))
+        _exc.check_error(_md.mbedtls_md_clone(&obj._ctx, &self._ctx))
         return obj
 
 
@@ -216,14 +217,14 @@ cdef class Hmac(_md.MDBase):
         super().__init__(name, 1)
         if not key.size:
             key = b"\0"
-        check_error(_md.mbedtls_md_hmac_starts(&self._ctx, &key[0], key.size))
+        _exc.check_error(_md.mbedtls_md_hmac_starts(&self._ctx, &key[0], key.size))
         self.update(buffer)
 
     def update(self, const unsigned char[:] buffer):
         """Update the HMAC object with `buffer`."""
         if buffer is None or buffer.size == 0:
             return
-        check_error(
+        _exc.check_error(
             _md.mbedtls_md_hmac_update(&self._ctx, &buffer[0], buffer.size))
 
     cdef _finish(self, unsigned char *output):

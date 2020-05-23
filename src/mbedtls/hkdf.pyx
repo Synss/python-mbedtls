@@ -14,8 +14,8 @@ from libc.stdlib cimport malloc, free
 cimport mbedtls._md as _hmac
 cimport mbedtls.hkdf as _hkdf
 
+import mbedtls.exceptions as _exc
 import mbedtls.hmac as _hmac
-from mbedtls.exceptions import *
 
 
 __all__ = ("hkdf", "extract", "expand")
@@ -50,7 +50,7 @@ def hkdf(
     if not okm:
         raise MemoryError()
     try:
-        check_error(_hkdf.mbedtls_hkdf(
+        _exc.check_error(_hkdf.mbedtls_hkdf(
             hmac._info,
             NULL if salt is None or salt.size == 0 else &salt[0],
             0 if salt is None else salt.size,
@@ -96,7 +96,7 @@ def extract(
     if not prk:
         raise MemoryError()
     try:
-        check_error(_hkdf.mbedtls_hkdf_extract(
+        _exc.check_error(_hkdf.mbedtls_hkdf_extract(
             hmac._info,
             NULL if salt is None or not salt.size else &salt[0],
             0 if salt is None else salt.size,
@@ -141,7 +141,7 @@ def expand(
     if not okm:
         raise MemoryError()
     try:
-        check_error(_hkdf.mbedtls_hkdf_expand(
+        _exc.check_error(_hkdf.mbedtls_hkdf_expand(
             hmac._info,
             &prk[0], prk.size,
             NULL if not info.size else &info[0],

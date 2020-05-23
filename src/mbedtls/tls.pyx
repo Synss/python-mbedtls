@@ -33,8 +33,8 @@ import cython
 
 import mbedtls._random as _rnd
 import mbedtls._ringbuf as _rb
+import mbedtls.exceptions as _exc
 import mbedtls.pk as _pk
-from mbedtls.exceptions import *
 
 
 cdef _rnd.Random __rng = _rnd.default_rng()
@@ -226,19 +226,19 @@ PEM_HEADER = "-----BEGIN CERTIFICATE-----"
 PEM_FOOTER = "-----END CERTIFICATE-----"
 
 
-class WantWriteError(TLSError):
+class WantWriteError(_exc.TLSError):
     pass
 
 
-class WantReadError(TLSError):
+class WantReadError(_exc.TLSError):
     pass
 
 
-class RaggedEOF(TLSError):
+class RaggedEOF(_exc.TLSError):
     pass
 
 
-class HelloVerifyRequest(TLSError):
+class HelloVerifyRequest(_exc.TLSError):
     pass
 
 
@@ -343,7 +343,7 @@ cdef class _BaseConfiguration:
         pre_shared_key_store=None,
         _transport=None,
     ):
-        check_error(_tls.mbedtls_ssl_config_defaults(
+        _exc.check_error(_tls.mbedtls_ssl_config_defaults(
             &self._ctx,
             endpoint=0,  # server / client is not known here...
             transport=_transport,
@@ -450,7 +450,7 @@ cdef class _BaseConfiguration:
             c_crt.set_next(c_crt_next)
         c_crt = certs[0]
         c_pk_key = <_pk.CipherBase?> pk_key
-        check_error(_tls.mbedtls_ssl_conf_own_cert(
+        _exc.check_error(_tls.mbedtls_ssl_conf_own_cert(
             &self._ctx, &c_crt._ctx, &c_pk_key._ctx))
 
     @property
@@ -465,7 +465,7 @@ cdef class _BaseConfiguration:
             c_ctx = c_ctx.next
         cdef _pk.mbedtls_pk_context *c_key = key_cert.key
         cdef unsigned char[:] buf = bytearray(_pk.PRV_DER_MAX_BYTES)
-        olen = check_error(
+        olen = _exc.check_error(
             _pk.mbedtls_pk_write_key_der(c_key, &buf[0], buf.size))
         cls = {
             0: _pk.ECC,
@@ -529,7 +529,7 @@ cdef class _BaseConfiguration:
                 proto = proto.value
             self._protos[idx] = proto
         self._protos[idx + 1] = NULL
-        check_error(_tls.mbedtls_ssl_conf_alpn_protocols(
+        _exc.check_error(_tls.mbedtls_ssl_conf_alpn_protocols(
             &self._ctx, self._protos))
 
     @property
@@ -629,7 +629,7 @@ cdef class _BaseConfiguration:
         except ValueError:
             raise TypeError("expected a tuple (name, key)")
         c_identity = identity.encode("utf8")
-        check_error(_tls.mbedtls_ssl_conf_psk(
+        _exc.check_error(_tls.mbedtls_ssl_conf_psk(
             &self._ctx,
             key, len(key),
             c_identity, len(c_identity)))
@@ -930,7 +930,7 @@ cdef class _BaseContext:
     """
     def __init__(self, _BaseConfiguration configuration not None):
         self._conf = configuration
-        check_error(_tls.mbedtls_ssl_setup(&self._ctx, &self._conf._ctx))
+        _exc.check_error(_tls.mbedtls_ssl_setup(&self._ctx, &self._conf._ctx))
 
     def __cinit__(self):
         """Initialize an `ssl_context`."""
@@ -955,7 +955,7 @@ cdef class _BaseContext:
         return Purpose(self._conf._ctx.endpoint)
 
     def _reset(self):
-        check_error(_tls.mbedtls_ssl_session_reset(&self._ctx))
+        _exc.check_error(_tls.mbedtls_ssl_session_reset(&self._ctx))
 
     def _shutdown(self):
         _tls.mbedtls_ssl_close_notify(&self._ctx)
@@ -980,10 +980,10 @@ cdef class _BaseContext:
         elif read == _tls.MBEDTLS_ERR_SSL_WANT_WRITE:
             raise WantWriteError()
         elif read == _tls.MBEDTLS_ERR_SSL_CLIENT_RECONNECT:
-            check_error(read)
+            _exc.check_error(read)
         else:
             self._reset()
-            check_error(read)
+            _exc.check_error(read)
 
     def _write(self, const unsigned char[:] buffer not None):
         if buffer.size == 0:
@@ -1000,7 +1000,7 @@ cdef class _BaseContext:
                 raise WantWriteError()
             else:
                 self._reset()
-                check_error(ret)
+                _exc.check_error(ret)
         return written
 
     # def getpeercert(self, binary_form=False):
@@ -1038,7 +1038,7 @@ cdef class _BaseContext:
             raise WantWriteError()
         else:
             self._reset()
-            check_error(ret)
+            _exc.check_error(ret)
             return self._state
 
     def _do_handshake(self):
@@ -1056,7 +1056,7 @@ cdef class _BaseContext:
         else:
             assert ret < 0
             self._reset()
-            check_error(ret)
+            _exc.check_error(ret)
 
     def _renegotiate(self):
         """Initialize an SSL renegotiation on the running connection."""
@@ -1070,7 +1070,7 @@ cdef class _BaseContext:
         else:
             assert ret < 0
             self._reset()
-            check_error(ret)
+            _exc.check_error(ret)
 
     def _get_channel_binding(self, cb_type="tls-unique"):
         return None
@@ -1127,7 +1127,7 @@ cdef class ClientContext(_BaseContext):
         #       to call with the temporary `hostname_`.
         hostname_ = hostname.encode("utf8")
         cdef const char* c_hostname = hostname_
-        check_error(_tls.mbedtls_ssl_set_hostname(&self._ctx, c_hostname))
+        _exc.check_error(_tls.mbedtls_ssl_set_hostname(&self._ctx, c_hostname))
 
     @property
     def _hostname(self):
