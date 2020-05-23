@@ -2,6 +2,19 @@
 line-length = 79
 target-version = ['py36', 'py37', 'py38']
 
+[tool.coverage.report]
+exclude_lines = [
+  'pragma: no cover',
+  'def __repr__',
+  'raise MemoryError()',
+  'raise NotImplementedError',
+  'free(\w)',
+]
+include = ['src/*']
+
+[tool.coverage.run]
+plugins = ['Cython.Coverage']
+
 [tool.isort]
 multi_line_output = 3
 include_trailing_comma = true
