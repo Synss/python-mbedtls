@@ -1393,7 +1393,7 @@ cdef class TLSWrappedSocket:
     def recvfrom_into(
         self, unsigned char[:] buffer not None, nbytes=None, flags=0
     ):
-        encrypted, addr = self._socket.recvfrom(bufsize, flags)
+        encrypted, addr = self._socket.recvfrom(buffer.size(), flags)
         if not encrypted:
             return buffer, addr
         self._buffer.receive_from_network(encrypted)

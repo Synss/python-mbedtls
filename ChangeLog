@@ -1,3 +1,8 @@
+[next]
+
+* tls: fix bug (typo) in `tls.recvfrom_into()` that would make
+the method crash.
+
 [1.2.1]
 
 * update wheels to mbedtls 1.16.6
