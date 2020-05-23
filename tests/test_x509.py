@@ -3,7 +3,7 @@ import datetime as dt
 import certifi
 import pytest
 
-from mbedtls import hash
+from mbedtls import hashlib
 from mbedtls.pk import ECC, RSA
 from mbedtls.x509 import *
 
@@ -152,7 +152,7 @@ class _CRTBase(_X509Base):
 
     @pytest.fixture
     def digestmod(self):
-        return hash.sha256()
+        return hashlib.sha256()
 
     @pytest.fixture
     def basic_constraints(self):
@@ -228,7 +228,7 @@ class TestCRTAccessors(_CRTBase):
 
 
 class TestCRTMDAlg(_CRTBase):
-    @pytest.fixture(params=[hash.sha1, hash.sha256])
+    @pytest.fixture(params=[hashlib.sha1, hashlib.sha256])
     def digestmod(self, request):
         return request.param()
 
@@ -254,7 +254,7 @@ class _CSRBase(_X509Base):
 
     @pytest.fixture
     def x509(self, subject, subject_key):
-        return CSR.new(subject_key, subject, hash.sha1())
+        return CSR.new(subject_key, subject, hashlib.sha1())
 
     @pytest.fixture
     def csr(self, x509):
@@ -352,7 +352,7 @@ class TestVerifyCertificateChain:
 
     @pytest.fixture
     def ca0_crt(self, ca0_key, now):
-        ca0_csr = CSR.new(ca0_key, "CN=Trusted CA", hash.sha256())
+        ca0_csr = CSR.new(ca0_key, "CN=Trusted CA", hashlib.sha256())
         return CRT.selfsign(
             ca0_csr,
             ca0_key,
@@ -364,7 +364,7 @@ class TestVerifyCertificateChain:
 
     @pytest.fixture
     def ca1_crt(self, ca1_key, ca0_crt, ca0_key, now):
-        ca1_csr = CSR.new(ca1_key, "CN=Intermediate CA", hash.sha256())
+        ca1_csr = CSR.new(ca1_key, "CN=Intermediate CA", hashlib.sha256())
         return ca0_crt.sign(
             ca1_csr,
             ca0_key,
@@ -376,7 +376,7 @@ class TestVerifyCertificateChain:
 
     @pytest.fixture
     def ee0_crt(self, ee0_key, ca1_crt, ca1_key, now):
-        ee0_csr = CSR.new(ee0_key, "CN=End Entity", hash.sha256())
+        ee0_csr = CSR.new(ee0_key, "CN=End Entity", hashlib.sha256())
         return ca1_crt.sign(
             ee0_csr, ca1_key, now, now + dt.timedelta(days=90), 0x345678
         )

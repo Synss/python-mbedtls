@@ -94,14 +94,15 @@ information to mbed TLS.
 Message digest
 --------------
 
-The *mbedtls.hash* module supports MD2, MD4, MD5, SHA-1, SHA-2
+The *mbedtls.hashlib* module supports MD2, MD4, MD5, SHA-1, SHA-2
 (in 224, 256, 384, and 512-bits), and RIPEMD-160 secure hashes
 and message digests.  Note that MD2 and MD4 are not included
 by default and are only present if they are compiled in mbedtls.
 
-Here are the examples from *hashlib* ported to *python-mbedtls*:
+Here are the examples from (standard) *hashlib* ported
+to *python-mbedtls*:
 
->>> from mbedtls import hash as hashlib
+>>> from mbedtls import hashlib
 >>> m = hashlib.md5()
 >>> m.update(b"Nobody inspects")
 >>> m.update(b" the spammish repetition")
@@ -350,7 +351,7 @@ Here, the trusted root is a self-signed CA certificate
 
 >>> import datetime as dt
 >>>
->>> from mbedtls import hash as hashlib
+>>> from mbedtls import hashlib
 >>> from mbedtls import pk
 >>> from mbedtls import x509
 >>>

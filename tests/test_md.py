@@ -9,10 +9,9 @@ import sys
 
 import pytest
 
-# pylint: disable=import-error
 import mbedtls
-import mbedtls.hash as md_hash
-import mbedtls.hmac as md_hmac
+from mbedtls import hashlib
+from mbedtls import hmac as hmaclib
 from mbedtls._md import Hash
 
 if sys.version_info >= (3, 6):
@@ -21,9 +20,6 @@ elif sys.version_info >= (3, 3):
     from collections.abc import Container as Collection
 else:
     from collections import Container as Collection
-
-
-# pylint: enable=import-error
 
 
 def make_chunks(buffer, size):
@@ -37,14 +33,14 @@ def test_make_chunks(randbytes):
 
 
 def test_algorithms():
-    assert isinstance(md_hash.algorithms_guaranteed, Collection)
-    assert md_hash.algorithms_guaranteed
+    assert isinstance(hashlib.algorithms_guaranteed, Collection)
+    assert hashlib.algorithms_guaranteed
 
-    assert isinstance(md_hash.algorithms_available, Collection)
-    assert md_hash.algorithms_available
+    assert isinstance(hashlib.algorithms_available, Collection)
+    assert hashlib.algorithms_available
 
-    assert frozenset(md_hash.algorithms_guaranteed).issubset(
-        md_hash.algorithms_available
+    assert frozenset(hashlib.algorithms_guaranteed).issubset(
+        hashlib.algorithms_available
     )
 
 
@@ -87,7 +83,7 @@ class _TestHash(_TestMDBase):
         return randbytes(512)
 
     def test_new(self, algorithm, buffer):
-        copy = md_hash.new(algorithm.name, buffer)
+        copy = hashlib.new(algorithm.name, buffer)
         algorithm.update(buffer)
         assert algorithm.digest() == copy.digest()
         assert algorithm.hexdigest() == copy.hexdigest()
@@ -112,7 +108,7 @@ class _TestHash(_TestMDBase):
 class TestHashMD2(_TestHash):
     @pytest.fixture
     def algorithm(self):
-        return md_hash.md2()
+        return hashlib.md2()
 
     @pytest.fixture
     def digest_size(self):
@@ -129,7 +125,7 @@ class TestHashMD2(_TestHash):
 class TestHashMD4(_TestHash):
     @pytest.fixture
     def algorithm(self):
-        return md_hash.md4()
+        return hashlib.md4()
 
     @pytest.fixture
     def digest_size(self):
@@ -146,7 +142,7 @@ class TestHashMD4(_TestHash):
 class TestHashMD5(_TestHash):
     @pytest.fixture
     def algorithm(self):
-        return md_hash.md5()
+        return hashlib.md5()
 
     @pytest.fixture
     def type_(self):
@@ -168,7 +164,7 @@ class TestHashMD5(_TestHash):
 class TestHashSHA1(_TestHash):
     @pytest.fixture
     def algorithm(self):
-        return md_hash.sha1()
+        return hashlib.sha1()
 
     @pytest.fixture
     def digest_size(self):
@@ -186,7 +182,7 @@ class TestHashSHA1(_TestHash):
 class TestHashSHA224(_TestHash):
     @pytest.fixture
     def algorithm(self):
-        return md_hash.sha224()
+        return hashlib.sha224()
 
     @pytest.fixture
     def digest_size(self):
@@ -204,7 +200,7 @@ class TestHashSHA224(_TestHash):
 class TestHashSHA256(_TestHash):
     @pytest.fixture
     def algorithm(self):
-        return md_hash.sha256()
+        return hashlib.sha256()
 
     @pytest.fixture
     def digest_size(self):
@@ -222,7 +218,7 @@ class TestHashSHA256(_TestHash):
 class TestHashSHA384(_TestHash):
     @pytest.fixture
     def algorithm(self):
-        return md_hash.sha384()
+        return hashlib.sha384()
 
     @pytest.fixture
     def digest_size(self):
@@ -240,7 +236,7 @@ class TestHashSHA384(_TestHash):
 class TestHashSHA512(_TestHash):
     @pytest.fixture
     def algorithm(self):
-        return md_hash.sha512()
+        return hashlib.sha512()
 
     @pytest.fixture
     def digest_size(self):
@@ -258,7 +254,7 @@ class TestHashSHA512(_TestHash):
 class TestHashRIPEMD160(_TestHash):
     @pytest.fixture
     def algorithm(self):
-        return md_hash.ripemd160()
+        return hashlib.ripemd160()
 
     @pytest.fixture
     def digest_size(self):
@@ -279,7 +275,7 @@ class _TestHmac(_TestMDBase):
         return randbytes(512)
 
     def test_new(self, algorithm, key, buffer):
-        copy = md_hmac.new(key, buffer, algorithm.name)
+        copy = hmaclib.new(key, buffer, algorithm.name)
         algorithm.update(buffer)
         assert algorithm.digest() == copy.digest()
         assert algorithm.hexdigest() == copy.hexdigest()
@@ -291,7 +287,7 @@ class _TestHmac(_TestMDBase):
 class TestHmacMD2(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
-        return md_hmac.md2(key)
+        return hmaclib.md2(key)
 
     @pytest.fixture
     def digest_size(self):
@@ -308,7 +304,7 @@ class TestHmacMD2(_TestHmac):
 class TestHmacMD4(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
-        return md_hmac.md4(key)
+        return hmaclib.md4(key)
 
     @pytest.fixture
     def digest_size(self):
@@ -325,7 +321,7 @@ class TestHmacMD4(_TestHmac):
 class TestHmacMD5(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
-        return md_hmac.md5(key)
+        return hmaclib.md5(key)
 
     @pytest.fixture
     def type_(self):
@@ -347,7 +343,7 @@ class TestHmacMD5(_TestHmac):
 class TestHmacSHA1(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
-        return md_hmac.sha1(key)
+        return hmaclib.sha1(key)
 
     @pytest.fixture
     def digest_size(self):
@@ -365,7 +361,7 @@ class TestHmacSHA1(_TestHmac):
 class TestHmacSHA224(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
-        return md_hmac.sha224(key)
+        return hmaclib.sha224(key)
 
     @pytest.fixture
     def digest_size(self):
@@ -383,7 +379,7 @@ class TestHmacSHA224(_TestHmac):
 class TestHmacSHA256(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
-        return md_hmac.sha256(key)
+        return hmaclib.sha256(key)
 
     @pytest.fixture
     def digest_size(self):
@@ -401,7 +397,7 @@ class TestHmacSHA256(_TestHmac):
 class TestHmacSHA384(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
-        return md_hmac.sha384(key)
+        return hmaclib.sha384(key)
 
     @pytest.fixture
     def digest_size(self):
@@ -419,7 +415,7 @@ class TestHmacSHA384(_TestHmac):
 class TestHmacSHA512(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
-        return md_hmac.sha512(key)
+        return hmaclib.sha512(key)
 
     @pytest.fixture
     def digest_size(self):
@@ -437,7 +433,7 @@ class TestHmacSHA512(_TestHmac):
 class TestHmacRIPEMD160(_TestHmac):
     @pytest.fixture
     def algorithm(self, key):
-        return md_hmac.ripemd160(key)
+        return hmaclib.ripemd160(key)
 
     @pytest.fixture
     def digest_size(self):

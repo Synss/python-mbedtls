@@ -157,7 +157,7 @@ def ciphers_available():
     """Return the list of ciphersuites supported by the SSL/TLS module.
 
     See Also:
-        - hash.algorithms_available
+        - hashlib.algorithms_available
         - hmac.algorithms_available
 
     """

@@ -29,7 +29,7 @@ from functools import partial
 
 import mbedtls._random as _rnd
 import mbedtls.exceptions as _exc
-import mbedtls.hash as _hash
+from mbedtls.hashlib import new as _new_hash
 
 
 __all__ = ("check_pair", "get_supported_ciphers", "get_supported_curves",
@@ -149,7 +149,7 @@ def _get_md_alg(digestmod):
     if callable(digestmod):
         return digestmod
     elif isinstance(digestmod, (str, unicode)):
-        return partial(_hash.new, digestmod)
+        return partial(_new_hash, digestmod)
     else:
         raise TypeError("a valid digestmod is required, got %r" % digestmod)
 

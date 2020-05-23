@@ -5,7 +5,7 @@ import sys
 
 import pytest
 
-import mbedtls.hash as hashlib
+from mbedtls import hashlib
 from mbedtls.exceptions import TLSError
 from mbedtls.pk import RSA
 from mbedtls.tls import *

@@ -1,5 +1,7 @@
 [next]
 
+* hash -> hashlib: Importing from `hash` is now deprecated.
+Import from `mbedtls.hashlib` now instead.
 * tls: fix bug (typo) in `tls.recvfrom_into()` that would make
 the method crash.
 

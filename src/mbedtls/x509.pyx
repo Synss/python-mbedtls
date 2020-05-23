@@ -20,10 +20,10 @@ except ImportError:
 from collections import namedtuple
 
 import mbedtls.exceptions as _exc
-import mbedtls.hash as hashlib
 import mbedtls.mpi as _mpi
 import mbedtls.pk as _pk
 import mbedtls._md as _md
+from mbedtls.hashlib import new as _new_hash
 
 import enum
 
@@ -220,7 +220,7 @@ cdef class CRT(Certificate):
     # RFC 4.1.2.3 Signature
     @property
     def digestmod(self):
-        return hashlib.new(_md._digestmod(self._ctx.sig_md))
+        return _new_hash(_md._digestmod(self._ctx.sig_md))
 
     @property
     def issuer(self):
@@ -675,7 +675,7 @@ cdef class CSR(Certificate):
             RFC5280, Section 4.1.1.2 Signature Algorithm.
 
         """
-        return hashlib.new(_md._digestmod(self._ctx.sig_md))
+        return _new_hash(_md._digestmod(self._ctx.sig_md))
 
     @property
     def version(self):

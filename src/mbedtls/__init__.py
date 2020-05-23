@@ -7,7 +7,7 @@
 
 import mbedtls.cipher as cipher
 import mbedtls.exceptions as exceptions
-import mbedtls.hash as hash
+import mbedtls.hashlib as hashlib
 import mbedtls.hkdf as hkdf
 import mbedtls.hmac as hmac
 import mbedtls.pk as pk
@@ -16,10 +16,13 @@ import mbedtls.tls as tls
 import mbedtls.version as version
 import mbedtls.x509 as x509
 
+hash = hashlib  # pylint: disable=redefined-builtin
+
 __all__ = (
     "cipher",
     "exceptions",
     "hash",
+    "hashlib",
     "hkdf",
     "hmac",
     "pk",
