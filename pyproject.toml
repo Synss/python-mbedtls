@@ -21,3 +21,9 @@ include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
 line_length = 79
+
+[tool.pylint.master]
+extension-pkg-whitelist='mbedtls'
+
+[tool.pylint.messages_control]
+disable = "C0103, C0326, C0330"
