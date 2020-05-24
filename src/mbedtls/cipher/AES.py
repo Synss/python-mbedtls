@@ -70,5 +70,4 @@ def new(key, mode, iv=None, ad=None):
         ).encode("ascii")
     if mode in {_cipher.Mode.GCM, _cipher.Mode.CCM}:
         return _cipher.AEADCipher(name, key, mode, iv, ad)
-    else:
-        return _cipher.Cipher(name, key, mode, iv)
+    return _cipher.Cipher(name, key, mode, iv)
