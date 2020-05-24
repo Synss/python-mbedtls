@@ -22,6 +22,22 @@ key_size = None
 
 
 def new(key, mode, iv=None):
+    """Return a `Cipher` object that can perform ARIA encryption and
+    decryption.
+
+    ARIA is a block cipher designed in 2003 by a large group of South
+    Korean researchers. In 2004, the Korean Agency for Technology and
+    Standards selected it as a standard cryptographic technique.
+
+    Parameters:
+        key (bytes): The key to encrypt decrypt.
+        mode (int): The mode of operation of the cipher.
+        iv (bytes or None): The initialization vector (IV).  The IV is
+            required for every mode but ECB and CTR where it is ignored.
+            If not set, the IV is initialized to all 0, which should not
+            be used for encryption.
+
+    """
     mode = _cipher.Mode(mode)
     if mode in {
         _cipher.Mode.ECB,
