@@ -11,8 +11,9 @@ Encryption Algorithms"
 
 from . import AES, ARC4, ARIA, CHACHA20, DES, DES3, Blowfish, Camellia, DES3dbl
 from ._cipher import *
+from ._cipher import __all__ as _cipher_all
 
-__all__ = _cipher.__all__ + (
+__all__ = _cipher_all + (
     "AES",
     "ARC4",
     "ARIA",
