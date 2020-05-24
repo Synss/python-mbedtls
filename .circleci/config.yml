@@ -98,7 +98,7 @@ jobs:
       - run: *tests
       - store_artifacts: *artifacts
 
-  python_extra:
+  python_qa:
     docker: *latest
     working_directory: ~/python-mbedtls
     steps:
@@ -121,7 +121,7 @@ jobs:
           name: Run tests
           command: |
             python -m pip install --user -r requirements/tests.txt
-            python -m pip install --user cython pytest-black pytest-cov pytest-isort
+            python -m pip install --user -r requirements/qa.txt
             PYTHONPATH=$(pwd)/src/:$PYTHONPATH
             export PYTHONPATH
             python -m pytest --black --isort --cov=src/ tests/
@@ -155,7 +155,7 @@ workflows:
   version: 2
   build:
     jobs:
-      - python_extra
+      - python_qa
       # - python_39
       - python_38
       - python_37

@@ -1,0 +1,14 @@
+# Base
+cython
+pytest
+
+# Tooling
+black
+coverage
+isort
+pylint
+
+# Plugins
+pytest-black
+pytest-cov
+pytest-isort
