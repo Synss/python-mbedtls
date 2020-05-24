@@ -177,11 +177,14 @@ cdef class CipherBase:
             return
         mbedtls_pk_free(&self._ctx)  # The context must be reset on entry.
         try:
-            _exc.check_error(_pk.mbedtls_pk_parse_key(
-                &self._ctx, &key[0], key.size,
-                NULL if password is None
-                or password.size == 0 else &password[0],
-                0 if password is None else password.size))
+            if password is None or password.size == 0:
+                _exc.check_error(_pk.mbedtls_pk_parse_key(
+                    &self._ctx, &key[0], key.size, NULL, 0
+                ))
+            else:
+                _exc.check_error(_pk.mbedtls_pk_parse_key(
+                    &self._ctx, &key[0], key.size, &password[0], password.size
+                ))
         except _exc.TLSError:
             _exc.check_error(_pk.mbedtls_pk_parse_public_key(
                 &self._ctx, &key[0], key.size))
@@ -885,11 +888,12 @@ cdef class DHClient(DHBase):
     def import_SKE(self, const unsigned char[:] buffer not None):
         """Read the ServerKeyExchange payload."""
         if buffer.size == 0:
-            buffer = b"\0"
-        cdef const unsigned char* first = &buffer[0]
+            raise ValueError("SKE is empty")
+        # Const away cast is safe because the pointer is used as
+        # a read-only index in `dhm_read_bignum()`.
+        cdef unsigned char* first = <unsigned char*> &buffer[0]
         cdef const unsigned char* end = &buffer[-1] + 1
-        _exc.check_error(_pk.mbedtls_dhm_read_params(
-            &self._ctx, &first, end))
+        _exc.check_error(_pk.mbedtls_dhm_read_params(&self._ctx, &first, end))
 
 
 cdef class ECDHBase:
