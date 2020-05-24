@@ -65,14 +65,14 @@ jobs:
     steps: *steps
 
   python_37:
-    docker:
+    docker: &qa
       - image: circleci/python:3.7
         environment: *env
     working_directory: ~/python-mbedtls
     steps: *steps
 
   python_38:
-    docker: &latest
+    docker:
       - image: circleci/python:3.8
         environment: *env
     working_directory: ~/python-mbedtls
@@ -99,7 +99,7 @@ jobs:
       - store_artifacts: *artifacts
 
   python_qa:
-    docker: *latest
+    docker: *qa
     working_directory: ~/python-mbedtls
     steps:
       - checkout
