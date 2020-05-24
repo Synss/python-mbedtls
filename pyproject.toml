@@ -31,3 +31,4 @@ disable = "C0103, C0326, C0330"
 [tool.pylint.similarities]
 ignore-comments = "yes"
 ignore-docstrings = "yes"
+min-similarity-lines = "8"
