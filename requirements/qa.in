@@ -10,6 +10,6 @@ pylint
 
 # Plugins
 pytest-black
-pytest-cov
+pytest-cov != 2.9.0
 pytest-isort
 pytest-repeat
