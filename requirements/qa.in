@@ -12,3 +12,4 @@ pylint
 pytest-black
 pytest-cov
 pytest-isort
+pytest-repeat

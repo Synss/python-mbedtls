@@ -25,7 +25,8 @@ pyparsing==2.4.7          # via packaging
 pytest-black==0.3.9       # via -r requirements/qa.in
 pytest-cov==2.9.0         # via -r requirements/qa.in
 pytest-isort==1.0.0       # via -r requirements/qa.in
-pytest==5.4.2             # via -r requirements/qa.in, pytest-black, pytest-cov, pytest-isort
+pytest-repeat==0.8.0      # via -r requirements/qa.in
+pytest==5.4.2             # via -r requirements/qa.in, pytest-black, pytest-cov, pytest-isort, pytest-repeat
 regex==2020.5.14          # via black
 six==1.15.0               # via astroid, packaging
 toml==0.10.1              # via black, pylint, pytest-black
