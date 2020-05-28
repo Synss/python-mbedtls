@@ -42,7 +42,6 @@ export LIBRARY_PATH
 export LD_LIBRARY_PATH
 export DYLD_LIBRARY_PATH
 
-python setup.py bdist_wheel
 python setup.py bdist_wheel && \
 	delocate-wheel -v dist/$wheel && \
 	pip install -U dist/$wheel
