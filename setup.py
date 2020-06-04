@@ -4,7 +4,7 @@ import os
 import sys
 from setuptools import setup, Extension, find_packages
 
-version = "1.2.1"
+version = "1.3.0"
 mbedtls_version = "2.16.6"
 download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
 

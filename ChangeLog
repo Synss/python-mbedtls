@@ -1,4 +1,4 @@
-[next]
+[1.3.0] - 2020-06-04
 
 * hash -> hashlib: Importing from `hash` is now deprecated.
 Import from `mbedtls.hashlib` now instead.
