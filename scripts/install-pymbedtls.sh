@@ -32,8 +32,8 @@ version="${2:-*}"
 python="cp$(python --version 2>&1 | perl -pe 's|^\w+\s(\d)\.(\d+)\.\d\w*$|\1\2|g')"
 wheel="python_mbedtls-$version-$python-$python"'*.whl'
 
-C_INCLUDE_PATH="/usr/include:$libdir/include"
-LIBRARY_PATH="/usr/lib:$libdir/lib"
+C_INCLUDE_PATH="$libdir/include"
+LIBRARY_PATH="$libdir/lib"
 LD_LIBRARY_PATH=$LIBRARY_PATH
 DYLD_LIBRARY_PATH=$LIBRARY_PATH
 
