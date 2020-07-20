@@ -80,7 +80,7 @@ jobs:
 
   python_39:
     docker:
-      - image: circleci/python:3.9-rc
+      - image: circleci/python:3.9.0b4
         environment: *env
     working_directory: ~/python-mbedtls
     steps:
@@ -156,7 +156,7 @@ workflows:
   build:
     jobs:
       - python_qa
-      # - python_39
+      - python_39
       - python_38
       - python_37
       - python_36

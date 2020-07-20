@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2018, Mathias Laurin
 
+# cython: c_api_binop_methods=True
+
 """Multi-precision integer library (MPI)."""
 
 
