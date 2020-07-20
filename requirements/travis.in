@@ -1,3 +1,5 @@
 devpi-client
 devpi-server
 twine
+
+pygments < 2.6.0    # for Python < 3
