@@ -23,11 +23,10 @@ else
 fi
 
 
-license="apache"
 name="mbedtls"
-filename="$name-$version-$license.tgz"
-url="https://tls.mbed.org/download/$filename"
+filename="$name-$version.tar.gz"
+url="https://github.com/ARMmbed/mbedtls/archive/$filename"
 
 mkdir -p "$destdir"
-curl -O "$url"
+curl -LO "$url"
 tar xzf "$filename" -C "$destdir" --strip-components 1
