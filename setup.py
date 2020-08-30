@@ -4,12 +4,12 @@ import os
 import sys
 from setuptools import setup, Extension, find_packages
 
-version = "1.3.1"
-mbedtls_version = "2.16.7"
-download_url = "https://github.com/Synss/python-mbedtls/tarball/%s" % version
+VERSION = "1.3.1"
+MBEDTLS_VERSION = "2.16.7"
+DOWNLOAD_URL = "https://github.com/Synss/python-mbedtls/tarball/%s" % VERSION
 
 
-__mbedtls_version_info__ = tuple(map(int, mbedtls_version.split(".")))
+__mbedtls_version_info__ = tuple(map(int, MBEDTLS_VERSION.split(".")))
 __mbedtls_url__ = "https://tls.mbed.org"
 
 
@@ -133,7 +133,7 @@ if len(sys.argv) > 1 and any(
 
 setup(
     name="python-mbedtls",
-    version=version,
+    version=VERSION,
     description=(
         "hash, hmac, RSA, ECC, X.509, TLS, DTLS, handshakes, and secrets "
         "with an mbed TLS back end"
@@ -143,7 +143,7 @@ setup(
     author_email="Mathias.Laurin@github.com",
     license="MIT License",
     url="https://github.com/Synss/python-mbedtls",
-    download_url=download_url,
+    download_url=DOWNLOAD_URL,
     ext_modules=list(extensions(COVERAGE)),
     options=options(COVERAGE),
     package_dir={"": "src"},
