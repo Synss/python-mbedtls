@@ -58,6 +58,9 @@ def check_mbedtls_support(version, url):
     try:
         lib = ctypes.cdll.LoadLibrary(library)
         sys.stdout.write(
+            "  loading: {!r}\n".format(lib._name)
+        )
+        sys.stdout.write(
             "  mbedtls version: {!s}{sep}".format(
                 mbedtls_version(lib), sep=os.linesep
             )
