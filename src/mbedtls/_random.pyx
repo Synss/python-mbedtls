@@ -151,9 +151,5 @@ cdef class Random:
 cdef Random __rng = Random()
 
 
-cdef Random default_rng():
-    return __rng
-
-
-def default_rng():
+cpdef Random default_rng():
     return __rng

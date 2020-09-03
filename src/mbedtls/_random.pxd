@@ -82,4 +82,4 @@ cdef class Random:
 
 
 # RNG for internal use only.
-cdef Random default_rng()
+cpdef Random default_rng()
