@@ -167,7 +167,7 @@ Example:
 b'v,\xef\x90\xccU\x1d\x1b\xd7\\a\xaf\x92\xac\n\x90\xf9q\xf4)\xcd"\xf7\x1a\x94p\x03.\xa8e\x1e\xfb\x92\xe8l\x0cc\xf8e\rvj'
 
 where *info*, *salt*, and *digestmod* are optional, although providing
-(at least) *info* is largely recommended.
+(at least) *info* is highly recommended.
 
 
 Symmetric cipher
@@ -181,15 +181,15 @@ drop-in replacement to other libraries.
 
 - AES encryption/decryption (128, 192, and 256 bits) in ECB, CBC, CFB128,
   CTR, OFB, or XTS mode;
-- AES AEAD (128, 192, and 256 bits) in GCM, or CCM mode;
+- AES AEAD (128, 192, and 256 bits) in GCM or CCM mode;
 - ARC4 encryption/decryption;
 - ARIA encryption/decryption (128, 192, and 256 bits) in ECB, CBC,
   CTR, or GCM modes;
 - Blowfish encryption/decryption in ECB, CBC, CFB64, or CTR mode;
 - Camellia encryption/decryption (128, 192, and 256 bits) in ECB, CBC,
   CFB128, CTR, or GCM mode;
-- DES, DES3, and double DES3 encryption/decryption in ECB, or CBC mode;
-- CHACHA20 and CHACHA0/POLY1305 encryption/decryption.
+- DES, DES3, and double DES3 encryption/decryption in ECB or CBC mode;
+- CHACHA20 and CHACHA20/POLY1305 encryption/decryption.
 
 Example:
 
@@ -239,7 +239,7 @@ False
 True
 
 
-Static and ephemeral Elliptic curve Diffie-Hellman
+Static and ephemeral elliptic curve Diffie-Hellman
 --------------------------------------------------
 
 The *mbedtls.pk* module provides the ECC cryptosystem.  This includes:
@@ -256,8 +256,8 @@ The API of the ECC class is the same as the API of the RSA class
 but ciphering (``encrypt()`` and ``decrypt()`` is not supported by
 Mbed TLS).
 
-Message signature and verification---elliptic curve digital signature
-algorithm (ECDSA):
+Message signature and verification using elliptic a curve digital
+signature algorithm (ECDSA):
 
 >>> from mbedtls import pk
 >>> ecdsa = pk.ECC()
@@ -340,7 +340,7 @@ True
 True
 
 
-X.509 Certificate writing and parsing
+X.509 certificate writing and parsing
 -------------------------------------
 
 The *mbedtls.x509* module can be used to parse X.509 certificates
