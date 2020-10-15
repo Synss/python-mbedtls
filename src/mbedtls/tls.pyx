@@ -774,7 +774,8 @@ cdef class DTLSConfiguration(_BaseConfiguration):
         trust_store=None,
         anti_replay=None,
         # badmac_limit
-        # handshake_timeout
+        handshake_timeout_min=None,
+        handshake_timeout_max=None,
         sni_callback=None,
         pre_shared_key=None,
         pre_shared_key_store=None,
@@ -793,6 +794,7 @@ cdef class DTLSConfiguration(_BaseConfiguration):
             _transport=_tls.MBEDTLS_SSL_TRANSPORT_DATAGRAM,
         )
         self._set_anti_replay(anti_replay)
+        self._set_handshake_timeout(handshake_timeout_min, handshake_timeout_max)
         # For security reasons, we do not make cookie optional here.
         cdef _tls._DTLSCookie cookie = _tls._DTLSCookie()
         cookie.generate()
@@ -821,6 +823,38 @@ cdef class DTLSConfiguration(_BaseConfiguration):
         cdef unsigned int enabled = _tls.MBEDTLS_SSL_ANTI_REPLAY_ENABLED
         return True if self._ctx.anti_replay == enabled else False
 
+    cdef _set_handshake_timeout(self, minimum, maximum):
+        """Set DTLS handshake timeout.
+
+        Args:
+            minimum (float, optional): minimum timeout in seconds.
+            maximum (float, optional): maximum timeout in seconds.
+
+        """
+        if minimum is None and maximum is None:
+            return
+
+        def validate(extremum: float, *, default: float) -> float:
+            if extremum < 0.0:
+                raise ValueError(extremum)
+            return default if extremum is None else extremum
+
+        _tls.mbedtls_ssl_conf_handshake_timeout(
+            &self._ctx,
+            int(1000.0 * validate(minimum, default=1.0)),
+            int(1000.0 * validate(maximum, default=60.0)),
+        )
+
+    @property
+    def handshake_timeout_min(self):
+        """Min handshake timeout in seconds (default 1.0)."""
+        return float(self._ctx.hs_timeout_min) / 1000.0
+
+    @property
+    def handshake_timeout_max(self):
+        """Max handshake timeout in seconds (default 60.0)."""
+        return float(self._ctx.hs_timeout_max) / 1000.0
+
     cdef _set_cookie(self, _tls._DTLSCookie cookie):
         """Register callbacks for DTLS cookies (server only)."""
         self._cookie = cookie
@@ -848,10 +882,12 @@ cdef class DTLSConfiguration(_BaseConfiguration):
         lowest_supported_version=_DEFAULT_VALUE,
         highest_supported_version=_DEFAULT_VALUE,
         trust_store=_DEFAULT_VALUE,
+        anti_replay=_DEFAULT_VALUE,
+        handshake_timeout_min=_DEFAULT_VALUE,
+        handshake_timeout_max=_DEFAULT_VALUE,
         sni_callback=_DEFAULT_VALUE,
         pre_shared_key=_DEFAULT_VALUE,
         pre_shared_key_store=_DEFAULT_VALUE,
-        anti_replay=_DEFAULT_VALUE,
     ):
         """Create a new ``DTLSConfiguration``.
 
@@ -880,6 +916,15 @@ cdef class DTLSConfiguration(_BaseConfiguration):
         if trust_store is _DEFAULT_VALUE:
             trust_store = self.trust_store
 
+        if anti_replay is _DEFAULT_VALUE:
+            anti_replay = self.anti_replay
+
+        if handshake_timeout_min is _DEFAULT_VALUE:
+            handshake_timeout_min = self.handshake_timeout_min
+
+        if handshake_timeout_max is _DEFAULT_VALUE:
+            handshake_timeout_max = self.handshake_timeout_max
+
         if sni_callback is _DEFAULT_VALUE:
             sni_callback = self.sni_callback
 
@@ -889,9 +934,6 @@ cdef class DTLSConfiguration(_BaseConfiguration):
         if pre_shared_key_store is _DEFAULT_VALUE:
             pre_shared_key_store = self.pre_shared_key_store
 
-        if anti_replay is _DEFAULT_VALUE:
-            anti_replay = self.anti_replay
-
         return self.__class__(
             validate_certificates=validate_certificates,
             certificate_chain=certificate_chain,
@@ -900,10 +942,12 @@ cdef class DTLSConfiguration(_BaseConfiguration):
             lowest_supported_version=lowest_supported_version,
             highest_supported_version=highest_supported_version,
             trust_store=trust_store,
+            anti_replay=anti_replay,
+            handshake_timeout_min=handshake_timeout_min,
+            handshake_timeout_max=handshake_timeout_max,
             sni_callback=sni_callback,
             pre_shared_key=pre_shared_key,
             pre_shared_key_store=pre_shared_key_store,
-            anti_replay=anti_replay,
         )
 
 

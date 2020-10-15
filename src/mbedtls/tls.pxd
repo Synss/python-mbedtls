@@ -151,6 +151,9 @@ cdef extern from "mbedtls/ssl.h" nogil:
         unsigned char min_minor_ver
         # set_anti_replay
         unsigned int anti_replay
+        # set_handshake_timeout
+        unsigned int hs_timeout_min
+        unsigned int hs_timeout_max
 
         unsigned int endpoint
         unsigned int transport
@@ -219,7 +222,9 @@ cdef extern from "mbedtls/ssl.h" nogil:
         mbedtls_ssl_config *conf,
         char mode)
     # mbedtls_ssl_conf_dtls_badmac_limit
-    # mbedtls_ssl_conf_handshake_timeout
+    void mbedtls_ssl_conf_handshake_timeout(
+        mbedtls_ssl_config *conf,
+        int min, int max)
     # mbedtls_ssl_conf_ciphersuites_for_version
     # mbedtls_ssl_conf_cert_profile
 
@@ -440,6 +445,7 @@ cdef class TLSConfiguration(_BaseConfiguration):
 cdef class DTLSConfiguration(_BaseConfiguration):
     cdef _DTLSCookie _cookie
     cdef _set_anti_replay(self, mode)
+    cdef _set_handshake_timeout(self, minimum, maximum)
     cdef _set_cookie(self, _DTLSCookie cookie)
 
 

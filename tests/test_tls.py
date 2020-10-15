@@ -239,6 +239,18 @@ class TestDTLSConfiguration(_BaseConfiguration):
         conf_ = conf.update(anti_replay=anti_replay)
         assert conf_.anti_replay is anti_replay
 
+    @pytest.mark.parametrize(
+        "hs_min, hs_max", [(1, 60), (42, 69), (4.2, 6.9), (42.0, 69.0)]
+    )
+    def test_handshake_timeout_minmax(self, conf, hs_min, hs_max):
+        assert conf.handshake_timeout_min == 1.0
+        assert conf.handshake_timeout_max == 60.0
+        conf_ = conf.update(
+            handshake_timeout_min=hs_min, handshake_timeout_max=hs_max,
+        )
+        assert conf_.handshake_timeout_min == hs_min
+        assert conf_.handshake_timeout_max == hs_max
+
 
 class TestBaseContext:
     @pytest.fixture(params=[Purpose.SERVER_AUTH, Purpose.CLIENT_AUTH])
