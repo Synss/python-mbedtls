@@ -14,32 +14,32 @@ before_install:
     IMAGE="synss/python-mbedtls_$ARCH"
     CONTAINER="manylinux"
   - docker pull $IMAGE:builder
-  - |
-    docker build \
-      --target builder \
-      --cache-from $IMAGE:builder \
-      --tag $IMAGE:builder \
-      --build-arg ARCH=$ARCH \
-      .
+  - >
+    docker build
+    --target builder
+    --cache-from $IMAGE:builder
+    --tag $IMAGE:builder
+    --build-arg ARCH=$ARCH
+    .
   - docker pull $IMAGE:latest
-  - |
-    docker build \
-      --cache-from $IMAGE:builder \
-      --cache-from $IMAGE:latest \
-      --tag $IMAGE:$TRAVIS_BUILD_NUMBER \
-      --tag $IMAGE:latest \
-      --build-arg ARCH=$ARCH \
-      .
-  - |
-    docker run \
-      --rm \
-      --interactive \
-      --tty \
-      --detach \
-      --name $CONTAINER \
-      --network=host \
-      $IMAGE:latest \
-      $PRE_CMD /bin/sh
+  - >
+    docker build
+    --cache-from $IMAGE:builder
+    --cache-from $IMAGE:latest
+    --tag $IMAGE:$TRAVIS_BUILD_NUMBER
+    --tag $IMAGE:latest
+    --build-arg ARCH=$ARCH
+    .
+  - >
+    docker run
+    --rm
+    --interactive
+    --tty
+    --detach
+    --name $CONTAINER
+    --network=host
+    $IMAGE:latest
+    $PRE_CMD /bin/sh
 
 install:
   - pip install -r requirements/travis.txt
@@ -54,14 +54,14 @@ script:
   - python setup.py sdist -d sdist
   - devpi upload wheelhouse/* sdist/*
   - devpi list python-mbedtls
-  - |
-    docker exec \
-      --interactive \
-      --tty \
-      --env PIP_INDEX_URL \
-      $CONTAINER \
-      $PRE_CMD /bin/sh -c \
-      scripts/run-tests.sh
+  - >
+    docker exec
+    --interactive
+    --tty
+    --env PIP_INDEX_URL
+    $CONTAINER
+    $PRE_CMD /bin/sh -c
+    scripts/run-tests.sh
 
 after_script:
   - scripts/stop-devpi.sh
