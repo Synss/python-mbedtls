@@ -79,23 +79,10 @@ jobs:
 
   python_39:
     docker:
-      - image: circleci/python:3.9.0b4
+      - image: circleci/python:3.9
         environment: *env
     working_directory: ~/python-mbedtls
-    steps:
-      - checkout
-      - run: *deps
-      - run: *python_version
-      - restore_cache: *restore_cache_ccache
-      - run: *mbedtls
-      - run:
-          name: Install cython from git
-          command: |
-            python -m pip install --user git+https://github.com/cython/cython.git@master
-      - run: *install
-      - save_cache: *save_cache_ccache
-      - run: *tests
-      - store_artifacts: *archive_dist
+    steps: *steps
 
   python_qa:
     docker: *qa
