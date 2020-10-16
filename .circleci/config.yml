@@ -84,6 +84,13 @@ jobs:
     working_directory: ~/python-mbedtls
     steps: *steps
 
+  python_310:
+    docker:
+      - image: circleci/python:3.10-rc
+        environment: *env
+    working_directory: ~/python-mbedtls
+    steps: *steps
+
   python_qa:
     docker: *qa
     working_directory: ~/python-mbedtls
