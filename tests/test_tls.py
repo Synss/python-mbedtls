@@ -246,7 +246,8 @@ class TestDTLSConfiguration(_BaseConfiguration):
         assert conf.handshake_timeout_min == 1.0
         assert conf.handshake_timeout_max == 60.0
         conf_ = conf.update(
-            handshake_timeout_min=hs_min, handshake_timeout_max=hs_max,
+            handshake_timeout_min=hs_min,
+            handshake_timeout_max=hs_max,
         )
         assert conf_.handshake_timeout_min == hs_min
         assert conf_.handshake_timeout_max == hs_max
@@ -388,7 +389,8 @@ class _CommunicationBase(Chain):
     def client(self, server, srv_hostname, cli_conf, proto):
         ctx = ClientContext(cli_conf)
         sock = ctx.wrap_socket(
-            socket.socket(socket.AF_INET, proto), server_hostname=srv_hostname,
+            socket.socket(socket.AF_INET, proto),
+            server_hostname=srv_hostname,
         )
         sock.connect(server.getsockname())
         yield sock
