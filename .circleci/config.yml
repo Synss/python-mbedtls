@@ -46,9 +46,8 @@ jobs:
           command: |
             python -m pip install --user -r requirements/tests.txt
             python -m pytest
-      - store_artifacts: &artifacts
-          path: out
-          destination: artifacts
+      - store_artifacts: &archive_dist
+          path: dist
 
   python_35:
     docker:
@@ -96,7 +95,7 @@ jobs:
       - run: *install
       - save_cache: *save_cache_ccache
       - run: *tests
-      - store_artifacts: *artifacts
+      - store_artifacts: *archive_dist
 
   python_qa:
     docker: *qa
@@ -143,13 +142,8 @@ jobs:
           command: |
             python -m pip install --user sphinx sphinx_rtd_theme
             sphinx-build docs/source docs_out/ --color -bhtml
-      - run:
-          name: Save docs
-          when: on_success
-          command: |
-            mkdir -p out/
-            cp -R docs_out out/docs
-      - store_artifacts: *artifacts
+      - store_artifacts:
+          path: docs_out
 
 workflows:
   version: 2
