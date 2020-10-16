@@ -4,4 +4,4 @@
 #
 #    pip-compile setup.py
 #
-certifi==2019.11.28       # via python-mbedtls (setup.py)
+certifi==2020.6.20        # via python-mbedtls (setup.py)

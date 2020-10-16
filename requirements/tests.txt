@@ -5,10 +5,10 @@
 #    pip-compile requirements/tests.in
 #
 atomicwrites==1.4.0       # via pytest
-attrs==19.3.0             # via pytest
-bleach==3.1.5             # via readme-renderer
+attrs==20.2.0             # via pytest
+bleach==3.2.1             # via readme-renderer
 docutils==0.16            # via readme-renderer
-importlib-metadata==1.7.0  # via pluggy, pytest
+importlib-metadata==2.0.0  # via pluggy, pytest
 more-itertools==5.0.0     # via -r requirements/tests.in, pytest
 packaging==20.4           # via bleach, pytest
 pluggy==0.13.1            # via pytest
@@ -16,7 +16,7 @@ py==1.9.0                 # via pytest
 pygments==2.5.2           # via -r requirements/tests.in, readme-renderer
 pyparsing==2.4.7          # via packaging
 pytest==4.6.11            # via -r requirements/tests.in
-readme-renderer==26.0     # via -r requirements/tests.in
+readme-renderer==27.0     # via -r requirements/tests.in
 six==1.15.0               # via bleach, more-itertools, packaging, pytest, readme-renderer
 wcwidth==0.2.5            # via pytest
 webencodings==0.5.1       # via bleach
