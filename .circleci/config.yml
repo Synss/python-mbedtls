@@ -45,7 +45,9 @@ jobs:
           name: Run tests
           command: |
             python -m pip install --user -r requirements/tests.txt
-            python -m pytest
+            python -m pytest --junitxml="test-results/result.xml"
+      - store_test_results:
+          path: test-results
       - store_artifacts: &archive_dist
           path: dist
 
