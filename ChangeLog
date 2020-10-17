@@ -1,4 +1,4 @@
-[next]
+[1.4.0] - 2020-10-17
 
 * tls: Add accessors to min/max timeout DTLS handshake.
 * ci: Support Python 3.9 final.
