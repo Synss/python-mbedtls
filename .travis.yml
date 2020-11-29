@@ -52,6 +52,7 @@ script:
   - ls -A wheelhouse | grep -q . && ls -A wheelhouse
   - twine check wheelhouse/*
   - python setup.py sdist -d sdist
+  - tar tf sdist/*
   - devpi upload wheelhouse/* sdist/*
   - devpi list python-mbedtls
   - >
