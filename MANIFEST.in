@@ -1,4 +1,5 @@
 recursive-include src *.pxd
+recursive-include src *.pyx
 include LICENSE*
 include *.md
 include *.toml

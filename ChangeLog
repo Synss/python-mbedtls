@@ -1,3 +1,8 @@
+[next]
+
+* *: The '*.pyx' files were missing from the archive
+on pypi.
+
 [1.4.0] - 2020-10-17
 
 * tls: Add accessors to min/max timeout DTLS handshake.
