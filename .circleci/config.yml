@@ -35,6 +35,7 @@ jobs:
       - run: &install
           name: Install library
           command: |
+            python setup.py sdist -d dist
             python setup.py bdist_wheel
             python -m pip install --user --upgrade dist/*.whl
       - save_cache: &save_cache_ccache
