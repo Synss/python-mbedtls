@@ -1,4 +1,4 @@
-[next]
+[1.4.1] - 2020-11-30
 
 * *: The '*.pyx' files were missing from the archive
 on pypi.
