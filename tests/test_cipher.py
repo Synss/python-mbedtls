@@ -23,17 +23,17 @@ def test_get_supported_ciphers():
 
 
 def test_wrong_size_raises_exception():
-    with pytest.raises(TLSError):
+    with pytest.raises(NotImplementedError):
         Cipher(b"AES-512-ECB", b"", mb.Mode.ECB, b"")
 
 
 def test_random_name_raises_exception():
-    with pytest.raises(TLSError):
+    with pytest.raises(NotImplementedError):
         Cipher(b"RANDOM TEXT IS NOT A CIPHER", b"", mb.Mode.ECB, b"")
 
 
 def test_zero_length_raises_exception():
-    with pytest.raises(TLSError):
+    with pytest.raises(NotImplementedError):
         Cipher(b"", b"", mb.Mode.ECB, b"")
 
 
@@ -109,7 +109,10 @@ class _TestCipher:
 
     @pytest.fixture
     def cipher(self, module, key, mode, iv):
-        return module.new(key, mode, iv)
+        try:
+            return module.new(key, mode, iv)
+        except NotImplementedError:
+            return pytest.skip("unsupported cipher")
 
     @pytest.fixture
     def data(self, cipher, mode, randbytes):

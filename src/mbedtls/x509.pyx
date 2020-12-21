@@ -300,7 +300,7 @@ cdef class CRT(Certificate):
             _pk.CipherType.ECKEY: _pk.ECC,
         }.get(cipher_type, None)
         if cipher is None:
-            raise ValueError("unsupported cipher %r" % cipher_type)
+            raise NotImplementedError("unsupported cipher %r" % cipher_type)
 
         cdef size_t osize = _pk.PUB_DER_MAX_BYTES
         cdef unsigned char *c_buf = <unsigned char *>malloc(

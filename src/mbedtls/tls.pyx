@@ -484,7 +484,7 @@ cdef class _BaseConfiguration:
         if ciphers is None:
             return
         if not frozenset(ciphers).issubset(ciphers_available()):
-            raise ValueError("unsupported ciphers")
+            raise NotImplementedError("unsupported ciphers")
         cdef size_t idx = 0
         self._ciphers[idx] = 0
         for idx, cipher in enumerate(ciphers):

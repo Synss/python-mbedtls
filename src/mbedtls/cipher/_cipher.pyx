@@ -186,7 +186,7 @@ cdef class _CipherBase:
         if mode in {Mode.CBC, Mode.CFB} and iv.size == 0:
             raise ValueError("mode requires an IV")
         if cipher_name not in get_supported_ciphers():
-            raise _exc.TLSError(msg="unsupported cipher: %r" % cipher_name)
+            raise NotImplementedError("unsupported cipher: %r" % cipher_name)
 
         _exc.check_error(_cipher.mbedtls_cipher_setup(
             &self._enc_ctx,
