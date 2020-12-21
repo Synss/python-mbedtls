@@ -76,7 +76,7 @@ class _TestCipher:
         return request.param
 
     @pytest.fixture
-    def iv_size(self):
+    def iv_size(self, mode):
         raise NotImplementedError
 
     @pytest.fixture
@@ -214,7 +214,7 @@ class TestAES(_TestAESBase):
 
     @pytest.fixture
     def iv_size(self, mode):
-        return 0 if mode is mb.Mode.ECB else 16
+        return {mb.Mode.ECB: 0}.get(mode, 16)
 
     @pytest.fixture(params=[16, 24, 32])
     def key_size(self, request):
@@ -227,8 +227,8 @@ class TestAES_XTS(_TestAESBase):
         return request.param
 
     @pytest.fixture
-    def iv_size(self):
-        return 16
+    def iv_size(self, mode):
+        return {mb.Mode.ECB: 0}.get(mode, 16)
 
     @pytest.fixture(params=[32, 64])
     def key_size(self, request):
@@ -245,8 +245,8 @@ class TestAES_AEAD(_TestAEADCipher):
         return request.param
 
     @pytest.fixture
-    def iv_size(self):
-        return 12
+    def iv_size(self, mode):
+        return {mb.Mode.ECB: 0}.get(mode, 12)
 
     @pytest.fixture(params=[16, 24, 32])
     def key_size(self, request):
@@ -267,8 +267,8 @@ class TestARC4(_TestCipher):
         return request.param
 
     @pytest.fixture
-    def iv_size(self):
-        return 0
+    def iv_size(self, mode):
+        return {mb.Mode.ECB: 0}.get(mode, 0)
 
     @pytest.fixture(params=[16])
     def key_size(self, request):
@@ -314,7 +314,7 @@ class TestARIA(_TestCipher):
 
     @pytest.fixture
     def iv_size(self, mode):
-        return 12 if mode is mb.Mode.GCM else 16
+        return {mb.Mode.GCM: 12}.get(mode, 16)
 
     @pytest.fixture(params=[16, 24, 32])
     def key_size(self, request):
@@ -359,8 +359,8 @@ class TestBlowfish(_TestCipher):
         return request.param
 
     @pytest.fixture
-    def iv_size(self):
-        return 8
+    def iv_size(self, mode):
+        return {}.get(mode, 8)
 
     @pytest.fixture(params=range(4, 57))
     def key_size(self, request):
@@ -410,7 +410,7 @@ class TestCamellia(_TestCipher):
 
     @pytest.fixture
     def iv_size(self, mode):
-        return 12 if mode is mb.Mode.GCM else 16
+        return {mb.Mode.GCM: 12}.get(mode, 16)
 
     @pytest.fixture(params=[16, 24, 32])
     def key_size(self, request):
@@ -449,8 +449,8 @@ class _TestDESBase(_TestCipher):
         return request.param
 
     @pytest.fixture
-    def iv_size(self):
-        return 8
+    def iv_size(self, mode):
+        return {}.get(mode, 8)
 
     @pytest.fixture(params=[4, 64])
     def invalid_key_size(self, request):
@@ -512,8 +512,8 @@ class TestCHACHA20(_TestCipher):
         return request.param
 
     @pytest.fixture
-    def iv_size(self):
-        return 12
+    def iv_size(self, mode):
+        return {mb.Mode.ECB: 0}.get(mode, 12)
 
     @pytest.fixture(params=[32])
     def key_size(self, request):
@@ -555,8 +555,8 @@ class TestCHACHA20AEAD(_TestAEADCipher):
         return request.param
 
     @pytest.fixture
-    def iv_size(self):
-        return 12
+    def iv_size(self, mode):
+        return {mb.Mode.ECB: 0}.get(mode, 12)
 
     @pytest.fixture(params=[32])
     def key_size(self, request):
