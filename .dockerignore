@@ -1,6 +1,7 @@
 *
 !setup.py
 !README.rst
+!requirements/
 !src/
 !scripts/
 !tests/

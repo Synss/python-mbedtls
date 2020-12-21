@@ -7,12 +7,14 @@ matrix:
     - sudo: required
       services:
         - docker
-      env: ARCH=x86_64
+      env:
+        - ARCH=x86_64
+        - MBEDTLS="2.16.8"
+        - TAGS="cp27-cp27m cp27-cp27mu cp35-cp35m cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39"
 
 before_install:
   - |
     IMAGE="synss/python-mbedtls_$ARCH"
-    CONTAINER="manylinux"
   - docker pull $IMAGE:builder
   - >
     docker build
@@ -20,16 +22,26 @@ before_install:
     --cache-from $IMAGE:builder
     --tag $IMAGE:builder
     --build-arg ARCH=$ARCH
+    --build-arg MBEDTLS=$MBEDTLS
+    --build-arg TAGS="$TAGS"
     .
-  - docker pull $IMAGE:latest
   - >
     docker build
     --cache-from $IMAGE:builder
     --cache-from $IMAGE:latest
-    --tag $IMAGE:$TRAVIS_BUILD_NUMBER
     --tag $IMAGE:latest
     --build-arg ARCH=$ARCH
+    --build-arg MBEDTLS=$MBEDTLS
+    --build-arg TAGS="$TAGS"
     .
+
+install:
+  - pip install -r requirements/travis.txt
+  - scripts/start-devpi.sh -u user -x dev http://localhost:3141
+  - export PIP_INDEX_URL=http://localhost:3141/user/dev/+simple/
+
+script:
+  - CONTAINER=test
   - >
     docker run
     --rm
@@ -38,31 +50,21 @@ before_install:
     --detach
     --name $CONTAINER
     --network=host
+    --env PIP_INDEX_URL
     $IMAGE:latest
-    $PRE_CMD /bin/sh
-
-install:
-  - pip install -r requirements/travis.txt
-  - scripts/start-devpi.sh -u user -x dev http://localhost:3141
-  - export PIP_INDEX_URL=http://localhost:3141/user/dev/+simple/
-
-script:
+    /bin/sh
   - docker cp $CONTAINER:/root/wheelhouse/ .
-  - docker cp requirements/ $CONTAINER:/root/requirements/
   - ls -A wheelhouse | grep -q . && ls -A wheelhouse
   - twine check wheelhouse/*
   - python setup.py sdist -d sdist
   - tar tf sdist/*
   - devpi upload wheelhouse/* sdist/*
   - devpi list python-mbedtls
-  - >
-    docker exec
-    --interactive
-    --tty
-    --env PIP_INDEX_URL
-    $CONTAINER
-    $PRE_CMD /bin/sh -c
-    scripts/run-tests.sh
+  - |
+    for PYTHON in `echo ${TAGS:?}`; do
+    docker exec $CONTAINER /bin/sh -c "./scripts/run-tests.sh /opt/python/$PYTHON/bin/python";
+    done
+  - docker rm --force --volumes $CONTAINER
 
 after_script:
   - scripts/stop-devpi.sh
@@ -73,7 +75,6 @@ after_success:
       echo "$DOCKER_PASSWORD" \
       | docker login -u "$DOCKER_USERNAME" --password-stdin
       docker push $IMAGE:builder
-      docker push $IMAGE:$TRAVIS_BUILD_NUMBER
       docker push $IMAGE:latest
     fi
 
