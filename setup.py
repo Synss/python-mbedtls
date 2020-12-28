@@ -4,7 +4,7 @@ import os
 import sys
 from setuptools import setup, Extension, find_packages
 
-VERSION = "1.4.1"
+VERSION = "1.4.1"  # Also in `mbedtls.__init__.py`.
 MBEDTLS_VERSION = "2.16.8"
 DOWNLOAD_URL = "https://github.com/Synss/python-mbedtls/tarball/%s" % VERSION
 
@@ -65,6 +65,7 @@ def check_mbedtls_support(version, url):
                 mbedtls_version(lib), sep=os.linesep
             )
         )
+        sys.stdout.write("  python-mbedtls version: {0}".format(VERSION))
     except OSError as exc:
         lib = None
         sys.stderr.write("  {exc!s}{sep}".format(exc=exc, sep=os.linesep))

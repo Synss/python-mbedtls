@@ -1,3 +1,10 @@
+import random
+import sys
+
+import pytest
+
+import mbedtls
+
 try:
     from collections.abc import Sequence
 except ImportError:
@@ -6,9 +13,14 @@ try:
     import reprlib
 except ImportError:
     import repr as reprlib
-import random
 
-import pytest
+
+def pytest_report_header(config, startdir):
+    sys.stdout.write(
+        "python-mbedtls {0}, {1}\n".format(
+            mbedtls.__version__, mbedtls.version.version
+        )
+    )
 
 
 class _Repr(reprlib.Repr):

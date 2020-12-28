@@ -18,6 +18,8 @@ import mbedtls.x509 as x509
 
 hash = hashlib  # pylint: disable=redefined-builtin
 
+__version__ = "1.4.1"
+
 __all__ = (
     "cipher",
     "exceptions",
