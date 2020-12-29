@@ -1,5 +1,6 @@
 [next]
 
+* ci: Drop Python < 3.6.
 * cipher,tls,x509: Unsupported ciphers now consistently
 raise NotImplementedError.
 * cython: Get rid of compilation warnings.

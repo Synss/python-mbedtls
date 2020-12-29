@@ -151,5 +151,3 @@ workflows:
       - python_38
       - python_37
       - python_36
-      - python_35
-      - python_27
