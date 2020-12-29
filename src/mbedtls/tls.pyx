@@ -370,17 +370,20 @@ cdef class _BaseConfiguration:
     def __cinit__(self):
         _tls.mbedtls_ssl_config_init(&self._ctx)
 
-        cdef int ciphers_sz = len(ciphers_available()) + 1
+        cdef Py_ssize_t ciphers_sz = len(ciphers_available()) + 1
         self._ciphers = <int *>malloc(ciphers_sz * sizeof(int))
         if not self._ciphers:
             raise MemoryError()
+
+        cdef Py_ssize_t idx = 0
         for idx in range(ciphers_sz):
             self._ciphers[idx] = 0
 
-        cdef int protos_sz = len(NextProtocol) + 1
-        self._protos = <char **>malloc(protos_sz * sizeof(char *))
+        cdef Py_ssize_t protos_sz = len(NextProtocol) + 1
+        self._protos = <const char **>malloc(protos_sz * sizeof(char *))
         if not self._protos:
             raise MemoryError()
+
         for idx in range(protos_sz):
             self._protos[idx] = NULL
 
@@ -485,7 +488,7 @@ cdef class _BaseConfiguration:
             return
         if not frozenset(ciphers).issubset(ciphers_available()):
             raise NotImplementedError("unsupported ciphers")
-        cdef size_t idx = 0
+        cdef Py_ssize_t idx = 0
         self._ciphers[idx] = 0
         for idx, cipher in enumerate(ciphers):
             if not isinstance(cipher, int):
@@ -498,7 +501,7 @@ cdef class _BaseConfiguration:
     def ciphers(self):
         ciphers = []
         cdef int cipher_id
-        cdef size_t idx
+        cdef Py_ssize_t idx
         for idx in range(len(ciphers_available())):
             cipher_id = self._ciphers[idx]
             if cipher_id == 0:
@@ -522,13 +525,14 @@ cdef class _BaseConfiguration:
             return
         if len(protocols) > len(NextProtocol):
             raise ValueError("invalid protocols")
-        cdef size_t idx = 0
-        self._protos[idx] = NULL
+
+        cdef Py_ssize_t idx = 0
         for idx, proto in enumerate(protocols):
             if not isinstance(proto, bytes):
                 proto = proto.value
             self._protos[idx] = proto
         self._protos[idx + 1] = NULL
+
         _exc.check_error(_tls.mbedtls_ssl_conf_alpn_protocols(
             &self._ctx, self._protos))
 

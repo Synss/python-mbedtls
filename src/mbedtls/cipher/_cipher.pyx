@@ -309,7 +309,6 @@ cdef class AEADCipher(_CipherBase):
         cdef size_t olen
         cdef size_t sz = input.size + self.block_size
         cdef unsigned char tag[16];
-        assert sizeof(tag) == 16
         cdef unsigned char* output = <unsigned char*>malloc(
             sz * sizeof(unsigned char))
         if not output:
@@ -337,6 +336,13 @@ cdef class AEADCipher(_CipherBase):
             _exc.check_error(-0x6280)  # Raise full block expected error.
         assert iv.size != 0
         assert tag.size == 16
+
+        cdef const unsigned char *pad
+        if ad.size == 0:
+            pad = NULL
+        else:
+            pad = &ad[0]
+
         cdef size_t olen
         cdef size_t sz = input.size + self.block_size
         cdef unsigned char* output = <unsigned char*>malloc(
@@ -344,10 +350,6 @@ cdef class AEADCipher(_CipherBase):
         if not output:
             raise MemoryError()
         try:
-            if ad.size:
-                pad = <const unsigned char*> &ad[0]
-            else:
-                pad = NULL
             _exc.check_error(_cipher.mbedtls_cipher_auth_decrypt(
                 &self._dec_ctx,
                 &iv[0], iv.size, pad, ad.size,

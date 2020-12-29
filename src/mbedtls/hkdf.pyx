@@ -44,19 +44,30 @@ def hkdf(
     if digestmod is None:
         digestmod = _hmac.sha256
     cdef _hmac.Hmac hmac = digestmod(key)
+
+    cdef const unsigned char *c_info
+    if info.size == 0:
+        c_info = NULL
+    else:
+        c_info = &info[0]
+    cdef const unsigned char *c_salt
+    if salt is None or salt.size == 0:
+        c_salt = NULL
+    else:
+        c_salt = &salt[0]
+
     cdef unsigned char *okm = <unsigned char *>malloc(
         length * sizeof(unsigned char)
     )
+
     if not okm:
         raise MemoryError()
     try:
         _exc.check_error(_hkdf.mbedtls_hkdf(
             hmac._info,
-            NULL if salt is None or salt.size == 0 else &salt[0],
-            0 if salt is None else salt.size,
+            c_salt, 0 if salt is None else salt.size,
             &key[0], key.size,
-            NULL if info.size == 0 else &info[0],
-            0 if info is None else info.size,
+            c_info, 0 if info is None else info.size,
             okm, length
         ))
         return okm[:length]
@@ -90,6 +101,18 @@ def extract(
     if digestmod is None:
         digestmod = _hmac.sha256
     cdef _hmac.Hmac hmac = digestmod(key)
+
+    cdef const unsigned char *c_key
+    if key.size == 0:
+        c_key = NULL
+    else:
+        c_key = &key[0]
+    cdef const unsigned char *c_salt
+    if salt is None or salt.size == 0:
+        c_salt = NULL
+    else:
+        c_salt = &salt[0]
+
     cdef unsigned char *prk = <unsigned char *>malloc(
         hmac.digest_size * sizeof(unsigned char)
     )
@@ -98,9 +121,8 @@ def extract(
     try:
         _exc.check_error(_hkdf.mbedtls_hkdf_extract(
             hmac._info,
-            NULL if salt is None or not salt.size else &salt[0],
-            0 if salt is None else salt.size,
-            &key[0], key.size,
+            c_salt, 0 if salt is None else salt.size,
+            c_key, key.size,
             prk
         ))
         return prk[:hmac.digest_size]
@@ -134,7 +156,13 @@ def expand(
     if digestmod is None:
         digestmod = _hmac.sha256
     cdef _hmac.Hmac hmac = digestmod(prk)
-    assert hmac.digest_size
+
+    cdef const unsigned char *c_info
+    if info.size == 0:
+        c_info = NULL
+    else:
+        c_info = &info[0]
+
     cdef unsigned char *okm = <unsigned char *>malloc(
         length * sizeof(unsigned char)
     )
@@ -144,8 +172,7 @@ def expand(
         _exc.check_error(_hkdf.mbedtls_hkdf_expand(
             hmac._info,
             &prk[0], prk.size,
-            NULL if not info.size else &info[0],
-            0 if info is None else info.size,
+            c_info, 0 if info is None else info.size,
             okm, length
         ))
         return okm[:length]

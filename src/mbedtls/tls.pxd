@@ -423,7 +423,7 @@ cdef class _BaseConfiguration:
     cdef mbedtls_ssl_config _ctx
     cdef _chain
     cdef int *_ciphers
-    cdef char **_protos
+    cdef const char **_protos
     cdef _PSKSToreProxy _store
     # cdef'd because we aim at a non-writable structure.
     cdef _set_validate_certificates(self, validate)
