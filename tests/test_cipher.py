@@ -314,7 +314,7 @@ class TestARIA(_TestCipher):
 
     @pytest.fixture
     def iv_size(self, mode):
-        return {mb.Mode.GCM: 12}.get(mode, 16)
+        return {mb.Mode.ECB: 0, mb.Mode.GCM: 12}.get(mode, 16)
 
     @pytest.fixture(params=[16, 24, 32])
     def key_size(self, request):
@@ -360,7 +360,7 @@ class TestBlowfish(_TestCipher):
 
     @pytest.fixture
     def iv_size(self, mode):
-        return {}.get(mode, 8)
+        return {mb.Mode.ECB: 0}.get(mode, 8)
 
     @pytest.fixture(params=range(4, 57))
     def key_size(self, request):
@@ -410,7 +410,7 @@ class TestCamellia(_TestCipher):
 
     @pytest.fixture
     def iv_size(self, mode):
-        return {mb.Mode.GCM: 12}.get(mode, 16)
+        return {mb.Mode.ECB: 0, mb.Mode.GCM: 12}.get(mode, 16)
 
     @pytest.fixture(params=[16, 24, 32])
     def key_size(self, request):
@@ -450,7 +450,7 @@ class _TestDESBase(_TestCipher):
 
     @pytest.fixture
     def iv_size(self, mode):
-        return {}.get(mode, 8)
+        return {mb.Mode.ECB: 0}.get(mode, 8)
 
     @pytest.fixture(params=[4, 64])
     def invalid_key_size(self, request):

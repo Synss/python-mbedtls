@@ -3,6 +3,8 @@
 * ci: Drop Python < 3.6.
 * cipher,tls,x509: Unsupported ciphers now consistently
 raise NotImplementedError.
+* upstream: The size of the IV in ECB mode is consistently 0.
+* Update wheels to mbedtls 2.16.9.
 * cython: Get rid of compilation warnings.
 
 [1.4.1] - 2020-11-30
