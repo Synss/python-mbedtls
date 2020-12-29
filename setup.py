@@ -143,6 +143,7 @@ setup(
         "with an mbed TLS back end"
     ),
     long_description=readme(),
+    long_description_content_type="text/x-rst",
     author="Mathias Laurin",
     author_email="Mathias.Laurin@github.com",
     license="MIT License",
