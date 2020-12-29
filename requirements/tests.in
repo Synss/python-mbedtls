@@ -1,6 +1,2 @@
-pytest < 5.0.0  # For Python < 3.5
+pytest
 readme_renderer
-
-more-itertools < 6.0.0      # via pytest, zipp; for Python < 3.5
-pygments < 2.6.0            # for Python < 3
-zipp < 2.0.0                # via importlib-metadata; for Python < 3.6
