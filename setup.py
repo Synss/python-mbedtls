@@ -2,9 +2,26 @@ import ctypes
 import ctypes.util
 import os
 import sys
+import re
 from setuptools import setup, Extension, find_packages
 
-VERSION = "1.4.1"  # Also in `mbedtls.__init__.py`.
+
+def _get_version():
+    pattern = re.compile('^__version__ = ["]([.\w]+?)["]')
+    with open(
+        os.path.join(
+            os.path.dirname(__file__), "src", "mbedtls", "__init__.py"
+        )
+    ) as f:
+        for line in f:
+            match = pattern.match(line)
+            if match:
+                return match.group(1)
+        else:
+            raise RuntimeError()
+
+
+VERSION = _get_version()
 MBEDTLS_VERSION = "2.16.8"
 DOWNLOAD_URL = "https://github.com/Synss/python-mbedtls/tarball/%s" % VERSION
 
@@ -57,9 +74,7 @@ def check_mbedtls_support(version, url):
         sys.stderr.write("  Library not found{sep}".format(sep=os.linesep))
     try:
         lib = ctypes.cdll.LoadLibrary(library)
-        sys.stdout.write(
-            "  loading: {!r}\n".format(lib._name)
-        )
+        sys.stdout.write("  loading: {!r}\n".format(lib._name))
         sys.stdout.write(
             "  mbedtls version: {!s}{sep}".format(
                 mbedtls_version(lib), sep=os.linesep
