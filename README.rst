@@ -65,13 +65,13 @@ https://synss.github.io/python-mbedtls/
 Installation
 ============
 
-The bindings are tested with Python 2.7, 3.5, 3.6, 3.7, and 3.8 on Linux
+The bindings are tested with Python 3.6, 3.7, 3.8, 3.9 on Linux
 and macOS.
 
-`manylinux1`_ wheels are available for 64-bit Linux systems.  Install
+`manylinux`_ wheels are available for 64-bit Linux systems.  Install
 with ``pip install python-mbedtls``.
 
-.. _manylinux1: https://www.python.org/dev/peps/pep-0513/
+.. _manylinux: https://www.python.org/dev/peps/pep-0513/
 
 
 Usage and examples
