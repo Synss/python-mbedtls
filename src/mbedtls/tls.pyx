@@ -1076,22 +1076,21 @@ cdef class _BaseContext:
     def _state(self):
         return HandshakeStep(self._ctx.state)
 
-    def _do_handshake_step(self):
-        ret = _tls.mbedtls_ssl_handshake_step(&self._ctx)
-        if ret == 0:
-            return self._state
-        elif ret == _tls.MBEDTLS_ERR_SSL_WANT_READ:
-            raise WantReadError()
-        elif ret == _tls.MBEDTLS_ERR_SSL_WANT_WRITE:
-            raise WantWriteError()
-        else:
-            self._reset()
-            _exc.check_error(ret)
-            return self._state
-
     def _do_handshake(self):
         """Start the SSL/TLS handshake."""
-        ret = _tls.mbedtls_ssl_handshake(&self._ctx)
+        while self._state is not HandshakeStep.HANDSHAKE_OVER:
+            self._do_handshake_step()
+
+    def _do_handshake_step(self):
+        if self._state is HandshakeStep.HANDSHAKE_OVER:
+            raise ValueError("handshake already over")
+        self._handle_handshake_response(_tls.mbedtls_ssl_handshake_step(&self._ctx))
+
+    def _renegotiate(self):
+        """Initialize an SSL renegotiation on the running connection."""
+        self._handle_handshake_response(_tls.mbedtls_ssl_renegotiate(&self._ctx))
+
+    def _handle_handshake_response(self, ret):
         if ret == 0:
             return
         elif ret == _tls.MBEDTLS_ERR_SSL_WANT_READ:
@@ -1101,20 +1100,6 @@ cdef class _BaseContext:
         elif ret == _tls.MBEDTLS_ERR_SSL_HELLO_VERIFY_REQUIRED:
             self._reset()
             raise HelloVerifyRequest()
-        else:
-            assert ret < 0
-            self._reset()
-            _exc.check_error(ret)
-
-    def _renegotiate(self):
-        """Initialize an SSL renegotiation on the running connection."""
-        ret = _tls.mbedtls_ssl_renegotiate(&self._ctx)
-        if ret == 0:
-            return
-        elif ret == _tls.MBEDTLS_ERR_SSL_WANT_READ:
-            raise WantReadError()
-        elif ret == _tls.MBEDTLS_ERR_SSL_WANT_WRITE:
-            raise WantWriteError()
         else:
             assert ret < 0
             self._reset()
@@ -1269,9 +1254,6 @@ cdef class TLSWrappedBuffer:
         amt = self.context._write(buffer)
         assert amt == buffer.size
         return len(self._send_buf)
-
-    def _do_handshake_step(self):
-        return self.context._do_handshake_step()
 
     def do_handshake(self):
         # PEP 543
@@ -1494,13 +1476,6 @@ cdef class TLSWrappedSocket:
         self._socket.shutdown(how)
 
     # PEP 543 adds the following methods.
-
-    def _do_handshake_step(self):
-        self._as_bio()
-        state = self._buffer._do_handshake_step()
-        if state is HandshakeStep.HANDSHAKE_OVER:
-            self._buffer._as_bio()
-        return state
 
     def do_handshake(self):
         self._as_bio()
