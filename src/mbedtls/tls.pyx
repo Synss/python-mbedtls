@@ -1376,7 +1376,7 @@ cdef class TLSWrappedSocket:
         self._ctx.fd = <int>socket.fileno()
         self._as_bio()
 
-    def __cinit__(self, socket, TLSWrappedBuffer buffer):
+    def __cinit__(self):
         _net.mbedtls_net_init(&self._ctx)
 
     def __dealloc__(self):
