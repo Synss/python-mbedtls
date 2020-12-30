@@ -1,6 +1,7 @@
 [next]
 
 * ci: Drop Python < 3.6.
+* hashlib: Drop hash alias to hashlib.
 * cipher,tls,x509: Unsupported ciphers now consistently
 raise NotImplementedError.
 * upstream: The size of the IV in ECB mode is consistently 0.
