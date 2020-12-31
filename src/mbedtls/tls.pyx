@@ -28,7 +28,6 @@ except ImportError:
     # Python 2.7
     from contextlib2 import suppress
 
-from enum import Enum, IntEnum
 from itertools import tee
 
 import certifi
@@ -41,63 +40,6 @@ import mbedtls.pk as _pk
 
 
 cdef _rnd.Random __rng = _rnd.default_rng()
-
-
-class TLSRecordHeader:
-    """Encode/decode TLS record protocol format."""
-
-    __slots__ = ("record_type", "version", "length")
-    fmt = "!BHH"
-
-    class RecordType(enum.IntEnum):
-        CHANGE_CIPHER_SPEC = 0x14
-        ALERT = 0x15
-        HANDSHAKE = 0x16
-        APPLICATION_DATA = 0x17
-
-    class Version(enum.IntEnum):
-        # MBEDTLS_SSL_|MAJOR|MINOR|_VERSION
-        SSLv3 = 0x0300
-        TLSv1_0 = 0x301
-        TLSv1_1 = 0x302
-        TLSv1_2 = 0x302
-        TLSv1_3 = 0x303
-
-    def __init__(self, record_type, version, length):
-        self.record_type = record_type
-        self.version = version
-        self.length = length
-
-    def __str__(self):
-        return "%s(%s, %s, %s)" % (type(self).__name__, self.record_type, self.version, self.length)
-
-    def __repr__(self):
-        return "%s(%r, %r, %r)" % (type(self).__name__, self.record_type, self.version, self.length)
-
-    def __eq__(self, other):
-        if not isinstance(other, TLSRecordHeader):
-            return NotImplemented
-        return (self.record_type is other.record_type and
-                self.version is other.version and
-                self.length == other.length)
-
-    def __hash__(self):
-        return 0x5AFE ^ self.record_type ^ self.version ^ self.length
-
-    def __len__(self):
-        return 5
-
-    def __bytes__(self):
-        return struct.pack(TLSRecordHeader.fmt, self.record_type, self.version, self.length)
-
-    @classmethod
-    def from_bytes(cls, header):
-        record_type, version, length = struct.unpack(TLSRecordHeader.fmt, header[:5])
-        return cls(
-            TLSRecordHeader.RecordType(record_type),
-            TLSRecordHeader.Version(version),
-            length,
-        )
 
 
 cdef class _PSKSToreProxy:
@@ -230,7 +172,8 @@ def ciphers_available():
     return tuple(ciphersuites)
 
 
-class NextProtocol(Enum):
+@enum.unique
+class NextProtocol(enum.Enum):
     # PEP 543
     H2 = b'h2'
     H2C = b'h2c'
@@ -242,25 +185,95 @@ class NextProtocol(Enum):
     TURN = b'stun.turn'
 
 
-class TLSVersion(Enum):
+class TLSVersion(enum.IntEnum):
+    # MBEDTLS_SSL_|MAJOR|MINOR|_VERSION
     # PEP 543
     # SSLv3 is not safe and is disabled by default.
-    # SSLv3 = _tls.MBEDTLS_SSL_MINOR_VERSION_0
-    TLSv1 = _tls.MBEDTLS_SSL_MINOR_VERSION_1
-    TLSv1_1 = _tls.MBEDTLS_SSL_MINOR_VERSION_2
-    TLSv1_2 = _tls.MBEDTLS_SSL_MINOR_VERSION_3
+    # SSLv3 = 0x300
+    TLSv1 = 0x301
+    TLSv1_1 = 0x302
+    TLSv1_2 = 0x303
     MINIMUM_SUPPORTED = TLSv1
     MAXIMUM_SUPPORTED = TLSv1_2
 
+    @classmethod
+    def from_major_minor(cls, major, minor):
+        return cls((major << 8) + minor)
 
-class DTLSVersion(Enum):
-    DTLSv1_0 = _tls.MBEDTLS_SSL_MINOR_VERSION_2
-    DTLSv1_2 = _tls.MBEDTLS_SSL_MINOR_VERSION_3
+    def major(self):
+        return (self >> 8) & 0xFF
+
+    def minor(self):
+        return self & 0xFF
+
+
+class DTLSVersion(enum.IntEnum):
+    DTLSv1_0 = 0x302
+    DTLSv1_2 = 0x303
     MINIMUM_SUPPORTED = DTLSv1_0
     MAXIMUM_SUPPORTED = DTLSv1_2
 
+    @classmethod
+    def from_major_minor(cls, major, minor):
+        return cls((major << 8) + minor)
 
-class HandshakeStep(Enum):
+    def major(self):
+        return (self >> 8) & 0xFF
+
+    def minor(self):
+        return self & 0xFF
+
+
+class TLSRecordHeader:
+    """Encode/decode TLS record protocol format."""
+
+    __slots__ = ("record_type", "version", "length")
+    fmt = "!BHH"
+
+    class RecordType(enum.IntEnum):
+        CHANGE_CIPHER_SPEC = 0x14
+        ALERT = 0x15
+        HANDSHAKE = 0x16
+        APPLICATION_DATA = 0x17
+
+    def __init__(self, record_type, version, length):
+        self.record_type = record_type
+        self.version = version
+        self.length = length
+
+    def __str__(self):
+        return "%s(%s, %s, %s)" % (type(self).__name__, self.record_type, self.version, self.length)
+
+    def __repr__(self):
+        return "%s(%r, %r, %r)" % (type(self).__name__, self.record_type, self.version, self.length)
+
+    def __eq__(self, other):
+        if not isinstance(other, TLSRecordHeader):
+            return NotImplemented
+        return (self.record_type is other.record_type and
+                self.version is other.version and
+                self.length == other.length)
+
+    def __hash__(self):
+        return 0x5AFE ^ self.record_type ^ self.version ^ self.length
+
+    def __len__(self):
+        return 5
+
+    def __bytes__(self):
+        return struct.pack(TLSRecordHeader.fmt, self.record_type, self.version, self.length)
+
+    @classmethod
+    def from_bytes(cls, header):
+        record_type, version, length = struct.unpack(TLSRecordHeader.fmt, header[:5])
+        return cls(
+            TLSRecordHeader.RecordType(record_type),
+            TLSVersion(version),
+            length,
+        )
+
+
+class HandshakeStep(enum.Enum):
     HELLO_REQUEST = _tls.MBEDTLS_SSL_HELLO_REQUEST
     CLIENT_HELLO = _tls.MBEDTLS_SSL_CLIENT_HELLO
     SERVER_HELLO = _tls.MBEDTLS_SSL_SERVER_HELLO
@@ -354,7 +367,7 @@ class TrustStore(abc.Sequence):
         self._db.append(crt)
 
 
-class Purpose(IntEnum):
+class Purpose(enum.IntEnum):
     SERVER_AUTH = _tls.MBEDTLS_SSL_IS_SERVER
     CLIENT_AUTH = _tls.MBEDTLS_SSL_IS_CLIENT
 
@@ -458,8 +471,8 @@ cdef class _BaseConfiguration:
                 "certificate_chain=%r, "
                 "ciphers=%r, "
                 "inner_protocols=%r, "
-                "lowest_supported_version=%r, "
-                "highest_supported_version=%r, "
+                "lowest_supported_version=%s, "
+                "highest_supported_version=%s, "
                 "trust_store=%r, "
                 "sni_callback=%r, "
                 "pre_shared_key=%r, "
@@ -618,8 +631,9 @@ cdef class _BaseConfiguration:
             return
         _tls.mbedtls_ssl_conf_min_version(
             &self._ctx,
-            _tls.MBEDTLS_SSL_MAJOR_VERSION_3,
-            version.value)
+            version.major(),
+            version.minor(),
+        )
 
     @property
     def lowest_supported_version(self):
@@ -636,8 +650,9 @@ cdef class _BaseConfiguration:
             return
         _tls.mbedtls_ssl_conf_max_version(
             &self._ctx,
-            _tls.MBEDTLS_SSL_MAJOR_VERSION_3,
-            version.value)
+            version.major(),
+            version.minor(),
+        )
 
     @property
     def highest_supported_version(self):
@@ -756,11 +771,13 @@ cdef class TLSConfiguration(_BaseConfiguration):
 
     @property
     def lowest_supported_version(self):
-        return TLSVersion(self._ctx.min_minor_ver)
+        return TLSVersion.from_major_minor(
+            self._ctx.min_major_ver, self._ctx.min_minor_ver)
 
     @property
     def highest_supported_version(self):
-        return TLSVersion(self._ctx.max_minor_ver)
+        return TLSVersion.from_major_minor(
+            self._ctx.max_major_ver, self._ctx.max_minor_ver)
 
     def update(
         self,
@@ -866,11 +883,13 @@ cdef class DTLSConfiguration(_BaseConfiguration):
 
     @property
     def lowest_supported_version(self):
-        return DTLSVersion(self._ctx.min_minor_ver)
+        return DTLSVersion.from_major_minor(
+            self._ctx.min_major_ver, self._ctx.min_minor_ver)
 
     @property
     def highest_supported_version(self):
-        return DTLSVersion(self._ctx.max_minor_ver)
+        return DTLSVersion.from_major_minor(
+            self._ctx.max_major_ver, self._ctx.max_minor_ver)
 
     cdef _set_anti_replay(self, anti_replay):
         """Set anti replay."""

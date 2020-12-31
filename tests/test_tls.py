@@ -36,12 +36,61 @@ def block(callback, *args, **kwargs):
             raise RuntimeError("maximum recursion depth exceeded.")
 
 
+class TestTLSVersion:
+    @pytest.mark.parametrize("version", TLSVersion)
+    def test_major(self, version):
+        assert version.major() == 3
+
+    def test_minor(self):
+        # assert TLSVersion.SSLv3.minor() == 0
+        assert TLSVersion.TLSv1.minor() == 1
+        assert TLSVersion.TLSv1_1.minor() == 2
+        assert TLSVersion.TLSv1_2.minor() == 3
+
+    @pytest.mark.parametrize("version", TLSVersion)
+    def test_from_major_minor(self, version):
+        assert (
+            TLSVersion.from_major_minor(version.major(), version.minor())
+            is version
+        )
+
+    @pytest.mark.parametrize(
+        "version", [TLSVersion.MINIMUM_SUPPORTED, TLSVersion.MAXIMUM_SUPPORTED]
+    )
+    def test_minmax_supported(self, version):
+        assert version in TLSVersion
+
+
+class TestDTLSVersion:
+    @pytest.mark.parametrize("version", DTLSVersion)
+    def test_major(self, version):
+        assert version.major() == 3
+
+    def test_minor(self):
+        assert DTLSVersion.DTLSv1_0.minor() == 2
+        assert DTLSVersion.DTLSv1_2.minor() == 3
+
+    @pytest.mark.parametrize("version", DTLSVersion)
+    def test_from_major_minor(self, version):
+        assert (
+            DTLSVersion.from_major_minor(version.major(), version.minor())
+            is version
+        )
+
+    @pytest.mark.parametrize(
+        "version",
+        [DTLSVersion.MINIMUM_SUPPORTED, DTLSVersion.MAXIMUM_SUPPORTED],
+    )
+    def test_minmax_supported(self, version):
+        assert version in DTLSVersion
+
+
 class TestTLSRecordHeader:
     @pytest.fixture(params=TLSRecordHeader.RecordType)
     def record_type(self, request):
         return request.param
 
-    @pytest.fixture(params=TLSRecordHeader.Version)
+    @pytest.fixture(params=TLSVersion)
     def version(self, request):
         return request.param
 
@@ -458,10 +507,7 @@ class _TLSCommunicationBase(_CommunicationBase):
     def proto(self):
         return socket.SOCK_STREAM
 
-    @pytest.fixture(
-        scope="class",
-        params=[TLSVersion.TLSv1, TLSVersion.TLSv1_1, TLSVersion.TLSv1_2],
-    )
+    @pytest.fixture(scope="class", params=TLSVersion)
     def version(self, request):
         return request.param
 
