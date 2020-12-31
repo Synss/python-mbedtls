@@ -13,7 +13,9 @@ cimport mbedtls.pk as _pk
 cimport mbedtls.tls as _tls
 cimport mbedtls.x509 as _x509
 
+import enum
 import socket as _socket
+import struct
 from collections import namedtuple
 try:
     from collections import abc
@@ -25,6 +27,7 @@ try:
 except ImportError:
     # Python 2.7
     from contextlib2 import suppress
+
 from enum import Enum, IntEnum
 from itertools import tee
 
@@ -38,6 +41,63 @@ import mbedtls.pk as _pk
 
 
 cdef _rnd.Random __rng = _rnd.default_rng()
+
+
+class TLSRecordHeader:
+    """Encode/decode TLS record protocol format."""
+
+    __slots__ = ("record_type", "version", "length")
+    fmt = "!BHH"
+
+    class RecordType(enum.IntEnum):
+        CHANGE_CIPHER_SPEC = 0x14
+        ALERT = 0x15
+        HANDSHAKE = 0x16
+        APPLICATION_DATA = 0x17
+
+    class Version(enum.IntEnum):
+        # MBEDTLS_SSL_|MAJOR|MINOR|_VERSION
+        SSLv3 = 0x0300
+        TLSv1_0 = 0x301
+        TLSv1_1 = 0x302
+        TLSv1_2 = 0x302
+        TLSv1_3 = 0x303
+
+    def __init__(self, record_type, version, length):
+        self.record_type = record_type
+        self.version = version
+        self.length = length
+
+    def __str__(self):
+        return "%s(%s, %s, %s)" % (type(self).__name__, self.record_type, self.version, self.length)
+
+    def __repr__(self):
+        return "%s(%r, %r, %r)" % (type(self).__name__, self.record_type, self.version, self.length)
+
+    def __eq__(self, other):
+        if not isinstance(other, TLSRecordHeader):
+            return NotImplemented
+        return (self.record_type is other.record_type and
+                self.version is other.version and
+                self.length == other.length)
+
+    def __hash__(self):
+        return 0x5AFE ^ self.record_type ^ self.version ^ self.length
+
+    def __len__(self):
+        return 5
+
+    def __bytes__(self):
+        return struct.pack(TLSRecordHeader.fmt, self.record_type, self.version, self.length)
+
+    @classmethod
+    def from_bytes(cls, header):
+        record_type, version, length = struct.unpack(TLSRecordHeader.fmt, header[:5])
+        return cls(
+            TLSRecordHeader.RecordType(record_type),
+            TLSRecordHeader.Version(version),
+            length,
+        )
 
 
 cdef class _PSKSToreProxy:

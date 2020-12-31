@@ -36,6 +36,36 @@ def block(callback, *args, **kwargs):
             raise RuntimeError("maximum recursion depth exceeded.")
 
 
+class TestTLSRecordHeader:
+    @pytest.fixture(params=TLSRecordHeader.RecordType)
+    def record_type(self, request):
+        return request.param
+
+    @pytest.fixture(params=TLSRecordHeader.Version)
+    def version(self, request):
+        return request.param
+
+    @pytest.fixture
+    def length(self):
+        return 42
+
+    @pytest.fixture
+    def header(self, record_type, version, length):
+        return TLSRecordHeader(record_type, version, length)
+
+    def test_accessors(self, header, record_type, version, length):
+        assert len(header) == 5
+        assert header.record_type is record_type
+        assert header.version is version
+        assert header.length == length
+
+    def test_serialization(self, header):
+        serialized = bytes(header)
+        assert isinstance(serialized, bytes)
+        assert len(serialized) == 5
+        assert TLSRecordHeader.from_bytes(serialized) == header
+
+
 class Chain:
     @pytest.fixture(scope="class")
     def now(self):
