@@ -592,7 +592,7 @@ cdef class ECPoint:
     def x(self):
         """Return the X coordinate."""
         try:
-            return _mpi.from_mpi(&self._ctx.X)
+            return _mpi.from_mpi_p(&self._ctx.X)
         except ValueError:
             return _mpi.MPI()
 
@@ -600,7 +600,7 @@ cdef class ECPoint:
     def y(self):
         """Return the Y coordinate."""
         try:
-            return _mpi.from_mpi(&self._ctx.Y)
+            return _mpi.from_mpi_p(&self._ctx.Y)
         except ValueError:
             return _mpi.MPI()
 
@@ -608,7 +608,7 @@ cdef class ECPoint:
     def z(self):
         """Return the Z coordinate."""
         try:
-            return _mpi.from_mpi(&self._ctx.Z)
+            return _mpi.from_mpi_p(&self._ctx.Z)
         except ValueError:
             return _mpi.MPI()
 
@@ -698,7 +698,7 @@ cdef class ECC(CipherBase):
 
     def _private_to_num(self):
         try:
-            return _mpi.from_mpi(&_pk.mbedtls_pk_ec(self._ctx).d)
+            return _mpi.from_mpi_p(&_pk.mbedtls_pk_ec(self._ctx).d)
         except ValueError:
             return _mpi.MPI()
 
@@ -783,17 +783,17 @@ cdef class DHBase:
     @property
     def modulus(self):
         """Return the prime modulus, P."""
-        return _mpi.from_mpi(&self._ctx.P)
+        return _mpi.from_mpi_p(&self._ctx.P)
 
     @property
     def generator(self):
         """Return the generator, G."""
-        return _mpi.from_mpi(&self._ctx.G)
+        return _mpi.from_mpi_p(&self._ctx.G)
 
     @property
     def _secret(self):
         """Return the secret (int)."""
-        return _mpi.from_mpi(&self._ctx.X)
+        return _mpi.from_mpi_p(&self._ctx.X)
 
     @property
     def shared_secret(self):
@@ -803,7 +803,7 @@ cdef class DHBase:
 
         """
         try:
-            return _mpi.from_mpi(&self._ctx.K)
+            return _mpi.from_mpi_p(&self._ctx.K)
         except ValueError:
             return _mpi.MPI()
 
@@ -879,7 +879,7 @@ cdef class DHClient(DHBase):
             _exc.check_error(_pk.mbedtls_dhm_make_public(
                 &self._ctx, self.key_size, &output[0], self.key_size,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
-            mpi = _mpi.from_mpi(&self._ctx.GX)
+            mpi = _mpi.from_mpi_p(&self._ctx.GX)
             return mpi.to_bytes(
                 _mpi.mbedtls_mpi_size(&mpi._ctx), "big")
         finally:
@@ -946,7 +946,7 @@ cdef class ECDHBase:
     @property
     def private_key(self):
         """The private key (int)"""
-        return _mpi.from_mpi(&self._ctx.d)
+        return _mpi.from_mpi_p(&self._ctx.d)
 
     @property
     def peers_public_key(self):
@@ -963,7 +963,7 @@ cdef class ECDHBase:
 
         """
         try:
-            return _mpi.from_mpi(&self._ctx.z)
+            return _mpi.from_mpi_p(&self._ctx.z)
         except ValueError:
             return _mpi.MPI()
 
@@ -1133,4 +1133,4 @@ cdef class ECDHNaive(ECDHBase):
         _exc.check_error(_pk.mbedtls_ecdh_compute_shared(
             &self._ctx.grp, &self._ctx.z, &self._ctx.Qp, &self._ctx.d,
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
-        return _mpi.from_mpi(&self._ctx.z)
+        return _mpi.from_mpi_p(&self._ctx.z)

@@ -108,12 +108,9 @@ cdef extern from "mbedtls/bignum.h" nogil:
         int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
 
 
+cdef from_mpi_p(mbedtls_mpi *)
+
+
 cdef class MPI:
     cdef mbedtls_mpi _ctx
     cdef size_t _len(self)
-
-
-cdef inline from_mpi(mbedtls_mpi *c_mpi):
-    new_mpi = MPI()
-    mbedtls_mpi_copy(&new_mpi._ctx, c_mpi)
-    return new_mpi

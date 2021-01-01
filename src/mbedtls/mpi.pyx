@@ -36,6 +36,12 @@ cdef from_bytes(value):
     return long(hexlify(value), 16)
 
 
+cdef from_mpi_p(_mpi.mbedtls_mpi *mpi_p):
+    cdef _mpi.MPI new_mpi = _mpi.MPI()
+    _mpi.mbedtls_mpi_copy(&new_mpi._ctx, mpi_p)
+    return new_mpi
+
+
 cdef class MPI:
     """Multi-precision integer.
 
