@@ -19,6 +19,10 @@ def test_repr(repr_):
     assert isinstance(repr_(MPI(69)), str)
 
 
+def test_hash():
+    assert isinstance(hash(MPI(1337)), int)
+
+
 def test_is_integral():
     assert isinstance(MPI(42), numbers.Integral)
 

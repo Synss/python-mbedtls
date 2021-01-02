@@ -48,6 +48,9 @@ class TestECPoint:
     def test_repr(self, repr_, point):
         assert isinstance(repr_(point), str)
 
+    def test_hash(self, point):
+        assert isinstance(hash(point), int)
+
     def test_accessors(self, point, xyz):
         x, y, z = xyz
         assert point.x == x
@@ -63,12 +66,6 @@ class TestECPoint:
         assert (zero == 1) is False
         assert (zero == 0) is True
         assert (zero == ECPoint(0, 0, 0)) is True
-
-    def test_hash(self, point):
-        zero = ECPoint(0, 0, 0)
-        assert hash(zero) == hash(zero)
-        assert hash(point) == hash(point)
-        assert hash(zero) != hash(point)
 
     def test_bool(self, point):
         assert bool(point) is True
@@ -87,6 +84,9 @@ class _TestCipherBase:
     @pytest.fixture
     def pub(self, cipher, key):
         return type(cipher).from_buffer(cipher.export_public_key())
+
+    def test_hash(self, cipher):
+        assert isinstance(hash(cipher), int)
 
     @pytest.mark.usefixtures("key")
     def test_cmp_eq(self, cipher):

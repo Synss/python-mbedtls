@@ -67,6 +67,9 @@ class _CommonTests(_X509Base):
     def test_repr(self, repr_, x509):
         assert isinstance(repr_(x509), str)
 
+    def test_hash(self, x509):
+        assert isinstance(hash(x509), int)
+
     def test_from_buffer(self, x509, der):
         assert type(x509).from_buffer(der) == x509
 

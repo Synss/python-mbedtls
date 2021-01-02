@@ -131,6 +131,9 @@ class TestTLSRecordHeader:
     def test_repr(self, repr_, record_type):
         assert isinstance(repr_(record_type), str)
 
+    def test_hash(self, record_type):
+        assert isinstance(hash(record_type), int)
+
     def test_accessors(self, header, record_type, version, length):
         assert len(header) == 5
         assert header.record_type is record_type
