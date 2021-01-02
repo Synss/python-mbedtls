@@ -10,6 +10,7 @@ from mbedtls.exceptions import TLSError
 from mbedtls.pk import RSA
 from mbedtls.tls import *
 from mbedtls.tls import _DTLSCookie as DTLSCookie
+from mbedtls.tls import _PSKSToreProxy as PSKStoreProxy
 from mbedtls.x509 import CRT, CSR, BasicConstraints
 
 try:
@@ -34,6 +35,26 @@ def block(callback, *args, **kwargs):
         counter += 1
         if counter == sys.getrecursionlimit():
             raise RuntimeError("maximum recursion depth exceeded.")
+
+
+class TestPSKStoreProxy:
+    @pytest.fixture
+    def psk_store(self):
+        return {"client": b"the secret key"}
+
+    @pytest.fixture
+    def proxy(self, psk_store):
+        return PSKStoreProxy(psk_store)
+
+    def test_unwrap(self, proxy, psk_store):
+        assert proxy.unwrap() == psk_store
+
+    def test_eq(self, proxy, psk_store):
+        for k, v in psk_store.items():
+            assert proxy[k] == v
+
+    def test_len(self, proxy, psk_store):
+        assert len(proxy) == len(psk_store)
 
 
 class TestTLSVersion:

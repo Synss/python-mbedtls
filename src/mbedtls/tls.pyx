@@ -52,7 +52,7 @@ cdef class _PSKSToreProxy:
         return self._mapping
 
     def __repr__(self):
-        return self._mapping.__repr__()
+        return "%s(%r)" % (type(self).__name__, self._mapping)
 
     def __str__(self):
         return self._mapping.__str__()
