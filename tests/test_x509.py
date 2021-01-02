@@ -49,7 +49,9 @@ def subject_key():
 
 
 class _X509Base:
-    # Derive and provide `x509`.
+    @pytest.fixture
+    def x509(self):
+        raise NotImplementedError
 
     @pytest.fixture
     def der(self, x509):
@@ -61,6 +63,10 @@ class _X509Base:
 
 
 class _CommonTests(_X509Base):
+    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    def test_repr(self, repr_, x509):
+        assert isinstance(repr_(x509), str)
+
     def test_from_buffer(self, x509, der):
         assert type(x509).from_buffer(der) == x509
 

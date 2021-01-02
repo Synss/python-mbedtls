@@ -14,6 +14,11 @@ def test_from_int(value):
     assert mpi == mpi
 
 
+@pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+def test_repr(repr_):
+    assert isinstance(repr_(MPI(69)), str)
+
+
 def test_is_integral():
     assert isinstance(MPI(42), numbers.Integral)
 

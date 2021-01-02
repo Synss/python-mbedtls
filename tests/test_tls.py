@@ -46,6 +46,10 @@ class TestPSKStoreProxy:
     def proxy(self, psk_store):
         return PSKStoreProxy(psk_store)
 
+    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    def test_repr(self, repr_, psk_store):
+        assert isinstance(repr_(psk_store), str)
+
     def test_unwrap(self, proxy, psk_store):
         assert proxy.unwrap() == psk_store
 
@@ -122,6 +126,10 @@ class TestTLSRecordHeader:
     @pytest.fixture
     def header(self, record_type, version, length):
         return TLSRecordHeader(record_type, version, length)
+
+    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    def test_repr(self, repr_, record_type):
+        assert isinstance(repr_(record_type), str)
 
     def test_accessors(self, header, record_type, version, length):
         assert len(header) == 5
@@ -200,6 +208,10 @@ class TestTrustStore(Chain):
     def store(self):
         return TrustStore.system()
 
+    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    def test_repr(self, repr_, store):
+        assert isinstance(repr_(store), str)
+
     def test_eq(self, store):
         other = TrustStore(store)
         assert store is not other
@@ -251,6 +263,10 @@ class _BaseConfiguration(Chain):
     @pytest.fixture
     def version(self):
         raise NotImplementedError
+
+    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    def test_repr(self, repr_, conf):
+        assert isinstance(repr_(conf), str)
 
     @pytest.mark.parametrize("validate", [True, False])
     def test_set_validate_certificates(self, conf, validate):
@@ -382,6 +398,14 @@ class TestBaseContext:
 
     # def test_negotiated_tls_version(self, context):
     #     assert context._negotiated_tls_version() is TLSVersion.SSLv3
+
+    @pytest.fixture
+    def tls_wrapped_buffer(self, context):
+        return TLSWrappedBuffer(context)
+
+    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    def test_repr_tls_wrapped_buffer(self, repr_, tls_wrapped_buffer):
+        assert isinstance(repr_(tls_wrapped_buffer), str)
 
 
 class TestClientContext(TestBaseContext):

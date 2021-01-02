@@ -67,6 +67,10 @@ class _TestMDBase:
     def block_size(self):
         raise NotImplementedError
 
+    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    def test_repr(self, repr_, algorithm):
+        assert isinstance(repr_(algorithm), str)
+
     def test_digest_size_accessor(self, algorithm, digest_size):
         assert algorithm.digest_size == digest_size
 
