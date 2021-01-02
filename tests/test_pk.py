@@ -44,17 +44,15 @@ class TestECPoint:
     def point(self, xyz):
         return ECPoint(*xyz)
 
+    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    def test_repr(self, repr_, point):
+        assert isinstance(repr_(point), str)
+
     def test_accessors(self, point, xyz):
         x, y, z = xyz
         assert point.x == x
         assert point.y == y
         assert point.z == z
-
-    def test_str(self, point):
-        assert str(point) == "ECPoint(1, 2, 3)"
-
-    def test_repr(self, point):
-        assert repr(point) == "ECPoint(MPI(1), MPI(2), MPI(3))"
 
     def test_eq_point(self, point, xyz):
         assert (point == ECPoint(*xyz)) is True
