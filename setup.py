@@ -1,13 +1,16 @@
 import ctypes
 import ctypes.util
 import os
-import sys
+import platform
 import re
-from setuptools import setup, Extension, find_packages
+import sys
+from contextlib import suppress
+
+from setuptools import Extension, find_packages, setup
 
 
 def _get_version():
-    pattern = re.compile('^__version__ = ["]([.\w]+?)["]')
+    pattern = re.compile(r'^__version__ = ["]([.\w]+?)["]')
     with open(
         os.path.join(
             os.path.dirname(__file__), "src", "mbedtls", "__init__.py"
@@ -17,8 +20,7 @@ def _get_version():
             match = pattern.match(line)
             if match:
                 return match.group(1)
-        else:
-            raise RuntimeError()
+        raise RuntimeError()
 
 
 VERSION = _get_version()
@@ -99,7 +101,25 @@ def check_mbedtls_support(version, url):
 
 
 def extensions(coverage=False):
-    for dirpath, dirnames, filenames in os.walk("src"):
+    def from_env(var):
+        with suppress(KeyError):
+            return filter(None, os.environ[var].split(ENVSEP))
+        return ()
+
+    WINDOWS = platform.system() == "Windows"
+    ENVSEP = ";" if WINDOWS else ":"
+
+    libraries = (
+        [
+            "AdvAPI32",  # `Crypt*` calls from `library/entropy_poll.c`
+            "mbedTLS",
+        ]
+        if WINDOWS
+        else ["mbedcrypto", "mbedtls", "mbedx509"]
+    )
+    library_dirs = list(from_env("LIBPATH" if WINDOWS else "LIBRARY_PATH"))
+
+    for dirpath, _, filenames in os.walk("src"):
         for fn in filenames:
             root, ext = os.path.splitext(fn)
             if ext != ".pyx":
@@ -107,9 +127,9 @@ def extensions(coverage=False):
             mod = ".".join(dirpath.split(os.sep)[1:] + [root])
             extension = Extension(
                 mod,
-                [os.path.join(dirpath, fn)],
-                library_dirs=os.environ.get("LIBRARY_PATH", "").split(":"),
-                libraries=["mbedcrypto", "mbedtls", "mbedx509"],
+                sources=[os.path.join(dirpath, fn)],
+                library_dirs=library_dirs,
+                libraries=libraries,
                 define_macros=[
                     ("CYTHON_TRACE", "1"),
                     ("CYTHON_TRACE_NOGIL", "1"),
