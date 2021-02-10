@@ -5,16 +5,16 @@
 #    pip-compile requirements/tests.in
 #
 attrs==20.3.0             # via pytest
-bleach==3.2.1             # via readme-renderer
+bleach==3.3.0             # via readme-renderer
 docutils==0.16            # via readme-renderer
-importlib-metadata==3.3.0  # via pluggy, pytest
+importlib-metadata==3.4.0  # via pluggy, pytest
 iniconfig==1.1.1          # via pytest
-packaging==20.8           # via bleach, pytest
+packaging==20.9           # via bleach, pytest
 pluggy==0.13.1            # via pytest
 py==1.10.0                # via pytest
-pygments==2.7.3           # via readme-renderer
+pygments==2.7.4           # via readme-renderer
 pyparsing==2.4.7          # via packaging
-pytest==6.2.1             # via -r requirements/tests.in
+pytest==6.2.2             # via -r requirements/tests.in
 readme-renderer==28.0     # via -r requirements/tests.in
 six==1.15.0               # via bleach, readme-renderer
 toml==0.10.2              # via pytest

@@ -8,37 +8,37 @@ apipkg==1.5               # via execnet
 appdirs==1.4.4            # via devpi-server, virtualenv
 argon2-cffi==20.1.0       # via passlib
 attrs==20.3.0             # via devpi-server
-bleach==3.2.1             # via readme-renderer
-build==0.1.0              # via check-manifest
+bleach==3.3.0             # via readme-renderer
+build==0.2.1              # via check-manifest
 certifi==2020.12.5        # via requests
 cffi==1.14.4              # via argon2-cffi
 chardet==4.0.0            # via requests
-check-manifest==0.45      # via devpi-client
+check-manifest==0.46      # via devpi-client
 colorama==0.4.4           # via twine
 devpi-client==5.2.1       # via -r requirements/travis.in
 devpi-common==3.6.0       # via devpi-client, devpi-server
 devpi-server==5.5.0       # via -r requirements/travis.in
 distlib==0.3.1            # via virtualenv
 docutils==0.16            # via readme-renderer
-execnet==1.7.1            # via devpi-server
+execnet==1.8.0            # via devpi-server
 filelock==3.0.12          # via tox, virtualenv
 hupper==1.10.2            # via pyramid
 idna==2.10                # via requests
-importlib-metadata==2.1.1  # via build, keyring, pep517, pluggy, tox, twine, virtualenv
+importlib-metadata==3.4.0  # via build, keyring, pep517, pluggy, tox, twine, virtualenv
 itsdangerous==1.1.0       # via devpi-server
-keyring==21.7.0           # via twine
+keyring==22.0.1           # via twine
 lazy==1.4                 # via devpi-common
-packaging==20.8           # via bleach, build, tox
+packaging==20.9           # via bleach, build, tox
 passlib[argon2]==1.7.4    # via devpi-server
 pastedeploy==2.1.1        # via plaster-pastedeploy
 pep517==0.9.1             # via build
-pkginfo==1.6.1            # via devpi-client, twine
+pkginfo==1.7.0            # via devpi-client, twine
 plaster-pastedeploy==0.7  # via pyramid
 plaster==1.0              # via plaster-pastedeploy, pyramid
 pluggy==0.13.1            # via devpi-client, devpi-server, tox
 py==1.10.0                # via devpi-client, devpi-common, devpi-server, tox
 pycparser==2.20           # via cffi
-pygments==2.7.3           # via readme-renderer
+pygments==2.7.4           # via readme-renderer
 pyparsing==2.4.7          # via packaging
 pyramid==1.10.5           # via devpi-server
 python-dateutil==2.8.1    # via strictyaml
@@ -50,15 +50,16 @@ rfc3986==1.4.0            # via twine
 ruamel.yaml.clib==0.2.2   # via ruamel.yaml
 ruamel.yaml==0.16.12      # via strictyaml
 six==1.15.0               # via argon2-cffi, bleach, python-dateutil, readme-renderer, tox, virtualenv
-strictyaml==1.1.1         # via devpi-server
+strictyaml==1.3.2         # via devpi-server
 toml==0.10.2              # via build, check-manifest, pep517, tox
-tox==3.20.1               # via devpi-client
-tqdm==4.55.0              # via twine
+tox==3.21.4               # via devpi-client
+tqdm==4.56.2              # via twine
 translationstring==1.4    # via pyramid
 twine==3.3.0              # via -r requirements/travis.in
-urllib3==1.26.2           # via requests
+typing-extensions==3.7.4.3  # via importlib-metadata
+urllib3==1.26.3           # via requests
 venusian==3.0.0           # via pyramid
-virtualenv==20.2.2        # via tox
+virtualenv==20.4.2        # via tox
 waitress==1.4.4           # via devpi-server
 webencodings==0.5.1       # via bleach
 webob==1.8.6              # via pyramid

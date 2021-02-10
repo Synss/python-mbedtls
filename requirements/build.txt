@@ -7,8 +7,7 @@
 click==7.1.2              # via pip-tools
 cython==0.29.21           # via -r requirements/build.in
 delocate==0.8.2 ; sys_platform == "darwin"  # via -r requirements/build.in
-pip-tools==5.4.0          # via -r requirements/build.in
-six==1.15.0               # via pip-tools
+pip-tools==5.5.0          # via -r requirements/build.in
 wheel==0.36.2             # via -r requirements/build.in, delocate
 
 # The following packages are considered to be unsafe in a requirements file:
