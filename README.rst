@@ -9,8 +9,8 @@ Cryptographic library for Python with Mbed TLS back end
    :target: https://circleci.com/gh/Synss/python-mbedtls/tree/master
 
 .. image::
-   https://travis-ci.org/Synss/python-mbedtls.svg?branch=master
-   :target: https://travis-ci.org/Synss/python-mbedtls
+   https://github.com/Synss/python-mbedtls/actions/workflows/main.yml/badge.svg?branch=master
+   :target: https://github.com/Synss/python-mbedtls/actions/
 
 .. image::
    https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=master

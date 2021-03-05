@@ -74,6 +74,12 @@ def check_mbedtls_support(version, url):
     library = ctypes.util.find_library("mbedtls")
     if not library:
         sys.stderr.write("  Library not found{sep}".format(sep=os.linesep))
+        sys.stderr.write(
+            "  The paths are probably not set correctly but let's try anyway{sep}".format(
+                sep=os.linesep
+            )
+        )
+        return
     try:
         lib = ctypes.cdll.LoadLibrary(library)
         sys.stdout.write("  loading: {!r}\n".format(lib._name))

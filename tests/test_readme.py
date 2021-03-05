@@ -18,7 +18,7 @@ else:
 @pytest.mark.skipif(render is None, reason="html5lib issue #419")
 def test_pypi_rendering():
     # Adapted from `https://stackoverflow.com/questions/46766570/`.
-    readme = Path("README.rst")
+    readme = Path(__file__).parent.parent / "README.rst"
     warnings = StringIO()
     with readme.open() as file_:
         html = render(file_.read(), stream=warnings)
