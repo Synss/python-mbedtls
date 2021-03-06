@@ -5,6 +5,8 @@
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=invalid-name, redefined-outer-name
 
+import pickle
+
 import pytest
 
 import mbedtls
@@ -118,6 +120,12 @@ class _TestCipher:
     def data(self, cipher, mode, randbytes):
         # `block_size` is limited for ECB because it is a block cipher.
         return randbytes(cipher.block_size if mode is mb.Mode.ECB else 20000)
+
+    def test_pickle(self, cipher):
+        with pytest.raises(TypeError) as excinfo:
+            pickle.dumps(cipher)
+
+        assert str(excinfo.value).startswith("cannot pickle")
 
     def test_mode_accessor(self, cipher, mode):
         assert cipher.mode is mode

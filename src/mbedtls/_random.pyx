@@ -29,6 +29,9 @@ cdef class _Entropy:
         """Free and clear the context."""
         _rnd.mbedtls_entropy_free(&self._ctx)
 
+    def __getstate__(self):
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+
     def gather(self):
         """Trigger an extra gather poll for the accumulator."""
         _rnd.mbedtls_entropy_gather(&self._ctx)
@@ -74,6 +77,9 @@ cdef class Random:
     def __dealloc__(self):
         """Free and clear the context."""
         _rnd.mbedtls_ctr_drbg_free(&self._ctx)
+
+    def __getstate__(self):
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
     @property
     def _entropy(self):

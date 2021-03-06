@@ -82,6 +82,9 @@ cdef class Certificate:
     def from_PEM(cls, pem):
         raise NotImplementedError
 
+    def __reduce__(self):
+        return type(self).from_DER, (bytes(self),)
+
     def __hash__(self):
         return hash(self.to_DER())
 
@@ -494,6 +497,9 @@ cdef class _CRTWriter:
         """Free the contents of a CRT write context."""
         x509.mbedtls_x509write_crt_free(&self._ctx)
 
+    def __getstate__(self):
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+
     def to_DER(self):
         """Return the certificate in DER format.
 
@@ -787,6 +793,9 @@ cdef class _CSRWriter:
     def __dealloc__(self):
         """Free the contents of a CSR context."""
         x509.mbedtls_x509write_csr_free(&self._ctx)
+
+    def __getstate__(self):
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
     def set_subject(self, subject):
         """Set the subject name for a CSR.

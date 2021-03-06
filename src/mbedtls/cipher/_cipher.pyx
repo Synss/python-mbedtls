@@ -214,6 +214,9 @@ cdef class _CipherBase:
         _cipher.mbedtls_cipher_free(&self._enc_ctx)
         _cipher.mbedtls_cipher_free(&self._dec_ctx)
 
+    def __getstate__(self):
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+
     def __str__(self):
         """Return the name of the cipher."""
         return self.name.decode("ascii")

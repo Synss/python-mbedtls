@@ -69,6 +69,13 @@ cdef class MPI:
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
         _mpi.mbedtls_mpi_free(&self._ctx)
 
+    def __reduce__(self):
+        byteorder = "big"
+        return type(self).from_bytes, (
+            self.to_bytes(self._len(), byteorder),
+            byteorder,
+        )
+
     cdef size_t _len(self):
         """Return the total size in bytes."""
         return _mpi.mbedtls_mpi_size(&self._ctx)

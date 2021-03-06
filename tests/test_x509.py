@@ -1,4 +1,5 @@
 import datetime as dt
+import pickle
 
 import certifi
 import pytest
@@ -66,6 +67,9 @@ class _CommonTests(_X509Base):
     @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
     def test_repr(self, repr_, x509):
         assert isinstance(repr_(x509), str)
+
+    def test_pickle(self, x509):
+        assert x509 == pickle.loads(pickle.dumps(x509))
 
     def test_hash(self, x509):
         assert isinstance(hash(x509), int)

@@ -1,5 +1,6 @@
 """Unit tests for mbedtls.random."""
 
+import pickle
 import random
 from collections import defaultdict
 
@@ -18,6 +19,12 @@ class TestEntropy:
     @pytest.fixture
     def entropy(self):
         return _drbg.Random()._entropy
+
+    def test_pickle(self, entropy):
+        with pytest.raises(TypeError) as excinfo:
+            pickle.dumps(entropy)
+
+        assert str(excinfo.value).startswith("cannot pickle")
 
     def test_gather(self, entropy):
         # Only test that this does not raise.
@@ -53,6 +60,12 @@ class TestRandom:
     @pytest.fixture
     def random(self):
         return _drbg.Random()
+
+    def test_pickle(self, random):
+        with pytest.raises(TypeError) as excinfo:
+            pickle.dumps(random)
+
+        assert str(excinfo.value).startswith("cannot pickle")
 
     def test_reseed(self, random):
         random._reseed()

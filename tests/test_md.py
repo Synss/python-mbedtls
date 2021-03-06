@@ -5,6 +5,7 @@
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=invalid-name
 
+import pickle
 import sys
 
 import pytest
@@ -70,6 +71,12 @@ class _TestMDBase:
     @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
     def test_repr(self, repr_, algorithm):
         assert isinstance(repr_(algorithm), str)
+
+    def test_pickle(self, algorithm):
+        with pytest.raises(TypeError) as excinfo:
+            pickle.dumps(algorithm)
+
+        assert str(excinfo.value).startswith("cannot pickle")
 
     def test_digest_size_accessor(self, algorithm, digest_size):
         assert algorithm.digest_size == digest_size

@@ -92,6 +92,9 @@ cdef class MDBase:
         """Free and clear the internal structures of ctx."""
         _md.mbedtls_md_free(&self._ctx)
 
+    def __getstate__(self):
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+
     def __str__(self):
         """Return the name of the message digest output."""
         return self.name

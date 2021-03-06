@@ -193,6 +193,12 @@ cdef class CipherBase:
         """Initialize the context."""
         _pk.mbedtls_pk_init(&self._ctx)
 
+    def __reduce__(self):
+        key = self.export_key()
+        if not key:
+            key = self.export_public_key()
+        return type(self).from_buffer, (key,)
+
     def __dealloc__(self):
         """Free and clear the context."""
         _pk.mbedtls_pk_free(&self._ctx)
@@ -588,6 +594,9 @@ cdef class ECPoint:
         """Free and clear the context."""
         _pk.mbedtls_ecp_point_free(&self._ctx)
 
+    def __reduce__(self):
+        return type(self), (self.x, self.y, self.z)
+
     @property
     def x(self):
         """Return the X coordinate."""
@@ -775,6 +784,9 @@ cdef class DHBase:
         """Free and clear the context."""
         _pk.mbedtls_dhm_free(&self._ctx)
 
+    def __getstate__(self):
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+
     @property
     def key_size(self):
         """Return the size of the key, in bytes."""
@@ -923,6 +935,9 @@ cdef class ECDHBase:
     def __dealloc__(self):
         """Free and clear the context."""
         _pk.mbedtls_ecdh_free(&self._ctx)
+
+    def __getstate__(self):
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
     def _has_private(self):
         """Return `True` if the key contains a valid private half."""

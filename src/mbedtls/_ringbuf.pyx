@@ -153,11 +153,17 @@ cdef size_t c_write(
 
 
 cdef class RingBuffer:
-    def __cinit__(self, size_t maxlen):
+    def __init__(self, size_t maxlen, content=b""):
+        self.write(content)
+
+    def __cinit__(self, size_t maxlen, content=b""):
         c_init(&self._ctx, maxlen)
 
     def __dealloc__(self):
         c_free(&self._ctx)
+
+    def __reduce__(self):
+        return type(self), (self.maxlen, self.__bytes__())
 
     @property
     def maxlen(self):

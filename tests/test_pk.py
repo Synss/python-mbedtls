@@ -1,6 +1,7 @@
 """Unit tests for mbedtls.pk."""
 
 import numbers
+import pickle
 
 import pytest
 
@@ -48,6 +49,9 @@ class TestECPoint:
     def test_repr(self, repr_, point):
         assert isinstance(repr_(point), str)
 
+    def test_pickle(self, point):
+        assert point == pickle.loads(pickle.dumps(point))
+
     def test_hash(self, point):
         assert isinstance(hash(point), int)
 
@@ -84,6 +88,9 @@ class _TestCipherBase:
     @pytest.fixture
     def pub(self, cipher, key):
         return type(cipher).from_buffer(cipher.export_public_key())
+
+    def test_pickle(self, cipher):
+        assert cipher == pickle.loads(pickle.dumps(cipher))
 
     def test_hash(self, cipher):
         assert isinstance(hash(cipher), int)
@@ -314,6 +321,12 @@ class _TestDHBase:
     def dhentity(self, modulus, generator):
         raise NotImplementedError
 
+    def test_pickle(self, dhentity):
+        with pytest.raises(TypeError) as excinfo:
+            pickle.dumps(dhentity)
+
+        assert str(excinfo.value).startswith("cannot pickle")
+
     def test_modulus(self, dhentity, modulus):
         assert dhentity.modulus == modulus
 
@@ -381,6 +394,18 @@ class TestECDH:
     @pytest.fixture
     def cli(self, curve):
         return ECDHClient(curve)
+
+    def test_srv_pickle(self, srv):
+        with pytest.raises(TypeError) as excinfo:
+            pickle.dumps(srv)
+
+        assert str(excinfo.value).startswith("cannot pickle")
+
+    def test_cli_pickle(self, cli):
+        with pytest.raises(TypeError) as excinfo:
+            pickle.dumps(cli)
+
+        assert str(excinfo.value).startswith("cannot pickle")
 
     def test_srv_key_accessors_without_key(self, srv):
         assert not srv._has_private()

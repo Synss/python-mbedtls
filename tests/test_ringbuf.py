@@ -1,3 +1,4 @@
+import pickle
 from random import randint
 
 import pytest
@@ -61,6 +62,15 @@ class TestRingBuf:
         assert not buffer.full()
 
         assert buffer == b""
+
+    @pytest.mark.usefixtures("randomize_start")
+    def test_pickle(self, buffer, maxlen, randbytes):
+        data = randbytes(maxlen // 2)
+        written = buffer.write(data)
+
+        other = pickle.loads(pickle.dumps(buffer))
+        assert other
+        assert other == buffer
 
     @pytest.mark.usefixtures("randomize_start")
     def test_consume_zero(self, buffer, maxlen, randbytes):

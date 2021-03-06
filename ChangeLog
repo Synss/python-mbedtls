@@ -1,5 +1,9 @@
 [Next]
 
+* *: Implement the pickling protocol (PEP 307).
+RingBuffer, ciphers, TLSConfiguration and DTLSConfiguration,
+and x509 certificates are copyable.  The other Cython classes
+are non-copyable.
 * tls: Fix missing DTLS-only parameters in DTLSConfiguration
 `__repr__()` and `__eq__()`.  Equality, especially, could
 have returned True for two configuration differing only on

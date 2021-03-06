@@ -1,4 +1,5 @@
 import numbers
+import pickle
 from binascii import hexlify, unhexlify
 
 import pytest
@@ -17,6 +18,11 @@ def test_from_int(value):
 @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
 def test_repr(repr_):
     assert isinstance(repr_(MPI(69)), str)
+
+
+def test_pickle():
+    value = MPI(1337)
+    assert value == pickle.loads(pickle.dumps(value))
 
 
 def test_hash():

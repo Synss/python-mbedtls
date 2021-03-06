@@ -797,6 +797,23 @@ cdef class TLSConfiguration(_BaseConfiguration):
             )
         )
 
+    def __reduce__(self):
+        return (
+            type(self),
+            (
+                self.validate_certificates,
+                self.certificate_chain,
+                self.ciphers,
+                self.inner_protocols,
+                self.lowest_supported_version,
+                self.highest_supported_version,
+                self.trust_store,
+                self.sni_callback,
+                self.pre_shared_key,
+                self.pre_shared_key_store,
+            ),
+        )
+
     def update(
         self,
         validate_certificates=_DEFAULT_VALUE,
@@ -961,6 +978,26 @@ cdef class DTLSConfiguration(_BaseConfiguration):
                    self.pre_shared_key_store,
                   ))
 
+    def __reduce__(self):
+        return (
+            type(self),
+            (
+                self.validate_certificates,
+                self.certificate_chain,
+                self.ciphers,
+                self.inner_protocols,
+                self.lowest_supported_version,
+                self.highest_supported_version,
+                self.trust_store,
+                self.anti_replay,
+                self.handshake_timeout_min,
+                self.handshake_timeout_max,
+                self.sni_callback,
+                self.pre_shared_key,
+                self.pre_shared_key_store,
+            ),
+        )
+
     cdef _set_anti_replay(self, anti_replay):
         """Set anti replay."""
         if anti_replay is None:
@@ -1118,6 +1155,9 @@ cdef class _TLSSession:
         """Free referenced items in an SSL session."""
         _tls.mbedtls_ssl_session_free(&self._ctx)
 
+    def __getstate__(self):
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+
 
 cdef class _BaseContext:
     # _pep543._BaseContext
@@ -1143,6 +1183,9 @@ cdef class _BaseContext:
     def __dealloc__(self):
         """Free and clear the internal structures of ctx."""
         _tls.mbedtls_ssl_free(&self._ctx)
+
+    def __getstate__(self):
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
     @property
     def configuration(self):
@@ -1382,6 +1425,10 @@ cdef class TLSWrappedBuffer:
     def __repr__(self):
         return "%s(%r)" % (type(self).__name__, self.context)
 
+    def __getstate__(self):
+        # We could make this pickable by copying the buffers.
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+
     def read(self, size_t amt):
         # PEP 543
         if amt <= 0:
@@ -1472,6 +1519,9 @@ cdef class TLSWrappedSocket:
 
     def __dealloc__(self):
         _net.mbedtls_net_free(&self._ctx)
+
+    def __getstate__(self):
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
     cdef void _as_bio(self):
         _tls.mbedtls_ssl_set_bio(
