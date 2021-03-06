@@ -1,5 +1,9 @@
 [Next]
 
+* tls: Fix missing DTLS-only parameters in DTLSConfiguration
+`__repr__()` and `__eq__()`.  Equality, especially, could
+have returned True for two configuration differing only on
+some parameters.
 * tls: Fix handling of min and max handshake timeout
 when set independently.
 * tls: Fix exception raised when unwrapping a

@@ -465,31 +465,6 @@ cdef class _BaseConfiguration:
         free(self._ciphers)
         free(self._protos)
 
-    def __repr__(self):
-        return ("%s("
-                "validate_certificates=%r, "
-                "certificate_chain=%r, "
-                "ciphers=%r, "
-                "inner_protocols=%r, "
-                "lowest_supported_version=%s, "
-                "highest_supported_version=%s, "
-                "trust_store=%r, "
-                "sni_callback=%r, "
-                "pre_shared_key=%r, "
-                "pre_shared_key_store=%r)"
-                % (type(self).__name__,
-                   self.validate_certificates,
-                   self.certificate_chain,
-                   self.ciphers,
-                   self.inner_protocols,
-                   self.lowest_supported_version,
-                   self.highest_supported_version,
-                   self.trust_store,
-                   self.sni_callback,
-                   self.pre_shared_key,
-                   self.pre_shared_key_store,
-                  ))
-
     cdef _set_validate_certificates(self, validate):
         """Set the certificate verification mode.
 
@@ -779,6 +754,49 @@ cdef class TLSConfiguration(_BaseConfiguration):
         return TLSVersion.from_major_minor(
             self._ctx.max_major_ver, self._ctx.max_minor_ver)
 
+    def __repr__(self):
+        return ("%s("
+                "validate_certificates=%r, "
+                "certificate_chain=%r, "
+                "ciphers=%r, "
+                "inner_protocols=%r, "
+                "lowest_supported_version=%s, "
+                "highest_supported_version=%s, "
+                "trust_store=%r, "
+                "sni_callback=%r, "
+                "pre_shared_key=%r, "
+                "pre_shared_key_store=%r)"
+                % (type(self).__name__,
+                   self.validate_certificates,
+                   self.certificate_chain,
+                   self.ciphers,
+                   self.inner_protocols,
+                   self.lowest_supported_version,
+                   self.highest_supported_version,
+                   self.trust_store,
+                   self.sni_callback,
+                   self.pre_shared_key,
+                   self.pre_shared_key_store,
+                  ))
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return all(
+            (
+                self.validate_certificates == other.validate_certificates,
+                self.certificate_chain == other.certificate_chain,
+                self.ciphers == other.ciphers,
+                self.inner_protocols == other.inner_protocols,
+                self.lowest_supported_version == other.lowest_supported_version,
+                self.highest_supported_version == other.highest_supported_version,
+                self.trust_store == other.trust_store,
+                self.sni_callback == other.sni_callback,
+                self.pre_shared_key == other.pre_shared_key,
+                self.pre_shared_key_store == other.pre_shared_key_store,
+            )
+        )
+
     def update(
         self,
         validate_certificates=_DEFAULT_VALUE,
@@ -890,6 +908,58 @@ cdef class DTLSConfiguration(_BaseConfiguration):
     def highest_supported_version(self):
         return DTLSVersion.from_major_minor(
             self._ctx.max_major_ver, self._ctx.max_minor_ver)
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return all(
+            (
+                self.validate_certificates == other.validate_certificates,
+                self.certificate_chain == other.certificate_chain,
+                self.ciphers == other.ciphers,
+                self.inner_protocols == other.inner_protocols,
+                self.lowest_supported_version == other.lowest_supported_version,
+                self.highest_supported_version == other.highest_supported_version,
+                self.trust_store == other.trust_store,
+                self.anti_replay == other.anti_replay,
+                self.handshake_timeout_min == other.handshake_timeout_min,
+                self.handshake_timeout_max == other.handshake_timeout_max,
+                self.sni_callback == other.sni_callback,
+                self.pre_shared_key == other.pre_shared_key,
+                self.pre_shared_key_store == other.pre_shared_key_store,
+            )
+        )
+
+    def __repr__(self):
+        return ("%s("
+                "validate_certificates=%r, "
+                "certificate_chain=%r, "
+                "ciphers=%r, "
+                "inner_protocols=%r, "
+                "lowest_supported_version=%s, "
+                "highest_supported_version=%s, "
+                "trust_store=%r, "
+                "anti_replay=%r, "
+                "handshake_timeout_min=%r, "
+                "handshake_timeout_max=%r, "
+                "sni_callback=%r, "
+                "pre_shared_key=%r, "
+                "pre_shared_key_store=%r)"
+                % (type(self).__name__,
+                   self.validate_certificates,
+                   self.certificate_chain,
+                   self.ciphers,
+                   self.inner_protocols,
+                   self.lowest_supported_version,
+                   self.highest_supported_version,
+                   self.trust_store,
+                   self.anti_replay,
+                   self.handshake_timeout_min,
+                   self.handshake_timeout_max,
+                   self.sni_callback,
+                   self.pre_shared_key,
+                   self.pre_shared_key_store,
+                  ))
 
     cdef _set_anti_replay(self, anti_replay):
         """Set anti replay."""
