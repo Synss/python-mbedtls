@@ -29,7 +29,7 @@ fi
 libdir="$1"
 version="${2:-*}"
 
-python="cp$(python --version 2>&1 | perl -pe 's|^\w+\s(\d)\.(\d+)\.\d\w*$|\1\2|g')"
+python="cp$(python --version 2>&1 | perl -ne '/^Python\ (\d+)\.(\d+)/ && print "$1$2"')"
 wheel="python_mbedtls-$version-$python-$python"'*.whl'
 
 C_INCLUDE_PATH="$libdir/include"
@@ -43,5 +43,5 @@ export LD_LIBRARY_PATH
 export DYLD_LIBRARY_PATH
 
 python setup.py bdist_wheel && \
-	delocate-wheel -v dist/$wheel && \
+	$fixlib dist/$wheel && \
 	pip install -U dist/$wheel
