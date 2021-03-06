@@ -1,5 +1,7 @@
 [Next]
 
+* tls: Fix handling of min and max handshake timeout
+when set independently.
 * tls: Fix exception raised when unwrapping a
 `TLSWrappedSocket` before opening it.
 

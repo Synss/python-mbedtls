@@ -917,10 +917,12 @@ cdef class DTLSConfiguration(_BaseConfiguration):
         if minimum is None and maximum is None:
             return
 
-        def validate(extremum: float, *, default: float) -> float:
+        def validate(extremum, *, default: float) -> float:
+            if extremum is None:
+                return default
             if extremum < 0.0:
                 raise ValueError(extremum)
-            return default if extremum is None else extremum
+            return extremum
 
         _tls.mbedtls_ssl_conf_handshake_timeout(
             &self._ctx,

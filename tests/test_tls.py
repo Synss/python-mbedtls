@@ -371,6 +371,17 @@ class TestDTLSConfiguration(_BaseConfiguration):
         assert conf_.handshake_timeout_min == hs_min
         assert conf_.handshake_timeout_max == hs_max
 
+    @pytest.mark.parametrize(
+        "hs_min, hs_max", [(None, None), (1, None), (None, 60)]
+    )
+    def test_handshake_timeout_default(self, conf, hs_min, hs_max):
+        conf_ = conf.update(
+            handshake_timeout_min=hs_min,
+            handshake_timeout_max=hs_max,
+        )
+        assert conf_.handshake_timeout_min == hs_min or 1.0
+        assert conf_.handshake_timeout_max == hs_max or 60.0
+
 
 class TestBaseContext:
     @pytest.fixture(params=[Purpose.SERVER_AUTH, Purpose.CLIENT_AUTH])
