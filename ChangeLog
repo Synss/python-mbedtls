@@ -1,3 +1,8 @@
+[Next]
+
+* tls: Fix exception raised when unwrapping a
+`TLSWrappedSocket` before opening it.
+
 [1.5.1] - 2020-12-30
 
 * doc: Do not document Python 2.7-3.5 as documented ;p
