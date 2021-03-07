@@ -2,6 +2,9 @@
 
 * tls: Fix arguments of TLSWrappedSocket.sendto() method.
 * *: Add MacOS support and tests on GitHub.
+* *: Add Windows support and tests on GitHub.
+* *: Remove Travis-CI job: The main CI is moved to GitHub
+Actions because of the less FOSS-friendly policy by Travis CI.
 * *: Implement the pickling protocol (PEP 307).
 RingBuffer, ciphers, TLSConfiguration and DTLSConfiguration,
 and x509 certificates are copyable.  The other Cython classes

@@ -2,6 +2,7 @@ import datetime as dt
 import itertools
 import multiprocessing as mp
 import pickle
+import platform
 import select
 import socket
 import sys
@@ -125,7 +126,9 @@ class Server:
             socket.socket(socket.AF_INET, self.proto)
         )
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self._sock.bind(("", 0))
+        self._sock.bind(
+            ("127.0.0.1" if platform.system() == "Windows" else "", 0)
+        )
         if self.proto == socket.SOCK_STREAM:
             self._sock.listen(1)
         self.conn_q.put(self._sock.getsockname())
