@@ -123,7 +123,7 @@ def extensions(coverage=False):
         if WINDOWS
         else ["mbedcrypto", "mbedtls", "mbedx509"]
     )
-    library_dirs = list(from_env("LIBPATH" if WINDOWS else "LIBRARY_PATH"))
+    library_dirs = list(from_env("LIB" if WINDOWS else "LIBRARY_PATH"))
 
     for dirpath, _, filenames in os.walk("src"):
         for fn in filenames:
