@@ -39,6 +39,134 @@ def block(callback, *args, **kwargs):
             raise RuntimeError("maximum recursion depth exceeded.")
 
 
+class Client:
+    def __init__(self, cli_conf, proto, srv_address, srv_hostname):
+        super().__init__()
+        self.cli_conf = cli_conf
+        self.proto = proto
+        self.srv_address = srv_address
+        self.srv_hostname = srv_hostname
+        self._sock = None
+
+    @property
+    def socket(self):
+        return self._sock
+
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, *exc_info):
+        self.stop()
+
+    def start(self):
+        if self._sock:
+            self.stop()
+
+        self._sock = ClientContext(self.cli_conf).wrap_socket(
+            socket.socket(socket.AF_INET, self.proto),
+            server_hostname=self.srv_hostname,
+        )
+        self._sock.connect(self.srv_address)
+
+    def stop(self):
+        if not self._sock:
+            return
+
+        with suppress(TLSError, OSError):
+            self._sock.close()
+        self._sock = None
+
+
+class Server:
+    def __init__(self, srv_conf, proto, conn_q):
+        super().__init__()
+        self.srv_conf = srv_conf
+        self.proto = proto
+        self.conn_q = conn_q
+        self._sock = None
+
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, *exc_info):
+        self.stop()
+
+    def start(self):
+        if self._sock:
+            self.stop()
+
+        self._sock = ServerContext(self.srv_conf).wrap_socket(
+            socket.socket(socket.AF_INET, self.proto)
+        )
+        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._sock.bind(("", 0))
+        if self.proto == socket.SOCK_STREAM:
+            self._sock.listen(1)
+        self.conn_q.put(self._sock.getsockname())
+
+    def stop(self):
+        if not self._sock:
+            return
+
+        with suppress(TLSError, OSError):
+            self._sock.close()
+        self._sock = None
+
+    def run(self, conn_handler):
+        with self:
+            {
+                TLSConfiguration: self._run_tls,
+                DTLSConfiguration: self._run_dtls,
+            }[type(self.srv_conf)](conn_handler)
+
+    def _run_tls(self, conn_handler):
+        assert self._sock
+        conn, addr = self._sock.accept()
+        try:
+            block(conn.do_handshake)
+        except TLSError:
+            conn.close()
+            return
+        try:
+            conn_handler(conn)
+        finally:
+            conn.close()
+
+    def _run_dtls(self, conn_handler):
+        assert self._sock
+        cli, addr = self._sock.accept()
+        cli.setcookieparam(addr[0].encode("ascii"))
+        with pytest.raises(HelloVerifyRequest):
+            block(cli.do_handshake)
+
+        _, (cli, addr) = cli, cli.accept()
+        _.close()
+        cli.setcookieparam(addr[0].encode("ascii"))
+        try:
+            block(cli.do_handshake)
+        except TLSError:
+            cli.close()
+            return
+        try:
+            conn_handler(cli)
+        finally:
+            cli.close()
+
+
+class EchoHandler:
+    def __init__(self, packet_size):
+        self.packet_size = packet_size
+
+    def __call__(self, conn):
+        while True:
+            # We use `send()` instead of `sendto()` for DTLS as well
+            # because the DTLS socket is connected.
+            data = block(conn.recv, self.packet_size)
+            amt = block(conn.send, data)
+
+
 class TestPickle:
     @pytest.fixture
     def session(self):
@@ -543,9 +671,6 @@ class _CommunicationBase(Chain):
     def cli_conf(self):
         raise NotImplementedError
 
-    def echo(self, sock):
-        raise NotImplementedError
-
     @pytest.fixture(params=[False])
     def buffer(self, request, randbytes):
         buffer = randbytes(5 * 16 * 1024)
@@ -564,32 +689,24 @@ class _CommunicationBase(Chain):
 
     @pytest.fixture
     def server(self, srv_conf, version, proto):
-        ctx = ServerContext(srv_conf)
-        sock = ctx.wrap_socket(socket.socket(socket.AF_INET, proto))
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind(("", 0))
-        if proto == socket.SOCK_STREAM:
-            sock.listen(1)
+        packet_size = {
+            TLSConfiguration: 2 << 13,
+            DTLSConfiguration: 4096,
+        }[type(srv_conf)]
 
-        runner = mp.Process(target=self.echo, args=(sock,))
+        conn_q = mp.SimpleQueue()
+        srv = Server(srv_conf, proto, conn_q)
+        runner = mp.Process(target=srv.run, args=(EchoHandler(packet_size),))
+
         runner.start()
-        yield sock
+        yield conn_q.get()
         runner.terminate()
         runner.join()
-        with suppress(OSError):
-            sock.close()
 
     @pytest.fixture
     def client(self, server, srv_hostname, cli_conf, proto):
-        ctx = ClientContext(cli_conf)
-        sock = ctx.wrap_socket(
-            socket.socket(socket.AF_INET, proto),
-            server_hostname=srv_hostname,
-        )
-        sock.connect(server.getsockname())
-        yield sock
-        with suppress(TLSError, OSError):
-            sock.close()
+        with Client(cli_conf, proto, server, srv_hostname) as client:
+            yield client
 
     def test_srv_conf(
         self,
@@ -659,18 +776,6 @@ class _TLSCommunicationBase(_CommunicationBase):
             validate_certificates=True,
         )
 
-    def echo(self, sock):
-        conn, addr = sock.accept()
-        try:
-            block(conn.do_handshake)
-        except TLSError:
-            conn.close()
-            return
-        while True:
-            data = block(conn.recv, 2 << 13)
-            amt = block(conn.send, data)
-        conn.close()
-
 
 class _DTLSCommunicationBase(_CommunicationBase):
     @pytest.fixture(scope="class")
@@ -714,27 +819,6 @@ class _DTLSCommunicationBase(_CommunicationBase):
             validate_certificates=True,
         )
 
-    def echo(self, sock):
-        cli, addr = sock.accept()
-        cli.setcookieparam(addr[0].encode("ascii"))
-        with pytest.raises(HelloVerifyRequest):
-            block(cli.do_handshake)
-
-        _, (cli, addr) = cli, cli.accept()
-        _.close()
-        cli.setcookieparam(addr[0].encode("ascii"))
-        try:
-            block(cli.do_handshake)
-        except TLSError:
-            cli.close()
-            return
-        while True:
-            data = block(cli.recv, 4096)
-            # We must use `send()` instead of `sendto()` because the
-            # DTLS socket is connected.
-            amt = block(cli.send, data)
-        cli.close()
-
 
 class TestTLSHostNameVerificationFailure(_TLSCommunicationBase):
     @pytest.fixture(scope="class")
@@ -744,7 +828,7 @@ class TestTLSHostNameVerificationFailure(_TLSCommunicationBase):
     @pytest.mark.usefixtures("server")
     def test_handshake_raises_tlserror(self, client):
         with pytest.raises(TLSError):
-            client.do_handshake()
+            client.socket.do_handshake()
 
 
 class TestTLS_PSKAuthentication(_TLSCommunicationBase):
@@ -771,7 +855,7 @@ class TestTLS_PSKAuthentication(_TLSCommunicationBase):
 
     @pytest.mark.usefixtures("server")
     def test_handshake_success(self, client):
-        block(client.do_handshake)
+        block(client.socket.do_handshake)
 
 
 class TestDTLS_PSKAuthentication(_DTLSCommunicationBase):
@@ -798,7 +882,7 @@ class TestDTLS_PSKAuthentication(_DTLSCommunicationBase):
 
     @pytest.mark.usefixtures("server")
     def test_handshake_success(self, client):
-        block(client.do_handshake)
+        block(client.socket.do_handshake)
 
 
 class TestTLS_PSKAuthenticationFailure(_TLSCommunicationBase):
@@ -833,7 +917,7 @@ class TestTLS_PSKAuthenticationFailure(_TLSCommunicationBase):
     @pytest.mark.usefixtures("server")
     def test_handshake_raises_tlserror(self, client):
         with pytest.raises(TLSError):
-            block(client.do_handshake)
+            block(client.socket.do_handshake)
 
 
 class TestDTLS_PSKAuthenticationFailure(_DTLSCommunicationBase):
@@ -869,7 +953,7 @@ class TestDTLS_PSKAuthenticationFailure(_DTLSCommunicationBase):
     @pytest.mark.usefixtures("server")
     def test_handshake_raises_tlserror(self, client):
         with pytest.raises(TLSError):
-            block(client.do_handshake)
+            block(client.socket.do_handshake)
 
 
 class TestTLSCommunication(_TLSCommunicationBase):
@@ -879,13 +963,13 @@ class TestTLSCommunication(_TLSCommunicationBase):
 
     @pytest.mark.usefixtures("server")
     def test_client_server(self, client, buffer, step):
-        block(client.do_handshake)
+        block(client.socket.do_handshake)
         received = bytearray()
         for idx in range(0, len(buffer), step):
             view = memoryview(buffer[idx : idx + step])
-            amt = block(client.send, view)
+            amt = block(client.socket.send, view)
             assert amt == len(view)
-            assert block(client.recv, 2 << 13) == view
+            assert block(client.socket.recv, 2 << 13) == view
 
 
 class TestDTLSCommunication(_DTLSCommunicationBase):
@@ -895,10 +979,10 @@ class TestDTLSCommunication(_DTLSCommunicationBase):
 
     @pytest.mark.usefixtures("server")
     def test_client_server(self, client, buffer, step):
-        block(client.do_handshake)
+        block(client.socket.do_handshake)
         received = bytearray()
         for idx in range(0, len(buffer), step):
             view = memoryview(buffer[idx : idx + step])
-            amt = block(client.send, view)
+            amt = block(client.socket.send, view)
             assert amt == len(view)
-            assert block(client.recv, 2 << 13) == view
+            assert block(client.socket.recv, 2 << 13) == view
