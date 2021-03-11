@@ -655,13 +655,13 @@ class _CommunicationBase(Chain):
     def srv_hostname(self):
         return "End Entity"
 
-    @pytest.fixture(scope="class")
-    def cli_psk(self):
-        return None
+    @pytest.fixture(scope="class", params=[None])
+    def cli_psk(self, request):
+        return request.param
 
-    @pytest.fixture(scope="class")
-    def srv_psk(self):
-        return None
+    @pytest.fixture(scope="class", params=[None])
+    def srv_psk(self, request):
+        return request.param
 
     @pytest.fixture(scope="class")
     def srv_conf(self):
@@ -845,17 +845,32 @@ class TestTLS_PSKAuthentication(_TLSCommunicationBase):
             "TLS-PSK-WITH-AES-128-CBC-SHA",
         )
 
-    @pytest.fixture(scope="class")
-    def srv_psk(self):
-        return {"client": b"the secret key"}
-
-    @pytest.fixture(scope="class")
-    def cli_psk(self):
-        return ("client", b"the secret key")
-
+    @pytest.mark.parametrize(
+        "srv_psk", [{"client": b"the secret key"}], indirect=True
+    )
+    @pytest.mark.parametrize(
+        "cli_psk", [("client", b"the secret key")], indirect=True
+    )
     @pytest.mark.usefixtures("server")
     def test_handshake_success(self, client):
         block(client.socket.do_handshake)
+
+    @pytest.mark.parametrize(
+        "srv_psk",
+        [
+            {"client": b"another key"},
+            {"another client": b"the secret key"},
+            {"another client": b"another key"},
+        ],
+        indirect=True,
+    )
+    @pytest.mark.parametrize(
+        "cli_psk", [("client", b"the secret key")], indirect=True
+    )
+    @pytest.mark.usefixtures("server")
+    def test_handshake_raises_tlserror(self, client):
+        with pytest.raises(TLSError):
+            block(client.socket.do_handshake)
 
 
 class TestDTLS_PSKAuthentication(_DTLSCommunicationBase):
@@ -872,84 +887,28 @@ class TestDTLS_PSKAuthentication(_DTLSCommunicationBase):
             "TLS-PSK-WITH-AES-128-CBC-SHA",
         )
 
-    @pytest.fixture(scope="class")
-    def srv_psk(self):
-        return {"client": b"the secret key"}
-
-    @pytest.fixture(scope="class")
-    def cli_psk(self):
-        return ("client", b"the secret key")
-
+    @pytest.mark.parametrize(
+        "srv_psk", [{"client": b"the secret key"}], indirect=True
+    )
+    @pytest.mark.parametrize(
+        "cli_psk", [("client", b"the secret key")], indirect=True
+    )
     @pytest.mark.usefixtures("server")
     def test_handshake_success(self, client):
         block(client.socket.do_handshake)
 
-
-class TestTLS_PSKAuthenticationFailure(_TLSCommunicationBase):
-    @pytest.fixture(scope="class")
-    def ciphers(self):
-        return (
-            "TLS-ECDHE-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA",
-            "TLS-DHE-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-DHE-PSK-WITH-AES-128-CBC-SHA",
-            "TLS-RSA-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-RSA-PSK-WITH-AES-128-CBC-SHA",
-            "TLS-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-PSK-WITH-AES-128-CBC-SHA",
-        )
-
-    @pytest.fixture(
-        scope="class",
-        params=[
+    @pytest.mark.parametrize(
+        "srv_psk",
+        [
             {"client": b"another key"},
             {"another client": b"the secret key"},
             {"another client": b"another key"},
         ],
+        indirect=True,
     )
-    def srv_psk(self, request):
-        return request.param
-
-    @pytest.fixture(scope="class")
-    def cli_psk(self):
-        return ("client", b"the secret key")
-
-    @pytest.mark.usefixtures("server")
-    def test_handshake_raises_tlserror(self, client):
-        with pytest.raises(TLSError):
-            block(client.socket.do_handshake)
-
-
-class TestDTLS_PSKAuthenticationFailure(_DTLSCommunicationBase):
-    @pytest.fixture(
-        scope="class",
-        params=[
-            "TLS-ECDHE-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA",
-            "TLS-RSA-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-RSA-PSK-WITH-AES-128-CBC-SHA",
-            "TLS-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-PSK-WITH-AES-128-CBC-SHA",
-        ],
+    @pytest.mark.parametrize(
+        "cli_psk", [("client", b"the secret key")], indirect=True
     )
-    def ciphers(self, request):
-        return (request.param,)
-
-    @pytest.fixture(
-        scope="class",
-        params=[
-            {"client": b"another key"},
-            {"another client": b"the secret key"},
-            {"another client": b"another key"},
-        ],
-    )
-    def srv_psk(self, request):
-        return request.param
-
-    @pytest.fixture(scope="class")
-    def cli_psk(self):
-        return ("client", b"the secret key")
-
     @pytest.mark.usefixtures("server")
     def test_handshake_raises_tlserror(self, client):
         with pytest.raises(TLSError):
