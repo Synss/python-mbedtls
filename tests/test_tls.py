@@ -647,9 +647,9 @@ class _CommunicationBase(Chain):
     def version(self):
         raise NotImplementedError
 
-    @pytest.fixture(scope="class")
-    def ciphers(self):
-        return None
+    @pytest.fixture(scope="class", params=[None])
+    def ciphers(self, request):
+        return request.param
 
     @pytest.fixture(scope="class")
     def srv_hostname(self):
@@ -921,6 +921,7 @@ class TestTLSCommunication(_TLSCommunicationBase):
         return request.param
 
     @pytest.mark.usefixtures("server")
+    @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
     def test_client_server(self, client, buffer, step):
         block(client.socket.do_handshake)
         received = bytearray()
@@ -937,6 +938,7 @@ class TestDTLSCommunication(_DTLSCommunicationBase):
         return request.param
 
     @pytest.mark.usefixtures("server")
+    @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
     def test_client_server(self, client, buffer, step):
         block(client.socket.do_handshake)
         received = bytearray()
