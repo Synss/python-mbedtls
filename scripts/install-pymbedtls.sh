@@ -43,5 +43,5 @@ export LD_LIBRARY_PATH
 export DYLD_LIBRARY_PATH
 
 python setup.py bdist_wheel && \
-	$fixlib dist/$wheel && \
+	$fixlib dist/$wheel || true && \
 	pip install -U dist/$wheel

@@ -22,11 +22,6 @@ else
 	exit 1
 fi
 
-cd "$srcdir"
-perl -p -i -e "s|(^DESTDIR=).+$|\1$destdir|g" Makefile
-make clean
-CFLAGS="-DMBEDTLS_ARIA_C=ON" \
-	SHARED="ON" \
-	make -j lib
-DESTDIR=$destir \
-	make -j install
+make -C "$srcdir" clean
+make -C "$srcdir" -j CFLAGS="-O2 -DMBEDTLS_ARIA_C=ON" SHARED=ON lib
+make -C "$srcdir" -j DESTDIR="$destdir" install
