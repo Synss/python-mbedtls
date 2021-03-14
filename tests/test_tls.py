@@ -10,6 +10,7 @@ from mbedtls import hashlib
 from mbedtls.exceptions import TLSError
 from mbedtls.pk import RSA
 from mbedtls.tls import *
+from mbedtls.tls import _BaseConfiguration as BaseConfiguration
 from mbedtls.tls import _DTLSCookie as DTLSCookie
 from mbedtls.tls import _PSKSToreProxy as PSKStoreProxy
 from mbedtls.tls import _TLSSession as TLSSession
@@ -389,6 +390,10 @@ class Chain:
             ee0_csr, ca1_key, now, now + dt.timedelta(days=90), 0x345678
         )
 
+    @pytest.fixture(scope="class")
+    def certificate_chain(self, ee0_crt, ca1_crt, ee0_key):
+        return (ee0_crt, ca1_crt), ee0_key
+
 
 class TestTrustStore(Chain):
     @pytest.fixture
@@ -461,11 +466,9 @@ class _BaseConfiguration(Chain):
         assert conf_.validate_certificates is validate
 
     @pytest.mark.parametrize("chain", [((), None), None])
-    def test_set_certificate_chain(
-        self, conf, chain, ee0_crt, ca1_crt, ee0_key
-    ):
+    def test_set_certificate_chain(self, conf, chain, certificate_chain):
         if chain is None:
-            chain = (ee0_crt, ca1_crt), ee0_key
+            chain = certificate_chain
         conf_ = conf.update(certificate_chain=chain)
         assert conf_.certificate_chain == chain
 
@@ -650,14 +653,78 @@ PSK_AUTHENTICATION_CIPHERS = (
 )
 
 
-class _CommunicationBase(Chain):
-    @pytest.fixture(scope="class")
-    def proto(self):
-        raise NotImplementedError
+def generate_configs(*configs):
+    for conf, versions in configs:
+        for version in versions:
+            yield conf, version
 
-    @pytest.fixture(scope="class")
-    def version(self):
-        raise NotImplementedError
+
+class TestCommunication(Chain):
+    @pytest.fixture(
+        params=generate_configs(
+            (TLSConfiguration, TLSVersion), (DTLSConfiguration, DTLSVersion)
+        )
+    )
+    def configs(self, request):
+        return request.param
+
+    @pytest.fixture
+    def conf_cls(self, configs):
+        assert issubclass(configs[0], BaseConfiguration)
+        return configs[0]
+
+    @pytest.fixture
+    def version(self, configs):
+        assert isinstance(configs[1], (TLSVersion, DTLSVersion))
+        return configs[1]
+
+    @pytest.fixture
+    def version_min(self, conf_cls):
+        return {
+            TLSConfiguration: TLSVersion.MINIMUM_SUPPORTED,
+            DTLSConfiguration: DTLSVersion.MINIMUM_SUPPORTED,
+        }[conf_cls]
+
+    @pytest.fixture
+    def proto(self, conf_cls):
+        return {
+            TLSConfiguration: socket.SOCK_STREAM,
+            DTLSConfiguration: socket.SOCK_DGRAM,
+        }[conf_cls]
+
+    @pytest.fixture
+    def srv_conf(
+        self,
+        conf_cls,
+        version,
+        version_min,
+        trust_store,
+        certificate_chain,
+        srv_psk,
+        ciphers,
+    ):
+        return conf_cls(
+            trust_store=trust_store,
+            certificate_chain=certificate_chain,
+            lowest_supported_version=version_min,
+            highest_supported_version=version,
+            ciphers=ciphers,
+            pre_shared_key_store=srv_psk,
+            validate_certificates=False,
+        )
+
+    @pytest.fixture
+    def cli_conf(
+        self, conf_cls, version, version_min, trust_store, cli_psk, ciphers
+    ):
+        return conf_cls(
+            trust_store=trust_store,
+            lowest_supported_version=version_min,
+            highest_supported_version=version,
+            ciphers=ciphers,
+            pre_shared_key=cli_psk,
+            validate_certificates=True,
+        )
 
     @pytest.fixture(scope="class", params=[None])
     def ciphers(self, request):
@@ -674,14 +741,6 @@ class _CommunicationBase(Chain):
     @pytest.fixture(scope="class", params=[None])
     def srv_psk(self, request):
         return request.param
-
-    @pytest.fixture(scope="class")
-    def srv_conf(self):
-        raise NotImplementedError
-
-    @pytest.fixture(scope="class")
-    def cli_conf(self):
-        raise NotImplementedError
 
     @pytest.fixture(params=[False])
     def buffer(self, request, randbytes):
@@ -725,15 +784,11 @@ class _CommunicationBase(Chain):
         srv_conf,
         trust_store,
         srv_psk,
+        certificate_chain,
         ciphers,
-        ca1_crt,
-        ee0_crt,
-        ee0_key,
     ):
         assert srv_conf.trust_store == trust_store
-        assert srv_conf.certificate_chain[0] == (ee0_crt, ca1_crt)
-        assert srv_conf.certificate_chain[1] == ee0_key
-        assert srv_conf.certificate_chain == ((ee0_crt, ca1_crt), ee0_key)
+        assert srv_conf.certificate_chain == certificate_chain
         if ciphers:
             assert srv_conf.ciphers == ciphers
         assert srv_conf.pre_shared_key_store == srv_psk
@@ -744,49 +799,6 @@ class _CommunicationBase(Chain):
         if ciphers:
             assert cli_conf.ciphers == ciphers
         assert cli_conf.pre_shared_key == cli_psk
-
-
-class TestTLSCommunication(_CommunicationBase):
-    @pytest.fixture(scope="class")
-    def proto(self):
-        return socket.SOCK_STREAM
-
-    @pytest.fixture(scope="class", params=TLSVersion)
-    def version(self, request):
-        return request.param
-
-    @pytest.fixture(scope="class")
-    def srv_conf(
-        self,
-        version,
-        trust_store,
-        srv_psk,
-        ciphers,
-        ca0_crt,
-        ca1_crt,
-        ee0_crt,
-        ee0_key,
-    ):
-        return TLSConfiguration(
-            trust_store=trust_store,
-            certificate_chain=([ee0_crt, ca1_crt], ee0_key),
-            lowest_supported_version=TLSVersion.MINIMUM_SUPPORTED,
-            highest_supported_version=version,
-            ciphers=ciphers,
-            pre_shared_key_store=srv_psk,
-            validate_certificates=False,
-        )
-
-    @pytest.fixture(scope="class")
-    def cli_conf(self, version, trust_store, ciphers, cli_psk):
-        return TLSConfiguration(
-            trust_store=trust_store,
-            lowest_supported_version=TLSVersion.MINIMUM_SUPPORTED,
-            highest_supported_version=version,
-            ciphers=ciphers,
-            pre_shared_key=cli_psk,
-            validate_certificates=True,
-        )
 
     @pytest.mark.parametrize(
         "srv_hostname", ["Wrong End Entity"], indirect=True
@@ -831,95 +843,7 @@ class TestTLSCommunication(_CommunicationBase):
 
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
-    @pytest.mark.parametrize("step", [100, 1000, 5000])
-    def test_client_server(self, client, buffer, step):
-        block(client.socket.do_handshake)
-        received = bytearray()
-        for idx in range(0, len(buffer), step):
-            view = memoryview(buffer[idx : idx + step])
-            amt = block(client.socket.send, view)
-            assert amt == len(view)
-            assert block(client.socket.recv, 2 << 13) == view
-
-
-class TestDTLSCommunication(_CommunicationBase):
-    @pytest.fixture(scope="class")
-    def proto(self):
-        return socket.SOCK_DGRAM
-
-    @pytest.fixture(scope="class", params=DTLSVersion)
-    def version(self, request):
-        return request.param
-
-    @pytest.fixture(scope="class")
-    def srv_conf(
-        self,
-        version,
-        trust_store,
-        srv_psk,
-        ciphers,
-        ca0_crt,
-        ca1_crt,
-        ee0_crt,
-        ee0_key,
-    ):
-        return DTLSConfiguration(
-            trust_store=trust_store,
-            certificate_chain=([ee0_crt, ca1_crt], ee0_key),
-            lowest_supported_version=DTLSVersion.MINIMUM_SUPPORTED,
-            highest_supported_version=version,
-            ciphers=ciphers,
-            pre_shared_key_store=srv_psk,
-            validate_certificates=False,
-        )
-
-    @pytest.fixture(scope="class")
-    def cli_conf(self, version, trust_store, cli_psk, ciphers):
-        return DTLSConfiguration(
-            trust_store=trust_store,
-            lowest_supported_version=DTLSVersion.MINIMUM_SUPPORTED,
-            highest_supported_version=version,
-            ciphers=ciphers,
-            pre_shared_key=cli_psk,
-            validate_certificates=True,
-        )
-
-    @pytest.mark.parametrize(
-        "ciphers", [PSK_AUTHENTICATION_CIPHERS], indirect=True
-    )
-    @pytest.mark.parametrize(
-        "srv_psk", [{"client": b"the secret key"}], indirect=True
-    )
-    @pytest.mark.parametrize(
-        "cli_psk", [("client", b"the secret key")], indirect=True
-    )
-    @pytest.mark.usefixtures("server")
-    def test_psk_authentication_success(self, client):
-        block(client.socket.do_handshake)
-
-    @pytest.mark.parametrize(
-        "ciphers", [PSK_AUTHENTICATION_CIPHERS], indirect=True
-    )
-    @pytest.mark.parametrize(
-        "srv_psk",
-        [
-            {"client": b"another key"},
-            {"another client": b"the secret key"},
-            {"another client": b"another key"},
-        ],
-        indirect=True,
-    )
-    @pytest.mark.parametrize(
-        "cli_psk", [("client", b"the secret key")], indirect=True
-    )
-    @pytest.mark.usefixtures("server")
-    def test_psk_authentication_failure(self, client):
-        with pytest.raises(TLSError):
-            block(client.socket.do_handshake)
-
-    @pytest.mark.usefixtures("server")
-    @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
-    @pytest.mark.parametrize("step", [10, 1000])
+    @pytest.mark.parametrize("step", [100, 500])
     def test_client_server(self, client, buffer, step):
         block(client.socket.do_handshake)
         received = bytearray()
