@@ -638,6 +638,18 @@ class TestServerContext(TestBaseContext):
         assert isinstance(context.wrap_buffers(), TLSWrappedBuffer)
 
 
+PSK_AUTHENTICATION_CIPHERS = (
+    "TLS-ECDHE-PSK-WITH-AES-256-CBC-SHA",
+    "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA",
+    "TLS-DHE-PSK-WITH-AES-256-CBC-SHA",
+    "TLS-DHE-PSK-WITH-AES-128-CBC-SHA",
+    "TLS-RSA-PSK-WITH-AES-256-CBC-SHA",
+    "TLS-RSA-PSK-WITH-AES-128-CBC-SHA",
+    "TLS-PSK-WITH-AES-256-CBC-SHA",
+    "TLS-PSK-WITH-AES-128-CBC-SHA",
+)
+
+
 class _CommunicationBase(Chain):
     @pytest.fixture(scope="class")
     def proto(self):
@@ -651,9 +663,9 @@ class _CommunicationBase(Chain):
     def ciphers(self, request):
         return request.param
 
-    @pytest.fixture(scope="class")
-    def srv_hostname(self):
-        return "End Entity"
+    @pytest.fixture(scope="class", params=["End Entity"])
+    def srv_hostname(self, request):
+        return request.param
 
     @pytest.fixture(scope="class", params=[None])
     def cli_psk(self, request):
@@ -734,7 +746,7 @@ class _CommunicationBase(Chain):
         assert cli_conf.pre_shared_key == cli_psk
 
 
-class _TLSCommunicationBase(_CommunicationBase):
+class TestTLSCommunication(_CommunicationBase):
     @pytest.fixture(scope="class")
     def proto(self):
         return socket.SOCK_STREAM
@@ -776,8 +788,61 @@ class _TLSCommunicationBase(_CommunicationBase):
             validate_certificates=True,
         )
 
+    @pytest.mark.parametrize(
+        "srv_hostname", ["Wrong End Entity"], indirect=True
+    )
+    @pytest.mark.usefixtures("server")
+    def test_host_name_verification_failure(self, client, srv_hostname):
+        with pytest.raises(TLSError):
+            client.socket.do_handshake()
 
-class _DTLSCommunicationBase(_CommunicationBase):
+    @pytest.mark.parametrize(
+        "ciphers", [PSK_AUTHENTICATION_CIPHERS], indirect=True
+    )
+    @pytest.mark.parametrize(
+        "srv_psk", [{"client": b"the secret key"}], indirect=True
+    )
+    @pytest.mark.parametrize(
+        "cli_psk", [("client", b"the secret key")], indirect=True
+    )
+    @pytest.mark.usefixtures("server")
+    def test_psk_authentication_success(self, client):
+        block(client.socket.do_handshake)
+
+    @pytest.mark.parametrize(
+        "ciphers", [PSK_AUTHENTICATION_CIPHERS], indirect=True
+    )
+    @pytest.mark.parametrize(
+        "srv_psk",
+        [
+            {"client": b"another key"},
+            {"another client": b"the secret key"},
+            {"another client": b"another key"},
+        ],
+        indirect=True,
+    )
+    @pytest.mark.parametrize(
+        "cli_psk", [("client", b"the secret key")], indirect=True
+    )
+    @pytest.mark.usefixtures("server")
+    def test_psk_authentication_failure(self, client):
+        with pytest.raises(TLSError):
+            block(client.socket.do_handshake)
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
+    @pytest.mark.parametrize("step", [100, 1000, 5000])
+    def test_client_server(self, client, buffer, step):
+        block(client.socket.do_handshake)
+        received = bytearray()
+        for idx in range(0, len(buffer), step):
+            view = memoryview(buffer[idx : idx + step])
+            amt = block(client.socket.send, view)
+            assert amt == len(view)
+            assert block(client.socket.recv, 2 << 13) == view
+
+
+class TestDTLSCommunication(_CommunicationBase):
     @pytest.fixture(scope="class")
     def proto(self):
         return socket.SOCK_DGRAM
@@ -819,32 +884,9 @@ class _DTLSCommunicationBase(_CommunicationBase):
             validate_certificates=True,
         )
 
-
-class TestTLSHostNameVerificationFailure(_TLSCommunicationBase):
-    @pytest.fixture(scope="class")
-    def srv_hostname(self):
-        return "Wrong End Entity"
-
-    @pytest.mark.usefixtures("server")
-    def test_handshake_raises_tlserror(self, client):
-        with pytest.raises(TLSError):
-            client.socket.do_handshake()
-
-
-class TestTLS_PSKAuthentication(_TLSCommunicationBase):
-    @pytest.fixture(scope="class")
-    def ciphers(self):
-        return (
-            "TLS-ECDHE-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA",
-            "TLS-DHE-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-DHE-PSK-WITH-AES-128-CBC-SHA",
-            "TLS-RSA-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-RSA-PSK-WITH-AES-128-CBC-SHA",
-            "TLS-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-PSK-WITH-AES-128-CBC-SHA",
-        )
-
+    @pytest.mark.parametrize(
+        "ciphers", [PSK_AUTHENTICATION_CIPHERS], indirect=True
+    )
     @pytest.mark.parametrize(
         "srv_psk", [{"client": b"the secret key"}], indirect=True
     )
@@ -852,9 +894,12 @@ class TestTLS_PSKAuthentication(_TLSCommunicationBase):
         "cli_psk", [("client", b"the secret key")], indirect=True
     )
     @pytest.mark.usefixtures("server")
-    def test_handshake_success(self, client):
+    def test_psk_authentication_success(self, client):
         block(client.socket.do_handshake)
 
+    @pytest.mark.parametrize(
+        "ciphers", [PSK_AUTHENTICATION_CIPHERS], indirect=True
+    )
     @pytest.mark.parametrize(
         "srv_psk",
         [
@@ -868,77 +913,13 @@ class TestTLS_PSKAuthentication(_TLSCommunicationBase):
         "cli_psk", [("client", b"the secret key")], indirect=True
     )
     @pytest.mark.usefixtures("server")
-    def test_handshake_raises_tlserror(self, client):
+    def test_psk_authentication_failure(self, client):
         with pytest.raises(TLSError):
             block(client.socket.do_handshake)
 
-
-class TestDTLS_PSKAuthentication(_DTLSCommunicationBase):
-    @pytest.fixture(scope="class")
-    def ciphers(self):
-        return (
-            "TLS-ECDHE-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-ECDHE-PSK-WITH-AES-128-CBC-SHA",
-            "TLS-DHE-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-DHE-PSK-WITH-AES-128-CBC-SHA",
-            "TLS-RSA-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-RSA-PSK-WITH-AES-128-CBC-SHA",
-            "TLS-PSK-WITH-AES-256-CBC-SHA",
-            "TLS-PSK-WITH-AES-128-CBC-SHA",
-        )
-
-    @pytest.mark.parametrize(
-        "srv_psk", [{"client": b"the secret key"}], indirect=True
-    )
-    @pytest.mark.parametrize(
-        "cli_psk", [("client", b"the secret key")], indirect=True
-    )
-    @pytest.mark.usefixtures("server")
-    def test_handshake_success(self, client):
-        block(client.socket.do_handshake)
-
-    @pytest.mark.parametrize(
-        "srv_psk",
-        [
-            {"client": b"another key"},
-            {"another client": b"the secret key"},
-            {"another client": b"another key"},
-        ],
-        indirect=True,
-    )
-    @pytest.mark.parametrize(
-        "cli_psk", [("client", b"the secret key")], indirect=True
-    )
-    @pytest.mark.usefixtures("server")
-    def test_handshake_raises_tlserror(self, client):
-        with pytest.raises(TLSError):
-            block(client.socket.do_handshake)
-
-
-class TestTLSCommunication(_TLSCommunicationBase):
-    @pytest.fixture(params=[100, 1000, 5000])
-    def step(self, request):
-        return request.param
-
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
-    def test_client_server(self, client, buffer, step):
-        block(client.socket.do_handshake)
-        received = bytearray()
-        for idx in range(0, len(buffer), step):
-            view = memoryview(buffer[idx : idx + step])
-            amt = block(client.socket.send, view)
-            assert amt == len(view)
-            assert block(client.socket.recv, 2 << 13) == view
-
-
-class TestDTLSCommunication(_DTLSCommunicationBase):
-    @pytest.fixture(params=[10, 1000])
-    def step(self, request):
-        return request.param
-
-    @pytest.mark.usefixtures("server")
-    @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
+    @pytest.mark.parametrize("step", [10, 1000])
     def test_client_server(self, client, buffer, step):
         block(client.socket.do_handshake)
         received = bytearray()
