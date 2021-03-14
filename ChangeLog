@@ -1,5 +1,6 @@
 [Next]
 
+* tls: Fix arguments of TLSWrappedSocket.sendto() method.
 * *: Add MacOS support and tests on GitHub.
 * *: Implement the pickling protocol (PEP 307).
 RingBuffer, ciphers, TLSConfiguration and DTLSConfiguration,
