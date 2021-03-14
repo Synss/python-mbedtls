@@ -157,15 +157,18 @@ class Server:
 
 
 class EchoHandler:
-    def __init__(self, packet_size):
+    def __init__(self, stop_ev, packet_size=4096):
+        self.stop_ev = stop_ev
         self.packet_size = packet_size
 
     def __call__(self, conn):
-        while True:
+        while self.stop_ev:
             # We use `send()` instead of `sendto()` for DTLS as well
             # because the DTLS socket is connected.
-            data = block(conn.recv, self.packet_size)
-            amt = block(conn.send, data)
+            received = block(conn.recv, self.packet_size)
+            sent = 0
+            while sent != len(received):
+                sent += block(conn.send, received)
 
 
 class TestPickle:
@@ -760,17 +763,14 @@ class TestCommunication(Chain):
 
     @pytest.fixture
     def server(self, srv_conf, version, proto):
-        packet_size = {
-            TLSConfiguration: 2 << 13,
-            DTLSConfiguration: 4096,
-        }[type(srv_conf)]
-
         conn_q = mp.SimpleQueue()
+        stop_ev = mp.Event()
         srv = Server(srv_conf, proto, conn_q)
-        runner = mp.Process(target=srv.run, args=(EchoHandler(packet_size),))
+        runner = mp.Process(target=srv.run, args=(EchoHandler(stop_ev),))
 
         runner.start()
         yield conn_q.get()
+        stop_ev.set()
         runner.terminate()
         runner.join()
 
@@ -843,7 +843,7 @@ class TestCommunication(Chain):
 
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
-    @pytest.mark.parametrize("step", [100, 500])
+    @pytest.mark.parametrize("step", [1024])
     def test_client_server(self, client, buffer, step):
         block(client.socket.do_handshake)
         received = bytearray()
