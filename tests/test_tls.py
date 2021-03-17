@@ -12,7 +12,9 @@ from mbedtls.pk import RSA
 from mbedtls.tls import *
 from mbedtls.tls import _BaseConfiguration as BaseConfiguration
 from mbedtls.tls import _DTLSCookie as DTLSCookie
+from mbedtls.tls import _enable_debug_output
 from mbedtls.tls import _PSKSToreProxy as PSKStoreProxy
+from mbedtls.tls import _set_debug_level
 from mbedtls.tls import _TLSSession as TLSSession
 from mbedtls.x509 import CRT, CSR, BasicConstraints
 
@@ -728,6 +730,12 @@ class TestCommunication(Chain):
             pre_shared_key=cli_psk,
             validate_certificates=True,
         )
+
+    @pytest.fixture(params=[4])
+    def debug(self, srv_conf, cli_conf, request):
+        _enable_debug_output(srv_conf)
+        _enable_debug_output(cli_conf)
+        _set_debug_level(request.param)
 
     @pytest.fixture(scope="class", params=[None])
     def ciphers(self, request):
