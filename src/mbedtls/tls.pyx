@@ -88,15 +88,20 @@ cdef int buffer_write(void *ctx, const unsigned char *buf, size_t len) nogil:
     c_buf = <_tls._C_Buffers *> ctx
     if len == 0:
         return _tls.MBEDTLS_ERR_SSL_BAD_INPUT_DATA
-    if len > _rb.c_capacity(c_buf.out_ctx) - _rb.c_len(c_buf.out_ctx):
-        return _tls.MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL
-    return _rb.c_write(c_buf.out_ctx, buf, len)
+    if _rb.c_len(c_buf.out_ctx) == _rb.c_capacity(c_buf.out_ctx):
+        return _tls.MBEDTLS_ERR_SSL_WANT_READ
+    cdef size_t writelen = min(
+        len, _rb.c_capacity(c_buf.out_ctx) - _rb.c_len(c_buf.out_ctx)
+    )
+    return _rb.c_write(c_buf.out_ctx, buf, writelen)
 
 
 @cython.boundscheck(False)
 cdef int buffer_read(void *ctx, unsigned char *buf, const size_t len) nogil:
     """Read from input buffer."""
     c_buf = <_tls._C_Buffers *> ctx
+    if _rb.c_len(c_buf.in_ctx) == 0:
+        return _tls.MBEDTLS_ERR_SSL_WANT_WRITE
     return _rb.c_readinto(c_buf.in_ctx, buf, len)
 
 
@@ -1446,9 +1451,6 @@ cdef class TLSWrappedBuffer:
 
     def write(self, const unsigned char[:] buffer not None):
         # PEP 543
-        assert self._output_buffer.empty(), (
-            "%i bytes in buffer" % len(self._output_buffer)
-        )
         amt = self.context._write(buffer)
         assert amt == buffer.size
         return len(self._output_buffer)

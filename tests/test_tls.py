@@ -1,9 +1,11 @@
 import datetime as dt
+import itertools
 import multiprocessing as mp
 import pickle
 import select
 import socket
 import sys
+import time
 
 import pytest
 
@@ -34,13 +36,11 @@ except NameError:
 
 
 def block(callback, *args, **kwargs):
-    counter = 0
-    while True:
+    counter = itertools.count()
+    while next(counter) != 5:
         with suppress(WantReadError, WantWriteError):
             return callback(*args, **kwargs)
-        counter += 1
-        if counter == sys.getrecursionlimit():
-            raise RuntimeError("maximum recursion depth exceeded.")
+        time.sleep(0.01)
 
 
 class Client:
