@@ -466,13 +466,13 @@ cdef enum:
 
 
 cdef struct _C_Buffers:
-    _rb.ring_buffer_ctx *send_ctx
-    _rb.ring_buffer_ctx *recv_ctx
+    _rb.ring_buffer_ctx *out_ctx
+    _rb.ring_buffer_ctx *in_ctx
 
 
 cdef class TLSWrappedBuffer:
-    cdef _rb.RingBuffer _send_buf
-    cdef _rb.RingBuffer _recv_buf
+    cdef _rb.RingBuffer _output_buffer
+    cdef _rb.RingBuffer _input_buffer
     cdef _C_Buffers _c_buffers
     cdef _BaseContext _context
     cdef void _as_bio(self)

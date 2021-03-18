@@ -84,20 +84,20 @@ def _enable_debug_output(_BaseConfiguration conf):
 
 @cython.boundscheck(False)
 cdef int buffer_write(void *ctx, const unsigned char *buf, size_t len) nogil:
-    """Copy `buf` to internal buffer."""
+    """"Write buffer to output buffer."""
     c_buf = <_tls._C_Buffers *> ctx
     if len == 0:
         return _tls.MBEDTLS_ERR_SSL_BAD_INPUT_DATA
-    if len > _rb.c_capacity(c_buf.send_ctx) - _rb.c_len(c_buf.send_ctx):
+    if len > _rb.c_capacity(c_buf.out_ctx) - _rb.c_len(c_buf.out_ctx):
         return _tls.MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL
-    return _rb.c_write(c_buf.send_ctx, buf, len)
+    return _rb.c_write(c_buf.out_ctx, buf, len)
 
 
 @cython.boundscheck(False)
 cdef int buffer_read(void *ctx, unsigned char *buf, const size_t len) nogil:
-    """Copy internal buffer to `buf`."""
+    """Read from input buffer."""
     c_buf = <_tls._C_Buffers *> ctx
-    return _rb.c_readinto(c_buf.recv_ctx, buf, len)
+    return _rb.c_readinto(c_buf.in_ctx, buf, len)
 
 
 @cython.boundscheck(False)
@@ -1408,10 +1408,10 @@ cdef class TLSWrappedBuffer:
         self.context._reset()
 
     def __cinit__(self):
-        self._send_buf = _rb.RingBuffer(_tls.TLS_BUFFER_CAPACITY)
-        self._recv_buf = _rb.RingBuffer(_tls.TLS_BUFFER_CAPACITY)
+        self._output_buffer = _rb.RingBuffer(_tls.TLS_BUFFER_CAPACITY)
+        self._input_buffer = _rb.RingBuffer(_tls.TLS_BUFFER_CAPACITY)
         self._c_buffers = _tls._C_Buffers(
-            &self._send_buf._ctx, &self._recv_buf._ctx
+            &self._output_buffer._ctx, &self._input_buffer._ctx
         )
 
     cdef void _as_bio(self):
@@ -1436,7 +1436,7 @@ cdef class TLSWrappedBuffer:
         buffer = bytearray(amt)
         cdef unsigned char[:] c_buffer = buffer
         cdef size_t nread = 0
-        while nread != amt and not self._recv_buf.empty():
+        while nread != amt and not self._input_buffer.empty():
             nread += self.readinto(c_buffer[nread:], amt - nread)
         return bytes(buffer[:nread])
 
@@ -1446,12 +1446,12 @@ cdef class TLSWrappedBuffer:
 
     def write(self, const unsigned char[:] buffer not None):
         # PEP 543
-        assert self._send_buf.empty(), (
-            "%i bytes in buffer" % len(self._send_buf)
+        assert self._output_buffer.empty(), (
+            "%i bytes in buffer" % len(self._output_buffer)
         )
         amt = self.context._write(buffer)
         assert amt == buffer.size
-        return len(self._send_buf)
+        return len(self._output_buffer)
 
     def do_handshake(self):
         # PEP 543
@@ -1489,19 +1489,19 @@ cdef class TLSWrappedBuffer:
     def receive_from_network(self, const unsigned char[:] data not None):
         # PEP 543
         # Append data to input buffer.
-        self._recv_buf.write(data, data.size)
+        self._input_buffer.write(data, data.size)
 
     def peek_outgoing(self, size_t amt):
         # PEP 543
         # Read from output buffer.
         if amt == 0:
             return b""
-        return self._send_buf.peek(amt)
+        return self._output_buffer.peek(amt)
 
     def consume_outgoing(self, size_t amt):
         """Consume `amt` bytes from the output buffer."""
         # PEP 543
-        self._send_buf.consume(amt)
+        self._output_buffer.consume(amt)
 
 
 cdef class TLSWrappedSocket:
