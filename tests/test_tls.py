@@ -52,16 +52,30 @@ class Client:
         self.srv_hostname = srv_hostname
         self._sock = None
 
-    @property
-    def socket(self):
-        return self._sock
-
     def __enter__(self):
         self.start()
         return self
 
     def __exit__(self, *exc_info):
         self.stop()
+
+    def do_handshake(self):
+        if not self._sock:
+            return
+
+        self._sock.do_handshake()
+
+    def echo(self, buffer, chunksize):
+        if not self._sock:
+            return
+
+        view = memoryview(buffer)
+        received = bytearray()
+        for idx in range(0, len(view), chunksize):
+            part = view[idx : idx + chunksize]
+            amt = block(self._sock.send, part)
+            received += block(self._sock.recv, 2 << 13)
+        return received
 
     def start(self):
         if self._sock:
@@ -796,7 +810,7 @@ class TestCommunication(Chain):
     )
     def test_host_name_verification_failure(self, client, srv_hostname):
         with pytest.raises(TLSError):
-            client.socket.do_handshake()
+            client.do_handshake()
 
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize(
@@ -808,8 +822,10 @@ class TestCommunication(Chain):
     @pytest.mark.parametrize(
         "cli_psk", [("client", b"the secret key")], indirect=True
     )
-    def test_psk_authentication_success(self, client):
-        block(client.socket.do_handshake)
+    @pytest.mark.parametrize("chunksize", [1024])
+    def test_psk_authentication_success(self, client, buffer, chunksize):
+        block(client.do_handshake)
+        assert client.echo(buffer, chunksize) == buffer
 
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize(
@@ -829,16 +845,11 @@ class TestCommunication(Chain):
     )
     def test_psk_authentication_failure(self, client):
         with pytest.raises(TLSError):
-            block(client.socket.do_handshake)
+            block(client.do_handshake)
 
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
-    @pytest.mark.parametrize("step", [1024])
-    def test_client_server(self, client, buffer, step):
-        block(client.socket.do_handshake)
-        received = bytearray()
-        for idx in range(0, len(buffer), step):
-            view = memoryview(buffer[idx : idx + step])
-            amt = block(client.socket.send, view)
-            assert amt == len(view)
-            assert block(client.socket.recv, 2 << 13) == view
+    @pytest.mark.parametrize("chunksize", [1024])
+    def test_client_server(self, client, buffer, chunksize):
+        block(client.do_handshake)
+        assert client.echo(buffer, chunksize) == buffer
