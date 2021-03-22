@@ -808,14 +808,15 @@ class TestCommunication(Chain):
             assert cli_conf.ciphers == ciphers
         assert cli_conf.pre_shared_key == cli_psk
 
+    @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize(
         "srv_hostname", ["Wrong End Entity"], indirect=True
     )
-    @pytest.mark.usefixtures("server")
     def test_host_name_verification_failure(self, client, srv_hostname):
         with pytest.raises(TLSError):
             client.socket.do_handshake()
 
+    @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize(
         "ciphers", [PSK_AUTHENTICATION_CIPHERS], indirect=True
     )
@@ -825,10 +826,10 @@ class TestCommunication(Chain):
     @pytest.mark.parametrize(
         "cli_psk", [("client", b"the secret key")], indirect=True
     )
-    @pytest.mark.usefixtures("server")
     def test_psk_authentication_success(self, client):
         block(client.socket.do_handshake)
 
+    @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize(
         "ciphers", [PSK_AUTHENTICATION_CIPHERS], indirect=True
     )
@@ -844,7 +845,6 @@ class TestCommunication(Chain):
     @pytest.mark.parametrize(
         "cli_psk", [("client", b"the secret key")], indirect=True
     )
-    @pytest.mark.usefixtures("server")
     def test_psk_authentication_failure(self, client):
         with pytest.raises(TLSError):
             block(client.socket.do_handshake)
