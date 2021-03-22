@@ -787,27 +787,6 @@ class TestCommunication(Chain):
         with Client(cli_conf, proto, server, srv_hostname) as client:
             yield client
 
-    def test_srv_conf(
-        self,
-        srv_conf,
-        trust_store,
-        srv_psk,
-        certificate_chain,
-        ciphers,
-    ):
-        assert srv_conf.trust_store == trust_store
-        assert srv_conf.certificate_chain == certificate_chain
-        if ciphers:
-            assert srv_conf.ciphers == ciphers
-        assert srv_conf.pre_shared_key_store == srv_psk
-
-    def test_cli_conf(self, cli_conf, trust_store, cli_psk, ciphers):
-        assert cli_conf.trust_store == trust_store
-        assert cli_conf.validate_certificates == True
-        if ciphers:
-            assert cli_conf.ciphers == ciphers
-        assert cli_conf.pre_shared_key == cli_psk
-
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize(
         "srv_hostname", ["Wrong End Entity"], indirect=True
