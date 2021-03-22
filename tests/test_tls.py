@@ -779,13 +779,7 @@ class TestCommunication(Chain):
 
     @pytest.fixture(params=[False])
     def buffer(self, request, randbytes):
-        buffer = randbytes(5 * 16 * 1024)
-        yield buffer
-        if request.node.rep_call.failed and request.param:
-            with open(
-                "/tmp/dump.%s" % dt.datetime.utcnow().isoformat(), "wb"
-            ) as dump:
-                dump.write(buffer)
+        return randbytes(5 * 16 * 1024)
 
     @pytest.fixture(scope="class")
     def trust_store(self, ca0_crt):
