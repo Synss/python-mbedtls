@@ -59,6 +59,9 @@ class Client:
     def __exit__(self, *exc_info):
         self.stop()
 
+    def __del__(self):
+        self.stop()
+
     def do_handshake(self):
         if not self._sock:
             return
@@ -109,6 +112,9 @@ class Server:
         return self
 
     def __exit__(self, *exc_info):
+        self.stop()
+
+    def __del__(self):
         self.stop()
 
     def start(self):
