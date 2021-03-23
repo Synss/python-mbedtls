@@ -1,6 +1,7 @@
 import datetime as dt
 import multiprocessing as mp
 import pickle
+import select
 import socket
 import sys
 
@@ -165,12 +166,15 @@ class EchoHandler:
 
     def __call__(self, conn):
         while not self.stop_ev.is_set():
-            # We use `send()` instead of `sendto()` for DTLS as well
-            # because the DTLS socket is connected.
-            received = block(conn.recv, self.packet_size)
-            sent = 0
-            while sent != len(received):
-                sent += block(conn.send, received)
+            readable, _, err = select.select([conn], [], [], 0.1)
+            if err:
+                break
+
+            for _ in readable:
+                # We use `send()` instead of `sendto()` for DTLS as well
+                # because the DTLS socket is connected.
+                received = block(conn.recv, self.packet_size)
+                sent = conn.send(received)
 
 
 class TestPickle:
@@ -779,7 +783,6 @@ class TestCommunication(Chain):
         runner.start()
         yield conn_q.get()
         stop_ev.set()
-        runner.terminate()
         runner.join()
 
     @pytest.fixture
