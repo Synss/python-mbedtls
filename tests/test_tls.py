@@ -162,7 +162,7 @@ class EchoHandler:
         self.packet_size = packet_size
 
     def __call__(self, conn):
-        while self.stop_ev:
+        while not self.stop_ev.is_set():
             # We use `send()` instead of `sendto()` for DTLS as well
             # because the DTLS socket is connected.
             received = block(conn.recv, self.packet_size)
