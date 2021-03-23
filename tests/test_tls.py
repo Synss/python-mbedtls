@@ -36,14 +36,6 @@ except NameError:
     FileNotFoundError = OSError
 
 
-def block(callback, *args, **kwargs):
-    counter = itertools.count()
-    while next(counter) != 5:
-        with suppress(WantReadError, WantWriteError):
-            return callback(*args, **kwargs)
-        time.sleep(0.01)
-
-
 class Client:
     def __init__(self, cli_conf, proto, srv_address, srv_hostname):
         super().__init__()
@@ -77,8 +69,8 @@ class Client:
         received = bytearray()
         for idx in range(0, len(view), chunksize):
             part = view[idx : idx + chunksize]
-            amt = block(self._sock.send, part)
-            received += block(self._sock.recv, 2 << 13)
+            amt = self._sock.send(part)
+            received += self._sock.recv(2 << 13)
         return received
 
     def start(self):
@@ -152,7 +144,7 @@ class Server:
         assert self._sock
         conn, addr = self._sock.accept()
         try:
-            block(conn.do_handshake)
+            conn.do_handshake()
         except TLSError:
             conn.close()
             return
@@ -166,13 +158,13 @@ class Server:
         cli, addr = self._sock.accept()
         cli.setcookieparam(addr[0].encode("ascii"))
         with pytest.raises(HelloVerifyRequest):
-            block(cli.do_handshake)
+            cli.do_handshake()
 
         _, (cli, addr) = cli, cli.accept()
         _.close()
         cli.setcookieparam(addr[0].encode("ascii"))
         try:
-            block(cli.do_handshake)
+            cli.do_handshake()
         except TLSError:
             cli.close()
             return
@@ -196,7 +188,7 @@ class EchoHandler:
             for _ in readable:
                 # We use `send()` instead of `sendto()` for DTLS as well
                 # because the DTLS socket is connected.
-                received = block(conn.recv, self.packet_size)
+                received = conn.recv(self.packet_size)
                 sent = conn.send(received)
 
 
@@ -827,7 +819,7 @@ class TestCommunication(Chain):
     )
     @pytest.mark.parametrize("chunksize", [1024])
     def test_psk_authentication_success(self, client, buffer, chunksize):
-        block(client.do_handshake)
+        client.do_handshake()
         assert client.echo(buffer, chunksize) == buffer
 
     @pytest.mark.usefixtures("server")
@@ -848,11 +840,11 @@ class TestCommunication(Chain):
     )
     def test_psk_authentication_failure(self, client):
         with pytest.raises(TLSError):
-            block(client.do_handshake)
+            client.do_handshake()
 
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
     @pytest.mark.parametrize("chunksize", [1024])
     def test_client_server(self, client, buffer, chunksize):
-        block(client.do_handshake)
+        client.do_handshake()
         assert client.echo(buffer, chunksize) == buffer

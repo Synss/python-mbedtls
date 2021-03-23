@@ -462,13 +462,6 @@ The contexts are used to wrap TCP sockets.
 ... )
 ...
 
->>> from contextlib import suppress
->>> def block(callback, *args, **kwargs):
-...     while True:
-...         with suppress(tls.WantReadError, tls.WantWriteError):
-...             return callback(*args, **kwargs)
-...
-
 The server starts in its own process in this example
 because ``accept()`` is blocking.
 
@@ -555,6 +548,7 @@ HelloVerifyRequest exception.  The server should then set a
 client-specific cookie and resume the handshake.  The second
 step of the handshake should succeed.
 
+>>> from contextlib import suppress
 >>> def dtls_server_main_loop(sock):
 ...     """A simple DTLS echo server."""
 ...     conn, addr = sock.accept()
