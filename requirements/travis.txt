@@ -147,7 +147,7 @@ translationstring==1.4
     # via pyramid
 twine==3.3.0
     # via -r travis.in
-urllib3==1.26.4
+urllib3==1.26.5
     # via requests
 venusian==3.0.0
     # via pyramid
