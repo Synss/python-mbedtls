@@ -1554,7 +1554,7 @@ cdef class TLSWrappedSocket:
         if self.type == _socket.SOCK_STREAM:
             conn, address = self._socket.accept()
         else:
-            data, address = self._socket.recvfrom(1, _socket.MSG_PEEK)
+            data, address = self._socket.recvfrom(1024, _socket.MSG_PEEK)
             assert data, "no data"
 
             # Use this socket to communicate with the client and bind
