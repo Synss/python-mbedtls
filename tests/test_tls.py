@@ -846,5 +846,12 @@ class TestCommunication(Chain):
     @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
     @pytest.mark.parametrize("chunksize", [1024])
     def test_client_server(self, client, buffer, chunksize):
-        client.do_handshake()
+        while True:
+            try:
+                client.do_handshake()
+            except (WantReadError, WantWriteError):
+                pass
+            else:
+                break
+
         assert client.echo(buffer, chunksize) == buffer
