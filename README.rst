@@ -467,7 +467,7 @@ because ``accept()`` is blocking.
 
 >>> def server_main_loop(sock):
 ...     conn, addr = sock.accept()
-...     block(conn.do_handshake)
+...     conn.do_handshake()
 ...     data = conn.recv(1024)
 ...     if data == get_request:
 ...         conn.sendall(http_response)
@@ -492,10 +492,10 @@ Finally, a client queries the server with the ``get_request``:
 ... )
 ...
 >>> tls_cli.connect(("localhost", port))
->>> block(tls_cli.do_handshake)
+>>> tls_cli.do_handshake()
 >>> tls_cli.send(get_request)
 18
->>> response = block(tls_cli.recv, 1024)
+>>> response = tls_cli.recv(1024)
 >>> print(response.decode("ascii").replace("\r\n", "\n"))
 HTTP/1.0 200 OK
 Content-Type: text/html
@@ -554,10 +554,10 @@ step of the handshake should succeed.
 ...     conn, addr = sock.accept()
 ...     conn.setcookieparam(addr[0].encode())
 ...     with suppress(tls.HelloVerifyRequest):
-...        block(conn.do_handshake)
+...        conn.do_handshake()
 ...     conn, addr = conn.accept()
 ...     conn.setcookieparam(addr[0].encode())
-...     block(conn.do_handshake)
+...     conn.do_handshake()
 ...     data = conn.recv(4096)
 ...     conn.send(data)
 ...
@@ -578,11 +578,11 @@ The DTLS client is mostly identical to the TLS client:
 ...     server_hostname=None,
 ... )
 >>> dtls_cli.connect(("localhost", port))
->>> block(dtls_cli.do_handshake)
+>>> dtls_cli.do_handshake()
 >>> DATAGRAM = b"hello datagram"
->>> block(dtls_cli.send, DATAGRAM)
+>>> dtls_cli.send(DATAGRAM)
 14
->>> block(dtls_cli.recv, 4096)
+>>> dtls_cli.recv(4096)
 b'hello datagram'
 
 Now, the DTLS communication is complete.
