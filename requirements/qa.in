@@ -13,3 +13,4 @@ pytest-black
 pytest-cov != 2.9.0
 pytest-isort
 pytest-repeat
+pytest-timeout

@@ -799,6 +799,7 @@ class TestCommunication(Chain):
         with Client(cli_conf, proto, server, srv_hostname) as client:
             yield client
 
+    @pytest.mark.timeout(60)
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize(
         "srv_hostname", ["Wrong End Entity"], indirect=True
@@ -807,6 +808,7 @@ class TestCommunication(Chain):
         with pytest.raises(TLSError):
             client.do_handshake()
 
+    @pytest.mark.timeout(60)
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize(
         "ciphers", [PSK_AUTHENTICATION_CIPHERS], indirect=True
@@ -822,6 +824,7 @@ class TestCommunication(Chain):
         client.do_handshake()
         assert client.echo(buffer, chunksize) == buffer
 
+    @pytest.mark.timeout(60)
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize(
         "ciphers", [PSK_AUTHENTICATION_CIPHERS], indirect=True
@@ -842,6 +845,7 @@ class TestCommunication(Chain):
         with pytest.raises(TLSError):
             client.do_handshake()
 
+    @pytest.mark.timeout(60)
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
     @pytest.mark.parametrize("chunksize", [1024])
