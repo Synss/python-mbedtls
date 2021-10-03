@@ -1,4 +1,4 @@
-[Next]
+[1.6.0] - 2021-10-03
 
 * tls: Fix arguments of TLSWrappedSocket.sendto() method.
 * *: Add MacOS support and tests on GitHub.
