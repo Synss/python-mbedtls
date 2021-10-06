@@ -1151,7 +1151,7 @@ cdef class DTLSConfiguration(_BaseConfiguration):
 DEFAULT_CIPHER_LIST = None
 
 
-cdef class _TLSSession:
+cdef class TLSSession:
     def __cinit__(self):
         """Initialize SSL session structure."""
         _tls.mbedtls_ssl_session_init(&self._ctx)
@@ -1162,6 +1162,24 @@ cdef class _TLSSession:
 
     def __getstate__(self):
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+
+    def __repr__(self):
+        return "%s()" % type(self).__name__
+
+    def save(self, ClientContext context):
+        try:
+            _exc.check_error(
+                _tls.mbedtls_ssl_get_session(&context._ctx, &self._ctx)
+            )
+        except _exc.TLSError as exc:
+            raise ValueError(context) from exc
+
+    def resume(self, _BaseConfiguration configuration not None):
+        cdef ClientContext client = ClientContext(configuration)
+        _exc.check_error(
+            _tls.mbedtls_ssl_set_session(&client._ctx, &self._ctx)
+        )
+        return client
 
 
 cdef class _BaseContext:
@@ -1203,6 +1221,10 @@ cdef class _BaseContext:
     @property
     def _purpose(self):
         return Purpose(self._conf._ctx.endpoint)
+
+    @property
+    def _verified(self):
+        return _tls.mbedtls_ssl_get_verify_result(&self._ctx) == 0
 
     def _reset(self):
         _exc.check_error(_tls.mbedtls_ssl_session_reset(&self._ctx))

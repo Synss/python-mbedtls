@@ -19,7 +19,7 @@ from mbedtls.tls import _DTLSCookie as DTLSCookie
 from mbedtls.tls import _enable_debug_output
 from mbedtls.tls import _PSKSToreProxy as PSKStoreProxy
 from mbedtls.tls import _set_debug_level
-from mbedtls.tls import _TLSSession as TLSSession
+from mbedtls.tls import TLSSession
 from mbedtls.x509 import CRT, CSR, BasicConstraints
 
 try:
@@ -54,6 +54,12 @@ class Client:
 
     def __del__(self):
         self.stop()
+
+    @property
+    def context(self):
+        if self._sock is None:
+            return None
+        return self._sock.context
 
     def do_handshake(self):
         if not self._sock:
@@ -109,6 +115,12 @@ class Server:
 
     def __del__(self):
         self.stop()
+
+    @property
+    def context(self):
+        if self._sock is None:
+            return None
+        return self._sock.context
 
     def start(self):
         if self._sock:
@@ -354,6 +366,15 @@ class TestTLSRecordHeader:
         assert isinstance(serialized, bytes)
         assert len(serialized) == 5
         assert TLSRecordHeader.from_bytes(serialized) == header
+
+
+class TestTLSSession:
+    @pytest.fixture
+    def session(self):
+        return TLSSession()
+
+    def test_repr(self, session):
+        assert isinstance(repr(session), str)
 
 
 class Chain:
@@ -862,3 +883,22 @@ class TestCommunication(Chain):
                 break
 
         assert client.echo(buffer, chunksize) == buffer
+
+    @pytest.mark.timeout(10)
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
+    def test_session_caching(self, client, cli_conf):
+        while True:
+            try:
+                client.do_handshake()
+            except (WantReadError, WantWriteError):
+                pass
+            else:
+                break
+
+        session = TLSSession()
+        session.save(client.context)
+
+        new_context = session.resume(cli_conf)
+        assert isinstance(new_context, ClientContext)
+        assert new_context._verified

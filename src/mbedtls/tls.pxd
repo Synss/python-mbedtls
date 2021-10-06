@@ -350,7 +350,7 @@ cdef extern from "mbedtls/ssl.h" nogil:
     # mbedtls_ssl_set_hs_authmode
     const char* mbedtls_ssl_get_alpn_protocol(const mbedtls_ssl_context *ctx)
     size_t mbedtls_ssl_get_bytes_avail(const mbedtls_ssl_context *ctx)
-    # mbedtls_ssl_get_verify_result
+    int mbedtls_ssl_get_verify_result(const mbedtls_ssl_context *ssl)
     const char* mbedtls_ssl_get_ciphersuite(const mbedtls_ssl_context *ssl)
     const char* mbedtls_ssl_get_version(const mbedtls_ssl_context *ssl)
     # mbedtls_ssl_get_record_expansion
@@ -441,7 +441,7 @@ cdef class DTLSConfiguration(_BaseConfiguration):
     cdef _set_cookie(self, _DTLSCookie cookie)
 
 
-cdef class _TLSSession:
+cdef class TLSSession:
     cdef mbedtls_ssl_session _ctx
 
 
