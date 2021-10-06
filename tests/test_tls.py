@@ -97,6 +97,10 @@ class Client:
             self._sock.close()
         self._sock = None
 
+    def restart(self):
+        self.stop()
+        self.start()
+
 
 class Server:
     def __init__(self, srv_conf, proto, conn_q):
@@ -820,8 +824,7 @@ class TestCommunication(Chain):
 
     @pytest.fixture
     def client(self, server, srv_hostname, cli_conf, proto):
-        with Client(cli_conf, proto, server, srv_hostname) as client:
-            yield client
+        return Client(cli_conf, proto, server, srv_hostname)
 
     @pytest.mark.timeout(10)
     @pytest.mark.usefixtures("server")
@@ -829,7 +832,7 @@ class TestCommunication(Chain):
         "srv_hostname", ["Wrong End Entity"], indirect=True
     )
     def test_host_name_verification_failure(self, client, srv_hostname):
-        with pytest.raises(TLSError):
+        with pytest.raises(TLSError), client:
             client.do_handshake()
 
     @pytest.mark.timeout(10)
@@ -845,8 +848,9 @@ class TestCommunication(Chain):
     )
     @pytest.mark.parametrize("chunksize", [1024])
     def test_psk_authentication_success(self, client, buffer, chunksize):
-        client.do_handshake()
-        assert client.echo(buffer, chunksize) == buffer
+        with client:
+            client.do_handshake()
+            assert client.echo(buffer, chunksize) == buffer
 
     @pytest.mark.timeout(10)
     @pytest.mark.usefixtures("server")
@@ -866,7 +870,7 @@ class TestCommunication(Chain):
         "cli_psk", [("client", b"the secret key")], indirect=True
     )
     def test_psk_authentication_failure(self, client):
-        with pytest.raises(TLSError):
+        with pytest.raises(TLSError), client:
             client.do_handshake()
 
     @pytest.mark.timeout(10)
@@ -874,30 +878,36 @@ class TestCommunication(Chain):
     @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
     @pytest.mark.parametrize("chunksize", [1024])
     def test_client_server(self, client, buffer, chunksize):
-        while True:
-            try:
-                client.do_handshake()
-            except (WantReadError, WantWriteError):
-                pass
-            else:
-                break
+        with client:
+            while True:
+                try:
+                    client.do_handshake()
+                except (WantReadError, WantWriteError):
+                    pass
+                except TLSError:
+                    client.restart()
+                else:
+                    break
 
-        assert client.echo(buffer, chunksize) == buffer
+            assert client.echo(buffer, chunksize) == buffer
 
     @pytest.mark.timeout(10)
     @pytest.mark.usefixtures("server")
     @pytest.mark.parametrize("ciphers", (ciphers_available(),), indirect=True)
     def test_session_caching(self, client, cli_conf):
-        while True:
-            try:
-                client.do_handshake()
-            except (WantReadError, WantWriteError):
-                pass
-            else:
-                break
-
         session = TLSSession()
-        session.save(client.context)
+        with client:
+            while True:
+                try:
+                    client.do_handshake()
+                except (WantReadError, WantWriteError):
+                    pass
+                except (ConnectionError, TLSError):
+                    client.restart()
+                else:
+                    break
+
+            session.save(client.context)
 
         new_context = session.resume(cli_conf)
         assert isinstance(new_context, ClientContext)
