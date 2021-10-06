@@ -608,6 +608,9 @@ class TestBaseContext:
         cls = request.param
         return cls(conf)
 
+    def test_repr(self, context):
+        assert isinstance(repr(context), str)
+
     def test_get_configuration(self, context, conf):
         assert conf
         assert context.configuration is conf
