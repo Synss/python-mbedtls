@@ -510,9 +510,9 @@ Now, it is possible to cache the session before closing the client side
 >>> session = TLSSession()
 >>> session.save(tls_cli.context)
 
-and restore it later
+and resume it later
 
->>> other_cli = session.restore(
+>>> other_cli = session.resume(
 ...     tls.TLSConfiguration(
 ...         trust_store=trust_store,
 ...         validate_certificates=True,
