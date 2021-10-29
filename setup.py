@@ -88,7 +88,7 @@ def check_mbedtls_support(version, url):
                 mbedtls_version(lib), sep=os.linesep
             )
         )
-        sys.stdout.write("  python-mbedtls version: {0}".format(VERSION))
+        sys.stdout.write("  python-mbedtls version: {0}\n".format(VERSION))
     except OSError as exc:
         lib = None
         sys.stderr.write("  {exc!s}{sep}".format(exc=exc, sep=os.linesep))
