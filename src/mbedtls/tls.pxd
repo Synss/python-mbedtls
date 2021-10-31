@@ -482,4 +482,5 @@ cdef class TLSWrappedSocket:
     cdef _net.mbedtls_net_context _ctx
     cdef TLSWrappedBuffer _buffer
     cdef _socket
+    cdef bint _closed
     cdef void _as_bio(self)
