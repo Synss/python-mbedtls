@@ -7,6 +7,7 @@ import select
 import socket
 import sys
 import time
+from contextlib import suppress
 
 import pytest
 
@@ -14,26 +15,13 @@ from mbedtls import hashlib
 from mbedtls.exceptions import TLSError
 from mbedtls.pk import RSA
 from mbedtls.tls import *
+from mbedtls.tls import TLSSession
 from mbedtls.tls import _BaseConfiguration as BaseConfiguration
 from mbedtls.tls import _DTLSCookie as DTLSCookie
 from mbedtls.tls import _enable_debug_output
 from mbedtls.tls import _PSKSToreProxy as PSKStoreProxy
 from mbedtls.tls import _set_debug_level
-from mbedtls.tls import TLSSession
 from mbedtls.x509 import CRT, CSR, BasicConstraints
-
-try:
-    from contextlib import suppress
-except ImportError:
-    # Python 2.7
-    from contextlib2 import suppress
-
-
-try:
-    FileNotFoundError
-except NameError:
-    # Python 2.7
-    FileNotFoundError = OSError
 
 
 class Client:
