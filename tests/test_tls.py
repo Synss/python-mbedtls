@@ -91,10 +91,11 @@ class Client:
 
 
 class Server:
-    def __init__(self, srv_conf, proto, conn_q):
+    def __init__(self, srv_conf, proto, address, conn_q):
         super().__init__()
         self.srv_conf = srv_conf
         self.proto = proto
+        self.address = address
         self.conn_q = conn_q
         self._sock = None
 
@@ -122,9 +123,7 @@ class Server:
             socket.socket(socket.AF_INET, self.proto)
         )
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self._sock.bind(
-            ("127.0.0.1" if platform.system() == "Windows" else "", 0)
-        )
+        self._sock.bind(self.address)
         if self.proto == socket.SOCK_STREAM:
             self._sock.listen(1)
         self.conn_q.put(self._sock.getsockname())
@@ -803,7 +802,12 @@ class TestCommunication(Chain):
     def server(self, srv_conf, version, proto):
         conn_q = mp.SimpleQueue()
         stop_ev = mp.Event()
-        srv = Server(srv_conf, proto, conn_q)
+        srv = Server(
+            srv_conf,
+            proto,
+            ("127.0.0.1" if platform.system() == "Windows" else "", 0),
+            conn_q,
+        )
         runner = mp.Process(target=srv.run, args=(EchoHandler(stop_ev),))
 
         runner.start()
