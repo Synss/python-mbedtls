@@ -2,6 +2,7 @@
 
 * tls: Add support for session caching.
 * tls: Add context manager to `TLSWrappedSocket`
+* programs: Add example DTLS and TLS client and server.
 * ci: Drop CircleCI.
 * Update wheels to mbedtls 2.16.12
 * Add support for Python 3.10.

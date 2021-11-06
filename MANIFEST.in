@@ -6,6 +6,7 @@ include *.toml
 include *.txt
 include ChangeLog
 recursive-include docs *.rst
+recursive-include programs *.py
 recursive-include requirements *.in
 recursive-include requirements *.txt
 recursive-include scripts *.sh

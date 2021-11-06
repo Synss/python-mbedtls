@@ -26,6 +26,8 @@ This repository's issues are reserved for feature requests and bug reports.
 
 ### Steps to reproduce
 
+<!-- Using `programs/client.py` and `programs/server.py` if possible -->
+
 1.
 1.
 1.
