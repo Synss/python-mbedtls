@@ -1230,7 +1230,8 @@ cdef class _BaseContext:
         _exc.check_error(_tls.mbedtls_ssl_session_reset(&self._ctx))
 
     def _shutdown(self):
-        _tls.mbedtls_ssl_close_notify(&self._ctx)
+        # This could also return SSL_WANT_READ / SSL_WANT_WRITE.
+        _exc.check_error(_tls.mbedtls_ssl_close_notify(&self._ctx))
         self._reset()
 
     def _close(self):
