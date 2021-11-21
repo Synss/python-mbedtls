@@ -7,7 +7,6 @@
 cimport libc.stdio as c_stdio
 from libc.stdlib cimport malloc, free
 
-cimport mbedtls._net as _net
 cimport mbedtls._random as _rnd
 cimport mbedtls.pk as _pk
 cimport mbedtls.tls as _tls
@@ -1538,19 +1537,13 @@ cdef class TLSWrappedBuffer:
         self._output_buffer.consume(amt)
 
 
-cdef class TLSWrappedSocket:
+class TLSWrappedSocket:
     # _pep543.TLSWrappedSocket
     def __init__(self, socket, TLSWrappedBuffer buffer):
         super().__init__()
         self._socket = socket
         self._buffer = buffer
         self._closed = False
-
-    def __cinit__(self):
-        _net.mbedtls_net_init(&self._ctx)
-
-    def __dealloc__(self):
-        _net.mbedtls_net_free(&self._ctx)
 
     def __getstate__(self):
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")

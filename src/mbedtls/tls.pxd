@@ -4,7 +4,6 @@
 """Declarations from `mbedtls/ssl.h`."""
 
 
-cimport mbedtls._net as _net
 cimport mbedtls._ringbuf as _rb
 cimport mbedtls.pk as _pk
 cimport mbedtls.x509 as _x509
@@ -475,10 +474,3 @@ cdef class TLSWrappedBuffer:
     cdef _rb.RingBuffer _input_buffer
     cdef _C_Buffers _c_buffers
     cdef _BaseContext _context
-
-
-cdef class TLSWrappedSocket:
-    cdef _net.mbedtls_net_context _ctx
-    cdef TLSWrappedBuffer _buffer
-    cdef _socket
-    cdef bint _closed
