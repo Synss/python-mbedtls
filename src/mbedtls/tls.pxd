@@ -475,7 +475,6 @@ cdef class TLSWrappedBuffer:
     cdef _rb.RingBuffer _input_buffer
     cdef _C_Buffers _c_buffers
     cdef _BaseContext _context
-    cdef void _as_bio(self)
 
 
 cdef class TLSWrappedSocket:
@@ -483,4 +482,3 @@ cdef class TLSWrappedSocket:
     cdef TLSWrappedBuffer _buffer
     cdef _socket
     cdef bint _closed
-    cdef void _as_bio(self)

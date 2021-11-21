@@ -1301,11 +1301,6 @@ cdef class _BaseContext:
     def _state(self):
         return HandshakeStep(self._ctx.state)
 
-    def _do_handshake(self):
-        """Start the SSL/TLS handshake."""
-        while self._state is not HandshakeStep.HANDSHAKE_OVER:
-            self._do_handshake_step()
-
     def _do_handshake_step(self):
         if self._state is HandshakeStep.HANDSHAKE_OVER:
             raise ValueError("handshake already over")
@@ -1438,16 +1433,14 @@ cdef class TLSWrappedBuffer:
         self._context = context
         self.context._reset()
 
-    def __cinit__(self):
+    def __cinit__(self, _BaseContext context):
         self._output_buffer = _rb.RingBuffer(_tls.TLS_BUFFER_CAPACITY)
         self._input_buffer = _rb.RingBuffer(_tls.TLS_BUFFER_CAPACITY)
         self._c_buffers = _tls._C_Buffers(
             &self._output_buffer._ctx, &self._input_buffer._ctx
         )
-
-    cdef void _as_bio(self):
         _tls.mbedtls_ssl_set_bio(
-            &(<_tls._BaseContext>self.context)._ctx,
+            &(<_tls._BaseContext>context)._ctx,
             &self._c_buffers,
             buffer_write,
             buffer_read,
@@ -1483,7 +1476,20 @@ cdef class TLSWrappedBuffer:
 
     def do_handshake(self):
         # PEP 543
-        self.context._do_handshake()
+        self.context._do_handshake_step()
+
+    def _do_handshake_blocking(self, sock):
+        while self._context._state is not HandshakeStep.HANDSHAKE_OVER:
+            try:
+                self.context._do_handshake_step()
+                amt = sock.send(self.peek_outgoing(1024))
+                self.consume_outgoing(amt)
+            except WantReadError:
+                amt = sock.send(self.peek_outgoing(1024))
+                self.consume_outgoing(amt)
+            except WantWriteError:
+                data = sock.recv(1024)
+                self.receive_from_network(data)
 
     def _setcookieparam(self, param):
         self.context._setcookieparam(param)
@@ -1538,9 +1544,6 @@ cdef class TLSWrappedSocket:
         super().__init__()
         self._socket = socket
         self._buffer = buffer
-        # Default to pass-through BIO.
-        self._ctx.fd = <int>socket.fileno()
-        self._as_bio()
         self._closed = False
 
     def __cinit__(self):
@@ -1558,14 +1561,6 @@ cdef class TLSWrappedSocket:
     def __exit__(self, *exc_info):
         if not self._closed:
             self.close()
-
-    cdef void _as_bio(self):
-        _tls.mbedtls_ssl_set_bio(
-            &(<_tls._BaseContext>self.context)._ctx,
-            &self._ctx,
-            _net.mbedtls_net_send,
-            _net.mbedtls_net_recv,
-            _net.mbedtls_net_recv_timeout)
 
     def __str__(self):
         return str(self._socket)
@@ -1588,9 +1583,7 @@ cdef class TLSWrappedSocket:
         if self.type == _socket.SOCK_STREAM:
             conn, address = self._socket.accept()
         else:
-            data, address = self._socket.recvfrom(1024, _socket.MSG_PEEK)
-            assert data, "no data"
-
+            _, address = self._socket.recvfrom(1024, _socket.MSG_PEEK)
             # Use this socket to communicate with the client and bind
             # another one for the next connection.  This procedure is
             # adapted from `mbedtls_net_accept()`.
@@ -1724,9 +1717,7 @@ cdef class TLSWrappedSocket:
     # PEP 543 adds the following methods.
 
     def do_handshake(self):
-        self._as_bio()
-        self._buffer.do_handshake()
-        self._buffer._as_bio()
+        self._buffer._do_handshake_blocking(self._socket)
 
     def setcookieparam(self, param):
         self._buffer._setcookieparam(param)
