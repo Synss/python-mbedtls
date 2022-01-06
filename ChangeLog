@@ -1,6 +1,7 @@
 [next]
 
 * tls: Add support for session caching.
+* ci: Drop CircleCI.
 * Update wheels to mbedtls 2.16.12
 * Add support for Python 3.10.
 * Drop Python 3.6 (EOL).
