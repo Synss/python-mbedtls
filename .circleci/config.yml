@@ -52,20 +52,6 @@ jobs:
       - store_artifacts: &archive_dist
           path: dist
 
-  python_35:
-    docker:
-      - image: circleci/python:3.5
-        environment: *env
-    working_directory: ~/python-mbedtls
-    steps: *steps
-
-  python_36:
-    docker:
-      - image: circleci/python:3.6
-        environment: *env
-    working_directory: ~/python-mbedtls
-    steps: *steps
-
   python_37:
     docker: &qa
       - image: circleci/python:3.7
@@ -89,7 +75,7 @@ jobs:
 
   python_310:
     docker:
-      - image: circleci/python:3.10-rc
+      - image: circleci/python:3.10
         environment: *env
     working_directory: ~/python-mbedtls
     steps: *steps
