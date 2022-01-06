@@ -8,7 +8,7 @@ jobs:
     docker:
       - image: circleci/python:2.7
         environment: &env
-          VERSION: 2.16.11
+          VERSION: 2.16.12
           CC: /usr/lib/ccache/cc
           C_INCLUDE_PATH: /usr/local/include:/usr/include
           LD_LIBRARY_PATH: /usr/local/lib:/usr/lib

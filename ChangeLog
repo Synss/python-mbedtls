@@ -1,6 +1,7 @@
 [next]
 
 * tls: Add support for session caching.
+* Update wheels to mbedtls 2.16.12
 
 [1.6.0] - 2021-10-03
 
