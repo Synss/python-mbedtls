@@ -14,55 +14,46 @@ from mbedtls.x509 import CRT, CSR, BasicConstraints
 
 
 class TestPickle:
-    @pytest.fixture
-    def session(self):
-        return TLSSession()
+    @pytest.mark.parametrize(
+        "obj", (TLSConfiguration(), DTLSConfiguration()), ids=type
+    )
+    def test_picklable(self, obj):
+        assert obj == pickle.loads(pickle.dumps(obj))
 
-    @pytest.fixture(params=[TLSConfiguration, DTLSConfiguration])
-    def conf(self, request):
-        return request.param()
-
-    @pytest.fixture(params=[ClientContext, ServerContext])
-    def context(self, request, conf):
-        return request.param(conf)
-
-    @pytest.fixture
-    def identity(self):
-        return lambda obj: pickle.loads(pickle.dumps(obj))
-
-    @pytest.fixture
-    def tls_wrapped_buffer(self, context):
-        return TLSWrappedBuffer(context)
-
-    @pytest.fixture
-    def tls_wrapped_socket(self, tls_wrapped_buffer):
-        return TLSWrappedSocket(socket.socket(), tls_wrapped_buffer)
-
-    def test_session(self, session):
+    @pytest.mark.parametrize(
+        "obj",
+        (
+            ClientContext(TLSConfiguration()),
+            ClientContext(DTLSConfiguration()),
+            ServerContext(TLSConfiguration()),
+            ServerContext(DTLSConfiguration()),
+            TLSSession(),
+            TLSWrappedBuffer(ClientContext(DTLSConfiguration())),
+            TLSWrappedBuffer(ClientContext(TLSConfiguration())),
+            TLSWrappedBuffer(ServerContext(DTLSConfiguration())),
+            TLSWrappedBuffer(ServerContext(TLSConfiguration())),
+            TLSWrappedSocket(
+                socket.socket(),
+                TLSWrappedBuffer(ClientContext(DTLSConfiguration())),
+            ),
+            TLSWrappedSocket(
+                socket.socket(),
+                TLSWrappedBuffer(ClientContext(TLSConfiguration())),
+            ),
+            TLSWrappedSocket(
+                socket.socket(),
+                TLSWrappedBuffer(ServerContext(DTLSConfiguration())),
+            ),
+            TLSWrappedSocket(
+                socket.socket(),
+                TLSWrappedBuffer(ServerContext(TLSConfiguration())),
+            ),
+        ),
+        ids=type,
+    )
+    def test_unpicklable(self, obj):
         with pytest.raises(TypeError) as excinfo:
-            pickle.dumps(session)
-
-        assert str(excinfo.value).startswith("cannot pickle")
-
-    def test_configuration(self, conf, identity):
-        assert conf == identity(conf)
-
-    def test_context(self, context, identity):
-        with pytest.raises(TypeError) as excinfo:
-            pickle.dumps(context)
-
-        assert str(excinfo.value).startswith("cannot pickle")
-
-    def test_tls_wrapped_buffer(self, tls_wrapped_buffer):
-        with pytest.raises(TypeError) as excinfo:
-            pickle.dumps(tls_wrapped_buffer)
-
-        assert str(excinfo.value).startswith("cannot pickle")
-
-    def test_tls_wrapped_socket(self, tls_wrapped_socket):
-        # Python socket.socket is not pickable.
-        with pytest.raises(TypeError) as excinfo:
-            pickle.dumps(tls_wrapped_socket)
+            pickle.dumps(obj)
 
         assert str(excinfo.value).startswith("cannot pickle")
 
