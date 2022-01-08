@@ -444,9 +444,16 @@ cdef class TLSSession:
     cdef mbedtls_ssl_session _ctx
 
 
+cdef struct _C_Buffers:
+    _rb.ring_buffer_ctx *out_ctx
+    _rb.ring_buffer_ctx *in_ctx
+
+
 cdef class _BaseContext:
     cdef mbedtls_ssl_context _ctx
     cdef _BaseConfiguration _conf
+    cdef _C_Buffers _c_buffers
+    cpdef set_bio(self, _rb.RingBuffer input, _rb.RingBuffer output)
     # DTLS only:
     cdef mbedtls_timing_delay_context _timer
 
@@ -462,15 +469,3 @@ cdef class ServerContext(_BaseContext):
 cdef enum:
     # 32K (MBEDTLS_SSL_DTLS_MAX_BUFFERING)
     TLS_BUFFER_CAPACITY = 2 << 14
-
-
-cdef struct _C_Buffers:
-    _rb.ring_buffer_ctx *out_ctx
-    _rb.ring_buffer_ctx *in_ctx
-
-
-cdef class TLSWrappedBuffer:
-    cdef _rb.RingBuffer _output_buffer
-    cdef _rb.RingBuffer _input_buffer
-    cdef _C_Buffers _c_buffers
-    cdef _BaseContext _context

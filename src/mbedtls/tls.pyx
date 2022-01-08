@@ -1206,6 +1206,16 @@ cdef class _BaseContext:
         """Free and clear the internal structures of ctx."""
         _tls.mbedtls_ssl_free(&self._ctx)
 
+    cpdef set_bio(self, _rb.RingBuffer output, _rb.RingBuffer input):
+        self._reset()
+        self._c_buffers = _tls._C_Buffers(&output._ctx, &input._ctx)
+        _tls.mbedtls_ssl_set_bio(
+            &self._ctx,
+            &self._c_buffers,
+            buffer_write,
+            buffer_read,
+            NULL)
+
     def __getstate__(self):
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
@@ -1426,24 +1436,13 @@ cdef class ServerContext(_BaseContext):
         return client_id if client_id else None
 
 
-cdef class TLSWrappedBuffer:
+class TLSWrappedBuffer:
     # _pep543.TLSWrappedBuffer
-    def __init__(self, _BaseContext context):
-        self._context = context
-        self.context._reset()
-
-    def __cinit__(self, _BaseContext context):
+    def __init__(self, context):
         self._output_buffer = _rb.RingBuffer(_tls.TLS_BUFFER_CAPACITY)
         self._input_buffer = _rb.RingBuffer(_tls.TLS_BUFFER_CAPACITY)
-        self._c_buffers = _tls._C_Buffers(
-            &self._output_buffer._ctx, &self._input_buffer._ctx
-        )
-        _tls.mbedtls_ssl_set_bio(
-            &(<_tls._BaseContext>context)._ctx,
-            &self._c_buffers,
-            buffer_write,
-            buffer_read,
-            NULL)
+        context.set_bio(self._output_buffer, self._input_buffer)
+        self._context = context
 
     def __repr__(self):
         return "%s(%r)" % (type(self).__name__, self.context)
@@ -1452,22 +1451,22 @@ cdef class TLSWrappedBuffer:
         # We could make this pickable by copying the buffers.
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
-    def read(self, size_t amt):
+    def read(self, amt):
         # PEP 543
         if amt <= 0:
             return b""
         buffer = bytearray(amt)
-        cdef unsigned char[:] c_buffer = buffer
-        cdef size_t nread = 0
+        view = memoryview(buffer)
+        nread = 0
         while nread != amt and not self._input_buffer.empty():
-            nread += self.readinto(c_buffer[nread:], amt - nread)
+            nread += self.readinto(view[nread:], amt - nread)
         return bytes(buffer[:nread])
 
-    def readinto(self, unsigned char[:] buffer not None, size_t amt):
+    def readinto(self, buffer, amt):
         # PEP 543
         return self.context._readinto(buffer, amt)
 
-    def write(self, const unsigned char[:] buffer not None):
+    def write(self, buffer):
         # PEP 543
         amt = self.context._write(buffer)
         assert amt == buffer.size
@@ -1519,19 +1518,19 @@ cdef class TLSWrappedBuffer:
         # PEP 543
         self.context._shutdown()
 
-    def receive_from_network(self, const unsigned char[:] data not None):
+    def receive_from_network(self, data):
         # PEP 543
         # Append data to input buffer.
-        self._input_buffer.write(data, data.size)
+        self._input_buffer.write(data, len(data))
 
-    def peek_outgoing(self, size_t amt):
+    def peek_outgoing(self, amt):
         # PEP 543
         # Read from output buffer.
         if amt == 0:
             return b""
         return self._output_buffer.peek(amt)
 
-    def consume_outgoing(self, size_t amt):
+    def consume_outgoing(self, amt):
         """Consume `amt` bytes from the output buffer."""
         # PEP 543
         self._output_buffer.consume(amt)
@@ -1539,7 +1538,7 @@ cdef class TLSWrappedBuffer:
 
 class TLSWrappedSocket:
     # _pep543.TLSWrappedSocket
-    def __init__(self, socket, TLSWrappedBuffer buffer):
+    def __init__(self, socket, buffer):
         super().__init__()
         self._socket = socket
         self._buffer = buffer
