@@ -5,11 +5,11 @@ import socket
 import pytest
 
 from mbedtls import hashlib
+from mbedtls._tls import _DTLSCookie as DTLSCookie
+from mbedtls._tls import _PSKSToreProxy as PSKStoreProxy
 from mbedtls.pk import RSA
 from mbedtls.tls import *
 from mbedtls.tls import TLSSession
-from mbedtls.tls import _DTLSCookie as DTLSCookie
-from mbedtls.tls import _PSKSToreProxy as PSKStoreProxy
 from mbedtls.x509 import CRT, CSR, BasicConstraints
 
 

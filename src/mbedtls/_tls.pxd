@@ -456,16 +456,3 @@ cdef class _BaseContext:
     cpdef set_bio(self, _rb.RingBuffer input, _rb.RingBuffer output)
     # DTLS only:
     cdef mbedtls_timing_delay_context _timer
-
-
-cdef class ClientContext(_BaseContext):
-    pass
-
-
-cdef class ServerContext(_BaseContext):
-    pass
-
-
-cdef enum:
-    # 32K (MBEDTLS_SSL_DTLS_MAX_BUFFERING)
-    TLS_BUFFER_CAPACITY = 2 << 14
