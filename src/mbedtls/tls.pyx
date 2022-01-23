@@ -615,8 +615,8 @@ cdef class _BaseConfiguration:
         )
 
     @property
-    def lowest_supported_version(self):
-        raise NotImplementedError
+    def _lowest_supported_version(self):
+        return self._ctx.min_major_ver, self._ctx.min_minor_ver
 
     cdef _set_highest_supported_version(self, version):
         """The maximum version of TLS that should be allowed.
@@ -634,8 +634,8 @@ cdef class _BaseConfiguration:
         )
 
     @property
-    def highest_supported_version(self):
-        raise NotImplementedError
+    def _highest_supported_version(self):
+        return self._ctx.max_major_ver, self._ctx.max_minor_ver
 
     cdef _set_trust_store(self, store):
         """The trust store that connections will use.
@@ -750,13 +750,11 @@ cdef class TLSConfiguration(_BaseConfiguration):
 
     @property
     def lowest_supported_version(self):
-        return TLSVersion.from_major_minor(
-            self._ctx.min_major_ver, self._ctx.min_minor_ver)
+        return TLSVersion.from_major_minor(*self._lowest_supported_version)
 
     @property
     def highest_supported_version(self):
-        return TLSVersion.from_major_minor(
-            self._ctx.max_major_ver, self._ctx.max_minor_ver)
+        return TLSVersion.from_major_minor(*self._highest_supported_version)
 
     def __repr__(self):
         return ("%s("
@@ -922,13 +920,11 @@ cdef class DTLSConfiguration(_BaseConfiguration):
 
     @property
     def lowest_supported_version(self):
-        return DTLSVersion.from_major_minor(
-            self._ctx.min_major_ver, self._ctx.min_minor_ver)
+        return DTLSVersion.from_major_minor(*self._lowest_supported_version)
 
     @property
     def highest_supported_version(self):
-        return DTLSVersion.from_major_minor(
-            self._ctx.max_major_ver, self._ctx.max_minor_ver)
+        return DTLSVersion.from_major_minor(*self._highest_supported_version)
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
@@ -1191,6 +1187,12 @@ cdef class _BaseContext:
     """
     def __init__(self, _BaseConfiguration configuration not None):
         self._conf = configuration
+        _tls.mbedtls_ssl_conf_endpoint(
+            &self._conf._ctx,
+            {
+                Purpose.CLIENT_AUTH: _tls.MBEDTLS_SSL_IS_CLIENT,
+                Purpose.SERVER_AUTH: _tls.MBEDTLS_SSL_IS_SERVER,
+            }[self._purpose])
         _exc.check_error(_tls.mbedtls_ssl_setup(&self._ctx, &self._conf._ctx))
 
     def __cinit__(self):
@@ -1228,12 +1230,49 @@ cdef class _BaseContext:
         return self._conf
 
     @property
-    def _purpose(self):
-        return Purpose(self._conf._ctx.endpoint)
+    def _purpose(self) -> Purpose:
+        raise NotImplementedError
 
     @property
     def _verified(self):
         return _tls.mbedtls_ssl_get_verify_result(&self._ctx) == 0
+
+    @property
+    def _hostname(self):
+        # Client side
+        if self._ctx.hostname is NULL:
+            return None
+        return (<bytes> self._ctx.hostname).decode("utf8")
+
+    def _set_hostname(self, hostname):
+        """Set the hostname to check against the received server."""
+        if hostname is None:
+            return
+        # Note: `ssl_set_hostname()` makes a copy so it is safe
+        #       to call with the temporary `hostname_`.
+        hostname_ = hostname.encode("utf8")
+        cdef const char* c_hostname = hostname_
+        _exc.check_error(_tls.mbedtls_ssl_set_hostname(&self._ctx, c_hostname))
+
+    @property
+    def _cookieparam(self):
+        """Client ID for the HelloVerifyRequest.
+
+        Note:
+            Server-side, DTLS only.
+
+        """
+        client_id = bytes(self._ctx.cli_id[0:self._ctx.cli_id_len])
+        return client_id if client_id else None
+
+    def _setcookieparam(self, const unsigned char[:] info not None):
+        if info.size == 0:
+            info = b"\0"
+        _tls.mbedtls_ssl_set_client_transport_id(
+            &self._ctx,
+            &info[0],
+            info.size,
+        )
 
     def _reset(self):
         _exc.check_error(_tls.mbedtls_ssl_session_reset(&self._ctx))
@@ -1352,10 +1391,9 @@ cdef class _BaseContext:
 cdef class ClientContext(_BaseContext):
     # _pep543.ClientContext
 
-    def __init__(self, _BaseConfiguration configuration not None):
-        _tls.mbedtls_ssl_conf_endpoint(
-            &configuration._ctx, _tls.MBEDTLS_SSL_IS_CLIENT)
-        super().__init__(configuration)
+    @property
+    def _purpose(self) -> Purpose:
+        return Purpose.CLIENT_AUTH
 
     def wrap_socket(self, socket, server_hostname):
         """Wrap an existing Python socket object ``socket`` and return a
@@ -1377,34 +1415,16 @@ cdef class ClientContext(_BaseContext):
     def wrap_buffers(self, server_hostname):
         """Create an in-memory stream for TLS."""
         # PEP 543
-        if server_hostname is not None:
-            self._set_hostname(server_hostname)
+        self._set_hostname(server_hostname)
         return TLSWrappedBuffer(self)
-
-    def _set_hostname(self, hostname):
-        """Set the hostname to check against the received server."""
-        if hostname is None:
-            return
-        # Note: `ssl_set_hostname()` makes a copy so it is safe
-        #       to call with the temporary `hostname_`.
-        hostname_ = hostname.encode("utf8")
-        cdef const char* c_hostname = hostname_
-        _exc.check_error(_tls.mbedtls_ssl_set_hostname(&self._ctx, c_hostname))
-
-    @property
-    def _hostname(self):
-        if self._ctx.hostname is NULL:
-            return None
-        return (<bytes> self._ctx.hostname).decode("utf8")
 
 
 cdef class ServerContext(_BaseContext):
     # _pep543.ServerContext
 
-    def __init__(self, _BaseConfiguration configuration not None):
-        _tls.mbedtls_ssl_conf_endpoint(
-            &configuration._ctx, _tls.MBEDTLS_SSL_IS_SERVER)
-        super().__init__(configuration)
+    @property
+    def _purpose(self) -> Purpose:
+        return Purpose.SERVER_AUTH
 
     def wrap_socket(self, socket):
         """Wrap an existing Python socket object ``socket``."""
@@ -1414,26 +1434,6 @@ cdef class ServerContext(_BaseContext):
     def wrap_buffers(self):
         # PEP 543
         return TLSWrappedBuffer(self)
-
-    def _setcookieparam(self, const unsigned char[:] info not None):
-        if info.size == 0:
-            info = b"\0"
-        _tls.mbedtls_ssl_set_client_transport_id(
-            &self._ctx,
-            &info[0],
-            info.size,
-        )
-
-    @property
-    def _cookieparam(self):
-        """Client ID for the HelloVerifyRequest.
-
-        Notes:
-            DTLS only.
-
-        """
-        client_id = bytes(self._ctx.cli_id[0:self._ctx.cli_id_len])
-        return client_id if client_id else None
 
 
 class TLSWrappedBuffer:
@@ -1488,9 +1488,6 @@ class TLSWrappedBuffer:
             except WantWriteError:
                 data = sock.recv(1024)
                 self.receive_from_network(data)
-
-    def _setcookieparam(self, param):
-        self.context._setcookieparam(param)
 
     def cipher(self):
         # PEP 543
@@ -1712,7 +1709,7 @@ class TLSWrappedSocket:
         self._buffer._do_handshake_blocking(self._socket)
 
     def setcookieparam(self, param):
-        self._buffer._setcookieparam(param)
+        self.context._setcookieparam(param)
 
     def cipher(self):
         return self._buffer.cipher()
