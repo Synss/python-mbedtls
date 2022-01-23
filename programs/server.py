@@ -26,6 +26,7 @@ __all__ = ["Server"]
 def _make_tls_connection(sock):
     assert sock
     conn, _addr = sock.accept()
+    conn.do_handshake()
     return conn
 
 
@@ -39,6 +40,7 @@ def _make_dtls_connection(sock):
     _, (conn, addr) = conn, conn.accept()
     _.close()
     conn.setcookieparam(addr[0].encode("ascii"))
+    conn.do_handshake()
     return conn
 
 
@@ -98,10 +100,6 @@ class Server:
 
     def _run(self, conn_handler):
         with self._make_connection(self._sock) as conn:
-            try:
-                conn.do_handshake()
-            except TLSError:
-                return
             conn_handler(conn)
 
 
