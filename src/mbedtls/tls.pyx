@@ -1355,7 +1355,7 @@ cdef class ClientContext(_BaseContext):
     def __init__(self, _BaseConfiguration configuration not None):
         _tls.mbedtls_ssl_conf_endpoint(
             &configuration._ctx, _tls.MBEDTLS_SSL_IS_CLIENT)
-        super(ClientContext, self).__init__(configuration)
+        super().__init__(configuration)
 
     def wrap_socket(self, socket, server_hostname):
         """Wrap an existing Python socket object ``socket`` and return a
@@ -1404,7 +1404,7 @@ cdef class ServerContext(_BaseContext):
     def __init__(self, _BaseConfiguration configuration not None):
         _tls.mbedtls_ssl_conf_endpoint(
             &configuration._ctx, _tls.MBEDTLS_SSL_IS_SERVER)
-        super(ServerContext, self).__init__(configuration)
+        super().__init__(configuration)
 
     def wrap_socket(self, socket):
         """Wrap an existing Python socket object ``socket``."""

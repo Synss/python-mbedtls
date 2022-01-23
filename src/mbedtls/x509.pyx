@@ -122,14 +122,14 @@ class BasicConstraints(
     """The basic constraints for the certificate."""
 
     def __new__(cls, ca=False, max_path_length=0):
-        return super(BasicConstraints, cls).__new__(cls, ca, max_path_length)
+        return super().__new__(cls, ca, max_path_length)
 
 
 cdef class CRT(Certificate):
     """X.509 certificate."""
 
     def __init__(self, const unsigned char[:] buffer):
-        super(CRT, self).__init__()
+        super().__init__()
         self._next = None
         if buffer is None or buffer.size == 0:
             return
@@ -479,7 +479,7 @@ cdef class _CRTWriter:
     def __init__(self, not_before, not_after, issuer, issuer_key,
                  subject, subject_key, serial_number, digestmod,
                  basic_constraints=BasicConstraints()):
-        super(_CRTWriter, self).__init__()
+        super().__init__()
         self.set_validity(not_before, not_after)
         self.set_issuer(issuer)
         self.set_issuer_key(issuer_key)
@@ -646,7 +646,7 @@ cdef class CSR(Certificate):
     """X.509 certificate signing request parser."""
 
     def __init__(self, const unsigned char[:] buffer):
-        super(CSR, self).__init__()
+        super().__init__()
         if buffer is None or buffer.size == 0:
             return
         _exc.check_error(x509.mbedtls_x509_csr_parse(
@@ -781,7 +781,7 @@ cdef class _CSRWriter:
 
     """
     def __init__(self, subject_key, subject, digestmod):
-        super(_CSRWriter, self).__init__()
+        super().__init__()
         self.set_subject_key(subject_key)
         self.set_subject(subject)
         self.set_digestmod(digestmod)
@@ -867,7 +867,7 @@ cdef class CRL(Certificate):
     """X.509 revocation list."""
 
     def __init__(self, const unsigned char[:] buffer):
-        super(CRL, self).__init__()
+        super().__init__()
         self._next = None
         if buffer is None or buffer.size == 0:
             return

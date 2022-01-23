@@ -16,7 +16,7 @@ class TLSError(Exception):
     """Exception raise by Mbed TLS."""
 
     def __init__(self, err=None, msg=""):
-        super(TLSError, self).__init__()
+        super().__init__()
         if err is not None:
             assert err >= 0
         self.err = err
