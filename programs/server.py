@@ -7,6 +7,7 @@ Run ./programs/server.py --help.
 
 import argparse
 import socket
+import time
 from contextlib import suppress
 from functools import partial
 
@@ -104,7 +105,12 @@ class Server:
 
 
 def echo_handler(conn, *, packet_size):
-    data = conn.recv(packet_size)
+    while True:
+        data = conn.recv(packet_size)
+        if data:
+            break
+        # Avoid tight loop.
+        time.sleep(0.01)
     sent = 0
     view = memoryview(data)
     while sent != len(data):

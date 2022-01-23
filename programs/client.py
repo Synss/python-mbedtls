@@ -7,6 +7,7 @@ Run ./programs/client.py --help.
 
 import argparse
 import socket
+import time
 from contextlib import suppress
 
 from mbedtls.exceptions import TLSError
@@ -34,11 +35,14 @@ def _echo_tls(sock, buffer, chunksize):
 def _echo_dtls(sock, buffer, chunksize):
     view = memoryview(buffer)
     received = bytearray()
-    for idx in range(0, len(view), chunksize):
-        part = view[idx : idx + chunksize]
+    while len(received) != len(buffer):
+        part = view[len(received) : len(received) + chunksize]
         _sent = sock.send(part)
         data, _addr = sock.recvfrom(chunksize)
         received += data
+        if not data:
+            # Avoid tight loop.
+            time.sleep(0.01)
     return received
 
 
