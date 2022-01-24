@@ -203,7 +203,7 @@ class TLSWrappedBuffer:
     def write(self, buffer):
         # PEP 543
         amt = self.context._write(buffer)
-        assert amt == buffer.size
+        assert amt == len(buffer)
         return len(self._output_buffer)
 
     def do_handshake(self):
@@ -375,7 +375,7 @@ class TLSWrappedSocket:
         return self._buffer.read(bufsize), addr
 
     def recvfrom_into(self, buffer, nbytes=None, flags=0):
-        encrypted, addr = self._socket.recvfrom(buffer.size(), flags)
+        encrypted, addr = self._socket.recvfrom(len(buffer), flags)
         if not encrypted:
             return buffer, addr
         self._buffer.receive_from_network(encrypted)

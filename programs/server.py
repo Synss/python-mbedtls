@@ -11,14 +11,13 @@ import time
 from contextlib import suppress
 from functools import partial
 
+from mbedtls._tls import _enable_debug_output, _set_debug_level
 from mbedtls.exceptions import TLSError
 from mbedtls.tls import (
     DTLSConfiguration,
     HelloVerifyRequest,
     ServerContext,
     TLSConfiguration,
-    _enable_debug_output,
-    _set_debug_level,
 )
 
 __all__ = ["Server"]

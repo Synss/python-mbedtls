@@ -10,14 +10,9 @@ import socket
 import time
 from contextlib import suppress
 
+from mbedtls._tls import _enable_debug_output, _set_debug_level
 from mbedtls.exceptions import TLSError
-from mbedtls.tls import (
-    ClientContext,
-    DTLSConfiguration,
-    TLSConfiguration,
-    _enable_debug_output,
-    _set_debug_level,
-)
+from mbedtls.tls import ClientContext, DTLSConfiguration, TLSConfiguration
 
 __all__ = ["Client"]
 
