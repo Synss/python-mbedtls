@@ -7,10 +7,10 @@ import struct
 import sys
 from contextlib import suppress
 
-if sys.version_info >= (3, 8):
-    from typing import Final
+if sys.version_info < (3, 8):
+    from typing_extensions import Final
 else:
-    Final = object
+    from typing import Final
 
 import mbedtls._ringbuf as _rb
 
