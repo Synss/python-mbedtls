@@ -6,7 +6,7 @@
 # pylint: disable=invalid-name
 
 import pickle
-import sys
+from collections.abc import Collection
 
 import pytest
 
@@ -14,13 +14,6 @@ import mbedtls
 from mbedtls import hashlib
 from mbedtls import hmac as hmaclib
 from mbedtls._md import Hash
-
-if sys.version_info >= (3, 6):
-    from collections.abc import Collection
-elif sys.version_info >= (3, 3):
-    from collections.abc import Container as Collection
-else:
-    from collections import Container as Collection
 
 
 def make_chunks(buffer, size):

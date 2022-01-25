@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 import mbedtls
@@ -78,9 +76,6 @@ def to_bytes(number, size):
     return number.to_bytes(size, byteorder="big")
 
 
-@pytest.mark.skipif(
-    sys.version_info < (3, 2), reason="int.to_bytes() requires Python 3.2+"
-)
 class TestHKDF_RFC5869_TestVectors:
     def test_case_1(self):
         algorithm = _hmac.sha256
