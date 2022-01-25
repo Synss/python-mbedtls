@@ -1,13 +1,8 @@
 import sys
 from io import StringIO
+from pathlib import Path
 
 import pytest
-
-try:
-    from pathlib import Path
-except ImportError:
-    from pathlib2 import Path
-
 
 if sys.version_info < (3, 9):
     from readme_renderer.rst import render

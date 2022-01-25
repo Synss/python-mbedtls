@@ -8,13 +8,8 @@
 cimport mbedtls.cipher._cipher as _cipher
 from libc.stdlib cimport malloc, free
 
-try:
-    from contextlib import suppress
-except ImportError:
-    # Python 2.7
-    from contextlib2 import suppress
-
 import enum
+from contextlib import suppress
 
 import mbedtls.exceptions as _exc
 

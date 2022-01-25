@@ -12,12 +12,8 @@ cimport mbedtls.pk as _pk
 
 import base64
 import datetime as dt
-try:
-    from contextlib import suppress
-except ImportError:
-    # Python 2.7
-    from contextlib2 import suppress
 from collections import namedtuple
+from contextlib import suppress
 
 import mbedtls.exceptions as _exc
 import mbedtls.mpi as _mpi

@@ -47,14 +47,10 @@ setup_requires = [
 ]
 install_requires = [
     "certifi",
-    'contextlib2; python_version < "3.0"',
-    'enum34 != 1.1.8; python_version < "3.0"',
-    'pathlib2; python_version < "3.0"',
     'typing_extensions; python_version < "3.8"',
 ]
 tests_require = [
     "readme_renderer",
-    'contextlib2; python_version < "3.0"',
 ]
 
 

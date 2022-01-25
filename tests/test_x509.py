@@ -1,5 +1,6 @@
 import datetime as dt
 import pickle
+from pathlib import Path
 
 import certifi
 import pytest
@@ -7,12 +8,6 @@ import pytest
 from mbedtls import hashlib
 from mbedtls.pk import ECC, RSA
 from mbedtls.x509 import *
-
-try:
-    from pathlib import Path
-except ImportError:
-    from pathlib2 import Path
-
 
 CRL_PEM = """
 -----BEGIN X509 CRL-----
