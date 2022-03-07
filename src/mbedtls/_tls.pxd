@@ -354,8 +354,8 @@ cdef extern from "mbedtls/ssl.h" nogil:
     const char* mbedtls_ssl_get_version(const mbedtls_ssl_context *ssl)
     # mbedtls_ssl_get_record_expansion
     size_t mbedtls_ssl_get_max_frag_len(const mbedtls_ssl_context *ssl)
-    # const _x509.mbedtls_x509_crt *mbedtls_ssl_get_peer_cert(
-    #     const mbedtls_ssl_context *ctx)
+    const _x509.mbedtls_x509_crt *mbedtls_ssl_get_peer_cert(
+        const mbedtls_ssl_context *ctx)
     int mbedtls_ssl_get_session(
         const mbedtls_ssl_context *ssl,
         mbedtls_ssl_session *session)

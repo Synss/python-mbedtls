@@ -1261,8 +1261,17 @@ cdef class _BaseContext:
                 _exc.check_error(ret)
         return written
 
-    # def getpeercert(self, binary_form=False):
-    #     crt = _tls.mbedtls_ssl_get_peer_cert()
+    def getpeercert(self, binary_form=False):
+        """Return the peer certificate, or None."""
+        c_crt = _tls.mbedtls_ssl_get_peer_cert(&self._ctx)
+        if c_crt is NULL:
+            return None
+
+        # See `CRT.to_DER()`.
+        der = bytes(c_crt.raw.p[0:c_crt.raw.len])
+        if binary_form:
+            return der
+        return _x509.CRT.from_DER(der)
 
     def _selected_npn_protocol(self):
         return None

@@ -1,6 +1,7 @@
 [next]
 
 * tls: Add support for session caching.
+* tls: Implement `context.getpeercert()`.
 * tls: Add context manager to `TLSWrappedSocket`
 * programs: Add example DTLS and TLS client and server.
 * ci: Drop CircleCI.
