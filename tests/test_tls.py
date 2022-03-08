@@ -9,7 +9,7 @@ from mbedtls._tls import _DTLSCookie as DTLSCookie
 from mbedtls._tls import _PSKSToreProxy as PSKStoreProxy
 from mbedtls.pk import RSA
 from mbedtls.tls import *
-from mbedtls.tls import TLSSession
+from mbedtls.tls import HandshakeStep, TLSSession
 from mbedtls.x509 import CRT, CSR, BasicConstraints
 
 
@@ -487,3 +487,114 @@ class TestServerContext(TestBaseContext):
 
     def test_wrap_buffers(self, context):
         assert isinstance(context.wrap_buffers(), TLSWrappedBuffer)
+
+
+class TestTLSWrappedBuffer:
+    @pytest.fixture
+    def server_hostname(self):
+        return "hostname"
+
+    @pytest.fixture
+    def psk(self):
+        return ("cli", b"secret")
+
+    @pytest.fixture
+    def cli_conf(self, psk):
+        return TLSConfiguration(
+            pre_shared_key=psk, validate_certificates=False
+        )
+
+    @pytest.fixture
+    def srv_conf(self, psk):
+        return TLSConfiguration(
+            pre_shared_key_store=dict((psk,)), validate_certificates=False
+        )
+
+    @pytest.fixture
+    def client(Self, cli_conf, server_hostname):
+        ctx = ClientContext(cli_conf).wrap_buffers(server_hostname)
+        yield ctx
+        ctx.shutdown()
+
+    @pytest.fixture
+    def server(self, srv_conf, server_hostname):
+        ctx = ServerContext(srv_conf).wrap_buffers()
+        yield ctx
+        ctx.shutdown()
+
+    def test_e2e_handshake_and_communicate(self, client, server):
+        def do_io(*, src, dst, amt=1024):
+            in_transit = src.peek_outgoing(amt)
+            src.consume_outgoing(len(in_transit))
+            dst.receive_from_network(in_transit)
+
+        def do_handshake(*end_state_pair):
+            for end, state in end_state_pair:
+                end.do_handshake()
+                assert end.context._state is state
+
+        do_handshake(
+            (server, HandshakeStep.CLIENT_HELLO),
+            (client, HandshakeStep.CLIENT_HELLO),
+            (client, HandshakeStep.SERVER_HELLO),
+        )
+
+        do_io(src=client, dst=server)
+        do_handshake(
+            (server, HandshakeStep.SERVER_HELLO),
+            (server, HandshakeStep.SERVER_CERTIFICATE),
+            (server, HandshakeStep.SERVER_KEY_EXCHANGE),
+            (server, HandshakeStep.CERTIFICATE_REQUEST),
+            (server, HandshakeStep.SERVER_HELLO_DONE),
+            (server, HandshakeStep.CLIENT_CERTIFICATE),
+            (server, HandshakeStep.CLIENT_KEY_EXCHANGE),
+        )
+        assert client.negotiated_protocol() == server.negotiated_protocol()
+
+        do_io(src=server, dst=client)
+        do_handshake(
+            (client, HandshakeStep.SERVER_CERTIFICATE),
+            (client, HandshakeStep.SERVER_KEY_EXCHANGE),
+            (client, HandshakeStep.CERTIFICATE_REQUEST),
+            (client, HandshakeStep.SERVER_HELLO_DONE),
+            (client, HandshakeStep.CLIENT_CERTIFICATE),
+            (client, HandshakeStep.CLIENT_KEY_EXCHANGE),
+            (client, HandshakeStep.CERTIFICATE_VERIFY),
+            (client, HandshakeStep.CLIENT_CHANGE_CIPHER_SPEC),
+            (client, HandshakeStep.CLIENT_FINISHED),
+            (client, HandshakeStep.SERVER_CHANGE_CIPHER_SPEC),
+        )
+        assert (
+            client.negotiated_tls_version() == server.negotiated_tls_version()
+        )
+
+        do_io(src=client, dst=server)
+        do_handshake(
+            (server, HandshakeStep.CERTIFICATE_VERIFY),
+            (server, HandshakeStep.CLIENT_CHANGE_CIPHER_SPEC),
+            (server, HandshakeStep.CLIENT_FINISHED),
+            (server, HandshakeStep.SERVER_CHANGE_CIPHER_SPEC),
+            (server, HandshakeStep.SERVER_FINISHED),
+            (server, HandshakeStep.FLUSH_BUFFERS),
+            (server, HandshakeStep.HANDSHAKE_WRAPUP),
+            (server, HandshakeStep.HANDSHAKE_OVER),
+        )
+
+        do_io(src=server, dst=client)
+        do_handshake(
+            (client, HandshakeStep.SERVER_FINISHED),
+            (client, HandshakeStep.FLUSH_BUFFERS),
+            (client, HandshakeStep.HANDSHAKE_WRAPUP),
+            (client, HandshakeStep.HANDSHAKE_OVER),
+        )
+        assert client.cipher() == server.cipher()
+
+        secret = b"a very secret message"
+
+        amt = client.write(secret)
+        do_io(src=client, dst=server)
+        assert server.read(amt) == secret
+
+        amt = server.write(secret)
+        do_io(src=server, dst=client)
+        assert client.read(amt) == secret
