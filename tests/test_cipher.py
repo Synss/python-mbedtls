@@ -119,7 +119,11 @@ class _TestCipher:
     @pytest.fixture
     def data(self, cipher, mode, randbytes):
         # `block_size` is limited for ECB because it is a block cipher.
-        return randbytes(cipher.block_size if mode is mb.Mode.ECB else 20000)
+        assert cipher.block_size
+        return randbytes(
+            cipher.block_size
+            if mode is mb.Mode.ECB
+            else cipher.block_size * 128)
 
     def test_pickle(self, cipher):
         with pytest.raises(TypeError) as excinfo:
@@ -179,6 +183,13 @@ class _TestAEADCipher(_TestCipher):
     @pytest.fixture(params=[0, 1, 16, 256])
     def ad(self, mode, randbytes, request):
         return randbytes(request.param)
+
+    def test_cbc_requires_padding(self, mode, cipher, data):
+        data += b"\0"
+        if mode is mb.Mode.CBC:
+            with pytest.raises(ValueError):
+                cipher.encrypt(data)
+        assert cipher.decrypt(*cipher.encrypt(data)) == data
 
     def test_encrypt_decrypt(self, cipher, data):
         msg, tag = cipher.encrypt(data)

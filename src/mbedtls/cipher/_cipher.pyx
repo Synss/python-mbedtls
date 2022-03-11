@@ -189,6 +189,15 @@ cdef class _CipherBase:
         _exc.check_error(_cipher.mbedtls_cipher_setup(
             &self._dec_ctx,
             _cipher.mbedtls_cipher_info_from_string(cipher_name)))
+        # Remove the default padding for the modes that support it and
+        # ignore possible errors caused by a cipher mode that doesn't.
+        #
+        # Note: Padding is only supported by CBC (mbedtls 2.16.12).
+        _cipher.mbedtls_cipher_set_padding_mode(
+            &self._enc_ctx, _cipher.MBEDTLS_PADDING_NONE)
+        _cipher.mbedtls_cipher_set_padding_mode(
+            &self._dec_ctx, _cipher.MBEDTLS_PADDING_NONE)
+
 
         if key is not None:
             _exc.check_error(_cipher.mbedtls_cipher_setkey(
@@ -271,11 +280,14 @@ cdef class Cipher(_CipherBase):
         try:
             # We can call `check_error` directly here because we return a
             # python object.
-            _exc.check_error(_cipher.mbedtls_cipher_crypt(
+            err = _cipher.mbedtls_cipher_crypt(
                 &self._enc_ctx if operation is _cipher.MBEDTLS_ENCRYPT else
                 &self._dec_ctx,
                 &iv[0] if iv.size else NULL, iv.size,
-                &input[0], input.size, output, &olen))
+                &input[0], input.size, output, &olen)
+            if err == -0x6280:
+                raise ValueError("expected a full block")
+            _exc.check_error(err)
             return output[:olen]
         finally:
             free(output)

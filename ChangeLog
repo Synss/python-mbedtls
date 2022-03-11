@@ -1,5 +1,7 @@
 [next]
 
+* cipher: CBC does not use PKCS7 padding by default and now requires a full
+block.  Encoding will raise ValueError otherwise.
 * tls: Add support for session caching.
 * tls: Implement `context.getpeercert()`.
 * tls: Add context manager to `TLSWrappedSocket`

@@ -11,6 +11,13 @@ cdef:
 
 
 cdef extern from "mbedtls/cipher.h" nogil:
+    ctypedef enum mbedtls_cipher_padding_t:
+        MBEDTLS_PADDING_PKCS7 = 0
+        MBEDTLS_PADDING_ONE_AND_ZEROS
+        MBEDTLS_PADDING_ZEROS_AND_LEN
+        MBEDTLS_PADDING_ZEROS
+        MBEDTLS_PADDING_NONE
+
     ctypedef enum mbedtls_operation_t:
         MBEDTLS_DECRYPT = 0, MBEDTLS_ENCRYPT = 1
 
@@ -79,7 +86,10 @@ cdef extern from "mbedtls/cipher.h" nogil:
         const unsigned char* key,
         int key_bitlen,
         const mbedtls_operation_t operation)
-    # mbedtls_cipher_set_padding_mode
+    int mbedtls_cipher_set_padding_mode(
+        mbedtls_cipher_context_t* ctx,
+        mbedtls_cipher_padding_t mode
+    )
     # mbedtls_cipher_set_iv
 
     # mbedtls_cipher_reset
