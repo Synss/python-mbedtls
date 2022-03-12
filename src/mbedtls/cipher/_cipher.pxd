@@ -90,21 +90,30 @@ cdef extern from "mbedtls/cipher.h" nogil:
         mbedtls_cipher_context_t* ctx,
         mbedtls_cipher_padding_t mode
     )
-    # mbedtls_cipher_set_iv
-
-    # mbedtls_cipher_reset
-    # mbedtls_cipher_update_ad
-    # mbedtls_cipher_update
-    # mbedtls_cipher_finish
+    int mbedtls_cipher_set_iv(
+        mbedtls_cipher_context_t* ctx,
+        const unsigned char *iv, size_t iv_len
+    )
+    int mbedtls_cipher_reset(mbedtls_cipher_context_t* ctx)
+    int mbedtls_cipher_update_ad(
+        mbedtls_cipher_context_t* ctx,
+        const unsigned char *ad, size_t ad_len)
+    int mbedtls_cipher_update(
+        mbedtls_cipher_context_t* ctx,
+        const unsigned char *input, size_t ilen,
+        unsigned char *output, size_t *olen)
+    int mbedtls_cipher_finish(
+        mbedtls_cipher_context_t* ctx,
+        unsigned char *output, size_t *olen)
 
     # mbedtls_cipher_write_tag
     # mbedtls_cipher_check_tag
 
-    int mbedtls_cipher_crypt(
-        mbedtls_cipher_context_t* ctx,
-        const unsigned char* iv, size_t iv_len,
-        const unsigned char* input, size_t ilen,
-        unsigned char* output, size_t* olen)
+    # int mbedtls_cipher_crypt(
+    #     mbedtls_cipher_context_t* ctx,
+    #     const unsigned char* iv, size_t iv_len,
+    #     const unsigned char* input, size_t ilen,
+    #     unsigned char* output, size_t* olen)
 
     int mbedtls_cipher_auth_encrypt(
         mbedtls_cipher_context_t* ctx,
@@ -127,20 +136,19 @@ cdef class _CipherBase:
     # Encapsulate two contexts to push the keys into mbedtls ASAP.
     cdef mbedtls_cipher_context_t _enc_ctx
     cdef mbedtls_cipher_context_t _dec_ctx
-    cdef const unsigned char[:] _iv
 
 
 cdef class Cipher(_CipherBase):
     cdef _crypt(
         self,
-        const unsigned char[:] iv,
+        mbedtls_cipher_context_t *ctx,
         const unsigned char[:] input,
-        const mbedtls_operation_t operation
     )
 
 
 cdef class AEADCipher(_CipherBase):
     cdef const unsigned char[:] _ad
+    cdef const unsigned char[:] _iv
     cdef _aead_encrypt(self,
                 const unsigned char[:] iv,
                 const unsigned char[:] ad,

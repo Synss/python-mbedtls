@@ -198,7 +198,6 @@ cdef class _CipherBase:
         _cipher.mbedtls_cipher_set_padding_mode(
             &self._dec_ctx, _cipher.MBEDTLS_PADDING_NONE)
 
-
         if key is not None:
             _exc.check_error(_cipher.mbedtls_cipher_setkey(
                 &self._enc_ctx, &key[0], 8 * key.size,
@@ -206,7 +205,11 @@ cdef class _CipherBase:
             _exc.check_error(_cipher.mbedtls_cipher_setkey(
                 &self._dec_ctx, &key[0], 8 * key.size,
                 _cipher.MBEDTLS_DECRYPT))
-        self._iv = iv
+
+        _exc.check_error(_cipher.mbedtls_cipher_set_iv(
+            &self._enc_ctx, &iv[0] if iv.size else NULL, iv.size))
+        _exc.check_error(_cipher.mbedtls_cipher_set_iv(
+            &self._dec_ctx, &iv[0] if iv.size else NULL, iv.size))
 
     def __cinit__(self):
         """Initialize a `cipher_context` (as NONE)."""
@@ -264,39 +267,35 @@ cdef class _CipherBase:
 
 
 cdef class Cipher(_CipherBase):
-    cdef _crypt(self, 
-                const unsigned char[:] iv,
-                const unsigned char[:] input,
-                const _cipher.mbedtls_operation_t operation):
-        """Generic all-in-one encryption/decryption."""
+    cdef _crypt(self,
+                _cipher.mbedtls_cipher_context_t *ctx,
+                const unsigned char[:] input):
         if input.size == 0:
             _exc.check_error(-0x6280)  # Raise full block expected error.
         cdef size_t olen
+        cdef size_t finish_olen
         cdef size_t sz = input.size + self.block_size
         cdef unsigned char* output = <unsigned char*>malloc(
             sz * sizeof(unsigned char))
         if not output:
             raise MemoryError()
         try:
-            # We can call `check_error` directly here because we return a
-            # python object.
-            err = _cipher.mbedtls_cipher_crypt(
-                &self._enc_ctx if operation is _cipher.MBEDTLS_ENCRYPT else
-                &self._dec_ctx,
-                &iv[0] if iv.size else NULL, iv.size,
-                &input[0], input.size, output, &olen)
+            _exc.check_error(_cipher.mbedtls_cipher_reset(ctx))
+            _exc.check_error(_cipher.mbedtls_cipher_update(
+                ctx, &input[0], input.size, output, &olen))
+            err = _cipher.mbedtls_cipher_finish(ctx, output + olen, &finish_olen)
             if err == -0x6280:
                 raise ValueError("expected a full block")
             _exc.check_error(err)
-            return output[:olen]
+            return output[:olen + finish_olen]
         finally:
             free(output)
 
     def encrypt(self, const unsigned char[:] message not None):
-        return self._crypt(self._iv, message, _cipher.MBEDTLS_ENCRYPT)
+        return self._crypt(&self._enc_ctx, message)
 
     def decrypt(self, const unsigned char[:] message not None):
-        return self._crypt(self._iv, message, _cipher.MBEDTLS_DECRYPT)
+        return self._crypt(&self._dec_ctx, message)
 
 
 cdef class AEADCipher(_CipherBase):
@@ -307,6 +306,7 @@ cdef class AEADCipher(_CipherBase):
                  const unsigned char[:] iv not None,
                  const unsigned char[:] ad not None):
         super().__init__(cipher_name, key, mode, iv)
+        self._iv = iv
         self._ad = ad
 
     cdef _aead_encrypt(self,
