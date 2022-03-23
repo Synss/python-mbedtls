@@ -123,7 +123,8 @@ class _TestCipher:
         return randbytes(
             cipher.block_size
             if mode is mb.Mode.ECB
-            else cipher.block_size * 128)
+            else cipher.block_size * 128
+        )
 
     def test_pickle(self, cipher):
         with pytest.raises(TypeError) as excinfo:
