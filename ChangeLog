@@ -1,4 +1,4 @@
-[next]
+[1.7.0] - 2022-03-23
 
 * cipher: CBC does not use PKCS7 padding by default and now requires a full
 block.  Encoding will raise ValueError otherwise.
