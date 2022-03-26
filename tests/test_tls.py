@@ -34,19 +34,19 @@ class TestPickle:
             TLSWrappedBuffer(ServerContext(TLSConfiguration())),
             TLSWrappedSocket(
                 socket.socket(),
-                TLSWrappedBuffer(ClientContext(DTLSConfiguration())),
+                ClientContext(DTLSConfiguration()),
             ),
             TLSWrappedSocket(
                 socket.socket(),
-                TLSWrappedBuffer(ClientContext(TLSConfiguration())),
+                ClientContext(TLSConfiguration()),
             ),
             TLSWrappedSocket(
                 socket.socket(),
-                TLSWrappedBuffer(ServerContext(DTLSConfiguration())),
+                ServerContext(DTLSConfiguration()),
             ),
             TLSWrappedSocket(
                 socket.socket(),
-                TLSWrappedBuffer(ServerContext(TLSConfiguration())),
+                ServerContext(TLSConfiguration()),
             ),
         ),
         ids=type,
