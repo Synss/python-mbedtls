@@ -210,19 +210,6 @@ class TLSWrappedBuffer:
         # PEP 543
         self.context._do_handshake_step()
 
-    def _do_handshake_blocking(self, sock):
-        while self._context._state is not HandshakeStep.HANDSHAKE_OVER:
-            try:
-                self.context._do_handshake_step()
-                amt = sock.send(self.peek_outgoing(1024))
-                self.consume_outgoing(amt)
-            except WantReadError:
-                amt = sock.send(self.peek_outgoing(1024))
-                self.consume_outgoing(amt)
-            except WantWriteError:
-                data = sock.recv(1024)
-                self.receive_from_network(data)
-
     def cipher(self):
         # PEP 543
         return self.context._cipher()
@@ -433,7 +420,17 @@ class TLSWrappedSocket:
     # PEP 543 adds the following methods.
 
     def do_handshake(self):
-        self._buffer._do_handshake_blocking(self._socket)
+        while self.context._state is not HandshakeStep.HANDSHAKE_OVER:
+            try:
+                self.context._do_handshake_step()
+                amt = self._socket.send(self._buffer.peek_outgoing(1024))
+                self._buffer.consume_outgoing(amt)
+            except WantReadError:
+                amt = self._socket.send(self._buffer.peek_outgoing(1024))
+                self._buffer.consume_outgoing(amt)
+            except WantWriteError:
+                data = self._socket.recv(1024)
+                self._buffer.receive_from_network(data)
 
     def setcookieparam(self, param):
         self.context._setcookieparam(param)
