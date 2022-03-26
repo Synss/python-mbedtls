@@ -1283,13 +1283,19 @@ cdef class _BaseContext:
             return None
         return protocol.decode("ascii")
 
-    def _cipher(self):
+    def _cipher_suite(self):
         cdef const char* name = _tls.mbedtls_ssl_get_ciphersuite(&self._ctx)
         if name is NULL:
             return None
         ssl_version = self._negotiated_tls_version()
         secret_bits = None
         return name.decode("ascii"), ssl_version, secret_bits
+
+    def _cipher(self):
+        cipher = self._cipher_suite()
+        if cipher is None:
+            return
+        return cipher[0]
 
     @property
     def _state(self):

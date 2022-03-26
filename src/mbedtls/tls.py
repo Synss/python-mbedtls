@@ -225,11 +225,7 @@ class TLSWrappedBuffer:
 
     def cipher(self):
         # PEP 543
-        cipher = self.context._cipher()
-        if cipher is None:
-            return cipher
-        else:
-            return cipher[0]
+        return self.context._cipher()
 
     def negotiated_protocol(self):
         # PEP 543
@@ -273,6 +269,7 @@ class TLSWrappedSocket:
         super().__init__()
         self._socket = socket
         self._buffer = buffer
+        self._context = buffer.context
         self._closed = False
 
     def __getstate__(self):
@@ -327,7 +324,7 @@ class TLSWrappedSocket:
 
     def close(self):
         self._closed = True
-        self._buffer.shutdown()
+        self.context._shutdown()
         self._socket.close()
 
     def connect(self, address):
@@ -430,6 +427,7 @@ class TLSWrappedSocket:
 
     def shutdown(self, how):
         self._buffer.shutdown()
+        self._context._shutdown()
         self._socket.shutdown(how)
 
     # PEP 543 adds the following methods.
@@ -441,18 +439,19 @@ class TLSWrappedSocket:
         self.context._setcookieparam(param)
 
     def cipher(self):
-        return self._buffer.cipher()
+        return self.context._cipher()
 
     def negotiated_protocol(self):
-        return self._buffer.negotiated_protocol()
+        return self.context._negotiated_protocol()
 
     @property
     def context(self):
-        return self._buffer.context
+        return self._context
 
     def negotiated_tls_version(self):
-        return self._buffer.negotiated_tls_version()
+        return self.context._negotiated_tls_version()
 
     def unwrap(self):
         self._buffer.shutdown()
+        self.context._shutdown()
         return self._socket
