@@ -73,11 +73,11 @@ class Curve(bytes, enum.Enum):
     BRAINPOOLP256R1 = b'brainpoolP256r1'
     BRAINPOOLP384R1 = b'brainpoolP384r1'
     BRAINPOOLP512R1 = b'brainpoolP512r1'
-    CURVE25519 = b'curve25519'
     SECP192K1 = b'secp192k1'
     SECP224K1 = b'secp224k1'
     SECP256K1 = b'secp256k1'
-    CURVE448 = b'curve448'
+    CURVE25519 = b'x25519'
+    CURVE448 = b'x448'
 
 
 # The following calculations come from mbedtls/library/pkwrite.c.
@@ -119,17 +119,13 @@ def get_supported_curves():
 
 
 cdef curve_name_to_grp_id(curve):
-    if curve is Curve.CURVE25519:
-        return _pk.MBEDTLS_ECP_DP_CURVE25519
-    elif curve is Curve.CURVE448:
-        return _pk.MBEDTLS_ECP_DP_CURVE448
-
     cdef const mbedtls_ecp_curve_info* info = _pk.mbedtls_ecp_curve_list()
     idx = 0
     while info[idx].name != NULL:
         if info[idx].name == curve:
             return info.grp_id
         idx += 1
+    raise LookupError(curve.decode("ascii") + " not found")
 
 
 cdef _rnd.Random __rng = _rnd.default_rng()

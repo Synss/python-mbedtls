@@ -24,7 +24,7 @@ def _get_version():
 
 
 VERSION = _get_version()
-MBEDTLS_VERSION = "2.16.12"
+MBEDTLS_VERSION = "2.28.0"
 DOWNLOAD_URL = "https://github.com/Synss/python-mbedtls/tarball/%s" % VERSION
 
 
