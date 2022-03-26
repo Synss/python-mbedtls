@@ -455,7 +455,4 @@ class TLSWrappedSocket:
 
     def unwrap(self):
         self._buffer.shutdown()
-        with suppress(OSError):
-            # shutdown may raise if the socket is not connected.
-            self._socket.shutdown(_socket.SHUT_RDWR)
         return self._socket
