@@ -143,8 +143,8 @@ class ClientContext(_BaseContext):
                 dangerous and should not be the default behavior.
 
         """
-        self._set_hostname(server_hostname)
-        return TLSWrappedSocket(socket, self)
+        buffer = self.wrap_buffers(server_hostname)
+        return TLSWrappedSocket(socket, buffer)
 
     def wrap_buffers(self, server_hostname):
         """Create an in-memory stream for TLS."""
@@ -162,7 +162,8 @@ class ServerContext(_BaseContext):
 
     def wrap_socket(self, socket):
         """Wrap an existing Python socket object ``socket``."""
-        return TLSWrappedSocket(socket, self)
+        buffer = self.wrap_buffers()
+        return TLSWrappedSocket(socket, buffer)
 
     def wrap_buffers(self):
         # PEP 543
@@ -251,15 +252,11 @@ class TLSWrappedBuffer:
 
 class TLSWrappedSocket:
     # _pep543.TLSWrappedSocket
-    def __init__(self, socket, context):
+    def __init__(self, socket, buffer):
         super().__init__()
         self._socket = socket
-        self._context = context
-
-        if context._purpose is Purpose.CLIENT_AUTH:
-            self._buffer = context.wrap_buffers(context._hostname)
-        else:
-            self._buffer = context.wrap_buffers()
+        self._buffer = buffer
+        self._context = buffer.context
         self._closed = False
 
     def __getstate__(self):
