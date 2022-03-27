@@ -4,40 +4,34 @@
 #
 #    pip-compile --no-annotate requirements/tests.in
 #
-astroid==2.9.3
+astroid==2.11.2
 attrs==21.4.0
-black==22.1.0
 bleach==4.1.0
-click==8.0.4
 coverage[toml]==6.3.2
 cython==0.29.28
+dill==0.3.4
 docutils==0.18.1
 iniconfig==1.1.1
 isort==5.10.1
 lazy-object-proxy==1.7.1
-mccabe==0.6.1
-mypy-extensions==0.4.3
+mccabe==0.7.0
 packaging==21.3
-pathspec==0.9.0
 platformdirs==2.5.1
 pluggy==1.0.0
 py==1.11.0
 pygments==2.11.2
-pylint==2.12.2
+pylint==2.13.1
 pyparsing==3.0.7
 pytest==7.1.1
-pytest-black==0.3.12
 pytest-cov==3.0.0
-pytest-isort==3.0.0
 pytest-repeat==0.9.1
 pytest-timeout==2.1.0
 readme-renderer==34.0
 six==1.16.0
-toml==0.10.2
 tomli==2.0.1
 typing-extensions==4.1.1
 webencodings==0.5.1
-wrapt==1.13.3
+wrapt==1.14.0
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

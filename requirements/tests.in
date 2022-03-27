@@ -3,15 +3,11 @@ cython
 pytest
 
 # Tooling
-black
 coverage
-isort
 pylint
 readme_renderer
 
 # Plugins
-pytest-black
 pytest-cov != 2.9.0
-pytest-isort
 pytest-repeat
 pytest-timeout
