@@ -14,12 +14,12 @@ jobs:
         os: [ubuntu-20.04, macos-10.15, windows-2019]
         version: [2.28.0]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
       - name: Create source dist
         run: python setup.py sdist
       - name: Upload source dist
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: dist
           path: dist
@@ -54,7 +54,7 @@ jobs:
       - name: Inventory
         run: ls wheelhouse
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: wheelhouse/
@@ -72,12 +72,12 @@ jobs:
       && github.repository == 'Synss/python-mbedtls'
     steps:
       - name: Download source packages
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: dist
           path: dist
       - name: Download wheels
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: wheels
           path: dist
