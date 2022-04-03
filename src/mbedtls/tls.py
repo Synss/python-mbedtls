@@ -14,7 +14,9 @@ from ._tls import (
     DTLSVersion,
     HandshakeStep,
     HelloVerifyRequest,
-    MbedTLSBuffer,
+)
+from ._tls import MbedTLSBuffer as TLSWrappedBuffer
+from ._tls import (
     NextProtocol,
     Purpose,
     RaggedEOF,
@@ -160,82 +162,6 @@ class ServerContext(_BaseContext):
     def wrap_buffers(self):
         # PEP 543
         return TLSWrappedBuffer(self)
-
-
-class TLSWrappedBuffer:
-    # _pep543.TLSWrappedBuffer
-    def __init__(self, context, server_hostname=None):
-        self._tlsbuf = MbedTLSBuffer(context, server_hostname)
-
-    def __repr__(self):
-        return "%s(%r)" % (type(self).__name__, self.context)
-
-    def __getstate__(self):
-        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
-
-    @property
-    def _server_hostname(self):
-        return self._tlsbuf._server_hostname
-
-    @property
-    def _handshake_state(self):
-        return self._tlsbuf._handshake_state
-
-    def read(self, amt):
-        # PEP 543
-        return self._tlsbuf.read(amt)
-
-    def readinto(self, buffer, amt):
-        # PEP 543
-        return self._tlsbuf.readinto(buffer, amt)
-
-    def write(self, buffer):
-        # PEP 543
-        return self._tlsbuf.write(buffer)
-
-    def do_handshake(self):
-        # PEP 543
-        self._tlsbuf.do_handshake()
-
-    def setcookieparam(self, param):
-        self._tlsbuf.setcookieparam(param)
-
-    def cipher(self):
-        # PEP 543
-        return self._tlsbuf.cipher()
-
-    def negotiated_protocol(self):
-        # PEP 543
-        return self._tlsbuf.negotiated_protocol()
-
-    @property
-    def context(self):
-        # PEP 543
-        """The ``Context`` object this buffer is tied to."""
-        return self._tlsbuf.context
-
-    def negotiated_tls_version(self):
-        # PEP 543
-        return self._tlsbuf.negotiated_tls_version()
-
-    def shutdown(self):
-        # PEP 543
-        self._tlsbuf.shutdown()
-
-    def receive_from_network(self, data):
-        # PEP 543
-        # Append data to input buffer.
-        self._tlsbuf.receive_from_network(data)
-
-    def peek_outgoing(self, amt):
-        # PEP 543
-        # Read from output buffer.
-        return self._tlsbuf.peek_outgoing(amt)
-
-    def consume_outgoing(self, amt):
-        """Consume `amt` bytes from the output buffer."""
-        # PEP 543
-        self._tlsbuf.consume_outgoing(amt)
 
 
 class TLSWrappedSocket:

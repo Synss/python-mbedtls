@@ -1172,6 +1172,9 @@ cdef class MbedTLSBuffer:
         # We could make this pickable by copying the buffers.
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
+    def __repr__(self):
+        return "%s(%r)" % (type(self).__name__, self.context)
+
     @property
     def context(self):
         return self._context
