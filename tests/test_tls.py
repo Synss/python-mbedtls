@@ -15,7 +15,16 @@ from mbedtls.x509 import CRT, CSR, BasicConstraints
 
 class TestPickle:
     @pytest.mark.parametrize(
-        "obj", (TLSConfiguration(), DTLSConfiguration()), ids=type
+        "obj",
+        (
+            TLSConfiguration(),
+            DTLSConfiguration(),
+            ClientContext(TLSConfiguration()),
+            ClientContext(DTLSConfiguration()),
+            ServerContext(TLSConfiguration()),
+            ServerContext(DTLSConfiguration()),
+        ),
+        ids=type,
     )
     def test_picklable(self, obj):
         assert obj == pickle.loads(pickle.dumps(obj))
@@ -23,10 +32,6 @@ class TestPickle:
     @pytest.mark.parametrize(
         "obj",
         (
-            ClientContext(TLSConfiguration()),
-            ClientContext(DTLSConfiguration()),
-            ServerContext(TLSConfiguration()),
-            ServerContext(DTLSConfiguration()),
             TLSSession(),
             TLSWrappedBuffer(ClientContext(DTLSConfiguration())),
             TLSWrappedBuffer(ClientContext(TLSConfiguration())),
@@ -436,26 +441,6 @@ class TestBaseContext:
         assert conf
         assert context.configuration is conf
 
-    def test_selected_npn_protocol(self, context):
-        assert context.selected_npn_protocol() is None
-
-    def test_cipher(self, context):
-        assert context.cipher() is None
-
-    def test_get_channel_binding(self, context):
-        assert context._get_channel_binding() is None
-
-    # def test_negotiated_tls_version(self, context):
-    #     assert context._negotiated_tls_version() is TLSVersion.SSLv3
-
-    @pytest.fixture
-    def tls_wrapped_buffer(self, context):
-        return TLSWrappedBuffer(context)
-
-    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
-    def test_repr_tls_wrapped_buffer(self, repr_, tls_wrapped_buffer):
-        assert isinstance(repr_(tls_wrapped_buffer), str)
-
 
 class TestClientContext(TestBaseContext):
     @pytest.fixture(params=[None, "hostname", "localhost"])
@@ -470,8 +455,8 @@ class TestClientContext(TestBaseContext):
         assert isinstance(context, ClientContext)
 
     def test_hostname(self, context, hostname):
-        _ = context.wrap_buffers(hostname)
-        assert context._hostname == hostname
+        wrapped_buffers = context.wrap_buffers(hostname)
+        assert wrapped_buffers._server_hostname == hostname
 
     def test_wrap_buffers(self, context):
         assert isinstance(context.wrap_buffers(None), TLSWrappedBuffer)
@@ -512,15 +497,15 @@ class TestTLSWrappedBuffer:
 
     @pytest.fixture
     def client(Self, cli_conf, server_hostname):
-        ctx = ClientContext(cli_conf).wrap_buffers(server_hostname)
-        yield ctx
-        ctx.shutdown()
+        buf = ClientContext(cli_conf).wrap_buffers(server_hostname)
+        yield buf
+        buf.shutdown()
 
     @pytest.fixture
     def server(self, srv_conf, server_hostname):
-        ctx = ServerContext(srv_conf).wrap_buffers()
-        yield ctx
-        ctx.shutdown()
+        buf = ServerContext(srv_conf).wrap_buffers()
+        yield buf
+        buf.shutdown()
 
     def test_e2e_handshake_and_communicate(self, client, server):
         def do_io(*, src, dst, amt=1024):
@@ -531,7 +516,7 @@ class TestTLSWrappedBuffer:
         def do_handshake(*end_state_pair):
             for end, state in end_state_pair:
                 end.do_handshake()
-                assert end.context._state is state
+                assert end._handshake_state is state
 
         do_handshake(
             (server, HandshakeStep.CLIENT_HELLO),

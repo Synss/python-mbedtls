@@ -450,8 +450,12 @@ cdef struct _C_Buffers:
 
 
 cdef class _BaseContext:
-    cdef mbedtls_ssl_context _ctx
     cdef _BaseConfiguration _conf
+
+
+cdef class MbedTLSBuffer:
+    cdef _BaseContext _context
+    cdef mbedtls_ssl_context _ctx
     cdef _C_Buffers _c_buffers
     cpdef set_bio(self, _rb.RingBuffer input, _rb.RingBuffer output)
     # DTLS only:

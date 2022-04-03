@@ -504,22 +504,6 @@ Content-Type: text/html
 <p>Successful connection.</p>
 <BLANKLINE>
 
-Now, it is possible to cache the session before closing the client side
-
->>> from mbedtls.tls import TLSSession
->>> session = TLSSession()
->>> session.save(tls_cli.context)
-
-and resume it later
-
->>> other_cli = session.resume(
-...     tls.TLSConfiguration(
-...         trust_store=trust_store,
-...         validate_certificates=True,
-...     )
-... )
-...
-
 The last step is to stop the extra process and close the sockets.
 
 >>> tls_cli.close()

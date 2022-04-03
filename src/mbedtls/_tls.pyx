@@ -1096,23 +1096,6 @@ cdef class TLSSession:
     def __repr__(self):
         return "%s()" % type(self).__name__
 
-    def save(self, _BaseContext context not None):
-        # Client only
-        try:
-            _exc.check_error(
-                _tls.mbedtls_ssl_get_session(&context._ctx, &self._ctx)
-            )
-        except _exc.TLSError as exc:
-            raise ValueError(context) from exc
-
-    def resume(self, _BaseConfiguration configuration not None):
-        # Client only
-        cdef _BaseContext client = _BaseContext(configuration)
-        _exc.check_error(
-            _tls.mbedtls_ssl_set_session(&client._ctx, &self._ctx)
-        )
-        return client
-
 
 cdef class _BaseContext:
     # _pep543._BaseContext
@@ -1130,9 +1113,30 @@ cdef class _BaseContext:
                 Purpose.CLIENT_AUTH: _tls.MBEDTLS_SSL_IS_CLIENT,
                 Purpose.SERVER_AUTH: _tls.MBEDTLS_SSL_IS_SERVER,
             }[self._purpose])
-        _exc.check_error(_tls.mbedtls_ssl_setup(&self._ctx, &self._conf._ctx))
 
-    def __cinit__(self):
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        if not type(self) is type(other):
+            return False
+        return self.configuration == other.configuration
+
+    @property
+    def configuration(self):
+        # PEP 543
+        return self._conf
+
+    @property
+    def _purpose(self) -> Purpose:
+        raise NotImplementedError
+
+
+cdef class MbedTLSBuffer:
+    def __init__(self, _BaseContext context):
+        self._context = context
+        _exc.check_error(_tls.mbedtls_ssl_setup(&self._ctx, &self._context._conf._ctx))
+
+    def __cinit__(self, _BaseContext context):
         """Initialize an `ssl_context`."""
         _tls.mbedtls_ssl_init(&self._ctx)
         _tls.mbedtls_ssl_set_timer_cb(
@@ -1158,24 +1162,16 @@ cdef class _BaseContext:
     def __getstate__(self):
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
-    def __repr__(self):
-        return "%s(%r)" % (type(self).__name__, self._conf)
-
     @property
-    def configuration(self):
-        # PEP 543
-        return self._conf
-
-    @property
-    def _purpose(self) -> Purpose:
-        raise NotImplementedError
+    def context(self):
+        return self._context
 
     @property
     def _verified(self):
         return _tls.mbedtls_ssl_get_verify_result(&self._ctx) == 0
 
     @property
-    def _hostname(self):
+    def _server_hostname(self):
         # Client side
         if self._ctx.hostname is NULL:
             return None
@@ -1298,11 +1294,11 @@ cdef class _BaseContext:
         return cipher[0]
 
     @property
-    def _state(self):
+    def _handshake_state(self):
         return HandshakeStep(self._ctx.state)
 
     def do_handshake(self):
-        if self._state is HandshakeStep.HANDSHAKE_OVER:
+        if self._handshake_state is HandshakeStep.HANDSHAKE_OVER:
             raise ValueError("handshake already over")
         self._handle_handshake_response(_tls.mbedtls_ssl_handshake_step(&self._ctx))
 

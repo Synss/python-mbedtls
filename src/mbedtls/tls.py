@@ -19,6 +19,7 @@ from ._tls import (
     DTLSVersion,
     HandshakeStep,
     HelloVerifyRequest,
+    MbedTLSBuffer,
     NextProtocol,
     Purpose,
     RaggedEOF,
@@ -149,8 +150,7 @@ class ClientContext(_BaseContext):
     def wrap_buffers(self, server_hostname):
         """Create an in-memory stream for TLS."""
         # PEP 543
-        self._set_hostname(server_hostname)
-        return TLSWrappedBuffer(self)
+        return TLSWrappedBuffer(self, server_hostname)
 
 
 class ServerContext(_BaseContext):
@@ -172,11 +172,12 @@ class ServerContext(_BaseContext):
 
 class TLSWrappedBuffer:
     # _pep543.TLSWrappedBuffer
-    def __init__(self, context):
+    def __init__(self, context, server_hostname=None):
         self._output_buffer = _rb.RingBuffer(TLS_BUFFER_CAPACITY)
         self._input_buffer = _rb.RingBuffer(TLS_BUFFER_CAPACITY)
-        context.set_bio(self._output_buffer, self._input_buffer)
-        self._context = context
+        self._tlsbuf = MbedTLSBuffer(context)
+        self._tlsbuf.set_bio(self._output_buffer, self._input_buffer)
+        self._tlsbuf._set_hostname(server_hostname)
 
     def __repr__(self):
         return "%s(%r)" % (type(self).__name__, self.context)
@@ -184,6 +185,14 @@ class TLSWrappedBuffer:
     def __getstate__(self):
         # We could make this pickable by copying the buffers.
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+
+    @property
+    def _server_hostname(self):
+        return self._tlsbuf._server_hostname
+
+    @property
+    def _handshake_state(self):
+        return self._tlsbuf._handshake_state
 
     def read(self, amt):
         # PEP 543
@@ -198,39 +207,42 @@ class TLSWrappedBuffer:
 
     def readinto(self, buffer, amt):
         # PEP 543
-        return self.context.readinto(buffer, amt)
+        return self._tlsbuf.readinto(buffer, amt)
 
     def write(self, buffer):
         # PEP 543
-        amt = self.context.write(buffer)
+        amt = self._tlsbuf.write(buffer)
         assert amt == len(buffer)
         return len(self._output_buffer)
 
     def do_handshake(self):
         # PEP 543
-        self.context.do_handshake()
+        self._tlsbuf.do_handshake()
+
+    def setcookieparam(self, param):
+        self._tlsbuf.setcookieparam(param)
 
     def cipher(self):
         # PEP 543
-        return self.context.cipher()
+        return self._tlsbuf.cipher()
 
     def negotiated_protocol(self):
         # PEP 543
-        return self.context.negotiated_protocol()
+        return self._tlsbuf.negotiated_protocol()
 
     @property
     def context(self):
         # PEP 543
         """The ``Context`` object this buffer is tied to."""
-        return self._context
+        return self._tlsbuf.context
 
     def negotiated_tls_version(self):
         # PEP 543
-        return self.context.negotiated_tls_version()
+        return self._tlsbuf.negotiated_tls_version()
 
     def shutdown(self):
         # PEP 543
-        self.context.shutdown()
+        self._tlsbuf.shutdown()
 
     def receive_from_network(self, data):
         # PEP 543
@@ -311,7 +323,7 @@ class TLSWrappedSocket:
 
     def close(self):
         self._closed = True
-        self.context.shutdown()
+        self._buffer.shutdown()
         self._socket.close()
 
     def connect(self, address):
@@ -414,15 +426,16 @@ class TLSWrappedSocket:
 
     def shutdown(self, how):
         self._buffer.shutdown()
-        self._context.shutdown()
         self._socket.shutdown(how)
 
     # PEP 543 adds the following methods.
 
     def do_handshake(self):
-        while self.context._state is not HandshakeStep.HANDSHAKE_OVER:
+        while (
+            self._buffer._handshake_state is not HandshakeStep.HANDSHAKE_OVER
+        ):
             try:
-                self.context.do_handshake()
+                self._buffer.do_handshake()
                 amt = self._socket.send(self._buffer.peek_outgoing(1024))
                 self._buffer.consume_outgoing(amt)
             except WantReadError:
@@ -433,22 +446,21 @@ class TLSWrappedSocket:
                 self._buffer.receive_from_network(data)
 
     def setcookieparam(self, param):
-        self.context.setcookieparam(param)
+        self._buffer.setcookieparam(param)
 
     def cipher(self):
-        return self.context.cipher()
+        return self._buffer.cipher()
 
     def negotiated_protocol(self):
-        return self.context.negotiated_protocol()
+        return self._buffer.negotiated_protocol()
 
     @property
     def context(self):
-        return self._context
+        return self._buffer.context
 
     def negotiated_tls_version(self):
-        return self.context.negotiated_tls_version()
+        return self._buffer.negotiated_tls_version()
 
     def unwrap(self):
         self._buffer.shutdown()
-        self.context.shutdown()
         return self._socket
