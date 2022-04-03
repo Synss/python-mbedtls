@@ -7,11 +7,6 @@ import struct
 import sys
 from contextlib import suppress
 
-if sys.version_info < (3, 8):
-    from typing_extensions import Final
-else:
-    from typing import Final
-
 import mbedtls._ringbuf as _rb
 
 from ._tls import (
@@ -53,9 +48,6 @@ __all__ = (
     "WantWriteError",
     "ciphers_available",
 )
-
-TLS_BUFFER_CAPACITY: Final = 2 << 14
-# 32K (MBEDTLS_SSL_DTLS_MAX_BUFFERING)
 
 
 class TLSRecordHeader:
@@ -173,17 +165,12 @@ class ServerContext(_BaseContext):
 class TLSWrappedBuffer:
     # _pep543.TLSWrappedBuffer
     def __init__(self, context, server_hostname=None):
-        self._output_buffer = _rb.RingBuffer(TLS_BUFFER_CAPACITY)
-        self._input_buffer = _rb.RingBuffer(TLS_BUFFER_CAPACITY)
-        self._tlsbuf = MbedTLSBuffer(context)
-        self._tlsbuf.set_bio(self._output_buffer, self._input_buffer)
-        self._tlsbuf._set_hostname(server_hostname)
+        self._tlsbuf = MbedTLSBuffer(context, server_hostname)
 
     def __repr__(self):
         return "%s(%r)" % (type(self).__name__, self.context)
 
     def __getstate__(self):
-        # We could make this pickable by copying the buffers.
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
     @property
@@ -196,14 +183,7 @@ class TLSWrappedBuffer:
 
     def read(self, amt):
         # PEP 543
-        if amt <= 0:
-            return b""
-        buffer = bytearray(amt)
-        view = memoryview(buffer)
-        nread = 0
-        while nread != amt and not self._input_buffer.empty():
-            nread += self.readinto(view[nread:], amt - nread)
-        return bytes(buffer[:nread])
+        return self._tlsbuf.read(amt)
 
     def readinto(self, buffer, amt):
         # PEP 543
@@ -211,9 +191,7 @@ class TLSWrappedBuffer:
 
     def write(self, buffer):
         # PEP 543
-        amt = self._tlsbuf.write(buffer)
-        assert amt == len(buffer)
-        return len(self._output_buffer)
+        return self._tlsbuf.write(buffer)
 
     def do_handshake(self):
         # PEP 543
@@ -247,19 +225,17 @@ class TLSWrappedBuffer:
     def receive_from_network(self, data):
         # PEP 543
         # Append data to input buffer.
-        self._input_buffer.write(data, len(data))
+        self._tlsbuf.receive_from_network(data)
 
     def peek_outgoing(self, amt):
         # PEP 543
         # Read from output buffer.
-        if amt == 0:
-            return b""
-        return self._output_buffer.peek(amt)
+        return self._tlsbuf.peek_outgoing(amt)
 
     def consume_outgoing(self, amt):
         """Consume `amt` bytes from the output buffer."""
         # PEP 543
-        self._output_buffer.consume(amt)
+        self._tlsbuf.consume_outgoing(amt)
 
 
 class TLSWrappedSocket:

@@ -1131,12 +1131,31 @@ cdef class _BaseContext:
         raise NotImplementedError
 
 
+TLS_BUFFER_CAPACITY = 2 << 14
+# 32K (MBEDTLS_SSL_DTLS_MAX_BUFFERING)
+
+
 cdef class MbedTLSBuffer:
-    def __init__(self, _BaseContext context):
+    def __init__(self, _BaseContext context, server_hostname=None):
         self._context = context
         _exc.check_error(_tls.mbedtls_ssl_setup(&self._ctx, &self._context._conf._ctx))
+        self._output_buffer = _rb.RingBuffer(TLS_BUFFER_CAPACITY)
+        self._input_buffer = _rb.RingBuffer(TLS_BUFFER_CAPACITY)
+        self._c_buffers = _tls._C_Buffers(
+            &self._output_buffer._ctx,
+            &self._input_buffer._ctx
+        )
+        self._reset()
+        _tls.mbedtls_ssl_set_bio(
+            &self._ctx,
+            &self._c_buffers,
+            buffer_write,
+            buffer_read,
+            NULL
+        )
+        self._set_hostname(server_hostname)
 
-    def __cinit__(self, _BaseContext context):
+    def __cinit__(self, _BaseContext context, server_hostname=None):
         """Initialize an `ssl_context`."""
         _tls.mbedtls_ssl_init(&self._ctx)
         _tls.mbedtls_ssl_set_timer_cb(
@@ -1149,17 +1168,8 @@ cdef class MbedTLSBuffer:
         """Free and clear the internal structures of ctx."""
         _tls.mbedtls_ssl_free(&self._ctx)
 
-    cpdef set_bio(self, _rb.RingBuffer output, _rb.RingBuffer input):
-        self._reset()
-        self._c_buffers = _tls._C_Buffers(&output._ctx, &input._ctx)
-        _tls.mbedtls_ssl_set_bio(
-            &self._ctx,
-            &self._c_buffers,
-            buffer_write,
-            buffer_read,
-            NULL)
-
     def __getstate__(self):
+        # We could make this pickable by copying the buffers.
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
     @property
@@ -1218,6 +1228,17 @@ cdef class MbedTLSBuffer:
     def _close(self):
         self.shutdown()
 
+    def read(self, amt):
+        # PEP 543
+        if amt <= 0:
+            return b""
+        buffer = bytearray(amt)
+        view = memoryview(buffer)
+        nread = 0
+        while nread != amt and not self._input_buffer.empty():
+            nread += self.readinto(view[nread:], amt - nread)
+        return bytes(buffer[:nread])
+
     def readinto(self, unsigned char[:] buffer not None, size_t amt):
         if buffer.size == 0:
             return 0
@@ -1255,7 +1276,25 @@ cdef class MbedTLSBuffer:
             else:
                 self._reset()
                 _exc.check_error(ret)
-        return written
+        assert written == len(buffer)
+        return len(self._output_buffer)
+
+    def receive_from_network(self, data):
+        # PEP 543
+        # Append data to input buffer.
+        self._input_buffer.write(data, len(data))
+
+    def peek_outgoing(self, amt):
+        # PEP 543
+        # Read from output buffer.
+        if amt == 0:
+            return b""
+        return self._output_buffer.peek(amt)
+
+    def consume_outgoing(self, amt):
+        """Consume `amt` bytes from the output buffer."""
+        # PEP 543
+        self._output_buffer.consume(amt)
 
     def getpeercert(self, binary_form=False):
         """Return the peer certificate, or None."""
