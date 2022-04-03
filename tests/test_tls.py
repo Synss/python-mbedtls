@@ -437,10 +437,10 @@ class TestBaseContext:
         assert context.configuration is conf
 
     def test_selected_npn_protocol(self, context):
-        assert context._selected_npn_protocol() is None
+        assert context.selected_npn_protocol() is None
 
     def test_cipher(self, context):
-        assert context._cipher() is None
+        assert context.cipher() is None
 
     def test_get_channel_binding(self, context):
         assert context._get_channel_binding() is None

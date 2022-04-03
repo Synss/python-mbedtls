@@ -198,25 +198,25 @@ class TLSWrappedBuffer:
 
     def readinto(self, buffer, amt):
         # PEP 543
-        return self.context._readinto(buffer, amt)
+        return self.context.readinto(buffer, amt)
 
     def write(self, buffer):
         # PEP 543
-        amt = self.context._write(buffer)
+        amt = self.context.write(buffer)
         assert amt == len(buffer)
         return len(self._output_buffer)
 
     def do_handshake(self):
         # PEP 543
-        self.context._do_handshake_step()
+        self.context.do_handshake()
 
     def cipher(self):
         # PEP 543
-        return self.context._cipher()
+        return self.context.cipher()
 
     def negotiated_protocol(self):
         # PEP 543
-        return self.context._negotiated_protocol()
+        return self.context.negotiated_protocol()
 
     @property
     def context(self):
@@ -226,11 +226,11 @@ class TLSWrappedBuffer:
 
     def negotiated_tls_version(self):
         # PEP 543
-        return self.context._negotiated_tls_version()
+        return self.context.negotiated_tls_version()
 
     def shutdown(self):
         # PEP 543
-        self.context._shutdown()
+        self.context.shutdown()
 
     def receive_from_network(self, data):
         # PEP 543
@@ -311,7 +311,7 @@ class TLSWrappedSocket:
 
     def close(self):
         self._closed = True
-        self.context._shutdown()
+        self.context.shutdown()
         self._socket.close()
 
     def connect(self, address):
@@ -414,7 +414,7 @@ class TLSWrappedSocket:
 
     def shutdown(self, how):
         self._buffer.shutdown()
-        self._context._shutdown()
+        self._context.shutdown()
         self._socket.shutdown(how)
 
     # PEP 543 adds the following methods.
@@ -422,7 +422,7 @@ class TLSWrappedSocket:
     def do_handshake(self):
         while self.context._state is not HandshakeStep.HANDSHAKE_OVER:
             try:
-                self.context._do_handshake_step()
+                self.context.do_handshake()
                 amt = self._socket.send(self._buffer.peek_outgoing(1024))
                 self._buffer.consume_outgoing(amt)
             except WantReadError:
@@ -433,22 +433,22 @@ class TLSWrappedSocket:
                 self._buffer.receive_from_network(data)
 
     def setcookieparam(self, param):
-        self.context._setcookieparam(param)
+        self.context.setcookieparam(param)
 
     def cipher(self):
-        return self.context._cipher()
+        return self.context.cipher()
 
     def negotiated_protocol(self):
-        return self.context._negotiated_protocol()
+        return self.context.negotiated_protocol()
 
     @property
     def context(self):
         return self._context
 
     def negotiated_tls_version(self):
-        return self.context._negotiated_tls_version()
+        return self.context.negotiated_tls_version()
 
     def unwrap(self):
         self._buffer.shutdown()
-        self.context._shutdown()
+        self.context.shutdown()
         return self._socket

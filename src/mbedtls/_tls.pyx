@@ -1202,7 +1202,7 @@ cdef class _BaseContext:
         client_id = bytes(self._ctx.cli_id[0:self._ctx.cli_id_len])
         return client_id if client_id else None
 
-    def _setcookieparam(self, const unsigned char[:] info not None):
+    def setcookieparam(self, const unsigned char[:] info not None):
         if info.size == 0:
             info = b"\0"
         _tls.mbedtls_ssl_set_client_transport_id(
@@ -1214,15 +1214,15 @@ cdef class _BaseContext:
     def _reset(self):
         _exc.check_error(_tls.mbedtls_ssl_session_reset(&self._ctx))
 
-    def _shutdown(self):
+    def shutdown(self):
         # This could also return SSL_WANT_READ / SSL_WANT_WRITE.
         _exc.check_error(_tls.mbedtls_ssl_close_notify(&self._ctx))
         self._reset()
 
     def _close(self):
-        self._shutdown()
+        self.shutdown()
 
-    def _readinto(self, unsigned char[:] buffer not None, size_t amt):
+    def readinto(self, unsigned char[:] buffer not None, size_t amt):
         if buffer.size == 0:
             return 0
         if amt <= 0:
@@ -1243,7 +1243,7 @@ cdef class _BaseContext:
             self._reset()
             _exc.check_error(read)
 
-    def _write(self, const unsigned char[:] buffer not None):
+    def write(self, const unsigned char[:] buffer not None):
         if buffer.size == 0:
             return 0
         cdef size_t written = 0
@@ -1273,10 +1273,10 @@ cdef class _BaseContext:
             return der
         return _x509.CRT.from_DER(der)
 
-    def _selected_npn_protocol(self):
+    def selected_npn_protocol(self):
         return None
 
-    def _negotiated_protocol(self):
+    def negotiated_protocol(self):
         cdef const char* protocol = _tls.mbedtls_ssl_get_alpn_protocol(
             &self._ctx)
         if protocol is NULL:
@@ -1287,11 +1287,11 @@ cdef class _BaseContext:
         cdef const char* name = _tls.mbedtls_ssl_get_ciphersuite(&self._ctx)
         if name is NULL:
             return None
-        ssl_version = self._negotiated_tls_version()
+        ssl_version = self.negotiated_tls_version()
         secret_bits = None
         return name.decode("ascii"), ssl_version, secret_bits
 
-    def _cipher(self):
+    def cipher(self):
         cipher = self._cipher_suite()
         if cipher is None:
             return
@@ -1301,7 +1301,7 @@ cdef class _BaseContext:
     def _state(self):
         return HandshakeStep(self._ctx.state)
 
-    def _do_handshake_step(self):
+    def do_handshake(self):
         if self._state is HandshakeStep.HANDSHAKE_OVER:
             raise ValueError("handshake already over")
         self._handle_handshake_response(_tls.mbedtls_ssl_handshake_step(&self._ctx))
@@ -1328,7 +1328,7 @@ cdef class _BaseContext:
     def _get_channel_binding(self, cb_type="tls-unique"):
         return None
 
-    def _negotiated_tls_version(self):
+    def negotiated_tls_version(self):
         # Strings from `ssl_tls.c`.
         return {
             "DTLSv1.0": DTLSVersion.DTLSv1_0,
