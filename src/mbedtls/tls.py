@@ -186,6 +186,10 @@ class TLSWrappedSocket:
     def __str__(self):
         return str(self._socket)
 
+    @property
+    def _handshake_state(self):
+        return self._buffer._handshake_state
+
     # PEP 543 requires the full socket API.
 
     @property
@@ -333,19 +337,16 @@ class TLSWrappedSocket:
     # PEP 543 adds the following methods.
 
     def do_handshake(self):
-        while (
-            self._buffer._handshake_state is not HandshakeStep.HANDSHAKE_OVER
-        ):
+        while self._handshake_state is not HandshakeStep.HANDSHAKE_OVER:
             try:
                 self._buffer.do_handshake()
-                amt = self._socket.send(self._buffer.peek_outgoing(1024))
-                self._buffer.consume_outgoing(amt)
             except WantReadError:
-                amt = self._socket.send(self._buffer.peek_outgoing(1024))
-                self._buffer.consume_outgoing(amt)
-            except WantWriteError:
                 data = self._socket.recv(1024)
                 self._buffer.receive_from_network(data)
+            except WantWriteError:
+                in_transit = self._buffer.peek_outgoing(1024)
+                amt = self._socket.send(in_transit)
+                self._buffer.consume_outgoing(amt)
 
     def setcookieparam(self, param):
         self._buffer.setcookieparam(param)

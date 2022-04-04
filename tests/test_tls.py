@@ -1,6 +1,7 @@
 import datetime as dt
 import pickle
 import socket
+from contextlib import suppress
 
 import pytest
 
@@ -515,7 +516,8 @@ class TestTLSWrappedBuffer:
 
         def do_handshake(*end_state_pair):
             for end, state in end_state_pair:
-                end.do_handshake()
+                with suppress(WantReadError, WantWriteError):
+                    end.do_handshake()
                 assert end._handshake_state is state
 
         do_handshake(

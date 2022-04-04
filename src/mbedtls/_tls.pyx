@@ -84,7 +84,7 @@ cdef int buffer_read(void *ctx, unsigned char *buf, const size_t len) nogil:
     """Read from input buffer."""
     c_buf = <_tls._C_Buffers *> ctx
     if _rb.c_len(c_buf.in_ctx) == 0:
-        return _tls.MBEDTLS_ERR_SSL_WANT_WRITE
+        return _tls.MBEDTLS_ERR_SSL_WANT_READ
     return _rb.c_readinto(c_buf.in_ctx, buf, len)
 
 
@@ -1247,7 +1247,6 @@ cdef class MbedTLSBuffer:
             return 0
         if amt <= 0:
             return 0
-        # cdef size_t avail = _tls.mbedtls_ssl_get_bytes_avail(&self._ctx)
         read = _tls.mbedtls_ssl_read(&self._ctx, &buffer[0], amt)
         if read > 0:
             return read
@@ -1342,26 +1341,28 @@ cdef class MbedTLSBuffer:
     def do_handshake(self):
         if self._handshake_state is HandshakeStep.HANDSHAKE_OVER:
             raise ValueError("handshake already over")
-        self._handle_handshake_response(_tls.mbedtls_ssl_handshake_step(&self._ctx))
+        self._handle_handshake_response(
+            _tls.mbedtls_ssl_handshake_step(&self._ctx)
+        )
 
     def _renegotiate(self):
         """Initialize an SSL renegotiation on the running connection."""
         self._handle_handshake_response(_tls.mbedtls_ssl_renegotiate(&self._ctx))
 
     def _handle_handshake_response(self, ret):
-        if ret == 0:
-            return
-        elif ret == _tls.MBEDTLS_ERR_SSL_WANT_READ:
+        if ret == _tls.MBEDTLS_ERR_SSL_WANT_READ:
             raise WantReadError()
-        elif ret == _tls.MBEDTLS_ERR_SSL_WANT_WRITE:
+        if ret == _tls.MBEDTLS_ERR_SSL_WANT_WRITE:
             raise WantWriteError()
-        elif ret == _tls.MBEDTLS_ERR_SSL_HELLO_VERIFY_REQUIRED:
+        if ret == _tls.MBEDTLS_ERR_SSL_HELLO_VERIFY_REQUIRED:
             self._reset()
             raise HelloVerifyRequest()
-        else:
-            assert ret < 0
+        if ret < 0:
             self._reset()
             _exc.check_error(ret)
+        if ret == 0 and self._output_buffer:
+            raise WantWriteError
+        assert ret == 0
 
     def _get_channel_binding(self, cb_type="tls-unique"):
         return None
