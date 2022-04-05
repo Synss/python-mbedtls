@@ -100,9 +100,6 @@ cdef extern from "mbedtls/bignum.h" nogil:
         int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
     # mbedtls_mpi_gcd
     # mbedtls_mpi_inv_mod
-    int mbedtls_mpi_is_prime(
-        mbedtls_mpi *X,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
     int mbedtls_mpi_gen_prime(
         mbedtls_mpi *X, size_t size, int dh_flag,
         int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )

@@ -1,3 +1,7 @@
+[next]
+
+* mpi: Remove is_prime() method.
+
 [2.0.1] - 2022-04-12
 
 * tls: Fix check of arguments to TLSWrappedSocket.sendto().

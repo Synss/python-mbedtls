@@ -134,12 +134,6 @@ cdef class MPI:
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
         return self_
 
-    def is_prime(self):
-        """Miller-Rabin primality test."""
-        return _exc.check_error(mbedtls_mpi_is_prime(
-            &self._ctx,
-            &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx)) == 0
-
     def __hash__(self):
         return long(self)
 

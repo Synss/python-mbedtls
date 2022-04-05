@@ -33,10 +33,6 @@ def test_is_integral():
     assert isinstance(MPI(42), numbers.Integral)
 
 
-def test_prime():
-    assert MPI.prime(512).is_prime()
-
-
 def test_add():
     assert MPI(12) + MPI(12) == 24
     assert MPI(12) + 12 == 24
