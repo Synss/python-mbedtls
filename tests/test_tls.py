@@ -514,42 +514,49 @@ class TestTLSWrappedBuffer:
             src.consume_outgoing(len(in_transit))
             dst.receive_from_network(in_transit)
 
-        def do_handshake(*end_state_pair):
-            for end, state in end_state_pair:
+        def do_handshake(end, states):
+            while end._handshake_state is not states[0]:
+                # The backend goes through every state for both
+                # ends.  This is not relevant.
+                end.do_handshake()
+
+            for state in states:
+                assert end._handshake_state is state
+                if state is HandshakeStep.HANDSHAKE_OVER:
+                    break
                 with suppress(WantReadError, WantWriteError):
                     end.do_handshake()
-                assert end._handshake_state is state
 
         do_handshake(
-            (server, HandshakeStep.CLIENT_HELLO),
-            (client, HandshakeStep.CLIENT_HELLO),
-            (client, HandshakeStep.SERVER_HELLO),
+            client,
+            (
+                HandshakeStep.HELLO_REQUEST,
+                HandshakeStep.CLIENT_HELLO,
+            ),
         )
 
         do_io(src=client, dst=server)
         do_handshake(
-            (server, HandshakeStep.SERVER_HELLO),
-            (server, HandshakeStep.SERVER_CERTIFICATE),
-            (server, HandshakeStep.SERVER_KEY_EXCHANGE),
-            (server, HandshakeStep.CERTIFICATE_REQUEST),
-            (server, HandshakeStep.SERVER_HELLO_DONE),
-            (server, HandshakeStep.CLIENT_CERTIFICATE),
-            (server, HandshakeStep.CLIENT_KEY_EXCHANGE),
+            server,
+            (
+                HandshakeStep.SERVER_HELLO,
+                HandshakeStep.SERVER_CERTIFICATE,
+                HandshakeStep.SERVER_KEY_EXCHANGE,
+                HandshakeStep.CERTIFICATE_REQUEST,
+                HandshakeStep.SERVER_HELLO_DONE,
+            ),
         )
         assert client.negotiated_protocol() == server.negotiated_protocol()
 
         do_io(src=server, dst=client)
         do_handshake(
-            (client, HandshakeStep.SERVER_CERTIFICATE),
-            (client, HandshakeStep.SERVER_KEY_EXCHANGE),
-            (client, HandshakeStep.CERTIFICATE_REQUEST),
-            (client, HandshakeStep.SERVER_HELLO_DONE),
-            (client, HandshakeStep.CLIENT_CERTIFICATE),
-            (client, HandshakeStep.CLIENT_KEY_EXCHANGE),
-            (client, HandshakeStep.CERTIFICATE_VERIFY),
-            (client, HandshakeStep.CLIENT_CHANGE_CIPHER_SPEC),
-            (client, HandshakeStep.CLIENT_FINISHED),
-            (client, HandshakeStep.SERVER_CHANGE_CIPHER_SPEC),
+            client,
+            (
+                HandshakeStep.CLIENT_KEY_EXCHANGE,
+                HandshakeStep.CERTIFICATE_VERIFY,
+                HandshakeStep.CLIENT_CHANGE_CIPHER_SPEC,
+                HandshakeStep.CLIENT_FINISHED,
+            ),
         )
         assert (
             client.negotiated_tls_version() == server.negotiated_tls_version()
@@ -557,23 +564,18 @@ class TestTLSWrappedBuffer:
 
         do_io(src=client, dst=server)
         do_handshake(
-            (server, HandshakeStep.CERTIFICATE_VERIFY),
-            (server, HandshakeStep.CLIENT_CHANGE_CIPHER_SPEC),
-            (server, HandshakeStep.CLIENT_FINISHED),
-            (server, HandshakeStep.SERVER_CHANGE_CIPHER_SPEC),
-            (server, HandshakeStep.SERVER_FINISHED),
-            (server, HandshakeStep.FLUSH_BUFFERS),
-            (server, HandshakeStep.HANDSHAKE_WRAPUP),
-            (server, HandshakeStep.HANDSHAKE_OVER),
+            server,
+            (
+                HandshakeStep.SERVER_CHANGE_CIPHER_SPEC,
+                HandshakeStep.SERVER_FINISHED,
+                HandshakeStep.FLUSH_BUFFERS,
+                HandshakeStep.HANDSHAKE_WRAPUP,
+                HandshakeStep.HANDSHAKE_OVER,
+            ),
         )
 
         do_io(src=server, dst=client)
-        do_handshake(
-            (client, HandshakeStep.SERVER_FINISHED),
-            (client, HandshakeStep.FLUSH_BUFFERS),
-            (client, HandshakeStep.HANDSHAKE_WRAPUP),
-            (client, HandshakeStep.HANDSHAKE_OVER),
-        )
+        do_handshake(client, (HandshakeStep.HANDSHAKE_OVER,))
         assert client.cipher() == server.cipher()
 
         secret = b"a very secret message"
