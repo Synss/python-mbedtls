@@ -475,7 +475,7 @@ class TestServerContext(TestBaseContext):
         assert isinstance(context.wrap_buffers(), TLSWrappedBuffer)
 
 
-class TestTLSWrappedBuffer:
+class TestTLSHandshake:
     @pytest.fixture
     def server_hostname(self):
         return "hostname"
@@ -497,7 +497,7 @@ class TestTLSWrappedBuffer:
         )
 
     @pytest.fixture
-    def client(Self, cli_conf, server_hostname):
+    def client(self, cli_conf, server_hostname):
         buf = ClientContext(cli_conf).wrap_buffers(server_hostname)
         yield buf
         buf.shutdown()
@@ -574,6 +574,142 @@ class TestTLSWrappedBuffer:
             ),
         )
 
+        do_io(src=server, dst=client)
+        do_handshake(client, (HandshakeStep.HANDSHAKE_OVER,))
+        assert client.cipher() == server.cipher()
+
+        secret = b"a very secret message"
+
+        amt = client.write(secret)
+        do_io(src=client, dst=server)
+        assert server.read(amt) == secret
+
+        amt = server.write(secret)
+        do_io(src=server, dst=client)
+        assert client.read(amt) == secret
+
+
+class TestDTLSHandshake:
+    @pytest.fixture
+    def server_hostname(self):
+        return "hostname"
+
+    @pytest.fixture
+    def psk(self):
+        return ("cli", b"secret")
+
+    @pytest.fixture
+    def cli_conf(self, psk):
+        return DTLSConfiguration(
+            pre_shared_key=psk, validate_certificates=False
+        )
+
+    @pytest.fixture
+    def srv_conf(self, psk):
+        return DTLSConfiguration(
+            pre_shared_key_store=dict((psk,)), validate_certificates=False
+        )
+
+    @pytest.fixture
+    def client(self, cli_conf, server_hostname):
+        buf = ClientContext(cli_conf).wrap_buffers(server_hostname)
+        yield buf
+        buf.shutdown()
+
+    @pytest.fixture
+    def server(sefl, srv_conf):
+        buf = ServerContext(srv_conf).wrap_buffers()
+        yield buf
+        buf.shutdown()
+
+    @pytest.fixture
+    def cli_ctx(Self, cli_conf):
+        return ClientContext(cli_conf)
+
+    @pytest.fixture
+    def srv_ctx(self, srv_conf):
+        return ServerContext(srv_conf)
+
+    def test_e2e_handshake_and_communicate(self, client, server):
+        def do_io(*, src, dst, amt=1024):
+            in_transit = src.peek_outgoing(amt)
+            src.consume_outgoing(len(in_transit))
+            dst.receive_from_network(in_transit)
+
+        def do_handshake(end, states):
+            while end._handshake_state is not states[0]:
+                # The backend goes through every state for both
+                # ends.  This is not relevant.
+                end.do_handshake()
+
+            for state in states:
+                assert end._handshake_state is state
+                if state is HandshakeStep.HANDSHAKE_OVER:
+                    break
+                with suppress(WantReadError, WantWriteError):
+                    end.do_handshake()
+
+        do_handshake(
+            client,
+            (
+                HandshakeStep.HELLO_REQUEST,
+                HandshakeStep.CLIENT_HELLO,
+            ),
+        )
+
+        do_io(src=client, dst=server)
+        server.setcookieparam("🍪🍪🍪".encode("utf-8"))
+        with pytest.raises(HelloVerifyRequest):
+            do_handshake(
+                server,
+                (
+                    HandshakeStep.SERVER_HELLO,
+                    HandshakeStep.SERVER_HELLO_VERIFY_REQUEST_SENT,
+                ),
+            )
+
+        do_handshake(server, (HandshakeStep.HELLO_REQUEST,))
+        do_io(src=server, dst=client)
+        do_handshake(client, (HandshakeStep.CLIENT_HELLO,))
+        do_io(src=client, dst=server)
+        server.setcookieparam("🍪🍪🍪".encode("utf-8"))
+        do_handshake(
+            server,
+            (
+                HandshakeStep.SERVER_HELLO,
+                HandshakeStep.SERVER_CERTIFICATE,
+                HandshakeStep.SERVER_KEY_EXCHANGE,
+                HandshakeStep.CERTIFICATE_REQUEST,
+                HandshakeStep.SERVER_HELLO_DONE,
+            ),
+        )
+        assert client.negotiated_protocol() == server.negotiated_protocol()
+
+        do_io(src=server, dst=client)
+        do_handshake(
+            client,
+            (
+                HandshakeStep.CLIENT_KEY_EXCHANGE,
+                HandshakeStep.CERTIFICATE_VERIFY,
+                HandshakeStep.CLIENT_CHANGE_CIPHER_SPEC,
+                HandshakeStep.CLIENT_FINISHED,
+            ),
+        )
+        assert (
+            client.negotiated_tls_version() == server.negotiated_tls_version()
+        )
+
+        do_io(src=client, dst=server)
+        do_handshake(
+            server,
+            (
+                HandshakeStep.SERVER_CHANGE_CIPHER_SPEC,
+                HandshakeStep.SERVER_FINISHED,
+                HandshakeStep.FLUSH_BUFFERS,
+                HandshakeStep.HANDSHAKE_WRAPUP,
+                HandshakeStep.HANDSHAKE_OVER,
+            ),
+        )
         do_io(src=server, dst=client)
         do_handshake(client, (HandshakeStep.HANDSHAKE_OVER,))
         assert client.cipher() == server.cipher()
