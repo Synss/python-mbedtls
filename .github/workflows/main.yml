@@ -50,7 +50,7 @@ jobs:
             && powershell %CD%\scripts\install-mbedtls.ps1 -ConfigurationType DynamicLibrary %HOMEDRIVE%%HOMEPATH%\mbedtls
             && dir %LIB%
           CIBW_TEST_REQUIRES: -rrequirements/tests.txt
-          CIBW_TEST_COMMAND: pytest {project}/tests
+          CIBW_TEST_COMMAND: pytest -m "not local" {project}/tests
       - name: Inventory
         run: ls wheelhouse
       - name: Upload wheels

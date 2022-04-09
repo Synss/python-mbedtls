@@ -1,7 +1,9 @@
 import datetime as dt
 import pickle
 import socket
+import subprocess
 from contextlib import suppress
+from pathlib import Path
 
 import pytest
 
@@ -618,3 +620,76 @@ class TestHandshake:
         amt = server.write(secret)
         do_io(src=server, dst=client)
         assert client.read(amt) == secret
+
+
+@pytest.mark.local
+class TestPrograms:
+    @pytest.fixture
+    def rootpath(self):
+        return Path(__file__).parent.parent
+
+    @pytest.fixture
+    def tls_server(self, rootpath):
+        proc = subprocess.Popen(
+            [
+                rootpath / "programs" / "server.py",
+                "--tls",
+                "--psk-store",
+                "cli=secret",
+            ]
+        )
+        yield proc
+        proc.kill()
+        proc.wait(1.0)
+
+    @pytest.fixture
+    def dtls_server(self, rootpath):
+        proc = subprocess.Popen(
+            [
+                rootpath / "programs" / "server.py",
+                "--dtls",
+                "--psk-store",
+                "cli=secret",
+            ]
+        )
+        yield proc
+        proc.kill()
+        proc.wait(1.0)
+
+    @pytest.mark.usefixtures("tls_server")
+    @pytest.mark.timeout(10)
+    def test_e2e_tls(self, rootpath):
+        secret = b"a very secret message"
+
+        for _ in range(3):
+            with subprocess.Popen(
+                [
+                    rootpath / "programs" / "client.py",
+                    "--tls",
+                    "--psk",
+                    "cli=secret",
+                    secret,
+                ],
+                stdout=subprocess.PIPE,
+            ) as client:
+                out, err = client.communicate()
+                assert out == secret + b"\n"
+
+    @pytest.mark.usefixtures("dtls_server")
+    @pytest.mark.timeout(10)
+    def test_e2e_dtls(self, rootpath):
+        secret = b"a very secret message"
+
+        for _ in range(3):
+            with subprocess.Popen(
+                [
+                    rootpath / "programs" / "client.py",
+                    "--dtls",
+                    "--psk",
+                    "cli=secret",
+                    secret,
+                ],
+                stdout=subprocess.PIPE,
+            ) as client:
+                out, err = client.communicate()
+                assert out == secret + b"\n"
