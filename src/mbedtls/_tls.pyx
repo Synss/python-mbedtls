@@ -1169,7 +1169,9 @@ cdef class MbedTLSBuffer:
         _tls.mbedtls_ssl_free(&self._ctx)
 
     def __getstate__(self):
-        # We could make this pickable by copying the buffers.
+        # TODO:
+        #   mbedtls_ssl_context_save(...)
+        #   mbdetls_ssl_context_load(...)
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
     def __repr__(self):
