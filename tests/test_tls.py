@@ -16,6 +16,11 @@ from mbedtls.tls import HandshakeStep, TLSSession
 from mbedtls.x509 import CRT, CSR, BasicConstraints
 
 
+@pytest.fixture(scope="module")
+def rootpath():
+    return Path(__file__).parent.parent
+
+
 class TestPickle:
     @pytest.mark.parametrize(
         "obj",
@@ -623,73 +628,100 @@ class TestHandshake:
 
 
 @pytest.mark.local
-class TestPrograms:
+class TestProgramsTLS:
     @pytest.fixture
-    def rootpath(self):
-        return Path(__file__).parent.parent
+    def port(self):
+        """Return a free port
+
+        Note:
+            Not 100% race condition free.
+
+        """
+        port = 0
+        with socket.socket() as sock:
+            sock.bind(("", port))
+            port = sock.getsockname()[1]
+        return port
 
     @pytest.fixture
-    def tls_server(self, rootpath):
-        proc = subprocess.Popen(
-            [
-                rootpath / "programs" / "server.py",
-                "--tls",
-                "--psk-store",
-                "cli=secret",
-            ]
-        )
+    def server(self, rootpath, port):
+        args = [
+            rootpath / "programs" / "server.py",
+            "--port",
+            f"{port}",
+            "--tls",
+            "--psk-store",
+            "cli=secret",
+        ]
+        proc = subprocess.Popen(args)
         yield proc
         proc.kill()
         proc.wait(1.0)
 
-    @pytest.fixture
-    def dtls_server(self, rootpath):
-        proc = subprocess.Popen(
-            [
-                rootpath / "programs" / "server.py",
-                "--dtls",
-                "--psk-store",
-                "cli=secret",
-            ]
-        )
-        yield proc
-        proc.kill()
-        proc.wait(1.0)
-
-    @pytest.mark.usefixtures("tls_server")
+    @pytest.mark.usefixtures("server")
     @pytest.mark.timeout(10)
-    def test_e2e_tls(self, rootpath):
+    def test_communicate(self, rootpath, port):
         secret = b"a very secret message"
-
+        args = [
+            rootpath / "programs" / "client.py",
+            "--port",
+            f"{port}",
+            "--tls",
+            "--psk",
+            "cli=secret",
+            secret,
+        ]
         for _ in range(3):
-            with subprocess.Popen(
-                [
-                    rootpath / "programs" / "client.py",
-                    "--tls",
-                    "--psk",
-                    "cli=secret",
-                    secret,
-                ],
-                stdout=subprocess.PIPE,
-            ) as client:
+            with subprocess.Popen(args, stdout=subprocess.PIPE) as client:
                 out, err = client.communicate()
                 assert out == secret + b"\n"
 
-    @pytest.mark.usefixtures("dtls_server")
-    @pytest.mark.timeout(10)
-    def test_e2e_dtls(self, rootpath):
-        secret = b"a very secret message"
 
+@pytest.mark.local
+class TestProgramsDTLS:
+    @pytest.fixture
+    def port(self):
+        """Return a free port
+
+        Note:
+            Not 100% race condition free.
+
+        """
+        port = 0
+        with socket.socket() as sock:
+            sock.bind(("", port))
+            port = sock.getsockname()[1]
+        return port
+
+    @pytest.fixture
+    def server(self, rootpath, port):
+        args = [
+            rootpath / "programs" / "server.py",
+            "--port",
+            f"{port}",
+            "--dtls",
+            "--psk-store",
+            "cli=secret",
+        ]
+        proc = subprocess.Popen(args)
+        yield proc
+        proc.kill()
+        proc.wait(1.0)
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(10)
+    def test_communication(self, rootpath, port):
+        secret = b"a very secret message"
+        args = [
+            rootpath / "programs" / "client.py",
+            "--port",
+            f"{port}",
+            "--dtls",
+            "--psk",
+            "cli=secret",
+            secret,
+        ]
         for _ in range(3):
-            with subprocess.Popen(
-                [
-                    rootpath / "programs" / "client.py",
-                    "--dtls",
-                    "--psk",
-                    "cli=secret",
-                    secret,
-                ],
-                stdout=subprocess.PIPE,
-            ) as client:
+            with subprocess.Popen(args, stdout=subprocess.PIPE) as client:
                 out, err = client.communicate()
                 assert out == secret + b"\n"
