@@ -641,7 +641,7 @@ class TestHandshake:
         assert client.read(amt) == secret
 
 
-@pytest.mark.local
+@pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
 class TestProgramsTLS:
     @pytest.fixture
     def port(self):
@@ -691,7 +691,7 @@ class TestProgramsTLS:
             assert do_communicate(args) == secret + b"\n"
 
 
-@pytest.mark.local
+@pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
 class TestProgramsDTLS:
     @pytest.fixture
     def port(self):

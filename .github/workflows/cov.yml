@@ -46,7 +46,7 @@ jobs:
         env:
           LD_LIBRARY_PATH: "${{ env.BACKEND_DIR }}/lib"
           PYTHONPATH: src
-        run: python -m pytest -m "not local" --cov=src/ tests/
+        run: python -m pytest --cov=src/ tests/
 
       - name: Upload to coveralls
         env:
