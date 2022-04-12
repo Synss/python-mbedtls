@@ -4,10 +4,6 @@
 import enum
 import socket as _socket
 import struct
-import sys
-from contextlib import suppress
-
-import mbedtls._ringbuf as _rb
 
 from ._tls import (
     DTLSConfiguration,
