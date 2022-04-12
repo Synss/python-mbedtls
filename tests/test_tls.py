@@ -646,7 +646,7 @@ class TestProgramsTLS:
     @pytest.fixture
     def server(self, rootpath, port):
         args = [
-            rootpath / "programs" / "server.py",
+            str(rootpath / "programs" / "server.py"),
             "--port",
             f"{port}",
             "--tls",
@@ -663,7 +663,7 @@ class TestProgramsTLS:
     def test_communicate(self, rootpath, port):
         secret = b"a very secret message"
         args = [
-            rootpath / "programs" / "client.py",
+            str(rootpath / "programs" / "client.py"),
             "--port",
             f"{port}",
             "--tls",
@@ -696,7 +696,7 @@ class TestProgramsDTLS:
     @pytest.fixture
     def server(self, rootpath, port):
         args = [
-            rootpath / "programs" / "server.py",
+            str(rootpath / "programs" / "server.py"),
             "--port",
             f"{port}",
             "--dtls",
@@ -713,7 +713,7 @@ class TestProgramsDTLS:
     def test_communication(self, rootpath, port):
         secret = b"a very secret message"
         args = [
-            rootpath / "programs" / "client.py",
+            str(rootpath / "programs" / "client.py"),
             "--port",
             f"{port}",
             "--dtls",
