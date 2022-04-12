@@ -639,8 +639,8 @@ class TestProgramsTLS:
 
         """
         port = 0
-        with socket.socket() as sock:
-            sock.bind(("", port))
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.bind(("localhost", port))
             port = sock.getsockname()[1]
         return port
 
@@ -691,8 +691,8 @@ class TestProgramsDTLS:
 
         """
         port = 0
-        with socket.socket() as sock:
-            sock.bind(("", port))
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.bind(("localhost", port))
             port = sock.getsockname()[1]
         return port
 
