@@ -300,7 +300,7 @@ class TLSWrappedSocket:
         self._socket.sendall(encrypted)
 
     def sendto(self, message, *args):
-        if not 2 <= len(args) <= 3:
+        if not 1 <= len(args) <= 2:
             raise TypeError(
                 "sendto() takes 2 or 3 arguments (%i given)" % (1 + len(args))
             )
