@@ -6,7 +6,7 @@
 #
 astroid==2.11.2
 attrs==21.4.0
-bleach==4.1.0
+bleach==5.0.0
 coverage[toml]==6.3.2
 cython==0.29.28
 dill==0.3.4
@@ -20,8 +20,8 @@ platformdirs==2.5.1
 pluggy==1.0.0
 py==1.11.0
 pygments==2.11.2
-pylint==2.13.1
-pyparsing==3.0.7
+pylint==2.13.5
+pyparsing==3.0.8
 pytest==7.1.1
 pytest-cov==3.0.0
 pytest-repeat==0.9.1
