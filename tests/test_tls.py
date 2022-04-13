@@ -3,6 +3,7 @@ import pickle
 import socket
 import subprocess
 import sys
+import time
 from contextlib import suppress
 from pathlib import Path
 
@@ -563,6 +564,18 @@ def make_hello_verify_request(*, client, server, cookie):
     do_io(src=server, dst=client)
 
 
+def do_communicate(args):
+    while True:
+        with subprocess.Popen(
+            args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        ) as proc:
+            out, err = proc.communicate()
+            if b"ConnectionRefusedError" not in err:
+                return out
+            time.sleep(0.01)  # Avoid tight CPU loop.
+            continue
+
+
 class TestHandshake:
     def test_tls(self):
         psk = ("cli", b"secret")
@@ -675,9 +688,7 @@ class TestProgramsTLS:
             secret,
         ]
         for _ in range(3):
-            with subprocess.Popen(args, stdout=subprocess.PIPE) as client:
-                out, err = client.communicate()
-                assert out == secret + b"\n"
+            assert do_communicate(args) == secret + b"\n"
 
 
 @pytest.mark.local
@@ -727,6 +738,4 @@ class TestProgramsDTLS:
             secret,
         ]
         for _ in range(3):
-            with subprocess.Popen(args, stdout=subprocess.PIPE) as client:
-                out, err = client.communicate()
-                assert out == secret + b"\n"
+            assert do_communicate(args) == secret + b"\n"
