@@ -2,6 +2,7 @@ import datetime as dt
 import pickle
 import socket
 import subprocess
+import sys
 from contextlib import suppress
 from pathlib import Path
 
@@ -646,6 +647,7 @@ class TestProgramsTLS:
     @pytest.fixture
     def server(self, rootpath, port):
         args = [
+            sys.executable,
             str(rootpath / "programs" / "server.py"),
             "--port",
             f"{port}",
@@ -663,6 +665,7 @@ class TestProgramsTLS:
     def test_communicate(self, rootpath, port):
         secret = b"a very secret message"
         args = [
+            sys.executable,
             str(rootpath / "programs" / "client.py"),
             "--port",
             f"{port}",
@@ -696,6 +699,7 @@ class TestProgramsDTLS:
     @pytest.fixture
     def server(self, rootpath, port):
         args = [
+            sys.executable,
             str(rootpath / "programs" / "server.py"),
             "--port",
             f"{port}",
@@ -713,6 +717,7 @@ class TestProgramsDTLS:
     def test_communication(self, rootpath, port):
         secret = b"a very secret message"
         args = [
+            sys.executable,
             str(rootpath / "programs" / "client.py"),
             "--port",
             f"{port}",
