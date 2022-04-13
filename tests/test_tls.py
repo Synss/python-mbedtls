@@ -567,10 +567,14 @@ def make_hello_verify_request(*, client, server, cookie):
 def do_communicate(args):
     while True:
         with subprocess.Popen(
-            args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf8",
         ) as proc:
             out, err = proc.communicate()
-            if b"ConnectionRefusedError" not in err:
+            if "ConnectionRefusedError" not in err:
                 return out
             time.sleep(0.01)  # Avoid tight CPU loop.
             continue
@@ -597,15 +601,15 @@ class TestHandshake:
 
         make_full_handshake(client=client, server=server)
 
-        secret = b"a very secret message"
+        secret = "a very secret message"
 
-        amt = client.write(secret)
+        amt = client.write(secret.encode("utf8"))
         do_io(src=client, dst=server)
-        assert server.read(amt) == secret
+        assert server.read(amt).decode("utf8") == secret
 
-        amt = server.write(secret)
+        amt = server.write(secret.encode("utf8"))
         do_io(src=server, dst=client)
-        assert client.read(amt) == secret
+        assert client.read(amt).decode("utf8") == secret
 
     def test_dtls(self):
         psk = ("cli", b"secret")
@@ -630,15 +634,15 @@ class TestHandshake:
         )
         make_full_handshake(client=client, server=server)
 
-        secret = b"a very secret message"
+        secret = "a very secret message"
 
-        amt = client.write(secret)
+        amt = client.write(secret.encode("utf8"))
         do_io(src=client, dst=server)
-        assert server.read(amt) == secret
+        assert server.read(amt).decode("utf8") == secret
 
-        amt = server.write(secret)
+        amt = server.write(secret.encode("utf8"))
         do_io(src=server, dst=client)
-        assert client.read(amt) == secret
+        assert client.read(amt).decode("utf8") == secret
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
@@ -668,7 +672,7 @@ class TestProgramsTLS:
             "--psk-store",
             "cli=secret",
         ]
-        proc = subprocess.Popen(args)
+        proc = subprocess.Popen(args, text=True, encoding="utf8")
         yield proc
         proc.kill()
         proc.wait(1.0)
@@ -676,7 +680,7 @@ class TestProgramsTLS:
     @pytest.mark.usefixtures("server")
     @pytest.mark.timeout(10)
     def test_communicate(self, rootpath, port):
-        secret = b"a very secret message"
+        secret = "a very secret message"
         args = [
             sys.executable,
             str(rootpath / "programs" / "client.py"),
@@ -688,7 +692,7 @@ class TestProgramsTLS:
             secret,
         ]
         for _ in range(3):
-            assert do_communicate(args) == secret + b"\n"
+            assert do_communicate(args) == secret + "\n"
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
@@ -718,7 +722,7 @@ class TestProgramsDTLS:
             "--psk-store",
             "cli=secret",
         ]
-        proc = subprocess.Popen(args)
+        proc = subprocess.Popen(args, text=True, encoding="utf8")
         yield proc
         proc.kill()
         proc.wait(1.0)
@@ -726,7 +730,7 @@ class TestProgramsDTLS:
     @pytest.mark.usefixtures("server")
     @pytest.mark.timeout(10)
     def test_communication(self, rootpath, port):
-        secret = b"a very secret message"
+        secret = "a very secret message"
         args = [
             sys.executable,
             str(rootpath / "programs" / "client.py"),
@@ -738,4 +742,4 @@ class TestProgramsDTLS:
             secret,
         ]
         for _ in range(3):
-            assert do_communicate(args) == secret + b"\n"
+            assert do_communicate(args) == secret + "\n"
