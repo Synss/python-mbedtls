@@ -21,7 +21,18 @@ def new(key, buffer=None, digestmod=None):
     """
     if digestmod is None:
         digestmod = "md5"
-    return Hmac(key, digestmod, buffer)
+    block_size = {
+        "md2": 16,
+        "md4": 64,
+        "md5": 64,
+        "sha1": 64,
+        "sha224": 64,
+        "sha256": 64,
+        "sha384": 128,
+        "sha512": 128,
+        "ripemd160": 64,
+    }.get(digestmod.lower(), 64)
+    return Hmac(key, digestmod, buffer, block_size=block_size)
 
 
 def md2(key, buffer=None):

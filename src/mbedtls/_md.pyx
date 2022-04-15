@@ -64,6 +64,8 @@ cdef class MDBase:
 
     Parameters:
         name (str): The MD name known to mbed TLS.
+        block_size (int): The internal block size of the hash
+            algorithm in bytes.
 
     Attributes:
         digest_size (int): The size of the message digest, in bytes.
@@ -72,7 +74,7 @@ cdef class MDBase:
         name (str): The name of the message digest.
 
     """
-    def __init__(self, name, _hmac):
+    def __init__(self, name, _hmac, *, block_size=64):
         try:
             name_ = name.encode("ascii", "strict").upper()
         except (AttributeError, ValueError) as exc:
@@ -83,6 +85,7 @@ cdef class MDBase:
         cdef char *c_name = name_
         self._info = _md.mbedtls_md_info_from_string(c_name)
         _exc.check_error(_md.mbedtls_md_setup(&self._ctx, self._info, _hmac))
+        self._block_size = block_size
 
     def __cinit__(self):
         """Initialize an `md_context` (as NONE)."""
@@ -112,7 +115,7 @@ cdef class MDBase:
     @property
     def block_size(self):
         """The internal block size of the hash algorithm in bytes."""
-        return self._ctx.md_info.block_size
+        return self._block_size
 
     @property
     def name(self):
@@ -160,6 +163,8 @@ cdef class Hash(_md.MDBase):
 
     Parameters:
         name (str): The MD name known to mbed TLS.
+        block_size (int): The internal block size of the hash
+            algorithm in bytes.
 
     Attributes:
         digest_size (int): The size of the message digest, in bytes.
@@ -168,8 +173,8 @@ cdef class Hash(_md.MDBase):
         name (str): The name of the message digest.
 
     """
-    def __init__(self, name, buffer=None):
-        super().__init__(name, 0)
+    def __init__(self, name, buffer=None, *, block_size=64):
+        super().__init__(name, 0, block_size=block_size)
         _exc.check_error(_md.mbedtls_md_starts(&self._ctx))
         self.update(buffer)
 
@@ -202,6 +207,8 @@ cdef class Hmac(_md.MDBase):
     Parameters:
         key (bytes): The key to use.
         name (str): The MD name known to mbed TLS.
+        block_size (int): The internal block size of the hash
+            algorithm in bytes.
 
     Warning:
         The message is cleared after calculation of the digest.  Only
@@ -215,9 +222,9 @@ cdef class Hmac(_md.MDBase):
 
     """
     def __init__(
-        self, const unsigned char[:] key not None, name, buffer=None
+        self, const unsigned char[:] key not None, name, buffer=None, *, block_size
     ):
-        super().__init__(name, 1)
+        super().__init__(name, 1, block_size=block_size)
         if not key.size:
             key = b"\0"
         _exc.check_error(_md.mbedtls_md_hmac_starts(&self._ctx, &key[0], key.size))

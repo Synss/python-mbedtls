@@ -19,7 +19,18 @@ def new(name, buffer=None):
     algorithm as its first parameter.
 
     """
-    return Hash(name, buffer)
+    block_size = {
+        "md2": 16,
+        "md4": 64,
+        "md5": 64,
+        "sha1": 64,
+        "sha224": 64,
+        "sha256": 64,
+        "sha384": 128,
+        "sha512": 128,
+        "ripemd160": 64,
+    }.get(name.lower(), 64)
+    return Hash(name, buffer, block_size=block_size)
 
 
 def md2(buffer=None):

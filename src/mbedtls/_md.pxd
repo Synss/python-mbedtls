@@ -5,12 +5,10 @@
 """Declarations from `mbedtls/md.h`."""
 
 
-cdef extern from "mbedtls/md_internal.h" nogil:
-    ctypedef struct mbedtls_md_info_t:
-        int block_size
-
-
 cdef extern from "mbedtls/md.h" nogil:
+    ctypedef struct mbedtls_md_info_t:
+        pass
+
     ctypedef enum mbedtls_md_type_t:
         pass
 
@@ -64,6 +62,7 @@ cdef extern from "mbedtls/md.h" nogil:
 cdef class MDBase:
     cdef const mbedtls_md_info_t* _info
     cdef mbedtls_md_context_t _ctx
+    cdef object _block_size
     cdef _finish(self, const unsigned char *output)
 
 
