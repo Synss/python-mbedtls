@@ -456,8 +456,8 @@ cdef class _BaseContext:
 cdef class MbedTLSBuffer:
     cdef _BaseContext _context
     cdef mbedtls_ssl_context _ctx
-    cdef _rb.RingBuffer _output_buffer
-    cdef _rb.RingBuffer _input_buffer
+    cdef _rb.RingBuffer _c_output_buffer
+    cdef _rb.RingBuffer _c_input_buffer
     cdef _C_Buffers _c_buffers
     # DTLS only:
     cdef mbedtls_timing_delay_context _timer

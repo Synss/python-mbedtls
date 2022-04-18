@@ -516,9 +516,10 @@ CHANGE_CIPHER_SPEC = (
 
 def do_io(*, src, dst, amt=1024):
     __tracebackhide__ = True
-    in_transit = src.peek_outgoing(amt)
-    src.consume_outgoing(len(in_transit))
-    dst.receive_from_network(in_transit)
+    while src._output_buffer:
+        in_transit = src.peek_outgoing(amt)
+        src.consume_outgoing(len(in_transit))
+        dst.receive_from_network(in_transit)
 
 
 def do_handshake(end, states):
@@ -544,17 +545,20 @@ def do_handshake(end, states):
 def make_full_handshake(*, client, server):
     do_handshake(client, CLIENT_HELLO)
     do_io(src=client, dst=server)
+
     do_handshake(server, SERVER_HELLO)
+    do_io(src=server, dst=client)
     assert client.negotiated_protocol() == server.negotiated_protocol()
 
-    do_io(src=server, dst=client)
     do_handshake(client, CLIENT_KEY_EXCHANGE)
+    do_io(src=client, dst=server)
     assert client.negotiated_tls_version() == server.negotiated_tls_version()
 
-    do_io(src=client, dst=server)
     do_handshake(server, CHANGE_CIPHER_SPEC)
     do_io(src=server, dst=client)
+
     do_handshake(client, (HandshakeStep.HANDSHAKE_OVER,))
+    do_io(src=client, dst=server)
     assert client.cipher() == server.cipher()
 
 

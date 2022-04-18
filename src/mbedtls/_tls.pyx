@@ -1139,11 +1139,11 @@ cdef class MbedTLSBuffer:
     def __init__(self, _BaseContext context, server_hostname=None):
         self._context = context
         _exc.check_error(_tls.mbedtls_ssl_setup(&self._ctx, &self._context._conf._ctx))
-        self._output_buffer = _rb.RingBuffer(TLS_BUFFER_CAPACITY)
-        self._input_buffer = _rb.RingBuffer(TLS_BUFFER_CAPACITY)
+        self._c_output_buffer = _rb.RingBuffer(TLS_BUFFER_CAPACITY)
+        self._c_input_buffer = _rb.RingBuffer(TLS_BUFFER_CAPACITY)
         self._c_buffers = _tls._C_Buffers(
-            &self._output_buffer._ctx,
-            &self._input_buffer._ctx
+            &self._c_output_buffer._ctx,
+            &self._c_input_buffer._ctx
         )
         self._reset()
         _tls.mbedtls_ssl_set_bio(
@@ -1176,6 +1176,14 @@ cdef class MbedTLSBuffer:
 
     def __repr__(self):
         return "%s(%r)" % (type(self).__name__, self.context)
+
+    @property
+    def _input_buffer(self):
+        return self._c_input_buffer
+
+    @property
+    def _output_buffer(self):
+        return self._c_output_buffer
 
     @property
     def context(self):
