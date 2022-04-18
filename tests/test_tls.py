@@ -25,7 +25,7 @@ def rootpath():
 
 @pytest.fixture(scope="module")
 def now():
-    return dt.datetime(2012, 1, 13, 14, 35)
+    return dt.datetime.utcnow()
 
 
 @pytest.fixture(scope="module")
@@ -82,7 +82,7 @@ def ca1_crt(ca1_key, ca0_crt, ca0_key, digestmod, now):
 
 @pytest.fixture(scope="module")
 def ee0_crt(ee0_key, ca1_crt, ca1_key, digestmod, now):
-    ee0_csr = CSR.new(ee0_key, "CN=End Entity", digestmod())
+    ee0_csr = CSR.new(ee0_key, "OU=test, CN=www.example.com", digestmod())
     return ca1_crt.sign(
         ee0_csr, ca1_key, now, now + dt.timedelta(days=90), 0x345678
     )
@@ -608,6 +608,33 @@ class TestTLSHandshake:
         cli_ctx = ClientContext(TLSConfiguration(validate_certificates=False))
         server = srv_ctx.wrap_buffers()
         client = cli_ctx.wrap_buffers("hostname")
+
+        make_full_handshake(client=client, server=server)
+
+        secret = "a very secret message"
+
+        amt = client.write(secret.encode("utf8"))
+        do_io(src=client, dst=server)
+        assert server.read(amt).decode("utf8") == secret
+
+        amt = server.write(secret.encode("utf8"))
+        do_io(src=server, dst=client)
+        assert client.read(amt).decode("utf8") == secret
+
+    def test_cert_with_validation(self, ca0_crt, certificate_chain):
+        trust_store = TrustStore()
+        trust_store.add(ca0_crt)
+
+        srv_ctx = ServerContext(
+            TLSConfiguration(
+                certificate_chain=certificate_chain,
+                validate_certificates=False,
+            )
+        )
+        cli_ctx = ClientContext(TLSConfiguration(trust_store=trust_store))
+        server = srv_ctx.wrap_buffers()
+        # Host name must now be the common name (CN) of the leaf certificate.
+        client = cli_ctx.wrap_buffers("www.example.com")
 
         make_full_handshake(client=client, server=server)
 
