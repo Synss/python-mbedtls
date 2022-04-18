@@ -500,6 +500,7 @@ SERVER_HELLO = (
     HandshakeStep.SERVER_HELLO_DONE,
 )
 CLIENT_KEY_EXCHANGE = (
+    HandshakeStep.CLIENT_CERTIFICATE,
     HandshakeStep.CLIENT_KEY_EXCHANGE,
     HandshakeStep.CERTIFICATE_VERIFY,
     HandshakeStep.CLIENT_CHANGE_CIPHER_SPEC,
@@ -597,6 +598,29 @@ def do_communicate(args):
 
 
 class TestTLSHandshake:
+    def test_cert_without_validation(self, certificate_chain):
+        srv_ctx = ServerContext(
+            TLSConfiguration(
+                certificate_chain=certificate_chain,
+                validate_certificates=False,
+            )
+        )
+        cli_ctx = ClientContext(TLSConfiguration(validate_certificates=False))
+        server = srv_ctx.wrap_buffers()
+        client = cli_ctx.wrap_buffers("hostname")
+
+        make_full_handshake(client=client, server=server)
+
+        secret = "a very secret message"
+
+        amt = client.write(secret.encode("utf8"))
+        do_io(src=client, dst=server)
+        assert server.read(amt).decode("utf8") == secret
+
+        amt = server.write(secret.encode("utf8"))
+        do_io(src=server, dst=client)
+        assert client.read(amt).decode("utf8") == secret
+
     def test_psk(self):
         psk = ("cli", b"secret")
 
