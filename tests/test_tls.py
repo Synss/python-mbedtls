@@ -23,6 +23,76 @@ def rootpath():
     return Path(__file__).parent.parent
 
 
+@pytest.fixture(scope="module")
+def now():
+    return dt.datetime(2012, 1, 13, 14, 35)
+
+
+@pytest.fixture(scope="module")
+def digestmod():
+    return hashlib.sha256
+
+
+@pytest.fixture(scope="module")
+def ca0_key():
+    ca0_key = RSA()
+    ca0_key.generate()
+    return ca0_key
+
+
+@pytest.fixture(scope="module")
+def ca1_key():
+    ca1_key = RSA()
+    ca1_key.generate()
+    return ca1_key
+
+
+@pytest.fixture(scope="module")
+def ee0_key():
+    ee0_key = RSA()
+    ee0_key.generate()
+    return ee0_key
+
+
+@pytest.fixture(scope="module")
+def ca0_crt(ca0_key, digestmod, now):
+    ca0_csr = CSR.new(ca0_key, "CN=Trusted CA", digestmod())
+    return CRT.selfsign(
+        ca0_csr,
+        ca0_key,
+        not_before=now,
+        not_after=now + dt.timedelta(days=90),
+        serial_number=0x123456,
+        basic_constraints=BasicConstraints(True, -1),
+    )
+
+
+@pytest.fixture(scope="module")
+def ca1_crt(ca1_key, ca0_crt, ca0_key, digestmod, now):
+    ca1_csr = CSR.new(ca1_key, "CN=Intermediate CA", digestmod())
+    return ca0_crt.sign(
+        ca1_csr,
+        ca0_key,
+        now,
+        now + dt.timedelta(days=90),
+        0x234567,
+        basic_constraints=BasicConstraints(True, -1),
+    )
+
+
+@pytest.fixture(scope="module")
+def ee0_crt(ee0_key, ca1_crt, ca1_key, digestmod, now):
+    ee0_csr = CSR.new(ee0_key, "CN=End Entity", digestmod())
+    return ca1_crt.sign(
+        ee0_csr, ca1_key, now, now + dt.timedelta(days=90), 0x345678
+    )
+
+
+@pytest.fixture(scope="module")
+def certificate_chain(ee0_crt, ca1_crt, ee0_key):
+    return (ee0_crt, ca1_crt), ee0_key
+
+
 class TestPickle:
     @pytest.mark.parametrize(
         "obj",
@@ -192,70 +262,7 @@ class TestTLSSession:
         assert isinstance(repr(session), str)
 
 
-class Chain:
-    @pytest.fixture(scope="class")
-    def now(self):
-        return dt.datetime.utcnow()
-
-    @pytest.fixture(scope="class")
-    def digestmod(self):
-        return hashlib.sha256
-
-    @pytest.fixture(scope="class")
-    def ca0_key(self):
-        ca0_key = RSA()
-        ca0_key.generate()
-        return ca0_key
-
-    @pytest.fixture(scope="class")
-    def ca1_key(self):
-        ca1_key = RSA()
-        ca1_key.generate()
-        return ca1_key
-
-    @pytest.fixture(scope="class")
-    def ee0_key(self):
-        ee0_key = RSA()
-        ee0_key.generate()
-        return ee0_key
-
-    @pytest.fixture(scope="class")
-    def ca0_crt(self, ca0_key, digestmod, now):
-        ca0_csr = CSR.new(ca0_key, "CN=Trusted CA", digestmod())
-        return CRT.selfsign(
-            ca0_csr,
-            ca0_key,
-            not_before=now,
-            not_after=now + dt.timedelta(days=90),
-            serial_number=0x123456,
-            basic_constraints=BasicConstraints(True, -1),
-        )
-
-    @pytest.fixture(scope="class")
-    def ca1_crt(self, ca1_key, ca0_crt, ca0_key, digestmod, now):
-        ca1_csr = CSR.new(ca1_key, "CN=Intermediate CA", digestmod())
-        return ca0_crt.sign(
-            ca1_csr,
-            ca0_key,
-            now,
-            now + dt.timedelta(days=90),
-            0x234567,
-            basic_constraints=BasicConstraints(True, -1),
-        )
-
-    @pytest.fixture(scope="class")
-    def ee0_crt(self, ee0_key, ca1_crt, ca1_key, digestmod, now):
-        ee0_csr = CSR.new(ee0_key, "CN=End Entity", digestmod())
-        return ca1_crt.sign(
-            ee0_csr, ca1_key, now, now + dt.timedelta(days=90), 0x345678
-        )
-
-    @pytest.fixture(scope="class")
-    def certificate_chain(self, ee0_crt, ca1_crt, ee0_key):
-        return (ee0_crt, ca1_crt), ee0_key
-
-
-class TestTrustStore(Chain):
+class TestTrustStore:
     @pytest.fixture
     def store(self):
         return TrustStore.system()
@@ -307,7 +314,7 @@ class TestDTLSCookie:
         assert cookie.timeout == 1000
 
 
-class _BaseConfiguration(Chain):
+class _BaseConfiguration:
     @pytest.fixture
     def conf(self):
         raise NotImplementedError
@@ -580,8 +587,8 @@ def do_communicate(args):
             continue
 
 
-class TestHandshake:
-    def test_tls(self):
+class TestTLSHandshake:
+    def test_psk(self):
         psk = ("cli", b"secret")
 
         srv_ctx = ServerContext(
@@ -611,7 +618,9 @@ class TestHandshake:
         do_io(src=server, dst=client)
         assert client.read(amt).decode("utf8") == secret
 
-    def test_dtls(self):
+
+class TestDTLSHandshake:
+    def test_psk(self):
         psk = ("cli", b"secret")
 
         srv_ctx = ServerContext(
