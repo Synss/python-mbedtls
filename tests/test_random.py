@@ -100,7 +100,7 @@ class TestRandom:
     def test_getrandbits_size(self, random, nbits):
         value = random.getrandbits(nbits)
         assert isinstance(value, _mpi.MPI)
-        assert value.bit_length() == pytest.approx(nbits, abs=7)
+        assert value.bit_length() == pytest.approx(nbits, abs=8)
         assert value.bit_length() <= nbits
 
     @pytest.mark.parametrize("nbits", [-1, 0])
