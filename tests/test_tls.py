@@ -526,7 +526,12 @@ def do_handshake(end, states):
     while end._handshake_state is not states[0]:
         # The backend goes through every state for both
         # ends.  This is not relevant.
-        end.do_handshake()
+        try:
+            end.do_handshake()
+        except (WantReadError, WantWriteError) as exc:
+            raise AssertionError(
+                f"{type(end.context).__name__} wants {end._handshake_state}"
+            ) from exc
 
     for state in states:
         assert end._handshake_state is state
