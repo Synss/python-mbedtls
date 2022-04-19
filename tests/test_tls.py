@@ -597,18 +597,29 @@ def do_communicate(args):
             continue
 
 
+@pytest.fixture
+def make_server():
+    return lambda conf: ServerContext(conf).wrap_buffers()
+
+
+@pytest.fixture
+def make_client():
+    return lambda conf, hostname: ClientContext(conf).wrap_buffers(hostname)
+
+
 class TestTLSHandshake:
-    def test_cert_without_validation(self, certificate_chain):
-        srv_ctx = ServerContext(
+    def test_cert_without_validation(
+        self, make_server, make_client, certificate_chain
+    ):
+        server = make_server(
             TLSConfiguration(
                 certificate_chain=certificate_chain,
                 validate_certificates=False,
             )
         )
-        cli_ctx = ClientContext(TLSConfiguration(validate_certificates=False))
-        server = srv_ctx.wrap_buffers()
-        client = cli_ctx.wrap_buffers("hostname")
-
+        client = make_client(
+            TLSConfiguration(validate_certificates=False), "hostname"
+        )
         make_full_handshake(client=client, server=server)
 
         secret = "a very secret message"
@@ -621,21 +632,21 @@ class TestTLSHandshake:
         do_io(src=server, dst=client)
         assert client.read(amt).decode("utf8") == secret
 
-    def test_cert_with_validation(self, ca0_crt, certificate_chain):
+    def test_cert_with_validation(
+        self, make_server, make_client, ca0_crt, certificate_chain
+    ):
         trust_store = TrustStore()
         trust_store.add(ca0_crt)
-
-        srv_ctx = ServerContext(
+        server = make_server(
             TLSConfiguration(
                 certificate_chain=certificate_chain,
                 validate_certificates=False,
             )
         )
-        cli_ctx = ClientContext(TLSConfiguration(trust_store=trust_store))
-        server = srv_ctx.wrap_buffers()
         # Host name must now be the common name (CN) of the leaf certificate.
-        client = cli_ctx.wrap_buffers("www.example.com")
-
+        client = make_client(
+            TLSConfiguration(trust_store=trust_store), "www.example.com"
+        )
         make_full_handshake(client=client, server=server)
 
         secret = "a very secret message"
@@ -648,24 +659,21 @@ class TestTLSHandshake:
         do_io(src=server, dst=client)
         assert client.read(amt).decode("utf8") == secret
 
-    def test_psk(self):
+    def test_psk(self, make_server, make_client):
         psk = ("cli", b"secret")
-
-        srv_ctx = ServerContext(
+        server = make_server(
             TLSConfiguration(
                 pre_shared_key_store=dict((psk,)),
                 validate_certificates=False,
             )
         )
-        cli_ctx = ClientContext(
+        client = make_client(
             TLSConfiguration(
                 pre_shared_key=psk,
                 validate_certificates=False,
-            )
+            ),
+            "hostname",
         )
-        server = srv_ctx.wrap_buffers()
-        client = cli_ctx.wrap_buffers("hostname")
-
         make_full_handshake(client=client, server=server)
 
         secret = "a very secret message"
@@ -680,24 +688,21 @@ class TestTLSHandshake:
 
 
 class TestDTLSHandshake:
-    def test_psk(self):
+    def test_psk(self, make_server, make_client):
         psk = ("cli", b"secret")
-
-        srv_ctx = ServerContext(
+        server = make_server(
             DTLSConfiguration(
                 pre_shared_key_store=dict((psk,)),
                 validate_certificates=False,
             )
         )
-        cli_ctx = ClientContext(
+        client = make_client(
             DTLSConfiguration(
                 pre_shared_key=psk,
                 validate_certificates=False,
-            )
+            ),
+            "hostname",
         )
-        server = srv_ctx.wrap_buffers()
-        client = cli_ctx.wrap_buffers("hostname")
-
         make_hello_verify_request(
             client=client, server=server, cookie="🍪🍪🍪".encode("utf-8")
         )
