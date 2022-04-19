@@ -1350,8 +1350,6 @@ cdef class MbedTLSBuffer:
         return HandshakeStep(self._ctx.state)
 
     def do_handshake(self):
-        if self._handshake_state is HandshakeStep.HANDSHAKE_OVER:
-            raise ValueError("handshake already over")
         self._handle_handshake_response(
             _tls.mbedtls_ssl_handshake_step(&self._ctx)
         )
@@ -1368,6 +1366,8 @@ cdef class MbedTLSBuffer:
         if ret == _tls.MBEDTLS_ERR_SSL_HELLO_VERIFY_REQUIRED:
             self._reset()
             raise HelloVerifyRequest()
+        if ret == -0x7100 and self._handshake_state is HandshakeStep.HANDSHAKE_OVER:
+            raise ValueError("handshake already over")
         if ret < 0:
             self._reset()
             _exc.check_error(ret)
