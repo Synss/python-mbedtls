@@ -181,8 +181,9 @@ class TLSVersion(enum.IntEnum):
     TLSv1 = 0x301
     TLSv1_1 = 0x302
     TLSv1_2 = 0x303
+    TLSv1_3 = 0x304
     MINIMUM_SUPPORTED = TLSv1
-    MAXIMUM_SUPPORTED = TLSv1_2
+    MAXIMUM_SUPPORTED = TLSv1_3
 
     @classmethod
     def from_major_minor(cls, major, minor):
@@ -1386,4 +1387,5 @@ cdef class MbedTLSBuffer:
             "TLSv1.0": TLSVersion.TLSv1,
             "TLSv1.1": TLSVersion.TLSv1_1,
             "TLSv1.2": TLSVersion.TLSv1_2,
+            "TLSV1.3": TLSVersion.TLSv1_3,
         }.get(_tls.mbedtls_ssl_get_version(&self._ctx).decode("ascii"))

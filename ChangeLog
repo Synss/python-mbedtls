@@ -1,5 +1,6 @@
 [next]
 
+* tls: Add TLS 1.3 support.
 * mpi: Remove is_prime() method.
 
 [2.0.1] - 2022-04-12
