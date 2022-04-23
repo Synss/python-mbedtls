@@ -23,74 +23,75 @@ def rootpath():
     return Path(__file__).parent.parent
 
 
-@pytest.fixture(scope="module")
-def now():
-    return dt.datetime.utcnow()
+def make_root_ca(
+    subject=None,
+    not_before=None,
+    not_after=None,
+    serial_number=None,
+    basic_constraints=None,
+    digestmod=None,
+):
+    if subject is None:
+        subject = "OU=test, CN=Trusted CA"
+    if not_before is None:
+        not_before = dt.datetime.utcnow()
+    if not_after is None:
+        not_after = not_before + dt.timedelta(days=90)
+    if serial_number is None:
+        serial_number = 0x123456
+    if basic_constraints is None:
+        basic_constraints = BasicConstraints(True, -1)
+    if digestmod is None:
+        digestmod = hashlib.sha256
 
-
-@pytest.fixture(scope="module")
-def digestmod():
-    return hashlib.sha256
-
-
-@pytest.fixture(scope="module")
-def ca0_key():
-    ca0_key = RSA()
-    ca0_key.generate()
-    return ca0_key
-
-
-@pytest.fixture(scope="module")
-def ca1_key():
-    ca1_key = RSA()
-    ca1_key.generate()
-    return ca1_key
-
-
-@pytest.fixture(scope="module")
-def ee0_key():
-    ee0_key = RSA()
-    ee0_key.generate()
-    return ee0_key
-
-
-@pytest.fixture(scope="module")
-def ca0_crt(ca0_key, digestmod, now):
-    ca0_csr = CSR.new(ca0_key, "CN=Trusted CA", digestmod())
-    return CRT.selfsign(
-        ca0_csr,
-        ca0_key,
-        not_before=now,
-        not_after=now + dt.timedelta(days=90),
-        serial_number=0x123456,
-        basic_constraints=BasicConstraints(True, -1),
+    key = RSA()
+    key.generate()
+    crt = CRT.selfsign(
+        csr=CSR.new(key, subject, digestmod()),
+        issuer_key=key,
+        not_before=not_before,
+        not_after=not_after,
+        serial_number=serial_number,
+        basic_constraints=basic_constraints,
     )
+    return crt, key
 
 
-@pytest.fixture(scope="module")
-def ca1_crt(ca1_key, ca0_crt, ca0_key, digestmod, now):
-    ca1_csr = CSR.new(ca1_key, "CN=Intermediate CA", digestmod())
-    return ca0_crt.sign(
-        ca1_csr,
-        ca0_key,
-        now,
-        now + dt.timedelta(days=90),
-        0x234567,
-        basic_constraints=BasicConstraints(True, -1),
+def make_crt(
+    issuer_crt,
+    issuer_key,
+    subject=None,
+    not_before=None,
+    not_after=None,
+    serial_number=None,
+    basic_constraints=None,
+    digestmod=None,
+):
+    if subject is None:
+        subject = "OU=test, CN=hostname"
+    if not_before is None:
+        not_before = issuer_crt.not_before
+    if not_after is None:
+        not_after = issuer_crt.not_after
+    if serial_number is None:
+        serial_number = 0x123456
+    if basic_constraints is None:
+        basic_constraints = BasicConstraints()
+    if digestmod is None:
+        # TODO: issuer_crt.digestmod should work but doesn't.
+        digestmod = hashlib.sha256
+
+    key = RSA()
+    key.generate()
+    crt = issuer_crt.sign(
+        csr=CSR.new(key, subject, digestmod()),
+        issuer_key=issuer_key,
+        not_before=not_before,
+        not_after=not_after,
+        serial_number=serial_number,
+        basic_constraints=basic_constraints,
     )
-
-
-@pytest.fixture(scope="module")
-def ee0_crt(ee0_key, ca1_crt, ca1_key, digestmod, now):
-    ee0_csr = CSR.new(ee0_key, "OU=test, CN=www.example.com", digestmod())
-    return ca1_crt.sign(
-        ee0_csr, ca1_key, now, now + dt.timedelta(days=90), 0x345678
-    )
-
-
-@pytest.fixture(scope="module")
-def certificate_chain(ee0_crt, ca1_crt, ee0_key):
-    return (ee0_crt, ca1_crt), ee0_key
+    return crt, key
 
 
 class TestPickle:
@@ -294,9 +295,10 @@ class TestTrustStore:
         store.add(store[0])
         assert len(store) == length
 
-    def test_add_new_certificate(self, store, ca0_crt):
+    def test_add_new_certificate(self, store):
+        root_ca = make_root_ca()[0]
         length = len(store)
-        store.add(ca0_crt)
+        store.add(root_ca)
         assert len(store) == length + 1
 
 
@@ -333,9 +335,11 @@ class _BaseConfiguration:
         assert conf_.validate_certificates is validate
 
     @pytest.mark.parametrize("chain", [((), None), None])
-    def test_set_certificate_chain(self, conf, chain, certificate_chain):
+    def test_set_certificate_chain(self, conf, chain):
+        root_crt, root_key = make_root_ca()
+        ee_crt, ee_key = make_crt(root_crt, root_key)
         if chain is None:
-            chain = certificate_chain
+            chain = (ee_crt, root_crt), ee_key
         conf_ = conf.update(certificate_chain=chain)
         assert conf_.certificate_chain == chain
 
@@ -609,6 +613,18 @@ def do_communicate(args):
 
 
 class TestTLSHandshake:
+    @pytest.fixture(scope="class")
+    def hostname(self):
+        return "www.example.com"
+
+    @pytest.fixture(scope="class")
+    def certificate_chain(self, hostname):
+        root_crt, root_key = make_root_ca()
+        ee_crt, ee_key = make_crt(
+            root_crt, root_key, subject=f"OU=test, CN={hostname}"
+        )
+        return (ee_crt, root_crt), ee_key
+
     def test_cert_without_validation(self, certificate_chain):
         server = make_server(
             TLSConfiguration(
@@ -631,9 +647,10 @@ class TestTLSHandshake:
         do_io(src=server, dst=client)
         assert client.read(amt).decode("utf8") == secret
 
-    def test_cert_with_validation(self, ca0_crt, certificate_chain):
+    def test_cert_with_validation(self, hostname, certificate_chain):
         trust_store = TrustStore()
-        trust_store.add(ca0_crt)
+        for crt in certificate_chain[0][1:]:
+            trust_store.add(crt)
         server = make_server(
             TLSConfiguration(
                 certificate_chain=certificate_chain,
@@ -642,7 +659,7 @@ class TestTLSHandshake:
         )
         # Host name must now be the common name (CN) of the leaf certificate.
         client = make_client(
-            TLSConfiguration(trust_store=trust_store), "www.example.com"
+            TLSConfiguration(trust_store=trust_store), hostname
         )
         make_full_handshake(client=client, server=server)
 
