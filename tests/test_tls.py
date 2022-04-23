@@ -13,8 +13,26 @@ from mbedtls import hashlib
 from mbedtls._tls import _DTLSCookie as DTLSCookie
 from mbedtls._tls import _PSKSToreProxy as PSKStoreProxy
 from mbedtls.pk import RSA
-from mbedtls.tls import *
-from mbedtls.tls import HandshakeStep, TLSSession
+from mbedtls.tls import (
+    ClientContext,
+    DTLSConfiguration,
+    DTLSVersion,
+    HandshakeStep,
+    HelloVerifyRequest,
+    NextProtocol,
+    Purpose,
+    ServerContext,
+    TLSConfiguration,
+    TLSRecordHeader,
+    TLSSession,
+    TLSVersion,
+    TLSWrappedBuffer,
+    TLSWrappedSocket,
+    TrustStore,
+    WantReadError,
+    WantWriteError,
+    ciphers_available,
+)
 from mbedtls.x509 import CRT, CSR, BasicConstraints
 
 
