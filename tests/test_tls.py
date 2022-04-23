@@ -517,6 +517,14 @@ HANDSHAKE_OVER = (
 )
 
 
+def make_server(conf):
+    return ServerContext(conf).wrap_buffers()
+
+
+def make_client(conf, hostname):
+    return ClientContext(conf).wrap_buffers(hostname)
+
+
 def do_io(*, src, dst, amt=1024):
     __tracebackhide__ = True
     assert src._output_buffer, "nothing to do"
@@ -600,20 +608,8 @@ def do_communicate(args):
             continue
 
 
-@pytest.fixture
-def make_server():
-    return lambda conf: ServerContext(conf).wrap_buffers()
-
-
-@pytest.fixture
-def make_client():
-    return lambda conf, hostname: ClientContext(conf).wrap_buffers(hostname)
-
-
 class TestTLSHandshake:
-    def test_cert_without_validation(
-        self, make_server, make_client, certificate_chain
-    ):
+    def test_cert_without_validation(self, certificate_chain):
         server = make_server(
             TLSConfiguration(
                 certificate_chain=certificate_chain,
@@ -635,9 +631,7 @@ class TestTLSHandshake:
         do_io(src=server, dst=client)
         assert client.read(amt).decode("utf8") == secret
 
-    def test_cert_with_validation(
-        self, make_server, make_client, ca0_crt, certificate_chain
-    ):
+    def test_cert_with_validation(self, ca0_crt, certificate_chain):
         trust_store = TrustStore()
         trust_store.add(ca0_crt)
         server = make_server(
@@ -662,7 +656,7 @@ class TestTLSHandshake:
         do_io(src=server, dst=client)
         assert client.read(amt).decode("utf8") == secret
 
-    def test_psk(self, make_server, make_client):
+    def test_psk(self):
         psk = ("cli", b"secret")
         server = make_server(
             TLSConfiguration(
@@ -691,7 +685,7 @@ class TestTLSHandshake:
 
 
 class TestDTLSHandshake:
-    def test_psk(self, make_server, make_client):
+    def test_psk(self):
         psk = ("cli", b"secret")
         server = make_server(
             DTLSConfiguration(
