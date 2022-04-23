@@ -506,9 +506,11 @@ CLIENT_KEY_EXCHANGE = (
     HandshakeStep.CLIENT_CHANGE_CIPHER_SPEC,
     HandshakeStep.CLIENT_FINISHED,
 )
-CHANGE_CIPHER_SPEC = (
+SERVER_CHANGE_CIPHER_SPEC = (
     HandshakeStep.SERVER_CHANGE_CIPHER_SPEC,
     HandshakeStep.SERVER_FINISHED,
+)
+HANDSHAKE_OVER = (
     HandshakeStep.FLUSH_BUFFERS,
     HandshakeStep.HANDSHAKE_WRAPUP,
     HandshakeStep.HANDSHAKE_OVER,
@@ -517,6 +519,7 @@ CHANGE_CIPHER_SPEC = (
 
 def do_io(*, src, dst, amt=1024):
     __tracebackhide__ = True
+    assert src._output_buffer, "nothing to do"
     while src._output_buffer:
         in_transit = src.peek_outgoing(amt)
         src.consume_outgoing(len(in_transit))
@@ -539,7 +542,7 @@ def do_handshake(end, states):
         assert end._handshake_state is state
         if state is HandshakeStep.HANDSHAKE_OVER:
             break
-        with suppress(WantReadError, WantWriteError):
+        with suppress(WantWriteError):
             end.do_handshake()
 
 
@@ -555,11 +558,11 @@ def make_full_handshake(*, client, server):
     do_io(src=client, dst=server)
     assert client.negotiated_tls_version() == server.negotiated_tls_version()
 
-    do_handshake(server, CHANGE_CIPHER_SPEC)
+    do_handshake(server, SERVER_CHANGE_CIPHER_SPEC)
     do_io(src=server, dst=client)
 
-    do_handshake(client, (HandshakeStep.HANDSHAKE_OVER,))
-    do_io(src=client, dst=server)
+    do_handshake(server, HANDSHAKE_OVER)
+    do_handshake(client, HANDSHAKE_OVER)
     assert client.cipher() == server.cipher()
 
 
