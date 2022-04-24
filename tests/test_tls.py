@@ -556,6 +556,12 @@ def do_io(*, src, dst, amt=1024):
         dst.receive_from_network(in_transit)
 
 
+def do_send(data, *, src, dst):
+    amt = src.write(data)
+    do_io(src=src, dst=dst)
+    return dst.read(amt)
+
+
 def do_handshake(end, states):
     __tracebackhide__ = True
     while end._handshake_state is not states[0]:
@@ -655,15 +661,9 @@ class TestTLSHandshake:
         )
         make_full_handshake(client=client, server=server)
 
-        secret = "a very secret message"
-
-        amt = client.write(secret.encode("utf8"))
-        do_io(src=client, dst=server)
-        assert server.read(amt).decode("utf8") == secret
-
-        amt = server.write(secret.encode("utf8"))
-        do_io(src=server, dst=client)
-        assert client.read(amt).decode("utf8") == secret
+        secret = "a very secret message".encode("utf8")
+        assert do_send(secret, src=client, dst=server) == secret
+        assert do_send(secret, src=server, dst=client) == secret
 
     def test_cert_with_validation(self, hostname, certificate_chain):
         trust_store = TrustStore()
@@ -681,15 +681,9 @@ class TestTLSHandshake:
         )
         make_full_handshake(client=client, server=server)
 
-        secret = "a very secret message"
-
-        amt = client.write(secret.encode("utf8"))
-        do_io(src=client, dst=server)
-        assert server.read(amt).decode("utf8") == secret
-
-        amt = server.write(secret.encode("utf8"))
-        do_io(src=server, dst=client)
-        assert client.read(amt).decode("utf8") == secret
+        secret = "a very secret message".encode("utf8")
+        assert do_send(secret, src=client, dst=server) == secret
+        assert do_send(secret, src=server, dst=client) == secret
 
     def test_psk(self):
         psk = ("cli", b"secret")
@@ -708,15 +702,9 @@ class TestTLSHandshake:
         )
         make_full_handshake(client=client, server=server)
 
-        secret = "a very secret message"
-
-        amt = client.write(secret.encode("utf8"))
-        do_io(src=client, dst=server)
-        assert server.read(amt).decode("utf8") == secret
-
-        amt = server.write(secret.encode("utf8"))
-        do_io(src=server, dst=client)
-        assert client.read(amt).decode("utf8") == secret
+        secret = "a very secret message".encode("utf8")
+        assert do_send(secret, src=client, dst=server) == secret
+        assert do_send(secret, src=server, dst=client) == secret
 
 
 class TestDTLSHandshake:
@@ -740,15 +728,9 @@ class TestDTLSHandshake:
         )
         make_full_handshake(client=client, server=server)
 
-        secret = "a very secret message"
-
-        amt = client.write(secret.encode("utf8"))
-        do_io(src=client, dst=server)
-        assert server.read(amt).decode("utf8") == secret
-
-        amt = server.write(secret.encode("utf8"))
-        do_io(src=server, dst=client)
-        assert client.read(amt).decode("utf8") == secret
+        secret = "a very secret message".encode("utf8")
+        assert do_send(secret, src=client, dst=server) == secret
+        assert do_send(secret, src=server, dst=client) == secret
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
