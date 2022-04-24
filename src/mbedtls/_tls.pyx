@@ -1235,8 +1235,8 @@ cdef class MbedTLSBuffer:
         _exc.check_error(_tls.mbedtls_ssl_session_reset(&self._ctx))
 
     def shutdown(self):
-        # This could also return SSL_WANT_READ / SSL_WANT_WRITE.
-        _exc.check_error(_tls.mbedtls_ssl_close_notify(&self._ctx))
+        # No error handling:  The connection may be closed already.
+        _tls.mbedtls_ssl_close_notify(&self._ctx)
         self._reset()
 
     def _close(self):

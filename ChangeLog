@@ -1,6 +1,8 @@
 [next]
 
 * tls: Add TLS 1.3 support.
+* tls: TLSWrappedBuffer.shutdown() does not raise anymore when
+the connection is already closed.
 * mpi: Remove is_prime() method.
 
 [2.0.1] - 2022-04-12
