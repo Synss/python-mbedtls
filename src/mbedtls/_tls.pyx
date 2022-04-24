@@ -1156,7 +1156,7 @@ cdef class MbedTLSBuffer:
         )
         self._set_hostname(server_hostname)
 
-    def __cinit__(self, _BaseContext context, server_hostname=None):
+    def __cinit__(self):
         """Initialize an `ssl_context`."""
         _tls.mbedtls_ssl_init(&self._ctx)
         _tls.mbedtls_ssl_set_timer_cb(
@@ -1170,10 +1170,34 @@ cdef class MbedTLSBuffer:
         _tls.mbedtls_ssl_free(&self._ctx)
 
     def __getstate__(self):
-        # TODO:
-        #   mbedtls_ssl_context_save(...)
-        #   mbdetls_ssl_context_load(...)
-        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+        cdef size_t olen = 0
+        ret = mbedtls_ssl_context_save(&self._ctx, NULL, 0, &olen)
+        if ret != -0x6A00 or olen == 0:
+            # 0x6A00: MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL
+            raise TypeError(
+                f"cannot pickle {self.__class__.__name__!r} object {hex(ret)}"
+            )
+        cdef unsigned char *c_buf = <unsigned char *> malloc(olen)
+        if not c_buf:
+            raise MemoryError()
+        try:
+            if mbedtls_ssl_context_save(&self._ctx, c_buf, olen, &olen) != 0:
+                raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+            return {
+                "connection": c_buf[:olen],
+                "context": self.context,
+                "server_hostname": self._server_hostname,
+            }
+        finally:
+            free(c_buf)
+
+    def __setstate__(self, state):
+        self.__init__(state["context"], state["server_hostname"])
+        cdef const unsigned char[:] buf = state["connection"]
+        ret = mbedtls_ssl_context_load(&self._ctx, &buf[0], buf.size)
+        if ret != 0:
+            self._reset()
+            raise TypeError(f"cannot unpickle {self.__class__.__name__!r} object")
 
     def __repr__(self):
         return "%s(%r)" % (type(self).__name__, self.context)

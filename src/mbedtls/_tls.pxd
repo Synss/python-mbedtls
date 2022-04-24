@@ -244,6 +244,17 @@ cdef extern from "mbedtls/ssl.h" nogil:
     int mbedtls_ssl_conf_alpn_protocols(
         mbedtls_ssl_config *conf,
         const char **protos)
+    int mbedtls_ssl_context_save(
+        mbedtls_ssl_context *ssl,
+        unsigned char *buf,
+        size_t buf_len,
+        size_t *olen,
+    )
+    int mbedtls_ssl_context_load(
+        mbedtls_ssl_context *ssl,
+        const unsigned char *buf,
+        size_t len,
+    )
     void mbedtls_ssl_config_init(mbedtls_ssl_config *conf)
     int mbedtls_ssl_config_defaults(
         mbedtls_ssl_config *conf,

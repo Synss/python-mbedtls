@@ -732,6 +732,36 @@ class TestDTLSHandshake:
         assert do_send(secret, src=client, dst=server) == secret
         assert do_send(secret, src=server, dst=client) == secret
 
+    def test_resume_from_pickle(self):
+        psk = ("cli", b"secret")
+        server = make_server(
+            DTLSConfiguration(
+                pre_shared_key_store=dict((psk,)),
+                validate_certificates=False,
+            )
+        )
+        client = make_client(
+            DTLSConfiguration(
+                pre_shared_key=psk,
+                ciphers=["TLS-ECDHE-PSK-WITH-CHACHA20-POLY1305-SHA256"],
+                lowest_supported_version=DTLSVersion.DTLSv1_2,
+                validate_certificates=False,
+            ),
+            "hostname",
+        )
+        make_hello_verify_request(
+            client=client, server=server, cookie="🍪🍪🍪".encode("utf-8")
+        )
+        make_full_handshake(client=client, server=server)
+
+        secret = "a very secret message".encode("utf8")
+        do_send(secret, src=client, dst=server)
+        do_send(secret, src=server, dst=client)
+
+        client = pickle.loads(pickle.dumps(client))
+        do_send(secret, src=client, dst=server)
+        do_send(secret, src=server, dst=client)
+
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
 class TestProgramsTLS:

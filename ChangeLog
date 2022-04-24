@@ -3,6 +3,9 @@
 * tls: Add TLS 1.3 support.
 * tls: TLSWrappedBuffer.shutdown() does not raise anymore when
 the connection is already closed.
+* tls: Make TLSWrappedBuffer picklable in the limited cases documented
+under `mbedtls_ssl_context_load` and `mbedtls_ssl_context_save` in
+the backend.
 * mpi: Remove is_prime() method.
 
 [2.0.1] - 2022-04-12
