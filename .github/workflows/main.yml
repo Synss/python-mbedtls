@@ -30,7 +30,7 @@ jobs:
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_BUILD: cp3{7,8,9,10}-*
-          CIBW_SKIP: "*-win32 *-manylinux_i686"
+          CIBW_SKIP: "*-manylinux_i686 *-musllinux_* *-win32"
           CIBW_ENVIRONMENT: VERSION=${{ matrix.version }}
           CIBW_BEFORE_ALL_LINUX: >
             ./scripts/download-mbedtls.sh $VERSION ~/.local/src
