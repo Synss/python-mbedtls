@@ -131,7 +131,7 @@ class TestCRTWikipediaAccessors(_CRTWikipediaBase):
         assert crt.key_usage is KeyUsage.DIGITAL_SIGNATURE
 
 
-class _CRTBase:
+class TestCRT(_CommonTests):
     @pytest.fixture
     def issuer(self):
         return "C=NL, O=PolarSSL, CN=PolarSSL Test CA"
@@ -144,13 +144,13 @@ class _CRTBase:
     def serial_number(self):
         return 0x1234567890
 
-    @pytest.fixture
-    def digestmod(self):
-        return hashlib.sha256()
+    @pytest.fixture(params=[hashlib.sha1, hashlib.sha256])
+    def digestmod(self, request):
+        return request.param()
 
-    @pytest.fixture
-    def basic_constraints(self):
-        return BasicConstraints(False, 0)
+    @pytest.fixture(params=[(True, 0), (True, 2), (False, 0), None])
+    def basic_constraints(self, request):
+        return request.param
 
     @pytest.fixture
     def x509(
@@ -180,12 +180,6 @@ class _CRTBase:
     def crt(self, x509):
         return x509
 
-
-class TestCRTBase(_CommonTests, _CRTBase):
-    pass
-
-
-class TestCRTAccessors(_CRTBase):
     def test_version(self, crt):
         assert crt.version == 3
 
@@ -220,20 +214,8 @@ class TestCRTAccessors(_CRTBase):
             while True:
                 crt = next(crt)
 
-
-class TestCRTMDAlg(_CRTBase):
-    @pytest.fixture(params=[hashlib.sha1, hashlib.sha256])
-    def digestmod(self, request):
-        return request.param()
-
     def test_digestmod(self, crt, digestmod):
         assert crt.digestmod.name == digestmod.name
-
-
-class TestCRTCAPath(_CRTBase):
-    @pytest.fixture(params=[(True, 0), (True, 2), (False, 0), None])
-    def basic_constraints(self, request):
-        return request.param
 
     def test_ca(self, crt, basic_constraints):
         if basic_constraints is None:
@@ -241,7 +223,7 @@ class TestCRTCAPath(_CRTBase):
         assert crt.basic_constraints == basic_constraints
 
 
-class _CSRBase:
+class TestCSR(_CommonTests):
     @pytest.fixture
     def subject(self):
         return "C=NL, O=PolarSSL, CN=PolarSSL Server 1"
@@ -254,12 +236,6 @@ class _CSRBase:
     def csr(self, x509):
         return x509
 
-
-class TestCSRBase(_CommonTests, _CSRBase):
-    pass
-
-
-class TestCSRAccessors(_CSRBase):
     def test_version(self, csr):
         assert csr.version == 1
 
@@ -270,7 +246,7 @@ class TestCSRAccessors(_CSRBase):
         assert csr.subject_public_key == subject_key.export_public_key()
 
 
-class _CRLBase:
+class TestCRL(_CommonTests):
     @pytest.fixture
     def x509(self):
         return CRL.from_PEM(CRL_PEM)
@@ -279,12 +255,6 @@ class _CRLBase:
     def crl(self, x509):
         return x509
 
-
-class TestCRLBase(_CommonTests, _CRLBase):
-    pass
-
-
-class TestCRLAccessors(_CRLBase):
     def test_tbs_certificate(self, crl):
         assert isinstance(crl.tbs_certificate, bytes)
         assert crl.tbs_certificate
@@ -311,8 +281,6 @@ class TestCRLAccessors(_CRLBase):
         assert entry.revocation_date == dt.datetime(2011, 2, 12, 14, 44, 7)
         assert entry.serial == 1
 
-
-class TestCRL(_CRLBase):
     @pytest.mark.skip("not implemented")
     def test_revocation_false(self, der):
         pass
