@@ -44,21 +44,7 @@ def subject_key():
     return subject_key
 
 
-class _X509Base:
-    @pytest.fixture
-    def x509(self):
-        raise NotImplementedError
-
-    @pytest.fixture
-    def der(self, x509):
-        return x509.to_DER()
-
-    @pytest.fixture
-    def pem(self, x509):
-        return x509.to_PEM()
-
-
-class _CommonTests(_X509Base):
+class _CommonTests:
     @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
     def test_repr(self, repr_, x509):
         assert isinstance(repr_(x509), str)
@@ -69,20 +55,20 @@ class _CommonTests(_X509Base):
     def test_hash(self, x509):
         assert isinstance(hash(x509), int)
 
-    def test_from_buffer(self, x509, der):
-        assert type(x509).from_buffer(der) == x509
+    def test_from_buffer(self, x509):
+        assert type(x509).from_buffer(x509.to_DER()) == x509
 
-    def test_from_file(self, x509, der, tmpdir):
+    def test_from_file(self, x509, tmpdir):
         path = tmpdir.join("key.der")
-        path.write_binary(der)
+        path.write_binary(x509.to_DER())
         assert type(x509).from_file(path) == x509
 
     def test_from_PEM_empty_buffer_raises_valueerror(self, x509):
         with pytest.raises(ValueError):
             type(x509).from_PEM("")
 
-    def test_from_DER(self, x509, der):
-        assert type(x509).from_DER(der) == x509
+    def test_from_DER(self, x509):
+        assert type(x509).from_DER(x509.to_DER()) == x509
 
     def test_from_DER_empty_buffer_raises_valueerror(self, x509):
         with pytest.raises(ValueError):
@@ -91,16 +77,16 @@ class _CommonTests(_X509Base):
     def test_eq(self, x509):
         assert x509 == x509
 
-    def test_eq_der(self, x509, der):
-        assert x509 == der
-        assert der == x509
+    def test_eq_der(self, x509):
+        assert x509 == x509.to_DER()
+        assert x509.to_DER() == x509
 
-    def test_eq_pem(self, x509, pem):
-        assert x509 == pem
-        assert pem == x509
+    def test_eq_pem(self, x509):
+        assert x509 == x509.to_PEM()
+        assert x509.to_PEM() == x509
 
 
-class _CRTWikipediaBase(_X509Base):
+class _CRTWikipediaBase:
     @pytest.fixture
     def x509(self):
         with (Path(__file__).parent / "ca/wikipedia.pem").open() as crt:
@@ -145,7 +131,7 @@ class TestCRTWikipediaAccessors(_CRTWikipediaBase):
         assert crt.key_usage is KeyUsage.DIGITAL_SIGNATURE
 
 
-class _CRTBase(_X509Base):
+class _CRTBase:
     @pytest.fixture
     def issuer(self):
         return "C=NL, O=PolarSSL, CN=PolarSSL Test CA"
@@ -223,8 +209,8 @@ class TestCRTAccessors(_CRTBase):
     def test_serial_number(self, crt, serial_number):
         assert crt.serial_number == serial_number
 
-    def test_revocation_bad_cast(self, der):
-        crt = CRT.from_buffer(der)
+    def test_revocation_bad_cast(self, crt):
+        crt = CRT.from_buffer(crt.to_DER())
         with pytest.raises(TypeError):
             crt.check_revocation(crt)
 
@@ -255,7 +241,7 @@ class TestCRTCAPath(_CRTBase):
         assert crt.basic_constraints == basic_constraints
 
 
-class _CSRBase(_X509Base):
+class _CSRBase:
     @pytest.fixture
     def subject(self):
         return "C=NL, O=PolarSSL, CN=PolarSSL Server 1"
@@ -284,7 +270,7 @@ class TestCSRAccessors(_CSRBase):
         assert csr.subject_public_key == subject_key.export_public_key()
 
 
-class _CRLBase(_X509Base):
+class _CRLBase:
     @pytest.fixture
     def x509(self):
         return CRL.from_PEM(CRL_PEM)
