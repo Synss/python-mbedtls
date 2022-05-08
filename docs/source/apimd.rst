@@ -1,7 +1,7 @@
 :mod:`mbedtls.hash` Module API
 ==============================
 
-.. automodule:: mbedtls.hash
+.. automodule:: mbedtls.hashlib
 
 
 :mod:`mbedtls.hmac` Module API
