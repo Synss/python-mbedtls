@@ -131,28 +131,26 @@ class TestCertificate:
             type(cert).from_DER(b"")
 
 
-@pytest.fixture
-def issuer_key():
-    issuer_key = RSA()
-    issuer_key.generate(key_size=1024)
-    return issuer_key
-
-
-@pytest.fixture
-def subject_key():
-    subject_key = RSA()
-    subject_key.generate(key_size=1024)
-    return subject_key
-
-
 class TestCRT:
     @pytest.fixture
     def issuer(self):
         return "C=NL, O=PolarSSL, CN=PolarSSL Test CA"
 
     @pytest.fixture
+    def issuer_key(self):
+        issuer_key = RSA()
+        issuer_key.generate(key_size=1024)
+        return issuer_key
+
+    @pytest.fixture
     def subject(self):
         return "C=NL"
+
+    @pytest.fixture
+    def subject_key(self):
+        subject_key = RSA()
+        subject_key.generate(key_size=1024)
+        return subject_key
 
     @pytest.fixture
     def serial_number(self):
@@ -237,6 +235,12 @@ class TestCSR:
     @pytest.fixture
     def subject(self):
         return "C=NL, O=PolarSSL, CN=PolarSSL Server 1"
+
+    @pytest.fixture
+    def subject_key(self):
+        subject_key = RSA()
+        subject_key.generate(key_size=1024)
+        return subject_key
 
     @pytest.fixture
     def csr(self, subject, subject_key):
