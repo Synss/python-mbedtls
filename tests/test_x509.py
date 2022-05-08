@@ -30,6 +30,107 @@ def now():
     return dt.datetime.utcnow().replace(microsecond=0)
 
 
+def make_csr(
+    key=None,
+    subject=None,
+    digestmod=None,
+):
+    if key is None:
+        key = RSA()
+        key.generate()
+    if subject is None:
+        subject = "OU=test, CN=example.com"
+    if digestmod is None:
+        digestmod = hashlib.sha256
+    return CSR.new(key, subject, digestmod()), key
+
+
+def make_root_ca(
+    subject=None,
+    not_before=None,
+    not_after=None,
+    serial_number=None,
+    basic_constraints=None,
+    digestmod=None,
+    csr_key_pair=None,
+):
+    if subject is None:
+        subject = "OU=test, CN=Trusted CA"
+    if not_before is None:
+        not_before = dt.datetime.utcnow()
+    if not_after is None:
+        not_after = not_before + dt.timedelta(days=90)
+    if serial_number is None:
+        serial_number = 0x123456
+    if basic_constraints is None:
+        basic_constraints = BasicConstraints(True, -1)
+    if digestmod is None:
+        digestmod = hashlib.sha256
+    if csr_key_pair is None:
+        csr, key = make_csr(subject=subject, digestmod=digestmod)
+    else:
+        csr, key = csr_key_pair
+
+    crt = CRT.selfsign(
+        csr=csr,
+        issuer_key=key,
+        not_before=not_before,
+        not_after=not_after,
+        serial_number=serial_number,
+        basic_constraints=basic_constraints,
+    )
+    return crt, key
+
+
+def make_crl():
+    return CRL.from_PEM(CRL_PEM)
+
+
+class TestCertificate:
+    @pytest.fixture(
+        scope="class", params=(make_csr()[0], make_root_ca()[0], make_crl())
+    )
+    def cert(self, request):
+        return request.param
+
+    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    def test_repr(self, repr_, cert):
+        assert isinstance(repr_(cert), str)
+
+    def test_pickle(self, cert):
+        assert cert == pickle.loads(pickle.dumps(cert))
+
+    def test_hash(self, cert):
+        assert isinstance(hash(cert), int)
+
+    def test_from_buffer(self, cert):
+        assert type(cert).from_buffer(cert.to_DER()) == cert
+
+    def test_from_file(self, cert, tmpdir):
+        path = tmpdir.join("key.der")
+        path.write_binary(cert.to_DER())
+        assert type(cert).from_file(path) == cert
+
+    def test_from_DER(self, cert):
+        assert type(cert).from_DER(cert.to_DER()) == cert
+
+    def test_eq_DER(self, cert):
+        assert cert == cert.to_DER()
+        assert cert.to_DER() == cert
+
+    def test_eq_PEM(self, cert):
+        assert cert == cert.to_PEM()
+        assert cert.to_PEM() == cert
+
+    def test_empty_PEM_raises_ValueError(self, cert):
+        with pytest.raises(ValueError):
+            type(cert).from_PEM("")
+
+    def test_empty_DER_raises_ValueError(self, cert):
+        with pytest.raises(ValueError):
+            type(cert).from_DER(b"")
+
+
 @pytest.fixture
 def issuer_key():
     issuer_key = RSA()
@@ -44,49 +145,7 @@ def subject_key():
     return subject_key
 
 
-class _CommonTests:
-    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
-    def test_repr(self, repr_, x509):
-        assert isinstance(repr_(x509), str)
-
-    def test_pickle(self, x509):
-        assert x509 == pickle.loads(pickle.dumps(x509))
-
-    def test_hash(self, x509):
-        assert isinstance(hash(x509), int)
-
-    def test_from_buffer(self, x509):
-        assert type(x509).from_buffer(x509.to_DER()) == x509
-
-    def test_from_file(self, x509, tmpdir):
-        path = tmpdir.join("key.der")
-        path.write_binary(x509.to_DER())
-        assert type(x509).from_file(path) == x509
-
-    def test_from_PEM_empty_buffer_raises_valueerror(self, x509):
-        with pytest.raises(ValueError):
-            type(x509).from_PEM("")
-
-    def test_from_DER(self, x509):
-        assert type(x509).from_DER(x509.to_DER()) == x509
-
-    def test_from_DER_empty_buffer_raises_valueerror(self, x509):
-        with pytest.raises(ValueError):
-            type(x509).from_DER(b"")
-
-    def test_eq(self, x509):
-        assert x509 == x509
-
-    def test_eq_der(self, x509):
-        assert x509 == x509.to_DER()
-        assert x509.to_DER() == x509
-
-    def test_eq_pem(self, x509):
-        assert x509 == x509.to_PEM()
-        assert x509.to_PEM() == x509
-
-
-class TestCRT(_CommonTests):
+class TestCRT:
     @pytest.fixture
     def issuer(self):
         return "C=NL, O=PolarSSL, CN=PolarSSL Test CA"
@@ -108,7 +167,7 @@ class TestCRT(_CommonTests):
         return request.param
 
     @pytest.fixture
-    def x509(
+    def crt(
         self,
         now,
         issuer,
@@ -130,10 +189,6 @@ class TestCRT(_CommonTests):
             digestmod=digestmod,
             basic_constraints=basic_constraints,
         )
-
-    @pytest.fixture
-    def crt(self, x509):
-        return x509
 
     def test_version(self, crt):
         assert crt.version == 3
@@ -178,18 +233,14 @@ class TestCRT(_CommonTests):
         assert crt.basic_constraints == basic_constraints
 
 
-class TestCSR(_CommonTests):
+class TestCSR:
     @pytest.fixture
     def subject(self):
         return "C=NL, O=PolarSSL, CN=PolarSSL Server 1"
 
     @pytest.fixture
-    def x509(self, subject, subject_key):
+    def csr(self, subject, subject_key):
         return CSR.new(subject_key, subject, hashlib.sha1())
-
-    @pytest.fixture
-    def csr(self, x509):
-        return x509
 
     def test_version(self, csr):
         assert csr.version == 1
@@ -201,14 +252,10 @@ class TestCSR(_CommonTests):
         assert csr.subject_public_key == subject_key.export_public_key()
 
 
-class TestCRL(_CommonTests):
+class TestCRL:
     @pytest.fixture
-    def x509(self):
+    def crl(self):
         return CRL.from_PEM(CRL_PEM)
-
-    @pytest.fixture
-    def crl(self, x509):
-        return x509
 
     def test_tbs_certificate(self, crl):
         assert isinstance(crl.tbs_certificate, bytes)
