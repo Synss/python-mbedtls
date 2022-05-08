@@ -86,51 +86,6 @@ class _CommonTests:
         assert x509.to_PEM() == x509
 
 
-class _CRTWikipediaBase:
-    @pytest.fixture
-    def x509(self):
-        with (Path(__file__).parent / "ca/wikipedia.pem").open() as crt:
-            return CRT(PEM_to_DER(crt.read()))
-
-    @pytest.fixture
-    def crt(self, x509):
-        return x509
-
-
-class TestCRTWikipediaBase(_CommonTests, _CRTWikipediaBase):
-    pass
-
-
-class TestCRTWikipediaAccessors(_CRTWikipediaBase):
-    def test_issuer(self, crt):
-        assert crt.issuer == ", ".join(
-            (
-                "C=US",
-                "O=DigiCert Inc",
-                "OU=www.digicert.com",
-                "CN=DigiCert SHA2 High Assurance Server CA",
-            )
-        )
-
-    def test_subject(self, crt):
-        assert crt.subject == ", ".join(
-            (
-                "C=US",
-                "ST=California",
-                "L=San Francisco",
-                "O=Wikimedia Foundation, Inc.",
-                "CN=*.wikipedia.org",
-            )
-        )
-
-    def test_subject_alternative_names(self, crt):
-        assert "*.m.wikidata.org" in crt.subject_alternative_names
-        assert len(crt.subject_alternative_names) == 41
-
-    def test_key_usage(self, crt):
-        assert crt.key_usage is KeyUsage.DIGITAL_SIGNATURE
-
-
 class TestCRT(_CommonTests):
     @pytest.fixture
     def issuer(self):
