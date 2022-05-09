@@ -1,6 +1,9 @@
 name: docs
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -10,11 +13,9 @@ jobs:
       BACKEND_DIR: "${{ github.workspace }}/.local"
       BACKEND_VERSION: "2.28.0"
     steps:
-      - uses: actions/setup-python@v3
-        with:
-          python-version: 3.9
-
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Cache backend
         id: cache-backend
@@ -23,33 +24,37 @@ jobs:
           path: ${{ env.BACKEND_DIR }}
           key: ${{ runner.os }}-${{ env.BACKEND_VERSION }}-backend
 
-      - name: Install backend
+      - name: Build backend
         if: steps.cache-backend.outputs.cache-hit != 'true'
         run: |
           ./scripts/download-mbedtls.sh $BACKEND_VERSION $BACKEND_DIR/src
           ./scripts/install-mbedtls.sh $BACKEND_DIR/src $BACKEND_DIR
+          ln -s "${{ env.BACKEND_DIR }}/lib/libmbed*so" docs
 
-      - name: Install library
-        env:
-          C_INCLUDE_PATH: "${{ env.BACKEND_DIR }}/include"
-          LIBRARY_PATH: "${{ env.BACKEND_DIR }}/lib"
-        run: python setup.py build_ext --inplace
+      - uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
 
       - name: Install deps
         run: >
           python -m pip install
           -r requirements.txt
           -r requirements/build.txt
-          -r requirements/docs.txt
 
-      - name: Build docs
-        run: |
-          ln -s "${{ env.BACKEND_DIR }}/lib/libmbed*so" docs
-          make -C docs html
+      - name: Build library
+        env:
+          C_INCLUDE_PATH: "${{ env.BACKEND_DIR }}/include"
+          LIBRARY_PATH: "${{ env.BACKEND_DIR }}/lib"
+        run: python setup.py build_ext --inplace
 
-      - name: Upload docs
-        uses: actions/upload-artifact@v3
+      - name: Build and commit
+        uses: sphinx-notes/pages@v2
         with:
-          name: docs-html
-          path: docs/build/html/
-          if-no-files-found: error
+          documentation_path: docs/source
+          requirements_path: requirements/docs.txt
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
