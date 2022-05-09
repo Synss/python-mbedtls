@@ -1,67 +1,34 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>mbedtls.hash Module API &mdash; python-mbedtls 0.18.0 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mbedtls.hash Module API &mdash; python-mbedtls 2.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mbedtls.mpi Module API" href="apimpi.html" />
     <link rel="prev" title="mbedtls.cipher Package API" href="apicipher.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> python-mbedtls
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -69,344 +36,89 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="apisecrets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.secrets</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.AES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.ARC4"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Blowfish"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Camellia"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3dbl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-aes-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-arc4-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-blowfish-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-camellia-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des3dbl-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des3-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#module-mbedtls.hmac"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#module-mbedtls.hkdf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#mbedtls-hmac-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#mbedtls-hkdf-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimpi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">python-mbedtls</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
       <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/apimd.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="module-mbedtls.hash">
-<span id="mbedtls-hash-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.hash" title="mbedtls.hash"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hash</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.hash" title="Permalink to this headline">¶</a></h1>
-<p>Generic message digest wrapper (hash algorithm).</p>
-<dl class="function">
-<dt id="mbedtls.hash.md2">
-<code class="descclassname">mbedtls.hash.</code><code class="descname">md2</code><span class="sig-paren">(</span><em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hash.html#md2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hash.md2" title="Permalink to this definition">¶</a></dt>
-<dd><p>MD2 message-digest algorithm.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hash.md4">
-<code class="descclassname">mbedtls.hash.</code><code class="descname">md4</code><span class="sig-paren">(</span><em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hash.html#md4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hash.md4" title="Permalink to this definition">¶</a></dt>
-<dd><p>MD4 message-digest algorithm.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hash.md5">
-<code class="descclassname">mbedtls.hash.</code><code class="descname">md5</code><span class="sig-paren">(</span><em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hash.html#md5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hash.md5" title="Permalink to this definition">¶</a></dt>
-<dd><p>MD5 message-digest algorithm.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hash.new">
-<code class="descclassname">mbedtls.hash.</code><code class="descname">new</code><span class="sig-paren">(</span><em>name</em>, <em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hash.html#new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hash.new" title="Permalink to this definition">¶</a></dt>
-<dd><p>A generic constructor that takes the string name of the desired
-algorithm as its first parameter.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hash.ripemd160">
-<code class="descclassname">mbedtls.hash.</code><code class="descname">ripemd160</code><span class="sig-paren">(</span><em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hash.html#ripemd160"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hash.ripemd160" title="Permalink to this definition">¶</a></dt>
-<dd><p>RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
-160 bits hash value.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hash.sha1">
-<code class="descclassname">mbedtls.hash.</code><code class="descname">sha1</code><span class="sig-paren">(</span><em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hash.html#sha1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hash.sha1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 1 (SHA-1).</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hash.sha224">
-<code class="descclassname">mbedtls.hash.</code><code class="descname">sha224</code><span class="sig-paren">(</span><em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hash.html#sha224"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hash.sha224" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 2 (SHA-2) with 224 bits hash value.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hash.sha256">
-<code class="descclassname">mbedtls.hash.</code><code class="descname">sha256</code><span class="sig-paren">(</span><em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hash.html#sha256"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hash.sha256" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 2 (SHA-2) with 256 bits hash value.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hash.sha384">
-<code class="descclassname">mbedtls.hash.</code><code class="descname">sha384</code><span class="sig-paren">(</span><em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hash.html#sha384"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hash.sha384" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 2 (SHA-2) with 384 bits hash value.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hash.sha512">
-<code class="descclassname">mbedtls.hash.</code><code class="descname">sha512</code><span class="sig-paren">(</span><em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hash.html#sha512"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hash.sha512" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hash Algorithm 2 (SHA-2) with 512 bits hash value.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-mbedtls.hmac">
-<span id="mbedtls-hmac-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.hmac" title="mbedtls.hmac"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.hmac" title="Permalink to this headline">¶</a></h1>
-<p>Generic message digest wrapper (hash algorithm).</p>
-<dl class="function">
-<dt id="mbedtls.hmac.md2">
-<code class="descclassname">mbedtls.hmac.</code><code class="descname">md2</code><span class="sig-paren">(</span><em>key</em>, <em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hmac.html#md2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hmac.md2" title="Permalink to this definition">¶</a></dt>
-<dd><p>MD2 message-digest algorithm.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hmac.md4">
-<code class="descclassname">mbedtls.hmac.</code><code class="descname">md4</code><span class="sig-paren">(</span><em>key</em>, <em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hmac.html#md4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hmac.md4" title="Permalink to this definition">¶</a></dt>
-<dd><p>MD4 message-digest algorithm.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hmac.md5">
-<code class="descclassname">mbedtls.hmac.</code><code class="descname">md5</code><span class="sig-paren">(</span><em>key</em>, <em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hmac.html#md5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hmac.md5" title="Permalink to this definition">¶</a></dt>
-<dd><p>MD5 message-digest algorithm.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hmac.new">
-<code class="descclassname">mbedtls.hmac.</code><code class="descname">new</code><span class="sig-paren">(</span><em>key</em>, <em>buffer=None</em>, <em>digestmod=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hmac.html#new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hmac.new" title="Permalink to this definition">¶</a></dt>
-<dd><p>A generic constructor that takes the key algorithm as its first
-parameter.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hmac.ripemd160">
-<code class="descclassname">mbedtls.hmac.</code><code class="descname">ripemd160</code><span class="sig-paren">(</span><em>key</em>, <em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hmac.html#ripemd160"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hmac.ripemd160" title="Permalink to this definition">¶</a></dt>
-<dd><p>RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
-160 bits hash value.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hmac.sha1">
-<code class="descclassname">mbedtls.hmac.</code><code class="descname">sha1</code><span class="sig-paren">(</span><em>key</em>, <em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hmac.html#sha1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hmac.sha1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hmac Algorithm 1 (SHA-1).</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hmac.sha224">
-<code class="descclassname">mbedtls.hmac.</code><code class="descname">sha224</code><span class="sig-paren">(</span><em>key</em>, <em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hmac.html#sha224"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hmac.sha224" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hmac Algorithm 2 (SHA-2) with 224 bits hash value.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hmac.sha256">
-<code class="descclassname">mbedtls.hmac.</code><code class="descname">sha256</code><span class="sig-paren">(</span><em>key</em>, <em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hmac.html#sha256"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hmac.sha256" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hmac Algorithm 2 (SHA-2) with 256 bits hash value.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hmac.sha384">
-<code class="descclassname">mbedtls.hmac.</code><code class="descname">sha384</code><span class="sig-paren">(</span><em>key</em>, <em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hmac.html#sha384"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hmac.sha384" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hmac Algorithm 2 (SHA-2) with 384 bits hash value.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hmac.sha512">
-<code class="descclassname">mbedtls.hmac.</code><code class="descname">sha512</code><span class="sig-paren">(</span><em>key</em>, <em>buffer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/hmac.html#sha512"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.hmac.sha512" title="Permalink to this definition">¶</a></dt>
-<dd><p>Secure Hmac Algorithm 2 (SHA-2) with 512 bits hash value.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-mbedtls.hkdf">
-<span id="mbedtls-hkdf-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.hkdf" title="mbedtls.hkdf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.hkdf" title="Permalink to this headline">¶</a></h1>
-<p>HMAC-based key derivation function (HKDF).</p>
-<p>The HMAC-based extract-and-expand key derivation function specified
-by RFC 5869.</p>
-<dl class="function">
-<dt id="mbedtls.hkdf.hkdf">
-<code class="descclassname">mbedtls.hkdf.</code><code class="descname">hkdf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hkdf.hkdf" title="Permalink to this definition">¶</a></dt>
-<dd><p>HMAC-based extract-and-expand key derivation function (HKDF).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>bytes</em>) – The input keying material.</p></li>
-<li><p><strong>length</strong> (<em>int</em>) – The length of the output keying material in bytes.</p></li>
-<li><p><strong>info</strong> (<em>bytes</em>) – Additional context and application specific information.</p></li>
-<li><p><strong>salt</strong> (<em>bytes</em><em>, </em><em>optional</em>) – A non-secret random value.</p></li>
-<li><p><strong>digestmod</strong> (<em>hmac function</em><em>, </em><em>optional</em>) – The HMAC function to use for
-the extraction, defaults to SHA256.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hkdf.extract">
-<code class="descclassname">mbedtls.hkdf.</code><code class="descname">extract</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hkdf.extract" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract a fixed-length pseudorandom key.</p>
-<p>This function extracts a fixed-length pseudorandom key from
-its input keying material.</p>
-<p>This function should only be used if the security of it has been
-studied and established in that particular context (eg. TLS 1.3 key
-schedule).  For standard HKDF security guarantees use <cite>hkdf</cite> instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>bytes</em>) – The input keying material.</p></li>
-<li><p><strong>salt</strong> (<em>bytes</em><em>, </em><em>optional</em>) – A non-secret random value.</p></li>
-<li><p><strong>digestmod</strong> (<em>hmac function</em><em>, </em><em>optional</em>) – The HMAC function to use for
-the extraction, defaults to SHA256.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.hkdf.expand">
-<code class="descclassname">mbedtls.hkdf.</code><code class="descname">expand</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.hkdf.expand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Expand the pseudorandom key <cite>prk</cite> into additional pseudorandom keys.</p>
-<p>This function should only be used if the security of it has been
-studied and established in that particular context (eg. TLS 1.3 key
-schedule).  For standard HKDF security guarantees use <cite>hkdf</cite> instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>prk</strong> (<em>bytes</em>) – The pseudorandom key to expand, usually the
-output of <cite>extract()</cite>.</p></li>
-<li><p><strong>length</strong> (<em>int</em>) – The length of the output keying material in bytes.</p></li>
-<li><p><strong>info</strong> (<em>bytes</em>) – Additional context and application specific information.</p></li>
-<li><p><strong>digestmod</strong> (<em>hmac function</em><em>, </em><em>optional</em>) – The HMAC function to use for
-the extraction, defaults to SHA256.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
+             
+  <section id="mbedtls-hash-module-api">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API<a class="headerlink" href="#mbedtls-hash-module-api" title="Permalink to this headline"></a></h1>
+</section>
+<section id="mbedtls-hmac-module-api">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API<a class="headerlink" href="#mbedtls-hmac-module-api" title="Permalink to this headline"></a></h1>
+</section>
+<section id="mbedtls-hkdf-module-api">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API<a class="headerlink" href="#mbedtls-hkdf-module-api" title="Permalink to this headline"></a></h1>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="apimpi.html" class="btn btn-neutral float-right" title="mbedtls.mpi Module API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="apicipher.html" class="btn btn-neutral float-left" title="mbedtls.cipher Package API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="apicipher.html" class="btn btn-neutral float-left" title="mbedtls.cipher Package API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="apimpi.html" class="btn btn-neutral float-right" title="mbedtls.mpi Module API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2016, Mathias Laurin
-
-    </p>
+    <p>&#169; Copyright 2016, Mathias Laurin.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -1,67 +1,34 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>mbedtls.x509 Module API &mdash; python-mbedtls 0.18.0 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mbedtls.x509 Module API &mdash; python-mbedtls 2.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mbedtls.pk Module API" href="apipk.html" />
     <link rel="prev" title="mbedtls.tls Module API" href="apitls.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> python-mbedtls
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -69,640 +36,83 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="apisecrets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.secrets</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.AES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.ARC4"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Blowfish"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Camellia"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3dbl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-aes-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-arc4-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-blowfish-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-camellia-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des3dbl-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des3-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hmac"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hkdf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#mbedtls-hmac-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#mbedtls-hkdf-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimpi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">python-mbedtls</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
       <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/apix509.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="module-mbedtls.x509">
-<span id="mbedtls-x509-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.x509" title="mbedtls.x509"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.x509</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.x509" title="Permalink to this headline">¶</a></h1>
-<p>Structure and functions for parsing and writing X.509 certificates.</p>
-<dl class="class">
-<dt id="mbedtls.x509.BasicConstraints">
-<em class="property">class </em><code class="descclassname">mbedtls.x509.</code><code class="descname">BasicConstraints</code><a class="headerlink" href="#mbedtls.x509.BasicConstraints" title="Permalink to this definition">¶</a></dt>
-<dd><p>The basic constraints for the certificate.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.x509.CRL">
-<em class="property">class </em><code class="descclassname">mbedtls.x509.</code><code class="descname">CRL</code><a class="headerlink" href="#mbedtls.x509.CRL" title="Permalink to this definition">¶</a></dt>
-<dd><p>X.509 revocation list.</p>
-<dl class="method">
-<dt id="mbedtls.x509.CRL.from_DER">
-<code class="descname">from_DER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRL.from_DER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRL.from_PEM">
-<code class="descname">from_PEM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRL.from_PEM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRL.from_file">
-<code class="descname">from_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRL.from_file" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRL.issuer_name">
-<code class="descname">issuer_name</code><a class="headerlink" href="#mbedtls.x509.CRL.issuer_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Entity that has signed and issued the certificate.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 5.1.2.3 Issuer Name</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRL.next_update">
-<code class="descname">next_update</code><a class="headerlink" href="#mbedtls.x509.CRL.next_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>The date by which the next certificate will be issued.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 5.1.2.5 Next Update</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRL.revoked_certificates">
-<code class="descname">revoked_certificates</code><a class="headerlink" href="#mbedtls.x509.CRL.revoked_certificates" title="Permalink to this definition">¶</a></dt>
-<dd><p>The list of revoked certificates.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 5.1.2.6 Revoked Certificates</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRL.signature_value">
-<code class="descname">signature_value</code><a class="headerlink" href="#mbedtls.x509.CRL.signature_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cryptographic algorithm used by the CA to sign this CRL.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 5.1.1.3 Signature Algorithm</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRL.tbs_certificate">
-<code class="descname">tbs_certificate</code><a class="headerlink" href="#mbedtls.x509.CRL.tbs_certificate" title="Permalink to this definition">¶</a></dt>
-<dd><p>The TBS (to be signed) certificate in DER format.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 5.1.1.1 TBS Certificate</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRL.this_update">
-<code class="descname">this_update</code><a class="headerlink" href="#mbedtls.x509.CRL.this_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>The issue date of this certificate.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 5.1.2.4 This Update</p>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRL.to_DER">
-<code class="descname">to_DER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRL.to_DER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRL.to_PEM">
-<code class="descname">to_PEM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRL.to_PEM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRL.version">
-<code class="descname">version</code><a class="headerlink" href="#mbedtls.x509.CRL.version" title="Permalink to this definition">¶</a></dt>
-<dd><p>The version of the encoded certificate.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RF 5280, Section 5.1.2.1 Version</p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.x509.CRLEntry">
-<em class="property">class </em><code class="descclassname">mbedtls.x509.</code><code class="descname">CRLEntry</code><a class="headerlink" href="#mbedtls.x509.CRLEntry" title="Permalink to this definition">¶</a></dt>
-<dd><p>An entry in the revocation list.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.x509.CRT">
-<em class="property">class </em><code class="descclassname">mbedtls.x509.</code><code class="descname">CRT</code><a class="headerlink" href="#mbedtls.x509.CRT" title="Permalink to this definition">¶</a></dt>
-<dd><p>X.509 certificate.</p>
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.basic_constraints">
-<code class="descname">basic_constraints</code><a class="headerlink" href="#mbedtls.x509.CRT.basic_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><p>ca is true if the certified public key may be used
-to verify certificate signatures.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p>RFC 5280, Section 4.2.1.9 Basic Constraints</p></li>
-<li><p>RFC 5280, <cite>max_path_length</cite></p></li>
-</ul>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRT.check_revocation">
-<code class="descname">check_revocation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRT.check_revocation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the certificate is revoked, False otherwise.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.digestmod">
-<code class="descname">digestmod</code><a class="headerlink" href="#mbedtls.x509.CRT.digestmod" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRT.from_DER">
-<code class="descname">from_DER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRT.from_DER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRT.from_PEM">
-<code class="descname">from_PEM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRT.from_PEM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRT.from_file">
-<code class="descname">from_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRT.from_file" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.issuer">
-<code class="descname">issuer</code><a class="headerlink" href="#mbedtls.x509.CRT.issuer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Entity that has signed and issued the certificate.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 4.1.2.4 Issuer</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.key_usage">
-<code class="descname">key_usage</code><a class="headerlink" href="#mbedtls.x509.CRT.key_usage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Key usage extension (bitfield).</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 4.2.1.3 Key Usage</p>
-</div>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="mbedtls.x509.CRT.new">
-<em class="property">static </em><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRT.new" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a new certificate.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.not_after">
-<code class="descname">not_after</code><a class="headerlink" href="#mbedtls.x509.CRT.not_after" title="Permalink to this definition">¶</a></dt>
-<dd><p>End of the validity of the certificate (inclusive).</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 4.1.2.5 Validity</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.not_before">
-<code class="descname">not_before</code><a class="headerlink" href="#mbedtls.x509.CRT.not_before" title="Permalink to this definition">¶</a></dt>
-<dd><p>Beginning of the validity of the certificate (inclusive).</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 4.1.2.5 Validity</p>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRT.selfsign">
-<code class="descname">selfsign</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRT.selfsign" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a new, self-signed certificate for the CSR.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.serial_number">
-<code class="descname">serial_number</code><a class="headerlink" href="#mbedtls.x509.CRT.serial_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>The certificate serial number.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 4.1.2.2 Serial Number</p>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRT.sign">
-<code class="descname">sign</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRT.sign" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a new, signed certificate for the CSR.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.signature_value">
-<code class="descname">signature_value</code><a class="headerlink" href="#mbedtls.x509.CRT.signature_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Digital signature of the TBS certificate.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 4.1.1.3 Signature Value</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.subject">
-<code class="descname">subject</code><a class="headerlink" href="#mbedtls.x509.CRT.subject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Entity associated with the public key.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 4.1.2.6 Subject</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.subject_alternative_names">
-<code class="descname">subject_alternative_names</code><a class="headerlink" href="#mbedtls.x509.CRT.subject_alternative_names" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subject alternative name extension.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 4.2.1.6 Subject Alternative Name</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.subject_public_key">
-<code class="descname">subject_public_key</code><a class="headerlink" href="#mbedtls.x509.CRT.subject_public_key" title="Permalink to this definition">¶</a></dt>
-<dd><p>The public key.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 4.1.2.7 Subject Public Key Info</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.tbs_certificate">
-<code class="descname">tbs_certificate</code><a class="headerlink" href="#mbedtls.x509.CRT.tbs_certificate" title="Permalink to this definition">¶</a></dt>
-<dd><p>The TBS (to be signed) certificate in DER format.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 4.1.1.1 TBS Certificate</p>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRT.to_DER">
-<code class="descname">to_DER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRT.to_DER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRT.to_PEM">
-<code class="descname">to_PEM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRT.to_PEM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CRT.verify">
-<code class="descname">verify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CRT.verify" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verify the certificate <cite>crt</cite>.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CRT.version">
-<code class="descname">version</code><a class="headerlink" href="#mbedtls.x509.CRT.version" title="Permalink to this definition">¶</a></dt>
-<dd><p>The version of the encoded certificate.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RF 5280, Section 4.1.2.1 Version</p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.x509.CSR">
-<em class="property">class </em><code class="descclassname">mbedtls.x509.</code><code class="descname">CSR</code><a class="headerlink" href="#mbedtls.x509.CSR" title="Permalink to this definition">¶</a></dt>
-<dd><p>X.509 certificate signing request parser.</p>
-<dl class="attribute">
-<dt id="mbedtls.x509.CSR.digestmod">
-<code class="descname">digestmod</code><a class="headerlink" href="#mbedtls.x509.CSR.digestmod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the hash function used for the signature.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC5280, Section 4.1.1.2 Signature Algorithm.</p>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CSR.from_DER">
-<code class="descname">from_DER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CSR.from_DER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CSR.from_PEM">
-<code class="descname">from_PEM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CSR.from_PEM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CSR.from_file">
-<code class="descname">from_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CSR.from_file" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="staticmethod">
-<dt id="mbedtls.x509.CSR.new">
-<em class="property">static </em><code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CSR.new" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a new CSR.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CSR.subject">
-<code class="descname">subject</code><a class="headerlink" href="#mbedtls.x509.CSR.subject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Entity associated with the public key.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 4.1.2.6 Subject</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CSR.subject_public_key">
-<code class="descname">subject_public_key</code><a class="headerlink" href="#mbedtls.x509.CSR.subject_public_key" title="Permalink to this definition">¶</a></dt>
-<dd><p>The public key.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280, Section 4.1.2.7 Subject Public Key Info</p>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CSR.to_DER">
-<code class="descname">to_DER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CSR.to_DER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.CSR.to_PEM">
-<code class="descname">to_PEM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.CSR.to_PEM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.CSR.version">
-<code class="descname">version</code><a class="headerlink" href="#mbedtls.x509.CSR.version" title="Permalink to this definition">¶</a></dt>
-<dd><p>The version of the encoded certificate.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RF 5280, Section 4.1.2.1 Version</p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.x509.Certificate">
-<em class="property">class </em><code class="descclassname">mbedtls.x509.</code><code class="descname">Certificate</code><a class="headerlink" href="#mbedtls.x509.Certificate" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="mbedtls.x509.Certificate.export">
-<code class="descname">export</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.Certificate.export" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.Certificate.from_DER">
-<code class="descname">from_DER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.Certificate.from_DER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.Certificate.from_PEM">
-<code class="descname">from_PEM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.Certificate.from_PEM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.Certificate.from_buffer">
-<code class="descname">from_buffer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.Certificate.from_buffer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.Certificate.from_file">
-<code class="descname">from_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.Certificate.from_file" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.Certificate.to_DER">
-<code class="descname">to_DER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.Certificate.to_DER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.Certificate.to_PEM">
-<code class="descname">to_PEM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.Certificate.to_PEM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.x509.Certificate.to_bytes">
-<code class="descname">to_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.Certificate.to_bytes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.x509.DER_to_PEM">
-<code class="descclassname">mbedtls.x509.</code><code class="descname">DER_to_PEM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.DER_to_PEM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.x509.KeyUsage">
-<em class="property">class </em><code class="descclassname">mbedtls.x509.</code><code class="descname">KeyUsage</code><a class="headerlink" href="#mbedtls.x509.KeyUsage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Key Usage Extension.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>RFC 5280 - 4.2.1.3 Key Usage.</p>
-</div>
-<dl class="attribute">
-<dt id="mbedtls.x509.KeyUsage.CRL_SIGN">
-<code class="descname">CRL_SIGN</code><em class="property"> = 2</em><a class="headerlink" href="#mbedtls.x509.KeyUsage.CRL_SIGN" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.KeyUsage.DATA_ENCIPHERMENT">
-<code class="descname">DATA_ENCIPHERMENT</code><em class="property"> = 16</em><a class="headerlink" href="#mbedtls.x509.KeyUsage.DATA_ENCIPHERMENT" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.KeyUsage.DECIPHER_ONLY">
-<code class="descname">DECIPHER_ONLY</code><em class="property"> = 32768</em><a class="headerlink" href="#mbedtls.x509.KeyUsage.DECIPHER_ONLY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.KeyUsage.DIGITAL_SIGNATURE">
-<code class="descname">DIGITAL_SIGNATURE</code><em class="property"> = 128</em><a class="headerlink" href="#mbedtls.x509.KeyUsage.DIGITAL_SIGNATURE" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.KeyUsage.ENCIPHER_ONLY">
-<code class="descname">ENCIPHER_ONLY</code><em class="property"> = 1</em><a class="headerlink" href="#mbedtls.x509.KeyUsage.ENCIPHER_ONLY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.KeyUsage.KEY_AGREEMENT">
-<code class="descname">KEY_AGREEMENT</code><em class="property"> = 8</em><a class="headerlink" href="#mbedtls.x509.KeyUsage.KEY_AGREEMENT" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.KeyUsage.KEY_CERT_SIGN">
-<code class="descname">KEY_CERT_SIGN</code><em class="property"> = 4</em><a class="headerlink" href="#mbedtls.x509.KeyUsage.KEY_CERT_SIGN" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.KeyUsage.KEY_ENCIPHERMENT">
-<code class="descname">KEY_ENCIPHERMENT</code><em class="property"> = 32</em><a class="headerlink" href="#mbedtls.x509.KeyUsage.KEY_ENCIPHERMENT" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.x509.KeyUsage.NON_REPUDIATION">
-<code class="descname">NON_REPUDIATION</code><em class="property"> = 64</em><a class="headerlink" href="#mbedtls.x509.KeyUsage.NON_REPUDIATION" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.x509.PEM_to_DER">
-<code class="descclassname">mbedtls.x509.</code><code class="descname">PEM_to_DER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.x509.PEM_to_DER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
+             
+  <section id="mbedtls-x509-module-api">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API<a class="headerlink" href="#mbedtls-x509-module-api" title="Permalink to this headline"></a></h1>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="apipk.html" class="btn btn-neutral float-right" title="mbedtls.pk Module API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="apitls.html" class="btn btn-neutral float-left" title="mbedtls.tls Module API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="apitls.html" class="btn btn-neutral float-left" title="mbedtls.tls Module API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="apipk.html" class="btn btn-neutral float-right" title="mbedtls.pk Module API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2016, Mathias Laurin
-
-    </p>
+    <p>&#169; Copyright 2016, Mathias Laurin.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -1,66 +1,33 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>mbedtls.mpi Module API &mdash; python-mbedtls 0.18.0 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mbedtls.mpi Module API &mdash; python-mbedtls 2.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="mbedtls.hash Module API" href="apimd.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> python-mbedtls
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -68,215 +35,82 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="apisecrets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.secrets</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.AES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.ARC4"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Blowfish"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Camellia"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3dbl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-aes-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-arc4-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-blowfish-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-camellia-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des3dbl-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des3-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hmac"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hkdf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#mbedtls-hmac-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#mbedtls-hkdf-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">python-mbedtls</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
       <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/apimpi.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="module-mbedtls.mpi">
-<span id="mbedtls-mpi-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.mpi" title="mbedtls.mpi"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.mpi" title="Permalink to this headline">¶</a></h1>
-<p>Multi-precision integer library (MPI).</p>
-<dl class="class">
-<dt id="mbedtls.mpi.MPI">
-<em class="property">class </em><code class="descclassname">mbedtls.mpi.</code><code class="descname">MPI</code><a class="headerlink" href="#mbedtls.mpi.MPI" title="Permalink to this definition">¶</a></dt>
-<dd><p>Multi-precision integer.</p>
-<p>This class implements <cite>numbers.Integral</cite>.  The representation
-of the MPI is overwritten with random bytes when the MPI is
-garbage collected.</p>
-<dl class="method">
-<dt id="mbedtls.mpi.MPI.bit_length">
-<code class="descname">bit_length</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.bit_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of bits necessary to represent MPI in binary.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.mpi.MPI.conjugate">
-<code class="descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.conjugate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.mpi.MPI.denominator">
-<code class="descname">denominator</code><a class="headerlink" href="#mbedtls.mpi.MPI.denominator" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.mpi.MPI.from_bytes">
-<code class="descname">from_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.from_bytes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.mpi.MPI.from_int">
-<code class="descname">from_int</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.from_int" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.mpi.MPI.imag">
-<code class="descname">imag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.imag" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.mpi.MPI.is_prime">
-<code class="descname">is_prime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.is_prime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Miller-Rabin primality test.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.mpi.MPI.numerator">
-<code class="descname">numerator</code><a class="headerlink" href="#mbedtls.mpi.MPI.numerator" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.mpi.MPI.prime">
-<code class="descname">prime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.prime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an MPI that is probably prime.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.mpi.MPI.real">
-<code class="descname">real</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.real" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.mpi.MPI.to_bytes">
-<code class="descname">to_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.mpi.MPI.to_bytes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
+             
+  <section id="mbedtls-mpi-module-api">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API<a class="headerlink" href="#mbedtls-mpi-module-api" title="Permalink to this headline"></a></h1>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="apimd.html" class="btn btn-neutral float-left" title="mbedtls.hash Module API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="apimd.html" class="btn btn-neutral float-left" title="mbedtls.hash Module API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2016, Mathias Laurin
-
-    </p>
+    <p>&#169; Copyright 2016, Mathias Laurin.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

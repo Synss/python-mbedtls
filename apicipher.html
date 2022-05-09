@@ -1,67 +1,34 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>mbedtls.cipher Package API &mdash; python-mbedtls 0.18.0 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mbedtls.cipher Package API &mdash; python-mbedtls 2.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mbedtls.hash Module API" href="apimd.html" />
     <link rel="prev" title="mbedtls.pk Module API" href="apipk.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> python-mbedtls
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -69,503 +36,218 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="apisecrets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.secrets</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#module-mbedtls.cipher.AES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#module-mbedtls.cipher.ARC4"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#module-mbedtls.cipher.Blowfish"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#module-mbedtls.cipher.Camellia"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#module-mbedtls.cipher.DES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#module-mbedtls.cipher.DES3dbl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#module-mbedtls.cipher.DES3"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#mbedtls-cipher-aes-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#mbedtls-cipher-arc4-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#mbedtls-cipher-blowfish-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#mbedtls-cipher-camellia-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#mbedtls-cipher-des-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#mbedtls-cipher-des3dbl-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#mbedtls-cipher-des3-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hmac"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hkdf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#mbedtls-hmac-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#mbedtls-hkdf-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimpi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">python-mbedtls</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
       <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/apicipher.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="module-mbedtls.cipher">
-<span id="mbedtls-cipher-package-api"></span><h1><a class="reference internal" href="#module-mbedtls.cipher" title="mbedtls.cipher"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code></a> Package API<a class="headerlink" href="#module-mbedtls.cipher" title="Permalink to this headline">¶</a></h1>
-<p>The cipher package provide symmetric encryption and decryption.</p>
-<p>The API follows the recommendations from PEP 272 “API for Block
-Encryption Algorithms”</p>
-<dl class="class">
-<dt id="mbedtls.cipher.Mode">
-<em class="property">class </em><code class="descclassname">mbedtls.cipher.</code><code class="descname">Mode</code><a class="headerlink" href="#mbedtls.cipher.Mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>An enumeration.</p>
-<dl class="attribute">
-<dt id="mbedtls.cipher.Mode.CBC">
-<code class="descname">CBC</code><em class="property"> = 2</em><a class="headerlink" href="#mbedtls.cipher.Mode.CBC" title="Permalink to this definition">¶</a></dt>
+             
+  <section id="mbedtls-cipher-package-api">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API<a class="headerlink" href="#mbedtls-cipher-package-api" title="Permalink to this headline"></a></h1>
+<dl class="py data">
+<dt class="sig sig-object py" id="MODE_ECB">
+<span class="sig-name descname"><span class="pre">MODE_ECB</span></span><a class="headerlink" href="#MODE_ECB" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="mbedtls.cipher.Mode.CCM">
-<code class="descname">CCM</code><em class="property"> = 8</em><a class="headerlink" href="#mbedtls.cipher.Mode.CCM" title="Permalink to this definition">¶</a></dt>
+<dl class="py data">
+<dt class="sig sig-object py" id="MODE_CBC">
+<span class="sig-name descname"><span class="pre">MODE_CBC</span></span><a class="headerlink" href="#MODE_CBC" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="mbedtls.cipher.Mode.CFB">
-<code class="descname">CFB</code><em class="property"> = 3</em><a class="headerlink" href="#mbedtls.cipher.Mode.CFB" title="Permalink to this definition">¶</a></dt>
+<dl class="py data">
+<dt class="sig sig-object py" id="MODE_CFB">
+<span class="sig-name descname"><span class="pre">MODE_CFB</span></span><a class="headerlink" href="#MODE_CFB" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="mbedtls.cipher.Mode.CHACHAPOLY">
-<code class="descname">CHACHAPOLY</code><em class="property"> = 10</em><a class="headerlink" href="#mbedtls.cipher.Mode.CHACHAPOLY" title="Permalink to this definition">¶</a></dt>
+<dl class="py data">
+<dt class="sig sig-object py" id="MODE_CTR">
+<span class="sig-name descname"><span class="pre">MODE_CTR</span></span><a class="headerlink" href="#MODE_CTR" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="mbedtls.cipher.Mode.CTR">
-<code class="descname">CTR</code><em class="property"> = 5</em><a class="headerlink" href="#mbedtls.cipher.Mode.CTR" title="Permalink to this definition">¶</a></dt>
+<dl class="py data">
+<dt class="sig sig-object py" id="MODE_GCM">
+<span class="sig-name descname"><span class="pre">MODE_GCM</span></span><a class="headerlink" href="#MODE_GCM" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="mbedtls.cipher.Mode.ECB">
-<code class="descname">ECB</code><em class="property"> = 1</em><a class="headerlink" href="#mbedtls.cipher.Mode.ECB" title="Permalink to this definition">¶</a></dt>
+<dl class="py data">
+<dt class="sig sig-object py" id="MODE_CCM">
+<span class="sig-name descname"><span class="pre">MODE_CCM</span></span><a class="headerlink" href="#MODE_CCM" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="mbedtls.cipher.Mode.GCM">
-<code class="descname">GCM</code><em class="property"> = 6</em><a class="headerlink" href="#mbedtls.cipher.Mode.GCM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.Mode.OFB">
-<code class="descname">OFB</code><em class="property"> = 4</em><a class="headerlink" href="#mbedtls.cipher.Mode.OFB" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.Mode.STREAM">
-<code class="descname">STREAM</code><em class="property"> = 7</em><a class="headerlink" href="#mbedtls.cipher.Mode.STREAM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.cipher.Mode.XTS">
-<code class="descname">XTS</code><em class="property"> = 9</em><a class="headerlink" href="#mbedtls.cipher.Mode.XTS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="data">
-<dt id="mbedtls.cipher.MODE_ECB">
-<code class="descclassname">mbedtls.cipher.</code><code class="descname">MODE_ECB</code><a class="headerlink" href="#mbedtls.cipher.MODE_ECB" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="data">
-<dt id="mbedtls.cipher.MODE_CBC">
-<code class="descclassname">mbedtls.cipher.</code><code class="descname">MODE_CBC</code><a class="headerlink" href="#mbedtls.cipher.MODE_CBC" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="data">
-<dt id="mbedtls.cipher.MODE_CFB">
-<code class="descclassname">mbedtls.cipher.</code><code class="descname">MODE_CFB</code><a class="headerlink" href="#mbedtls.cipher.MODE_CFB" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="data">
-<dt id="mbedtls.cipher.MODE_CTR">
-<code class="descclassname">mbedtls.cipher.</code><code class="descname">MODE_CTR</code><a class="headerlink" href="#mbedtls.cipher.MODE_CTR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="data">
-<dt id="mbedtls.cipher.MODE_GCM">
-<code class="descclassname">mbedtls.cipher.</code><code class="descname">MODE_GCM</code><a class="headerlink" href="#mbedtls.cipher.MODE_GCM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="data">
-<dt id="mbedtls.cipher.MODE_CCM">
-<code class="descclassname">mbedtls.cipher.</code><code class="descname">MODE_CCM</code><a class="headerlink" href="#mbedtls.cipher.MODE_CCM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-mbedtls.cipher.AES">
-<span id="mbedtls-cipher-aes-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.AES" title="mbedtls.cipher.AES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.AES" title="Permalink to this headline">¶</a></h1>
-<p>Advanced Encryption Standard (AES) cipher established by the U.S.
-NIST in 2001.</p>
-<dl class="function">
-<dt id="mbedtls.cipher.AES.new">
-<code class="descclassname">mbedtls.cipher.AES.</code><code class="descname">new</code><span class="sig-paren">(</span><em>key</em>, <em>mode</em>, <em>iv=None</em>, <em>ad=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/cipher/AES.html#new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.cipher.AES.new" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>Cipher</cite> object that can perform AES encryption and
-decryption.</p>
-<p>Advanced Encryption Standard (AES) cipher established by the U.S.
-NIST in 2001.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
-encryption and decryption are unavailable.</p></li>
-<li><p><strong>mode</strong> (<em>int</em>) – The mode of operation of the cipher.</p></li>
-<li><p><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
-required for every mode but ECB and CTR where it is ignored.
-If not set, the IV is initialized to all 0, which should not
-be used for encryption.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.AES.block_size = 16</code></dt>
+</section>
+<section id="mbedtls-cipher-aes-module">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module<a class="headerlink" href="#mbedtls-cipher-aes-module" title="Permalink to this headline"></a></h1>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.AES.block_size</span> <span class="pre">=</span> <span class="pre">16</span></span></dt>
 <dd><p>Block size in bytes.</p>
 </dd></dl>
 
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.AES.key_size = None</code></dt>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.AES.key_size</span> <span class="pre">=</span> <span class="pre">None</span></span></dt>
 <dd><p>Key size in bytes.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mbedtls.cipher.ARC4">
-<span id="mbedtls-cipher-arc4-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.ARC4" title="mbedtls.cipher.ARC4"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.ARC4" title="Permalink to this headline">¶</a></h1>
-<p>Alleged River Cipher 4 cipher (ARC4 or ARCFOUR) designed in 1987
-at RSA Security.</p>
-<dl class="function">
-<dt id="mbedtls.cipher.ARC4.new">
-<code class="descclassname">mbedtls.cipher.ARC4.</code><code class="descname">new</code><span class="sig-paren">(</span><em>key</em>, <em>mode=None</em>, <em>iv=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/cipher/ARC4.html#new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.cipher.ARC4.new" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>Cipher</cite> object that can perform ARC4 encryption and
-decryption.</p>
-<p>Alleged River Cipher 4 cipher (ARC4 or ARCFOUR) designed in 1987
-at RSA Security.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
-encryption and decryption are unavailable.</p></li>
-<li><p><strong>mode</strong> (<em>None</em>) – The feedback mode is ignored for ARC4.</p></li>
-<li><p><strong>iv</strong> (<em>None</em>) – ARC4 does not use IV.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.ARC4.block_size = 1</code></dt>
+</section>
+<section id="mbedtls-cipher-arc4-module">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module<a class="headerlink" href="#mbedtls-cipher-arc4-module" title="Permalink to this headline"></a></h1>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.ARC4.block_size</span> <span class="pre">=</span> <span class="pre">1</span></span></dt>
 <dd><p>Block size in bytes.</p>
 </dd></dl>
 
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.ARC4.key_size = 16</code></dt>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.ARC4.key_size</span> <span class="pre">=</span> <span class="pre">16</span></span></dt>
 <dd><p>Key size in bytes.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mbedtls.cipher.Blowfish">
-<span id="mbedtls-cipher-blowfish-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.Blowfish" title="mbedtls.cipher.Blowfish"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.Blowfish" title="Permalink to this headline">¶</a></h1>
-<p>Blowfish cipher designed by Bruce Schneier in 1993.</p>
-<dl class="function">
-<dt id="mbedtls.cipher.Blowfish.new">
-<code class="descclassname">mbedtls.cipher.Blowfish.</code><code class="descname">new</code><span class="sig-paren">(</span><em>key</em>, <em>mode</em>, <em>iv=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/cipher/Blowfish.html#new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.cipher.Blowfish.new" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>Cipher</cite> object that can perform Blowfish encryption and
-decryption.</p>
-<p>Blowfish cipher designed by Bruce Schneier in 1993.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
-encryption and decryption are unavailable.</p></li>
-<li><p><strong>mode</strong> (<a class="reference internal" href="#mbedtls.cipher.Mode" title="mbedtls.cipher.Mode"><em>Mode</em></a>) – The mode of operation of the cipher.</p></li>
-<li><p><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
-required for every mode but ECB and CTR where it is ignored.
-If not set, the IV is initialized to all 0, which should not
-be used for encryption.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.Blowfish.block_size = 8</code></dt>
+</section>
+<section id="mbedtls-cipher-blowfish-module">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module<a class="headerlink" href="#mbedtls-cipher-blowfish-module" title="Permalink to this headline"></a></h1>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.Blowfish.block_size</span> <span class="pre">=</span> <span class="pre">8</span></span></dt>
 <dd><p>Block size in bytes.</p>
 </dd></dl>
 
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.Blowfish.key_size = None</code></dt>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.Blowfish.key_size</span> <span class="pre">=</span> <span class="pre">None</span></span></dt>
 <dd><p>Key size in bytes.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mbedtls.cipher.Camellia">
-<span id="mbedtls-cipher-camellia-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.Camellia" title="mbedtls.cipher.Camellia"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.Camellia" title="Permalink to this headline">¶</a></h1>
-<p>Camellia cipher developed by Japan’s Mitsubishi an NTT in 2000.</p>
-<dl class="function">
-<dt id="mbedtls.cipher.Camellia.new">
-<code class="descclassname">mbedtls.cipher.Camellia.</code><code class="descname">new</code><span class="sig-paren">(</span><em>key</em>, <em>mode</em>, <em>iv=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/cipher/Camellia.html#new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.cipher.Camellia.new" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>Cipher</cite> object that can perform Camellia encryption and
-decryption.</p>
-<p>Camellia cipher developed by Japan’s Mitsubishi an NTT in 2000.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
-encryption and decryption are unavailable.</p></li>
-<li><p><strong>mode</strong> (<a class="reference internal" href="#mbedtls.cipher.Mode" title="mbedtls.cipher.Mode"><em>Mode</em></a>) – The mode of operation of the cipher.</p></li>
-<li><p><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
-required for every mode but ECB and CTR where it is ignored.
-If not set, the IV is initialized to all 0, which should not
-be used for encryption.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.Camellia.block_size = 16</code></dt>
+</section>
+<section id="mbedtls-cipher-camellia-module">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module<a class="headerlink" href="#mbedtls-cipher-camellia-module" title="Permalink to this headline"></a></h1>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.Camellia.block_size</span> <span class="pre">=</span> <span class="pre">16</span></span></dt>
 <dd><p>Block size in bytes.</p>
 </dd></dl>
 
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.Camellia.key_size = None</code></dt>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.Camellia.key_size</span> <span class="pre">=</span> <span class="pre">None</span></span></dt>
 <dd><p>Key size in bytes.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mbedtls.cipher.DES">
-<span id="mbedtls-cipher-des-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.DES" title="mbedtls.cipher.DES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.DES" title="Permalink to this headline">¶</a></h1>
-<p>Data Encryption Standard (DES) cipher developed by IBM
-in the 70’s.</p>
-<dl class="function">
-<dt id="mbedtls.cipher.DES.new">
-<code class="descclassname">mbedtls.cipher.DES.</code><code class="descname">new</code><span class="sig-paren">(</span><em>key</em>, <em>mode</em>, <em>iv=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/cipher/DES.html#new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.cipher.DES.new" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>Cipher</cite> object that can perform DES encryption and
-decryption.</p>
-<p>Data Encryption Standard (DES) cipher developed by IBM in the 70’s.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
-encryption and decryption are unavailable.</p></li>
-<li><p><strong>mode</strong> (<a class="reference internal" href="#mbedtls.cipher.Mode" title="mbedtls.cipher.Mode"><em>Mode</em></a>) – The mode of operation of the cipher.</p></li>
-<li><p><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
-required for every mode but ECB and CTR where it is ignored.
-If not set, the IV is initialized to all 0, which should not
-be used for encryption.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.DES.block_size = 8</code></dt>
+</section>
+<section id="mbedtls-cipher-des-module">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module<a class="headerlink" href="#mbedtls-cipher-des-module" title="Permalink to this headline"></a></h1>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.DES.block_size</span> <span class="pre">=</span> <span class="pre">8</span></span></dt>
 <dd><p>Block size in bytes.</p>
 </dd></dl>
 
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.DES.key_size = 8</code></dt>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.DES.key_size</span> <span class="pre">=</span> <span class="pre">8</span></span></dt>
 <dd><p>Key size in bytes.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mbedtls.cipher.DES3dbl">
-<span id="mbedtls-cipher-des3dbl-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.DES3dbl" title="mbedtls.cipher.DES3dbl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.DES3dbl" title="Permalink to this headline">¶</a></h1>
-<p>Two-key triple DES cipher (also known as DES3, 3DES, Triple DES,
-or DES-EDE).</p>
-<dl class="function">
-<dt id="mbedtls.cipher.DES3dbl.new">
-<code class="descclassname">mbedtls.cipher.DES3dbl.</code><code class="descname">new</code><span class="sig-paren">(</span><em>key</em>, <em>mode</em>, <em>iv=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/cipher/DES3dbl.html#new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.cipher.DES3dbl.new" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>Cipher</cite> object that can perform two-key triple DES
-encryption and decryption.</p>
-<p>Two-key triple DES cipher (also known as DES3, 3DES, Triple DES,
-or DES-EDE).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
-encryption and decryption are unavailable.</p></li>
-<li><p><strong>mode</strong> (<a class="reference internal" href="#mbedtls.cipher.Mode" title="mbedtls.cipher.Mode"><em>Mode</em></a>) – The mode of operation of the cipher.</p></li>
-<li><p><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
-required for every mode but ECB and CTR where it is ignored.
-If not set, the IV is initialized to all 0, which should not
-be used for encryption.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.DES3dbl.block_size = 8</code></dt>
+</section>
+<section id="mbedtls-cipher-des3dbl-module">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module<a class="headerlink" href="#mbedtls-cipher-des3dbl-module" title="Permalink to this headline"></a></h1>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.DES3dbl.block_size</span> <span class="pre">=</span> <span class="pre">8</span></span></dt>
 <dd><p>Block size in bytes.</p>
 </dd></dl>
 
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.DES3dbl.key_size = 16</code></dt>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.DES3dbl.key_size</span> <span class="pre">=</span> <span class="pre">16</span></span></dt>
 <dd><p>Key size in bytes.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mbedtls.cipher.DES3">
-<span id="mbedtls-cipher-des3-module"></span><h1><a class="reference internal" href="#module-mbedtls.cipher.DES3" title="mbedtls.cipher.DES3"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code></a> Module<a class="headerlink" href="#module-mbedtls.cipher.DES3" title="Permalink to this headline">¶</a></h1>
-<p>Three-key triple DES cipher (also known as DES3, 3DES,
-Triple DES, or DES-EDE3).</p>
-<dl class="function">
-<dt id="mbedtls.cipher.DES3.new">
-<code class="descclassname">mbedtls.cipher.DES3.</code><code class="descname">new</code><span class="sig-paren">(</span><em>key</em>, <em>mode</em>, <em>iv=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mbedtls/cipher/DES3.html#new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mbedtls.cipher.DES3.new" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>Cipher</cite> object that can perform three-key triple DES
-encryption and decryption.</p>
-<p>Three-key triple DES cipher (also known as DES3, 3DES,
-Triple DES, or DES-EDE3).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>bytes</em><em> or </em><em>None</em>) – The key to encrypt decrypt.  If None,
-encryption and decryption are unavailable.</p></li>
-<li><p><strong>mode</strong> (<a class="reference internal" href="#mbedtls.cipher.Mode" title="mbedtls.cipher.Mode"><em>Mode</em></a>) – The mode of operation of the cipher.</p></li>
-<li><p><strong>iv</strong> (<em>bytes</em><em> or </em><em>None</em>) – The initialization vector (IV).  The IV is
-required for every mode but ECB and CTR where it is ignored.
-If not set, the IV is initialized to all 0, which should not
-be used for encryption.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.DES3.block_size = 8</code></dt>
+</section>
+<section id="mbedtls-cipher-des3-module">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module<a class="headerlink" href="#mbedtls-cipher-des3-module" title="Permalink to this headline"></a></h1>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.DES3.block_size</span> <span class="pre">=</span> <span class="pre">8</span></span></dt>
 <dd><p>Block size in bytes.</p>
 </dd></dl>
 
-<dl class="data">
-<dt>
-<code class="descname">mbedtls.cipher.DES3.key_size = 24</code></dt>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mbedtls.cipher.DES3.key_size</span> <span class="pre">=</span> <span class="pre">24</span></span></dt>
 <dd><p>Key size in bytes.</p>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="apimd.html" class="btn btn-neutral float-right" title="mbedtls.hash Module API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="apipk.html" class="btn btn-neutral float-left" title="mbedtls.pk Module API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="apipk.html" class="btn btn-neutral float-left" title="mbedtls.pk Module API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="apimd.html" class="btn btn-neutral float-right" title="mbedtls.hash Module API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2016, Mathias Laurin
-
-    </p>
+    <p>&#169; Copyright 2016, Mathias Laurin.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

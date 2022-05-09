@@ -1,66 +1,33 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Cryptographic library for Python with Mbed TLS back end &mdash; python-mbedtls 0.18.0 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cryptographic library for Python with Mbed TLS back end &mdash; python-mbedtls 2.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mbedtls.secrets Module" href="apisecrets.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="#" class="icon icon-home"> python-mbedtls
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -68,102 +35,54 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="apisecrets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.secrets</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.AES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.ARC4"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Blowfish"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Camellia"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3dbl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-aes-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-arc4-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-blowfish-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-camellia-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des3dbl-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des3-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hmac"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hkdf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#mbedtls-hmac-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#mbedtls-hkdf-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimpi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="#">python-mbedtls</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="#">Docs</a> &raquo;</li>
-        
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
       <li>Cryptographic library for Python with Mbed TLS back end</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="cryptographic-library-for-python-with-mbed-tls-back-end">
-<h1>Cryptographic library for Python with Mbed TLS back end<a class="headerlink" href="#cryptographic-library-for-python-with-mbed-tls-back-end" title="Permalink to this headline">¶</a></h1>
-<a class="reference external image-reference" href="https://circleci.com/gh/Synss/python-mbedtls/tree/develop"><img alt="https://circleci.com/gh/Synss/python-mbedtls/tree/develop.svg?style=svg" src="https://circleci.com/gh/Synss/python-mbedtls/tree/develop.svg?style=svg" /></a>
-<a class="reference external image-reference" href="https://travis-ci.org/Synss/python-mbedtls"><img alt="https://travis-ci.org/Synss/python-mbedtls.svg?branch=develop" src="https://travis-ci.org/Synss/python-mbedtls.svg?branch=develop" /></a>
+             
+  <section id="cryptographic-library-for-python-with-mbed-tls-back-end">
+<h1>Cryptographic library for Python with Mbed TLS back end<a class="headerlink" href="#cryptographic-library-for-python-with-mbed-tls-back-end" title="Permalink to this headline"></a></h1>
+<a class="reference external image-reference" href="https://circleci.com/gh/Synss/python-mbedtls/tree/master"><img alt="https://circleci.com/gh/Synss/python-mbedtls/tree/master.svg?style=svg" src="https://circleci.com/gh/Synss/python-mbedtls/tree/master.svg?style=svg" /></a>
+<a class="reference external image-reference" href="https://github.com/Synss/python-mbedtls/actions/"><img alt="https://github.com/Synss/python-mbedtls/actions/workflows/main.yml/badge.svg?branch=master" src="https://github.com/Synss/python-mbedtls/actions/workflows/main.yml/badge.svg?branch=master" /></a>
 <a class="reference external image-reference" href="https://coveralls.io/github/Synss/python-mbedtls?branch=master"><img alt="https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=master" src="https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=master" /></a>
 <p><a class="reference external" href="https://synss.github.io/python-mbedtls">python-mbedtls</a> is a free cryptographic library for Python that uses
 <a class="reference external" href="https://tls.mbed.org">mbed TLS</a> for back end.</p>
@@ -182,43 +101,46 @@ coding footprint.</p>
 </ul>
 <p>and therefore plays well with the <a class="reference external" href="https://docs.python.org/3/library/crypto.html">cryptographic services</a> from the
 Python standard library and many other cryptography libraries as well.</p>
-<div class="section" id="license">
-<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline"></a></h2>
 <p><em>python-mbedtls</em> is licensed under the MIT License (see LICENSE.txt).
 This enables the use of <em>python-mbedtls</em> in both open source and closed
 source projects.  The MIT License is compatible with both GPL and Apache
 2.0 license under which mbed TLS is distributed.</p>
-</div>
-<div class="section" id="api-documentation">
-<h2>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="api-documentation">
+<h2>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline"></a></h2>
 <p><a class="reference external" href="https://synss.github.io/python-mbedtls/">https://synss.github.io/python-mbedtls/</a></p>
-</div>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>The bindings are tested with Python 2.7, 3.4, 3.5, 3.6, and 3.7 on Linux
-and macOS.</p>
-<p><a class="reference external" href="https://www.python.org/dev/peps/pep-0513/">manylinux1</a> wheels are available for 64-bit Linux systems.  Install
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<p>The bindings are tested with mbedTLS 2.28.0 for Python 3.7,
+3.8, 3.9, and 3.10 on Linux, macOS, and Windows.</p>
+<p><a class="reference external" href="https://www.python.org/dev/peps/pep-0513/">manylinux</a> wheels are available for 64-bit Linux systems.  Install
 with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">python-mbedtls</span></code>.</p>
-</div>
-<div class="section" id="usage-and-examples">
-<h2>Usage and examples<a class="headerlink" href="#usage-and-examples" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="usage-and-examples">
+<h2>Usage and examples<a class="headerlink" href="#usage-and-examples" title="Permalink to this headline"></a></h2>
 <p>Now, let us see examples using the various parts of the library.</p>
-<div class="section" id="check-which-version-of-mbed-tls-is-being-used-by-python-mbedtls">
-<h3>Check which version of mbed TLS is being used by python-mbedtls<a class="headerlink" href="#check-which-version-of-mbed-tls-is-being-used-by-python-mbedtls" title="Permalink to this headline">¶</a></h3>
+<section id="check-which-version-of-mbed-tls-is-being-used-by-python-mbedtls">
+<h3>Check which version of mbed TLS is being used by python-mbedtls<a class="headerlink" href="#check-which-version-of-mbed-tls-is-being-used-by-python-mbedtls" title="Permalink to this headline"></a></h3>
 <p>The <em>mbedtls.version</em> module shows the run-time version
 information to mbed TLS.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">version</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">version</span>  <span class="c1"># &quot;mbed TLS 2.16.1&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">version_info</span>  <span class="c1"># (2, 16, 1)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">version</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">version</span>  <span class="c1"># &quot;mbed TLS 2.28.0&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">version_info</span>  <span class="c1"># (2, 28, 0)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="message-digest">
-<h3>Message digest<a class="headerlink" href="#message-digest" title="Permalink to this headline">¶</a></h3>
-<p>The <em>mbedtls.hash</em> module supports MD5, SHA-1, SHA-2 (in 224, 256, 384,
-and 512-bits), and RIPEMD-160 secure hashes and message digests.</p>
-<p>Here are the examples from <em>hashlib</em> ported to <em>python-mbedtls</em>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="nb">hash</span> <span class="k">as</span> <span class="n">hashlib</span>
+</section>
+<section id="message-digest">
+<h3>Message digest<a class="headerlink" href="#message-digest" title="Permalink to this headline"></a></h3>
+<p>The <em>mbedtls.hashlib</em> module supports MD2, MD4, MD5, SHA-1, SHA-2
+(in 224, 256, 384, and 512-bits), and RIPEMD-160 secure hashes
+and message digests.  Note that MD2 and MD4 are not included
+by default and are only present if they are compiled in mbedtls.</p>
+<p>Here are the examples from (standard) <em>hashlib</em> ported
+to <em>python-mbedtls</em>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">hashlib</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Nobody inspects&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot; the spammish repetition&quot;</span><span class="p">)</span>
@@ -231,23 +153,23 @@ and 512-bits), and RIPEMD-160 secure hashes and message digests.</p>
 </pre></div>
 </div>
 <p>More condensed:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha224</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Nobody inspects the spammish repetition&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha224</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Nobody inspects the spammish repetition&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 <span class="go">&#39;a4337bc45a8fc544c03f52dc550cd6e1e87021bc896588bd79e901e2&#39;</span>
 </pre></div>
 </div>
 <p>Using <code class="docutils literal notranslate"><span class="pre">new()</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;ripemd160&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;ripemd160&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Nobody inspects the spammish repetition&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 <span class="go">&#39;cc4a5ce1b3df48aec5d22d1f16b894a0b894eccc&#39;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="hmac-algorithm">
-<h3>HMAC algorithm<a class="headerlink" href="#hmac-algorithm" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="hmac-algorithm">
+<h3>HMAC algorithm<a class="headerlink" href="#hmac-algorithm" title="Permalink to this headline"></a></h3>
 <p>The <em>mbedtls.hmac</em> module computes HMAC.</p>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">hmac</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">hmac</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;This is my secret key&quot;</span><span class="p">,</span> <span class="n">digestmod</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Nobody inspects&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot; the spammish repetition&quot;</span><span class="p">)</span>
@@ -259,14 +181,14 @@ and 512-bits), and RIPEMD-160 secure hashes and message digests.</p>
 <p>The message is cleared after calculation of the digest.  Only call
 <code class="docutils literal notranslate"><span class="pre">mbedtls.hmac.Hmac.digest()</span></code> or <code class="docutils literal notranslate"><span class="pre">mbedtls.hmac.Hmac.hexdigest()</span></code>
 once per message.</p>
-</div>
-<div class="section" id="hmac-based-key-derivation-function-hkdf">
-<h3>HMAC-based key derivation function (HKDF)<a class="headerlink" href="#hmac-based-key-derivation-function-hkdf" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="hmac-based-key-derivation-function-hkdf">
+<h3>HMAC-based key derivation function (HKDF)<a class="headerlink" href="#hmac-based-key-derivation-function-hkdf" title="Permalink to this headline"></a></h3>
 <p>The <em>mbedtls.hkdf</em> module exposes extract-and-expand key derivation
 functions.  The main function is <code class="docutils literal notranslate"><span class="pre">hkdf()</span></code> but <code class="docutils literal notranslate"><span class="pre">extract()</span></code> and
 <code class="docutils literal notranslate"><span class="pre">expand()</span></code> may be used as well.</p>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">hkdf</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">hkdf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hkdf</span><span class="o">.</span><span class="n">hkdf</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="sa">b</span><span class="s2">&quot;my secret key&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">length</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
@@ -278,10 +200,10 @@ functions.  The main function is <code class="docutils literal notranslate"><spa
 </pre></div>
 </div>
 <p>where <em>info</em>, <em>salt</em>, and <em>digestmod</em> are optional, although providing
-(at least) <em>info</em> is largely recommended.</p>
-</div>
-<div class="section" id="symmetric-cipher">
-<h3>Symmetric cipher<a class="headerlink" href="#symmetric-cipher" title="Permalink to this headline">¶</a></h3>
+(at least) <em>info</em> is highly recommended.</p>
+</section>
+<section id="symmetric-cipher">
+<h3>Symmetric cipher<a class="headerlink" href="#symmetric-cipher" title="Permalink to this headline"></a></h3>
 <p>The <em>mbedtls.cipher</em> module provides symmetric encryption.  The API
 follows the recommendations from PEP 272 so that it can be used as a
 drop-in replacement to other libraries.</p>
@@ -289,29 +211,29 @@ drop-in replacement to other libraries.</p>
 <ul class="simple">
 <li><p>AES encryption/decryption (128, 192, and 256 bits) in ECB, CBC, CFB128,
 CTR, OFB, or XTS mode;</p></li>
-<li><p>AES AEAD (128, 192, and 256 bits) in GCM, or CCM mode;</p></li>
+<li><p>AES AEAD (128, 192, and 256 bits) in GCM or CCM mode;</p></li>
 <li><p>ARC4 encryption/decryption;</p></li>
 <li><p>ARIA encryption/decryption (128, 192, and 256 bits) in ECB, CBC,
 CTR, or GCM modes;</p></li>
 <li><p>Blowfish encryption/decryption in ECB, CBC, CFB64, or CTR mode;</p></li>
 <li><p>Camellia encryption/decryption (128, 192, and 256 bits) in ECB, CBC,
 CFB128, CTR, or GCM mode;</p></li>
-<li><p>DES, DES3, and double DES3 encryption/decryption in ECB, or CBC mode;</p></li>
-<li><p>CHACHA20 and CHACHA0/POLY1305 encryption/decryption.</p></li>
+<li><p>DES, DES3, and double DES3 encryption/decryption in ECB or CBC mode;</p></li>
+<li><p>CHACHA20 and CHACHA20/POLY1305 encryption/decryption.</p></li>
 </ul>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">cipher</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">cipher</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;My 16-bytes key.&quot;</span><span class="p">,</span> <span class="n">cipher</span><span class="o">.</span><span class="n">MODE_CBC</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;CBC needs an IV.&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">enc</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;This is a super-secret message!&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enc</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;This is a super-secret message!!&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">enc</span>
-<span class="go">b&#39;*`k6\x98\x97=[\xdf\x7f\x88\x96\xf5\t\x19J7\x93\xb5\xe0~\t\x9e\x968m\xcd\x9c3\x04o\xe6&#39;</span>
+<span class="go">b&quot;*`k6\x98\x97=[\xdf\x7f\x88\x96\xf5\t\x19J\xf62h\xf4n\xca\xe8\xfe\xf5\xd7X&#39;\xb1\x8c\xc9\x85&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">enc</span><span class="p">)</span>
-<span class="go">b&#39;This is a super-secret message!&#39;</span>
+<span class="go">b&#39;This is a super-secret message!!&#39;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="rsa-public-key">
-<h3>RSA public key<a class="headerlink" href="#rsa-public-key" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="rsa-public-key">
+<h3>RSA public key<a class="headerlink" href="#rsa-public-key" title="Permalink to this headline"></a></h3>
 <p>The <em>mbedtls.pk</em> module provides the RSA cryptosystem.  This includes:</p>
 <ul class="simple">
 <li><p>Public-private key generation and key import/export in PEM and DER
@@ -320,7 +242,7 @@ formats;</p></li>
 <li><p>message signature and verification.</p></li>
 </ul>
 <p>Key generation, the default size is 2048 bits:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">pk</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">pk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">RSA</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">prv</span> <span class="o">=</span> <span class="n">rsa</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span><span class="o">.</span><span class="n">key_size</span>
@@ -328,13 +250,13 @@ formats;</p></li>
 </pre></div>
 </div>
 <p>Message encryption and decryption:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">enc</span> <span class="o">=</span> <span class="n">rsa</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;secret message&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">enc</span> <span class="o">=</span> <span class="n">rsa</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;secret message&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">enc</span><span class="p">)</span>
 <span class="go">b&#39;secret message&#39;</span>
 </pre></div>
 </div>
 <p>Message signature and verification:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">rsa</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Please sign here.&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">rsa</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Please sign here.&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Please sign here.&quot;</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rsa</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Sorry, wrong message.&quot;</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
@@ -345,9 +267,9 @@ formats;</p></li>
 <span class="go">True</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="static-and-ephemeral-elliptic-curve-diffie-hellman">
-<h3>Static and ephemeral Elliptic curve Diffie-Hellman<a class="headerlink" href="#static-and-ephemeral-elliptic-curve-diffie-hellman" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="static-and-ephemeral-elliptic-curve-diffie-hellman">
+<h3>Static and ephemeral elliptic curve Diffie-Hellman<a class="headerlink" href="#static-and-ephemeral-elliptic-curve-diffie-hellman" title="Permalink to this headline"></a></h3>
 <p>The <em>mbedtls.pk</em> module provides the ECC cryptosystem.  This includes:</p>
 <ul class="simple">
 <li><p>Public-private key generation and key import/export in the PEM and DER
@@ -360,9 +282,9 @@ formats;</p></li>
 <p>The API of the ECC class is the same as the API of the RSA class
 but ciphering (<code class="docutils literal notranslate"><span class="pre">encrypt()</span></code> and <code class="docutils literal notranslate"><span class="pre">decrypt()</span></code> is not supported by
 Mbed TLS).</p>
-<p>Message signature and verification—elliptic curve digital signature
-algorithm (ECDSA):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">pk</span>
+<p>Message signature and verification using elliptic a curve digital
+signature algorithm (ECDSA):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">pk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ecdsa</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECC</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">prv</span> <span class="o">=</span> <span class="n">ecdsa</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">ecdsa</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Please sign here.&quot;</span><span class="p">)</span>
@@ -378,39 +300,39 @@ algorithm (ECDSA):</p>
 </div>
 <p>The classes <code class="docutils literal notranslate"><span class="pre">ECDHServer</span></code> and <code class="docutils literal notranslate"><span class="pre">ECDHClient</span></code> may be used for ephemeral
 ECDH.  The key exchange is as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_srv</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECDHServer</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_srv</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECDHServer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_cli</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECDHClient</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>The server generates the ServerKeyExchange encrypted payload and
 passes it to the client:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ske</span> <span class="o">=</span> <span class="n">ecdh_srv</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ske</span> <span class="o">=</span> <span class="n">ecdh_srv</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_cli</span><span class="o">.</span><span class="n">import_SKE</span><span class="p">(</span><span class="n">ske</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>then the client generates the ClientKeyExchange encrypted payload and
 passes it back to the server:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cke</span> <span class="o">=</span> <span class="n">ecdh_cli</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cke</span> <span class="o">=</span> <span class="n">ecdh_cli</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_srv</span><span class="o">.</span><span class="n">import_CKE</span><span class="p">(</span><span class="n">cke</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now, client and server may generate their shared secret:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">secret</span> <span class="o">=</span> <span class="n">ecdh_srv</span><span class="o">.</span><span class="n">generate_secret</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">secret</span> <span class="o">=</span> <span class="n">ecdh_srv</span><span class="o">.</span><span class="n">generate_secret</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_cli</span><span class="o">.</span><span class="n">generate_secret</span><span class="p">()</span> <span class="o">==</span> <span class="n">secret</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_srv</span><span class="o">.</span><span class="n">shared_secret</span> <span class="o">==</span> <span class="n">ecdh_cli</span><span class="o">.</span><span class="n">shared_secret</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="diffie-hellman-merkle-key-exchange">
-<h3>Diffie-Hellman-Merkle key exchange<a class="headerlink" href="#diffie-hellman-merkle-key-exchange" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="diffie-hellman-merkle-key-exchange">
+<h3>Diffie-Hellman-Merkle key exchange<a class="headerlink" href="#diffie-hellman-merkle-key-exchange" title="Permalink to this headline"></a></h3>
 <p>The classes <code class="docutils literal notranslate"><span class="pre">DHServer</span></code> and <code class="docutils literal notranslate"><span class="pre">DHClient</span></code> may be used for DH Key
 exchange.  The classes have the same API as <code class="docutils literal notranslate"><span class="pre">ECDHServer</span></code>
 and <code class="docutils literal notranslate"><span class="pre">ECDHClient</span></code>, respectively.</p>
 <p>The key exchange is as follow:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls.mpi</span> <span class="k">import</span> <span class="n">MPI</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">pk</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls.mpi</span> <span class="kn">import</span> <span class="n">MPI</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">pk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dh_srv</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">DHServer</span><span class="p">(</span><span class="n">MPI</span><span class="o">.</span><span class="n">prime</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span> <span class="n">MPI</span><span class="o">.</span><span class="n">prime</span><span class="p">(</span><span class="mi">96</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dh_cli</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">DHClient</span><span class="p">(</span><span class="n">MPI</span><span class="o">.</span><span class="n">prime</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span> <span class="n">MPI</span><span class="o">.</span><span class="n">prime</span><span class="p">(</span><span class="mi">96</span><span class="p">))</span>
 </pre></div>
@@ -418,13 +340,13 @@ and <code class="docutils literal notranslate"><span class="pre">ECDHClient</spa
 <p>The 128-bytes prime and the 96-bytes prime are the modulus <code class="docutils literal notranslate"><span class="pre">P</span></code>
 and the generator <code class="docutils literal notranslate"><span class="pre">G</span></code>.</p>
 <p>The server generates the ServerKeyExchange payload:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ske</span> <span class="o">=</span> <span class="n">dh_srv</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ske</span> <span class="o">=</span> <span class="n">dh_srv</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dh_cli</span><span class="o">.</span><span class="n">import_SKE</span><span class="p">(</span><span class="n">ske</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The payload ends with <code class="docutils literal notranslate"><span class="pre">G^X</span> <span class="pre">mod</span> <span class="pre">P</span></code> where <code class="docutils literal notranslate"><span class="pre">X</span></code> is the secret value of
 the server.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cke</span> <span class="o">=</span> <span class="n">dh_cli</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cke</span> <span class="o">=</span> <span class="n">dh_cli</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dh_srv</span><span class="o">.</span><span class="n">import_CKE</span><span class="p">(</span><span class="n">cke</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -432,25 +354,25 @@ the server.</p>
 returned as its representation in bytes so that it can be readily
 transported over the network.</p>
 <p>As in ECDH, client and server may now generate their shared secret:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">secret</span> <span class="o">=</span> <span class="n">dh_srv</span><span class="o">.</span><span class="n">generate_secret</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">secret</span> <span class="o">=</span> <span class="n">dh_srv</span><span class="o">.</span><span class="n">generate_secret</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dh_cli</span><span class="o">.</span><span class="n">generate_secret</span><span class="p">()</span> <span class="o">==</span> <span class="n">secret</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dh_srv</span><span class="o">.</span><span class="n">shared_secret</span> <span class="o">==</span> <span class="n">dh_cli</span><span class="o">.</span><span class="n">shared_secret</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="x-509-certificate-writing-and-parsing">
-<h3>X.509 Certificate writing and parsing<a class="headerlink" href="#x-509-certificate-writing-and-parsing" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="x-509-certificate-writing-and-parsing">
+<h3>X.509 certificate writing and parsing<a class="headerlink" href="#x-509-certificate-writing-and-parsing" title="Permalink to this headline"></a></h3>
 <p>The <em>mbedtls.x509</em> module can be used to parse X.509 certificates
 or create and verify a certificate chain.</p>
 <p>Here, the trusted root is a self-signed CA certificate
 <code class="docutils literal notranslate"><span class="pre">ca0_crt</span></code> signed by <code class="docutils literal notranslate"><span class="pre">ca0_key</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="nb">hash</span> <span class="k">as</span> <span class="n">hashlib</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">pk</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">x509</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">hashlib</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">pk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">x509</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">now</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ca0_key</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">RSA</span><span class="p">()</span>
@@ -466,7 +388,7 @@ or create and verify a certificate chain.</p>
 </div>
 <p>An intermediate then issues a Certificate Singing Request (CSR) that the
 root CA signs:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ca1_key</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECC</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ca1_key</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECC</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ca1_key</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ca1_csr</span> <span class="o">=</span> <span class="n">x509</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ca1_key</span><span class="p">,</span> <span class="s2">&quot;CN=Intermediate CA&quot;</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">())</span>
 <span class="go">&gt;&gt;&gt;</span>
@@ -478,7 +400,7 @@ root CA signs:</p>
 </div>
 <p>And finally, the intermediate CA signs a certificate for the
 End Entity on the basis of a new CSR:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ee0_key</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECC</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ee0_key</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECC</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ee0_key</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ee0_csr</span> <span class="o">=</span> <span class="n">x509</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ee0_key</span><span class="p">,</span> <span class="s2">&quot;CN=End Entity&quot;</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">())</span>
 <span class="go">&gt;&gt;&gt;</span>
@@ -489,7 +411,7 @@ End Entity on the basis of a new CSR:</p>
 </div>
 <p>The emitting certificate can be used to verify the next certificate in
 the chain:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ca1_crt</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">ee0_crt</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ca1_crt</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">ee0_crt</span><span class="p">)</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ca0_crt</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">ca1_crt</span><span class="p">)</span>
 <span class="go">True</span>
@@ -497,205 +419,28 @@ the chain:</p>
 </div>
 <p>Note, however, that this verification is only one step in a private key
 infrastructure and does not take CRLs, path length, etc. into account.</p>
-</div>
-<div class="section" id="tls-client-and-server">
-<h3>TLS client and server<a class="headerlink" href="#tls-client-and-server" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="tls-client-and-server">
+<h3>TLS client and server<a class="headerlink" href="#tls-client-and-server" title="Permalink to this headline"></a></h3>
 <p>The <em>mbedtls.tls</em> module provides TLS clients and servers.  The API
 follows the recommendations of <a class="reference external" href="https://www.python.org/dev/peps/pep-0543/">PEP 543</a>.  Note, however, that the
 Python standard SSL library does not follow the PEP so that this
 library may not be a drop-in replacement.</p>
-<p>Here are some simple HTTP messages to pass from the client to the
-server and back.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_request</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span>
-<span class="gp">... </span>    <span class="s2">&quot;GET / HTTP/1.0&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s2">&quot;&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
-<span class="gp">...</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">http_response</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span>
-<span class="gp">... </span>    <span class="s2">&quot;HTTP/1.0 200 OK&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s2">&quot;Content-Type: text/html&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s2">&quot;&lt;h2&gt;Test Server&lt;/h2&gt;&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s2">&quot;&lt;p&gt;Successful connection.&lt;/p&gt;&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s2">&quot;&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
-<span class="gp">...</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">http_error</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span>
-<span class="gp">... </span>    <span class="s2">&quot;HTTP/1.0 400 Bad Request&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s2">&quot;&quot;</span><span class="p">))</span>
-<span class="gp">...</span>
-</pre></div>
-</div>
-<p>For this example, the trust store just consists in the root certificate
-<code class="docutils literal notranslate"><span class="pre">ca0_crt</span></code> from the previous section.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="k">import</span> <span class="n">tls</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">trust_store</span> <span class="o">=</span> <span class="n">tls</span><span class="o">.</span><span class="n">TrustStore</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">trust_store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ca0_crt</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The next step is to configure the TLS contexts for server and client.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tls_srv_ctx</span> <span class="o">=</span> <span class="n">tls</span><span class="o">.</span><span class="n">ServerContext</span><span class="p">(</span><span class="n">tls</span><span class="o">.</span><span class="n">TLSConfiguration</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">trust_store</span><span class="o">=</span><span class="n">trust_store</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">certificate_chain</span><span class="o">=</span><span class="p">([</span><span class="n">ee0_crt</span><span class="p">,</span> <span class="n">ca1_crt</span><span class="p">],</span> <span class="n">ee0_key</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">validate_certificates</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">))</span>
-<span class="gp">...</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tls_cli_ctx</span> <span class="o">=</span> <span class="n">tls</span><span class="o">.</span><span class="n">ClientContext</span><span class="p">(</span><span class="n">tls</span><span class="o">.</span><span class="n">TLSConfiguration</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">trust_store</span><span class="o">=</span><span class="n">trust_store</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">validate_certificates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">))</span>
-<span class="gp">...</span>
-</pre></div>
-</div>
-<p>The contexts are used to wrap TCP sockets.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">socket</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tls_srv</span> <span class="o">=</span> <span class="n">tls_srv_ctx</span><span class="o">.</span><span class="n">wrap_socket</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">...</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">suppress</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-<span class="gp">... </span>        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">tls</span><span class="o">.</span><span class="n">WantReadError</span><span class="p">,</span> <span class="n">tls</span><span class="o">.</span><span class="n">WantWriteError</span><span class="p">):</span>
-<span class="gp">... </span>            <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="gp">...</span>
-</pre></div>
-</div>
-<p>The server starts in its own process in this example
-because <code class="docutils literal notranslate"><span class="pre">accept()</span></code> is blocking.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">server_main_loop</span><span class="p">(</span><span class="n">sock</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-<span class="gp">... </span>    <span class="n">block</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">do_handshake</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="n">data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="n">get_request</span><span class="p">:</span>
-<span class="gp">... </span>        <span class="n">conn</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">http_response</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
-<span class="gp">... </span>        <span class="n">conn</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">http_error</span><span class="p">)</span>
-<span class="gp">...</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">port</span> <span class="o">=</span> <span class="mi">4433</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tls_srv</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tls_srv</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tls_srv</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">runner</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">server_main_loop</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tls_srv</span><span class="p">,</span> <span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">runner</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Finally, a client queries the server with the <code class="docutils literal notranslate"><span class="pre">get_request</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tls_cli</span> <span class="o">=</span> <span class="n">tls_cli_ctx</span><span class="o">.</span><span class="n">wrap_socket</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">server_hostname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">...</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tls_cli</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">block</span><span class="p">(</span><span class="n">tls_cli</span><span class="o">.</span><span class="n">do_handshake</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tls_cli</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">get_request</span><span class="p">)</span>
-<span class="go">18</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">block</span><span class="p">(</span><span class="n">tls_cli</span><span class="o">.</span><span class="n">recv</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
-<span class="go">HTTP/1.0 200 OK</span>
-<span class="go">Content-Type: text/html</span>
-<span class="go">&lt;BLANKLINE&gt;</span>
-<span class="go">&lt;h2&gt;Test Server&lt;/h2&gt;</span>
-<span class="go">&lt;p&gt;Successful connection.&lt;/p&gt;</span>
-<span class="go">&lt;BLANKLINE&gt;</span>
-</pre></div>
-</div>
-<p>The last step is to stop the extra process and close the sockets.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tls_cli</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">runner</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tls_srv</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="dtls-client-and-server">
-<h3>DTLS client and server<a class="headerlink" href="#dtls-client-and-server" title="Permalink to this headline">¶</a></h3>
+<p>See examples in the <cite>programs/</cite> directory of the repository
+and <cite>tests/test_tls.py</cite>.</p>
+</section>
+<section id="dtls-client-and-server">
+<h3>DTLS client and server<a class="headerlink" href="#dtls-client-and-server" title="Permalink to this headline"></a></h3>
 <p>The <em>mbedtls.tls</em> module further provides DTLS (encrypted UDP
 traffic).  Client and server must be bound and connected for
 the handshake so that DTLS should use <code class="docutils literal notranslate"><span class="pre">recv()</span></code> and <code class="docutils literal notranslate"><span class="pre">send()</span></code>
 as well.</p>
-<p>The example reuses the certificate and trust store from the TLS
-example.  However server and client are now initialized with
-<code class="docutils literal notranslate"><span class="pre">DTLSConfiguration</span></code> instances instead of <code class="docutils literal notranslate"><span class="pre">TLSConfiguration</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dtls_srv_ctx</span> <span class="o">=</span> <span class="n">tls</span><span class="o">.</span><span class="n">ServerContext</span><span class="p">(</span><span class="n">tls</span><span class="o">.</span><span class="n">DTLSConfiguration</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">trust_store</span><span class="o">=</span><span class="n">trust_store</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">certificate_chain</span><span class="o">=</span><span class="p">([</span><span class="n">ee0_crt</span><span class="p">,</span> <span class="n">ca1_crt</span><span class="p">],</span> <span class="n">ee0_key</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">validate_certificates</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">))</span>
-<span class="gp">...</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dtls_cli_ctx</span> <span class="o">=</span> <span class="n">tls</span><span class="o">.</span><span class="n">ClientContext</span><span class="p">(</span><span class="n">tls</span><span class="o">.</span><span class="n">DTLSConfiguration</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">trust_store</span><span class="o">=</span><span class="n">trust_store</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">validate_certificates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">))</span>
-</pre></div>
-</div>
-<p>The DTLS contexts can now wrap UDP sockets.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dtls_srv</span> <span class="o">=</span> <span class="n">dtls_srv_ctx</span><span class="o">.</span><span class="n">wrap_socket</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">...</span>
-</pre></div>
-</div>
-<p>Here again, the <code class="docutils literal notranslate"><span class="pre">accept()</span></code> method blocks until the server
-receives a datagram.  The DTLS server handshake is performed in
-two steps.  The first handshake is interrupted by an
-HelloVerifyRequest exception.  The server should then set a
-client-specific cookie and resume the handshake.  The second
-step of the handshake should succeed.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">dtls_server_main_loop</span><span class="p">(</span><span class="n">sock</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="sd">&quot;&quot;&quot;A simple DTLS echo server.&quot;&quot;&quot;</span>
-<span class="gp">... </span>    <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-<span class="gp">... </span>    <span class="n">conn</span><span class="o">.</span><span class="n">setcookieparam</span><span class="p">(</span><span class="n">addr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
-<span class="gp">... </span>    <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">tls</span><span class="o">.</span><span class="n">HelloVerifyRequest</span><span class="p">):</span>
-<span class="gp">... </span>       <span class="n">block</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">do_handshake</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-<span class="gp">... </span>    <span class="n">conn</span><span class="o">.</span><span class="n">setcookieparam</span><span class="p">(</span><span class="n">addr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
-<span class="gp">... </span>    <span class="n">block</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">do_handshake</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="n">data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="gp">...</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">port</span> <span class="o">=</span> <span class="mi">4443</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dtls_srv</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dtls_srv</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
-</pre></div>
-</div>
-<p>In contrast with TCP (TLS), there is not call to <code class="docutils literal notranslate"><span class="pre">listen()</span></code> for UDP.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">runner</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">dtls_server_main_loop</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">dtls_srv</span><span class="p">,</span> <span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">runner</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>The DTLS client is mostly identical to the TLS client:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dtls_cli</span> <span class="o">=</span> <span class="n">dtls_cli_ctx</span><span class="o">.</span><span class="n">wrap_socket</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">server_hostname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dtls_cli</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">block</span><span class="p">(</span><span class="n">dtls_cli</span><span class="o">.</span><span class="n">do_handshake</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">DATAGRAM</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;hello datagram&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">block</span><span class="p">(</span><span class="n">dtls_cli</span><span class="o">.</span><span class="n">send</span><span class="p">,</span> <span class="n">DATAGRAM</span><span class="p">)</span>
-<span class="go">14</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">block</span><span class="p">(</span><span class="n">dtls_cli</span><span class="o">.</span><span class="n">recv</span><span class="p">,</span> <span class="mi">4096</span><span class="p">)</span>
-<span class="go">b&#39;hello datagram&#39;</span>
-</pre></div>
-</div>
-<p>Now, the DTLS communication is complete.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dtls_cli</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">runner</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dtls_srv</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="id2">
-<h2>API documentation<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>See examples in the <cite>programs/</cite> directory of the repository
+and <cite>tests/test_tls.py</cite>.</p>
+</section>
+</section>
+<section id="id2">
+<h2>API documentation<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="apisecrets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.secrets</span></code> Module</a></li>
@@ -703,75 +448,58 @@ step of the handshake should succeed.</p>
 <li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apipk.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.AES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.ARC4"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Blowfish"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Camellia"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3dbl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-aes-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-arc4-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-blowfish-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-camellia-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des3dbl-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des3-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hmac"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hkdf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#mbedtls-hmac-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#mbedtls-hkdf-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimpi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
 </ul>
 </div>
-</div>
-<div class="section" id="indices-and-tables">
-<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="apisecrets.html" class="btn btn-neutral float-right" title="mbedtls.secrets Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="apisecrets.html" class="btn btn-neutral float-right" title="mbedtls.secrets Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2016, Mathias Laurin
-
-    </p>
+    <p>&#169; Copyright 2016, Mathias Laurin.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

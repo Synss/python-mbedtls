@@ -1,67 +1,34 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>mbedtls.pk Module API &mdash; python-mbedtls 0.18.0 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mbedtls.pk Module API &mdash; python-mbedtls 2.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mbedtls.cipher Package API" href="apicipher.html" />
     <link rel="prev" title="mbedtls.x509 Module API" href="apix509.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> python-mbedtls
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -69,594 +36,83 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="apisecrets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.secrets</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apitls.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.tls</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apix509.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.x509</span></code> Module API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apicipher.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher</span></code> Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.AES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.ARC4"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Blowfish"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.Camellia"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3dbl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apicipher.html#module-mbedtls.cipher.DES3"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-aes-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.AES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-arc4-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.ARC4</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-blowfish-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Blowfish</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-camellia-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.Camellia</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des3dbl-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3dbl</span></code> Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apicipher.html#mbedtls-cipher-des3-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.cipher.DES3</span></code> Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimd.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hash</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hmac"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apimd.html#module-mbedtls.hkdf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#mbedtls-hmac-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hmac</span></code> Module API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apimd.html#mbedtls-hkdf-module-api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.hkdf</span></code> Module API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apimpi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.mpi</span></code> Module API</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">python-mbedtls</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
       <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/apipk.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="module-mbedtls.pk">
-<span id="mbedtls-pk-module-api"></span><h1><a class="reference internal" href="#module-mbedtls.pk" title="mbedtls.pk"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.pk</span></code></a> Module API<a class="headerlink" href="#module-mbedtls.pk" title="Permalink to this headline">¶</a></h1>
-<p>Public key (PK) library.</p>
-<p>The library handles RSA certificates and ECC (elliptic curve
-cryptography).</p>
-<p>The RSA and ECC classes offer compatible APIs.  They may be used
-interchangeably.</p>
-<p>ECDHServer and ECDHClient should be used for ephemeral Elliptic Curve
-Diffie-Hellman exchange.</p>
-<dl class="function">
-<dt id="mbedtls.pk.check_pair">
-<code class="descclassname">mbedtls.pk.</code><code class="descname">check_pair</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.check_pair" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if a public-private pair of keys matches.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.pk.get_supported_ciphers">
-<code class="descclassname">mbedtls.pk.</code><code class="descname">get_supported_ciphers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.get_supported_ciphers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="mbedtls.pk.get_supported_curves">
-<code class="descclassname">mbedtls.pk.</code><code class="descname">get_supported_curves</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.get_supported_curves" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the list of supported curves in order of preference.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.pk.Curve">
-<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">Curve</code><a class="headerlink" href="#mbedtls.pk.Curve" title="Permalink to this definition">¶</a></dt>
-<dd><p>Elliptic curves.</p>
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.BRAINPOOLP256R1">
-<code class="descname">BRAINPOOLP256R1</code><em class="property"> = b'brainpoolP256r1'</em><a class="headerlink" href="#mbedtls.pk.Curve.BRAINPOOLP256R1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.BRAINPOOLP384R1">
-<code class="descname">BRAINPOOLP384R1</code><em class="property"> = b'brainpoolP384r1'</em><a class="headerlink" href="#mbedtls.pk.Curve.BRAINPOOLP384R1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.BRAINPOOLP512R1">
-<code class="descname">BRAINPOOLP512R1</code><em class="property"> = b'brainpoolP512r1'</em><a class="headerlink" href="#mbedtls.pk.Curve.BRAINPOOLP512R1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.CURVE25519">
-<code class="descname">CURVE25519</code><em class="property"> = b'curve25519'</em><a class="headerlink" href="#mbedtls.pk.Curve.CURVE25519" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.CURVE448">
-<code class="descname">CURVE448</code><em class="property"> = b'curve448'</em><a class="headerlink" href="#mbedtls.pk.Curve.CURVE448" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.SECP192K1">
-<code class="descname">SECP192K1</code><em class="property"> = b'secp192k1'</em><a class="headerlink" href="#mbedtls.pk.Curve.SECP192K1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.SECP192R1">
-<code class="descname">SECP192R1</code><em class="property"> = b'secp192r1'</em><a class="headerlink" href="#mbedtls.pk.Curve.SECP192R1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.SECP224K1">
-<code class="descname">SECP224K1</code><em class="property"> = b'secp224k1'</em><a class="headerlink" href="#mbedtls.pk.Curve.SECP224K1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.SECP224R1">
-<code class="descname">SECP224R1</code><em class="property"> = b'secp224r1'</em><a class="headerlink" href="#mbedtls.pk.Curve.SECP224R1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.SECP256K1">
-<code class="descname">SECP256K1</code><em class="property"> = b'secp256k1'</em><a class="headerlink" href="#mbedtls.pk.Curve.SECP256K1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.SECP256R1">
-<code class="descname">SECP256R1</code><em class="property"> = b'secp256r1'</em><a class="headerlink" href="#mbedtls.pk.Curve.SECP256R1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.SECP384R1">
-<code class="descname">SECP384R1</code><em class="property"> = b'secp384r1'</em><a class="headerlink" href="#mbedtls.pk.Curve.SECP384R1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="mbedtls.pk.Curve.SECP521R1">
-<code class="descname">SECP521R1</code><em class="property"> = b'secp521r1'</em><a class="headerlink" href="#mbedtls.pk.Curve.SECP521R1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.pk.RSA">
-<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">RSA</code><a class="headerlink" href="#mbedtls.pk.RSA" title="Permalink to this definition">¶</a></dt>
-<dd><p>RSA public-key cryptosystem.</p>
-<dl class="method">
-<dt id="mbedtls.pk.RSA.from_buffer">
-<code class="descname">from_buffer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.from_buffer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Import a key (public or private half).</p>
-<p>The public half is generated upon importing a private key.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>bytes</em>) – The key in PEM or DER format.</p></li>
-<li><p><strong>password</strong> (<em>bytes</em><em>, </em><em>optional</em>) – The password for
-password-protected private keys.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.RSA.generate">
-<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.RSA.generate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate an RSA keypair.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key_size</strong> (<em>unsigned int</em>) – size in bits.</p></li>
-<li><p><strong>exponent</strong> (<em>int</em>) – public RSA exponent.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The private key in DER format.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(bytes)</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.pk.ECC">
-<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">ECC</code><a class="headerlink" href="#mbedtls.pk.ECC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Elliptic-curve cryptosystems.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>optional</strong><strong>)</strong> (<em>(</em><a class="reference internal" href="#mbedtls.pk.Curve" title="mbedtls.pk.Curve"><em>Curve</em></a><em>,</em>) – A curve returned by <cite>get_supported_curves()</cite>.</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>get_supported_curves()</p>
-</div>
-<dl class="method">
-<dt id="mbedtls.pk.ECC.export_key">
-<code class="descname">export_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECC.export_key" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the private key.</p>
-<p>If not key is present, return a falsy value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>format</strong> (<em>str</em>) – One of “DER”, “PEM”, or “NUM”.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.ECC.export_public_key">
-<code class="descname">export_public_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECC.export_public_key" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the public key.</p>
-<p>If no key is present, return a falsy value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>format</strong> (<em>str</em>) – One of “DER”, “PEM”, or “POINT”.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.ECC.from_buffer">
-<code class="descname">from_buffer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECC.from_buffer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Import a key (public or private half).</p>
-<p>The public half is generated upon importing a private key.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>bytes</em>) – The key in PEM or DER format.</p></li>
-<li><p><strong>password</strong> (<em>bytes</em><em>, </em><em>optional</em>) – The password for
-password-protected private keys.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.ECC.generate">
-<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECC.generate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate an EC keypair.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The private key in DER format.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(bytes)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.ECC.to_ECDH_client">
-<code class="descname">to_ECDH_client</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECC.to_ECDH_client" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an ECDH client initialized with this context.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.ECC.to_ECDH_server">
-<code class="descname">to_ECDH_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECC.to_ECDH_server" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an ECDH server initialized with this context.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.pk.DHServer">
-<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">DHServer</code><a class="headerlink" href="#mbedtls.pk.DHServer" title="Permalink to this definition">¶</a></dt>
-<dd><p>The server side of the DH key exchange.</p>
-<dl class="method">
-<dt id="mbedtls.pk.DHServer.generate">
-<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.DHServer.generate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a public key.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A TLS ServerKeyExchange payload.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bytes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.DHServer.import_CKE">
-<code class="descname">import_CKE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.DHServer.import_CKE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read the ClientKeyExchange payload.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.pk.DHClient">
-<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">DHClient</code><a class="headerlink" href="#mbedtls.pk.DHClient" title="Permalink to this definition">¶</a></dt>
-<dd><p>The client side of the DH key exchange.</p>
-<dl class="method">
-<dt id="mbedtls.pk.DHClient.generate">
-<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.DHClient.generate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate the public key.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The byte representation (big endian) of: G^X mod P.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bytes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.DHClient.import_SKE">
-<code class="descname">import_SKE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.DHClient.import_SKE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read the ServerKeyExchange payload.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.pk.ECDHServer">
-<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">ECDHServer</code><a class="headerlink" href="#mbedtls.pk.ECDHServer" title="Permalink to this definition">¶</a></dt>
-<dd><p>The server side of the ECDH key exchange.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>optional</strong><strong>)</strong> (<em>(</em><a class="reference internal" href="#mbedtls.pk.Curve" title="mbedtls.pk.Curve"><em>Curve</em></a><em>,</em>) – A curve returned by <cite>get_supported_curves()</cite>.</p>
-</dd>
-</dl>
-<dl class="method">
-<dt id="mbedtls.pk.ECDHServer.generate">
-<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECDHServer.generate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a public key.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A TLS ServerKeyExchange payload.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bytes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.ECDHServer.import_CKE">
-<code class="descname">import_CKE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECDHServer.import_CKE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read the ClientKeyExchange payload.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.pk.ECDHClient">
-<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">ECDHClient</code><a class="headerlink" href="#mbedtls.pk.ECDHClient" title="Permalink to this definition">¶</a></dt>
-<dd><p>The client side of the ephemeral ECDH key exchange.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>optional</strong><strong>)</strong> (<em>(</em><a class="reference internal" href="#mbedtls.pk.Curve" title="mbedtls.pk.Curve"><em>Curve</em></a><em>,</em>) – A curve returned by <cite>get_supported_curves()</cite>.</p>
-</dd>
-</dl>
-<dl class="method">
-<dt id="mbedtls.pk.ECDHClient.generate">
-<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECDHClient.generate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a public key.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A TLS ClientKeyExchange payload.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bytes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.ECDHClient.import_SKE">
-<code class="descname">import_SKE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECDHClient.import_SKE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read the ServerKeyExchange payload.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mbedtls.pk.ECDHNaive">
-<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">ECDHNaive</code><a class="headerlink" href="#mbedtls.pk.ECDHNaive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Naive ECDH key exchange.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>optional</strong><strong>)</strong> (<em>(</em><a class="reference internal" href="#mbedtls.pk.Curve" title="mbedtls.pk.Curve"><em>Curve</em></a><em>,</em>) – b’curve25519’ or b’curve448’.</p>
-</dd>
-</dl>
-<dl class="method">
-<dt id="mbedtls.pk.ECDHNaive.generate">
-<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECDHNaive.generate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a public key.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>public key.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>ECPoint</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.ECDHNaive.generate_secret">
-<code class="descname">generate_secret</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECDHNaive.generate_secret" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate the shared secret.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.ECDHNaive.import_peer_public">
-<code class="descname">import_peer_public</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECDHNaive.import_peer_public" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbedtls.pk.ECDHNaive.import_peers_public">
-<code class="descname">import_peers_public</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbedtls.pk.ECDHNaive.import_peers_public" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read peer public key.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt>
-<em class="property">class </em><code class="descclassname">mbedtls.pk.</code><code class="descname">Curve</code></dt>
-<dd><p>Elliptic curves.</p>
-<dl class="attribute">
-<dt>
-<code class="descname">BRAINPOOLP256R1</code><em class="property"> = b'brainpoolP256r1'</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">BRAINPOOLP384R1</code><em class="property"> = b'brainpoolP384r1'</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">BRAINPOOLP512R1</code><em class="property"> = b'brainpoolP512r1'</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">CURVE25519</code><em class="property"> = b'curve25519'</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">CURVE448</code><em class="property"> = b'curve448'</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">SECP192K1</code><em class="property"> = b'secp192k1'</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">SECP192R1</code><em class="property"> = b'secp192r1'</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">SECP224K1</code><em class="property"> = b'secp224k1'</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">SECP224R1</code><em class="property"> = b'secp224r1'</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">SECP256K1</code><em class="property"> = b'secp256k1'</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">SECP256R1</code><em class="property"> = b'secp256r1'</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">SECP384R1</code><em class="property"> = b'secp384r1'</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">SECP521R1</code><em class="property"> = b'secp521r1'</em></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
+             
+  <section id="mbedtls-pk-module-api">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.pk</span></code> Module API<a class="headerlink" href="#mbedtls-pk-module-api" title="Permalink to this headline"></a></h1>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="apicipher.html" class="btn btn-neutral float-right" title="mbedtls.cipher Package API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="apix509.html" class="btn btn-neutral float-left" title="mbedtls.x509 Module API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="apix509.html" class="btn btn-neutral float-left" title="mbedtls.x509 Module API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="apicipher.html" class="btn btn-neutral float-right" title="mbedtls.cipher Package API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2016, Mathias Laurin
-
-    </p>
+    <p>&#169; Copyright 2016, Mathias Laurin.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
