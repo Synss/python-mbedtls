@@ -5,10 +5,6 @@ Cryptographic library for Python with Mbed TLS back end
 =======================================================
 
 .. image::
-   https://circleci.com/gh/Synss/python-mbedtls/tree/master.svg?style=svg
-   :target: https://circleci.com/gh/Synss/python-mbedtls/tree/master
-
-.. image::
    https://github.com/Synss/python-mbedtls/actions/workflows/main.yml/badge.svg?branch=master
    :target: https://github.com/Synss/python-mbedtls/actions/
 
