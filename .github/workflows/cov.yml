@@ -13,10 +13,6 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v3
-        with:
-          python-version: 3.9
-
       - name: Cache backend
         id: cache-backend
         uses: actions/cache@v3
@@ -24,23 +20,31 @@ jobs:
           path: ${{ env.BACKEND_DIR }}
           key: ${{ runner.os }}-${{ env.BACKEND_VERSION }}-backend
 
-      - name: Install backend
+      - name: Build backend
         if: steps.cache-backend.outputs.cache-hit != 'true'
         run: |
           ./scripts/download-mbedtls.sh $BACKEND_VERSION $BACKEND_DIR/src
           ./scripts/install-mbedtls.sh $BACKEND_DIR/src $BACKEND_DIR
 
-      - name: Install library
-        env:
-          C_INCLUDE_PATH: "${{ env.BACKEND_DIR }}/include"
-          LIBRARY_PATH: "${{ env.BACKEND_DIR }}/lib"
-        run: python setup.py --with-coverage build_ext --inplace
+      - uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements/tests.txt
 
-      - name: Install test deps
+      - name: Install deps
         run: >
           python -m pip install
           -r requirements.txt
           -r requirements/tests.txt
+
+      - name: Build and install
+        env:
+          C_INCLUDE_PATH: "${{ env.BACKEND_DIR }}/include"
+          LIBRARY_PATH: "${{ env.BACKEND_DIR }}/lib"
+        run: python setup.py --with-coverage build_ext --inplace
 
       - name: Run tests
         env:
