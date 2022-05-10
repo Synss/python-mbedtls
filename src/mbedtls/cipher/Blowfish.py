@@ -5,7 +5,7 @@
 """Blowfish cipher designed by Bruce Schneier in 1993."""
 
 
-from mbedtls.exceptions import TLSError
+from mbedtls.exceptions import TLSError  # type: ignore
 
 from . import _cipher
 

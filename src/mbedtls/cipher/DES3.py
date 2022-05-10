@@ -6,7 +6,7 @@
 Triple DES, or DES-EDE3)."""
 
 
-from mbedtls.exceptions import TLSError
+from mbedtls.exceptions import TLSError  # type: ignore
 
 from . import _cipher
 

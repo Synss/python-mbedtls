@@ -1,7 +1,7 @@
-import pytest
+import pytest  # type: ignore
 
 import mbedtls
-import mbedtls.hkdf as _hkdf
+import mbedtls.hkdf as _hkdf  # type: ignore
 import mbedtls.hmac as _hmac
 
 

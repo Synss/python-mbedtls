@@ -1,4 +1,4 @@
-import pytest
+import pytest  # type: ignore
 
 from mbedtls import secrets
 
@@ -9,7 +9,7 @@ except NameError:
     unicode = str
 
 
-def test_token_bytes():
+def test_token_bytes_default_entropy():
     token = secrets.token_bytes()
     assert len(token) == secrets.DEFAULT_ENTROPY
     assert isinstance(token, bytes)

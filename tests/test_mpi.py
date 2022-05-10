@@ -2,9 +2,9 @@ import numbers
 import pickle
 from binascii import hexlify, unhexlify
 
-import pytest
+import pytest  # type: ignore
 
-from mbedtls.mpi import MPI
+from mbedtls.mpi import MPI  # type: ignore
 
 
 @pytest.mark.parametrize("value", (12, 2**32 - 1, 10**100))

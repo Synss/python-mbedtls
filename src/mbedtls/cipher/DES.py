@@ -6,7 +6,7 @@
 in the 70's."""
 
 
-from mbedtls.exceptions import TLSError
+from mbedtls.exceptions import TLSError  # type: ignore
 
 from . import _cipher
 

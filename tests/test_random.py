@@ -4,11 +4,11 @@ import pickle
 import random
 from collections import defaultdict
 
-import pytest
+import pytest  # type: ignore
 
-import mbedtls._random as _drbg
-import mbedtls.mpi as _mpi
-from mbedtls.exceptions import TLSError
+import mbedtls._random as _drbg  # type: ignore
+import mbedtls.mpi as _mpi  # type: ignore
+from mbedtls.exceptions import TLSError  # type: ignore
 
 
 def sample(start, end, k=20):

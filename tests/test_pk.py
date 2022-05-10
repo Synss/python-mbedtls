@@ -3,14 +3,21 @@
 import numbers
 import pickle
 
-import pytest
+import pytest  # type: ignore
 
 import mbedtls
 from mbedtls import hashlib
-from mbedtls.exceptions import *
-from mbedtls.mpi import MPI
-from mbedtls.pk import *
-from mbedtls.pk import ECPoint, _get_md_alg, _type_from_name
+from mbedtls.exceptions import *  # type: ignore
+from mbedtls.mpi import MPI  # type: ignore
+from mbedtls.pk import *  # type: ignore
+from mbedtls.pk import (
+    Curve,
+    ECPoint,
+    _get_md_alg,
+    _type_from_name,
+    get_supported_ciphers,
+    get_supported_curves,
+)
 
 try:
     long

@@ -11,8 +11,8 @@ import time
 from contextlib import suppress
 from functools import partial
 
-from mbedtls._tls import _enable_debug_output, _set_debug_level
-from mbedtls.tls import (
+from mbedtls._tls import _enable_debug_output, _set_debug_level  # type: ignore
+from mbedtls.tls import (  # type: ignore
     DTLSConfiguration,
     HelloVerifyRequest,
     ServerContext,

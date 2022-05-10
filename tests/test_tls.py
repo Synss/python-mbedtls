@@ -7,12 +7,12 @@ import time
 from contextlib import suppress
 from pathlib import Path
 
-import pytest
+import pytest  # type: ignore
 
 from mbedtls import hashlib
-from mbedtls._tls import _DTLSCookie as DTLSCookie
+from mbedtls._tls import _DTLSCookie as DTLSCookie  # type: ignore
 from mbedtls._tls import _PSKSToreProxy as PSKStoreProxy
-from mbedtls.pk import RSA
+from mbedtls.pk import RSA  # type: ignore
 from mbedtls.tls import (
     ClientContext,
     DTLSConfiguration,
@@ -33,7 +33,7 @@ from mbedtls.tls import (
     WantWriteError,
     ciphers_available,
 )
-from mbedtls.x509 import CRT, CSR, BasicConstraints
+from mbedtls.x509 import CRT, CSR, BasicConstraints  # type: ignore
 
 
 @pytest.fixture(scope="module")

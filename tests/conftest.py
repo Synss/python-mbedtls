@@ -1,18 +1,11 @@
 import random
+import reprlib
 import sys
+from collections.abc import Sequence
 
-import pytest
+import pytest  # type: ignore
 
 import mbedtls
-
-try:
-    from collections.abc import Sequence
-except ImportError:
-    from collections import Sequence
-try:
-    import reprlib
-except ImportError:
-    import repr as reprlib
 
 
 def pytest_report_header(config, startdir):

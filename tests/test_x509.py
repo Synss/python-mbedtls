@@ -1,13 +1,12 @@
 import datetime as dt
 import pickle
-from pathlib import Path
 
-import certifi
-import pytest
+import certifi  # type: ignore
+import pytest  # type: ignore
 
 from mbedtls import hashlib
-from mbedtls.pk import ECC, RSA
-from mbedtls.x509 import *
+from mbedtls.pk import ECC, RSA  # type: ignore
+from mbedtls.x509 import *  # type: ignore
 
 CRL_PEM = """
 -----BEGIN X509 CRL-----

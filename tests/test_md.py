@@ -8,12 +8,12 @@
 import pickle
 from collections.abc import Collection
 
-import pytest
+import pytest  # type: ignore
 
 import mbedtls
 from mbedtls import hashlib
 from mbedtls import hmac as hmaclib
-from mbedtls._md import Hash
+from mbedtls._md import Hash  # type: ignore
 
 
 def make_chunks(buffer, size):

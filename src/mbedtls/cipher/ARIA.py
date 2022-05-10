@@ -10,7 +10,7 @@ the IETF in *RFC 5794*.
 """
 
 
-from mbedtls.exceptions import TLSError
+from mbedtls.exceptions import TLSError  # type: ignore
 
 from . import _cipher
 

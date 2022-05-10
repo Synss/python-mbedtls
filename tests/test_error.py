@@ -1,8 +1,8 @@
 """Unit test mbedtls.exceptions."""
 
-import pytest
+import pytest  # type: ignore
 
-from mbedtls.exceptions import TLSError, check_error
+from mbedtls.exceptions import TLSError, check_error  # type: ignore
 
 
 @pytest.mark.parametrize(

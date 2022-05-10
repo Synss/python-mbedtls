@@ -2,7 +2,7 @@ import sys
 from io import StringIO
 from pathlib import Path
 
-import pytest
+import pytest  # type: ignore
 
 if sys.version_info < (3, 9):
     from readme_renderer.rst import render

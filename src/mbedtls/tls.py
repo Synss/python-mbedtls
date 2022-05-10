@@ -5,14 +5,14 @@ import enum
 import socket as _socket
 import struct
 
-from ._tls import (
+from ._tls import (  # type: ignore
     DTLSConfiguration,
     DTLSVersion,
     HandshakeStep,
     HelloVerifyRequest,
 )
 from ._tls import MbedTLSBuffer as TLSWrappedBuffer
-from ._tls import (
+from ._tls import (  # type: ignore
     NextProtocol,
     Purpose,
     RaggedEOF,

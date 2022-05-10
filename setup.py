@@ -6,7 +6,7 @@ import re
 import sys
 from contextlib import suppress
 
-from setuptools import Extension, find_packages, setup
+from setuptools import Extension, find_packages, setup  # type: ignore
 
 
 def _get_version():

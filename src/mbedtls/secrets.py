@@ -13,7 +13,7 @@ This module is compatibale with the standard `secrets` (PEP 506) module.
 import base64 as _base64
 import binascii as _binascii
 
-import mbedtls._random as _rnd
+import mbedtls._random as _rnd  # type: ignore
 
 __all__ = [
     "randbits",
