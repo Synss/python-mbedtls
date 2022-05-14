@@ -6,10 +6,12 @@
 # pylint: disable=invalid-name, redefined-outer-name
 
 import pickle
+import sys
+from collections import defaultdict
+from typing import DefaultDict, Mapping, NamedTuple, Sequence
 
 import pytest  # type: ignore
 
-import mbedtls
 from mbedtls.cipher import (  # type: ignore
     AES,
     ARC4,
@@ -28,6 +30,116 @@ from mbedtls.cipher import (  # type: ignore
 )
 from mbedtls.cipher._cipher import CIPHER_NAME  # type: ignore
 from mbedtls.exceptions import TLSError  # type: ignore
+
+
+class Size(NamedTuple):
+    key_size: Sequence[int]
+    iv_size: int
+
+
+def constant(value):
+    return lambda: value
+
+
+SUPPORTED_SIZES: Mapping[str, DefaultDict[Mode, Size]] = {
+    "mbedtls.cipher.AES": defaultdict(
+        constant(Size(key_size=(16, 24, 32), iv_size=16)),
+        {
+            Mode.CCM: Size((16, 24, 32), 12),
+            Mode.ECB: Size((16, 24, 32), 0),
+            Mode.GCM: Size((16, 24, 32), 12),
+            Mode.XTS: Size((32, 64), 16),
+        },
+    ),
+    "mbedtls.cipher.ARC4": defaultdict(
+        constant(Size(key_size=(ARC4.key_size,), iv_size=0)),
+    ),
+    "mbedtls.cipher.ARIA": defaultdict(
+        constant(Size(key_size=(16, 24, 32), iv_size=16)),
+        {
+            Mode.CBC: Size((16, 24, 32), 16),
+            Mode.ECB: Size((16, 24, 32), 0),
+            Mode.GCM: Size((16, 24, 32), 12),
+        },
+    ),
+    "mbedtls.cipher.Blowfish": defaultdict(
+        constant(Size(key_size=(16,), iv_size=8)),
+        {Mode.ECB: Size((16,), 0)},
+    ),
+    "mbedtls.cipher.Camellia": defaultdict(
+        constant(Size(key_size=(16, 24, 32), iv_size=16)),
+        {
+            Mode.ECB: Size((16, 24, 32), 0),
+            Mode.GCM: Size((16, 24, 32), 12),
+        },
+    ),
+    "mbedtls.cipher.CHACHA20": defaultdict(
+        constant(Size(key_size=(CHACHA20.key_size,), iv_size=12)),
+        {Mode.ECB: Size((CHACHA20.key_size,), 0)},
+    ),
+    "mbedtls.cipher.DES": defaultdict(
+        constant(Size(key_size=(DES.key_size,), iv_size=8)),
+        {Mode.ECB: Size((DES.key_size,), 0)},
+    ),
+    "mbedtls.cipher.DES3": defaultdict(
+        constant(Size(key_size=(DES3.key_size,), iv_size=8)),
+        {Mode.ECB: Size((DES3.key_size,), 0)},
+    ),
+    "mbedtls.cipher.DES3dbl": defaultdict(
+        constant(Size(key_size=(DES3dbl.key_size,), iv_size=8)),
+        {Mode.ECB: Size((DES3dbl.key_size,), 0)},
+    ),
+}
+
+
+SUPPORTED_MODES: Mapping[str, Sequence[Mode]] = {
+    "mbedtls.cipher.AES": (
+        Mode.ECB,
+        Mode.CBC,
+        Mode.CFB,
+        Mode.CTR,
+        Mode.OFB,
+        Mode.XTS,
+    ),
+    "mbedtls.cipher.ARC4": (Mode.STREAM,),
+    "mbedtls.cipher.ARIA": (
+        (Mode.ECB, Mode.CBC, Mode.CTR, Mode.GCM)
+        if not sys.platform.startswith("win")
+        else ()
+    ),
+    "mbedtls.cipher.Blowfish": (Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR),
+    "mbedtls.cipher.Camellia": (
+        Mode.ECB,
+        Mode.CBC,
+        Mode.CFB,
+        Mode.CTR,
+        Mode.GCM,
+    ),
+    "mbedtls.cipher.CHACHA20": (Mode.STREAM,),
+    "mbedtls.cipher.DES": (Mode.ECB, Mode.CBC),
+    "mbedtls.cipher.DES3": (Mode.ECB, Mode.CBC),
+    "mbedtls.cipher.DES3dbl": (Mode.ECB, Mode.CBC),
+}
+
+
+SUPPORTED_AEAD_MODES: Mapping[str, Sequence[Mode]] = {
+    "mbedtls.cipher.AES": (Mode.GCM, Mode.CCM),
+    "mbedtls.cipher.CHACHA20": (Mode.CHACHAPOLY,),
+}
+
+
+def gen_cipher_data(module):
+    for mode in SUPPORTED_MODES[module.__name__]:
+        sizes = SUPPORTED_SIZES[module.__name__][mode]
+        for key_size in sizes.key_size:
+            yield key_size, mode, sizes.iv_size
+
+
+def gen_aead_cipher_data(module):
+    for mode in SUPPORTED_AEAD_MODES[module.__name__]:
+        sizes = SUPPORTED_SIZES[module.__name__][mode]
+        for key_size in sizes.key_size:
+            yield key_size, mode, sizes.iv_size
 
 
 def test_cipher_list():
@@ -66,535 +178,182 @@ def test_cfb_raises_value_error_without_iv(mode):
         Cipher(b"AES-512-CFB", b"", mode, b"")
 
 
-def _mode(mode):
-    return (
-        mode
-        if mbedtls.has_feature("cipher_mode_%s" % mode.name)
-        else pytest.skip("requires %s support in libmbedtls" % mode.name)
-    )
-
-
-class _TestCipher:
+class TestCipher:
     @pytest.fixture(
         params=[
-            Mode.ECB,
-            _mode(Mode.CBC),
-            _mode(Mode.CFB),
-            _mode(Mode.CTR),
-            Mode.GCM,
-            Mode.CCM,
+            AES,
+            ARC4,
+            ARIA,
+            Blowfish,
+            Camellia,
+            CHACHA20,
+            DES,
+            DES3,
+            DES3dbl,
         ]
     )
-    def mode(self, request):
+    def module(self, request):
         return request.param
 
-    @pytest.fixture(params=[])
-    def unsupported_mode(self, request):
+    def test_pickle(self, module, randbytes):
+        for key_size, mode, iv_size in gen_cipher_data(module):
+            cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
+            with pytest.raises(TypeError) as excinfo:
+                pickle.dumps(cipher)
+
+            assert str(excinfo.value).startswith("cannot pickle")
+
+    def test_accessors(self, module, randbytes):
+        for key_size, mode, iv_size in gen_cipher_data(module):
+            cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
+            assert cipher.key_size == key_size
+            assert cipher.mode == mode
+            assert cipher.iv_size == iv_size
+            assert module.block_size == cipher.block_size
+            assert module.key_size in {module.key_size, None}
+
+    def test_cipher_name(self, module, randbytes):
+        for key_size, mode, iv_size in gen_cipher_data(module):
+            cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
+            assert cipher.name in CIPHER_NAME
+            assert CIPHER_NAME[cipher._type] == cipher.name
+            assert str(cipher) == cipher.name.decode("ascii")
+
+    def test_encrypt_decrypt(self, module, randbytes):
+        for key_size, mode, iv_size in gen_cipher_data(module):
+            cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
+            data = randbytes(
+                cipher.block_size
+                if cipher.mode is Mode.ECB
+                else cipher.block_size * 128
+            )
+            assert cipher.decrypt(cipher.encrypt(data)) == data
+
+    def test_encrypt_nothing_raises(self, module, randbytes):
+        for key_size, mode, iv_size in gen_cipher_data(module):
+            cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
+            with pytest.raises(TLSError):
+                cipher.encrypt(b"")
+
+    def test_decrypt_nothing_raises(self, module, randbytes):
+        for key_size, mode, iv_size in gen_cipher_data(module):
+            cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
+            with pytest.raises(TLSError):
+                cipher.decrypt(b"")
+
+    def test_cbc_requires_padding(self, module, randbytes):
+        mode = Mode.CBC
+        if mode not in SUPPORTED_MODES[module.__name__]:
+            return pytest.skip(
+                f"unsupported mode for {module.__name__!r}: {mode!s}"
+            )
+
+        sizes = SUPPORTED_SIZES[module.__name__][mode]
+        for key_size in sizes.key_size:
+            cipher = module.new(
+                randbytes(key_size), mode, iv=randbytes(sizes.iv_size)
+            )
+            data = randbytes(
+                cipher.block_size
+                if cipher.mode is Mode.ECB
+                else cipher.block_size * 128
+            )
+            data += b"\0"
+            if cipher.mode is Mode.CBC:
+                with pytest.raises(ValueError):
+                    cipher.encrypt(data)
+
+
+class TestAEADCipher:
+    @pytest.fixture(params=[AES, CHACHA20])
+    def module(self, request):
         return request.param
 
-    @pytest.fixture
-    def iv_size(self, mode):
-        raise NotImplementedError
-
-    @pytest.fixture
-    def iv(self, iv_size, randbytes):
-        return randbytes(iv_size)
-
-    @pytest.fixture
-    def key_size(self):
-        raise NotImplementedError
-
-    @pytest.fixture(params=[])
-    def invalid_key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def module(self):
-        raise NotImplementedError
-
-    @pytest.fixture
-    def key(self, key_size, randbytes):
-        return randbytes(key_size)
-
-    @pytest.fixture
-    def invalid_key(self, invalid_key_size, randbytes):
-        return randbytes(invalid_key_size)
-
-    @pytest.fixture
-    def cipher(self, module, key, mode, iv):
-        try:
-            return module.new(key, mode, iv)
-        except NotImplementedError:
-            return pytest.skip("unsupported cipher")
-
-    @pytest.fixture
-    def data(self, cipher, mode, randbytes):
-        # `block_size` is limited for ECB because it is a block cipher.
-        assert cipher.block_size
-        return randbytes(
-            cipher.block_size if mode is Mode.ECB else cipher.block_size * 128
-        )
-
-    def test_pickle(self, cipher):
-        with pytest.raises(TypeError) as excinfo:
-            pickle.dumps(cipher)
-
-        assert str(excinfo.value).startswith("cannot pickle")
-
-    def test_mode_accessor(self, cipher, mode):
-        assert cipher.mode is mode
-
-    def test_iv_size_accessor(self, cipher, iv_size):
-        assert cipher.iv_size == iv_size
-
-    def test_key_size_accessor(self, cipher, key_size):
-        assert cipher.key_size == key_size
-
-    def test_name_accessor(self, cipher):
-        assert cipher.name in CIPHER_NAME
-
-    def test_str(self, cipher):
-        assert str(cipher) == cipher.name.decode("ascii")
-
-    def test_type_accessor(self, cipher):
-        assert CIPHER_NAME[cipher._type] == cipher.name
-
-    def test_unsupported_mode(self, module, key, unsupported_mode, iv):
-        with pytest.raises(TLSError):
-            module.new(key, unsupported_mode, iv)
-
-    def test_invalid_key_size(self, module, invalid_key, mode, iv):
-        with pytest.raises(TLSError):
-            module.new(invalid_key, mode, iv)
-
-    def test_encrypt_decrypt(self, cipher, data):
-        assert cipher.decrypt(cipher.encrypt(data)) == data
-
-    def test_encrypt_nothing_raises(self, cipher):
-        with pytest.raises(TLSError):
-            cipher.encrypt(b"")
-
-    def test_decrypt_nothing_raises(self, cipher):
-        with pytest.raises(TLSError):
-            cipher.decrypt(b"")
-
-    def test_module_level_block_size(self, module, cipher):
-        assert module.block_size == cipher.block_size
-
-    def test_module_level_key_size(self, module, cipher):
-        assert module.key_size in {module.key_size, None}
-
-
-class _TestAEADCipher(_TestCipher):
-    @pytest.fixture
-    def cipher(self, module, key, mode, iv, ad):
-        return module.new(key, mode, iv, ad)
-
-    @pytest.fixture(params=[0, 1, 16, 256])
-    def ad(self, mode, randbytes, request):
-        return randbytes(request.param)
-
-    def test_cbc_requires_padding(self, mode, cipher, data):
-        data += b"\0"
-        if mode is Mode.CBC:
-            with pytest.raises(ValueError):
-                cipher.encrypt(data)
-        assert cipher.decrypt(*cipher.encrypt(data)) == data
-
-    def test_encrypt_decrypt(self, cipher, data):
-        msg, tag = cipher.encrypt(data)
-        assert cipher.decrypt(msg, tag) == data
-
-    def test_decrypt_nothing_raises(self, cipher, data):
-        msg, tag = cipher.encrypt(data)
-        with pytest.raises(TLSError):
-            cipher.decrypt(b"", tag)
-
-
-@pytest.mark.skipif(
-    not mbedtls.has_feature("aes"), reason="requires AES support in libmbedtls"
-)
-class _TestAESBase(_TestCipher):
-    @pytest.fixture(params=[Mode.STREAM, Mode.CHACHAPOLY])
-    def unsupported_mode(self, request):
-        return request.param
-
-    @pytest.fixture(params=[8, 15, 128])
-    def invalid_key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def module(self):
-        return AES
-
-
-class TestAES(_TestAESBase):
-    @pytest.fixture(
-        params=[
-            Mode.ECB,
-            _mode(Mode.CBC),
-            _mode(Mode.CFB),
-            _mode(Mode.CTR),
-            _mode(Mode.OFB),
-        ]
-    )
-    def mode(self, request):
-        return request.param
-
-    @pytest.fixture
-    def iv_size(self, mode):
-        return {Mode.ECB: 0}.get(mode, 16)
-
-    @pytest.fixture(params=[16, 24, 32])
-    def key_size(self, request):
-        return request.param
-
-
-class TestAES_XTS(_TestAESBase):
-    @pytest.fixture(params=[_mode(Mode.XTS)])
-    def mode(self, request):
-        return request.param
-
-    @pytest.fixture
-    def iv_size(self, mode):
-        return {Mode.ECB: 0}.get(mode, 16)
-
-    @pytest.fixture(params=[32, 64])
-    def key_size(self, request):
-        return request.param
-
-
-class TestAES_AEAD(_TestAEADCipher):
-    @pytest.fixture(params=[Mode.GCM, Mode.CCM])
-    def mode(self, request):
-        return request.param
-
-    @pytest.fixture(params=[8, 15, 128])
-    def invalid_key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def iv_size(self, mode):
-        return {Mode.ECB: 0}.get(mode, 12)
-
-    @pytest.fixture(params=[16, 24, 32])
-    def key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def module(self):
-        return AES
-
-
-@pytest.mark.skipif(
-    not mbedtls.has_feature("arc4"),
-    reason="requires ARC4 support in libmbedtls",
-)
-class TestARC4(_TestCipher):
-    @pytest.fixture(params=[Mode.STREAM])
-    def mode(self, request):
-        return request.param
-
-    @pytest.fixture
-    def iv_size(self, mode):
-        return {Mode.ECB: 0}.get(mode, 0)
-
-    @pytest.fixture(params=[16])
-    def key_size(self, request):
-        return request.param
-
-    @pytest.fixture(params=[8, 15, 32])
-    def invalid_key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def module(self):
-        return ARC4
-
-
-@pytest.mark.skipif(
-    not mbedtls.has_feature("aria"),
-    reason="requires Aria support in libmbedtls",
-)
-class TestARIA(_TestCipher):
-    @pytest.fixture(
-        params=[
-            Mode.ECB,
-            _mode(Mode.CBC),
-            _mode(Mode.CTR),
-            Mode.GCM,
-        ]
-    )
-    def mode(self, request):
-        return request.param
-
-    @pytest.fixture(
-        params=[
-            Mode.CFB,
-            Mode.OFB,
-            Mode.STREAM,
-            Mode.CCM,
-            Mode.XTS,
-            Mode.CHACHAPOLY,
-        ]
-    )
-    def unsupported_mode(self, request):
-        return request.param
-
-    @pytest.fixture
-    def iv_size(self, mode):
-        return {Mode.ECB: 0, Mode.GCM: 12}.get(mode, 16)
-
-    @pytest.fixture(params=[16, 24, 32])
-    def key_size(self, request):
-        return request.param
-
-    @pytest.fixture(params=[8, 15, 64])
-    def invalid_key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def module(self):
-        return ARIA
-
-
-@pytest.mark.skipif(
-    not mbedtls.has_feature("blowfish"),
-    reason="requires Blowfish support in libmbedtls",
-)
-class TestBlowfish(_TestCipher):
-    @pytest.fixture(
-        params=[
-            Mode.ECB,
-            _mode(Mode.CBC),
-            _mode(Mode.CFB),
-            _mode(Mode.CTR),
-        ]
-    )
-    def mode(self, request):
-        return request.param
-
-    @pytest.fixture(
-        params=[
-            Mode.OFB,
-            Mode.GCM,
-            Mode.STREAM,
-            Mode.CCM,
-            Mode.XTS,
-            Mode.CHACHAPOLY,
-        ]
-    )
-    def unsupported_mode(self, request):
-        return request.param
-
-    @pytest.fixture
-    def iv_size(self, mode):
-        return {Mode.ECB: 0}.get(mode, 8)
-
-    @pytest.fixture(params=range(4, 57))
-    def key_size(self, request):
-        return request.param
-
-    @pytest.fixture(params=[3, 57])
-    def invalid_key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def module(self):
-        return Blowfish
-
-    @pytest.mark.skip("Blowfish always returns key_size == 16")
-    def test_key_size_accessor(self, cipher, key_size):
-        assert cipher.key_size == 16
-
-
-@pytest.mark.skipif(
-    not mbedtls.has_feature("camellia"),
-    reason="requires Camellia support in libmbedtls",
-)
-class TestCamellia(_TestCipher):
-    @pytest.fixture(
-        params=[
-            Mode.ECB,
-            _mode(Mode.CBC),
-            _mode(Mode.CFB),
-            _mode(Mode.CTR),
-            Mode.GCM,
-        ]
-    )
-    def mode(self, request):
-        return request.param
-
-    @pytest.fixture(
-        params=[
-            Mode.OFB,
-            Mode.STREAM,
-            Mode.CCM,
-            Mode.XTS,
-            Mode.CHACHAPOLY,
-        ]
-    )
-    def unsupported_mode(self, request):
-        return request.param
-
-    @pytest.fixture
-    def iv_size(self, mode):
-        return {Mode.ECB: 0, Mode.GCM: 12}.get(mode, 16)
-
-    @pytest.fixture(params=[16, 24, 32])
-    def key_size(self, request):
-        return request.param
-
-    @pytest.fixture(params=[8, 15, 64])
-    def invalid_key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def module(self):
-        return Camellia
-
-
-@pytest.mark.skipif(
-    not mbedtls.has_feature("des"), reason="requires DES support in libmbedtls"
-)
-class _TestDESBase(_TestCipher):
-    @pytest.fixture(params=[Mode.ECB, _mode(Mode.CBC)])
-    def mode(self, request):
-        return request.param
-
-    @pytest.fixture(
-        params=[
-            Mode.CFB,
-            Mode.OFB,
-            Mode.CTR,
-            Mode.GCM,
-            Mode.STREAM,
-            Mode.CCM,
-            Mode.XTS,
-            Mode.CHACHAPOLY,
-        ]
-    )
-    def unsupported_mode(self, request):
-        return request.param
-
-    @pytest.fixture
-    def iv_size(self, mode):
-        return {Mode.ECB: 0}.get(mode, 8)
-
-    @pytest.fixture(params=[4, 64])
-    def invalid_key_size(self, request):
-        return request.param
-
-
-class TestDES(_TestDESBase):
-    @pytest.fixture(params=[8])
-    def key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def module(self):
-        return DES
-
-
-class TestDES3(_TestDESBase):
-    @pytest.fixture(params=[24])
-    def key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def module(self):
-        return DES3
-
-
-class TestDES3dbl(_TestDESBase):
-    @pytest.fixture(params=[16])
-    def key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def module(self):
-        return DES3dbl
-
-
-@pytest.mark.skipif(
-    not mbedtls.has_feature("chacha20"),
-    reason="requires CHACHA20 support in libmbedtls",
-)
-class TestCHACHA20(_TestCipher):
-    @pytest.fixture(params=[Mode.STREAM])
-    def mode(self, request):
-        return request.param
-
-    @pytest.fixture(
-        params=[
-            Mode.ECB,
-            Mode.CBC,
-            Mode.CFB,
-            Mode.OFB,
-            Mode.CTR,
-            Mode.GCM,
-            Mode.CCM,
-            Mode.XTS,
-        ]
-    )
-    def unsupported_mode(self, request):
-        return request.param
-
-    @pytest.fixture
-    def iv_size(self, mode):
-        return {Mode.ECB: 0}.get(mode, 12)
-
-    @pytest.fixture(params=[32])
-    def key_size(self, request):
-        return request.param
-
-    @pytest.fixture(params=[8, 16, 64])
-    def invalid_key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def module(self):
-        return CHACHA20
-
-
-@pytest.mark.skipif(
-    not all(
-        (mbedtls.has_feature("chacha20"), mbedtls.has_feature("chachapoly"))
-    ),
-    reason="requires CHACHA20 support in libmbedtls",
-)
-class TestCHACHA20AEAD(_TestAEADCipher):
-    @pytest.fixture(params=[Mode.CHACHAPOLY])
-    def mode(self, request):
-        return request.param
-
-    @pytest.fixture(
-        params=[
-            Mode.ECB,
-            Mode.CBC,
-            Mode.CFB,
-            Mode.OFB,
-            Mode.CTR,
-            Mode.GCM,
-            Mode.CCM,
-            Mode.XTS,
-        ]
-    )
-    def unsupported_mode(self, request):
-        return request.param
-
-    @pytest.fixture
-    def iv_size(self, mode):
-        return {Mode.ECB: 0}.get(mode, 12)
-
-    @pytest.fixture(params=[32])
-    def key_size(self, request):
-        return request.param
-
-    @pytest.fixture(params=[8, 16, 64])
-    def invalid_key_size(self, request):
-        return request.param
-
-    @pytest.fixture
-    def module(self):
-        return CHACHA20
+    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
+    def test_pickle(self, module, ad_size, randbytes):
+        for key_size, mode, iv_size in gen_aead_cipher_data(module):
+            cipher = module.new(
+                randbytes(key_size),
+                mode,
+                iv=randbytes(iv_size),
+                ad=randbytes(ad_size),
+            )
+            with pytest.raises(TypeError) as excinfo:
+                pickle.dumps(cipher)
+
+            assert str(excinfo.value).startswith("cannot pickle")
+
+    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
+    def test_accessors(self, module, ad_size, randbytes):
+        for key_size, mode, iv_size in gen_aead_cipher_data(module):
+            cipher = module.new(
+                randbytes(key_size),
+                mode,
+                iv=randbytes(iv_size),
+                ad=randbytes(ad_size),
+            )
+            assert cipher.key_size == key_size
+            assert cipher.mode == mode
+            assert cipher.iv_size == iv_size
+            assert module.block_size == cipher.block_size
+            assert module.key_size in {module.key_size, None}
+
+    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
+    def test_cipher_name(self, module, ad_size, randbytes):
+        for key_size, mode, iv_size in gen_aead_cipher_data(module):
+            cipher = module.new(
+                randbytes(key_size),
+                mode,
+                iv=randbytes(iv_size),
+                ad=randbytes(ad_size),
+            )
+            assert cipher.name in CIPHER_NAME
+            assert CIPHER_NAME[cipher._type] == cipher.name
+            assert str(cipher) == cipher.name.decode("ascii")
+
+    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
+    def test_encrypt_decrypt(self, module, ad_size, randbytes):
+        for key_size, mode, iv_size in gen_aead_cipher_data(module):
+            cipher = module.new(
+                randbytes(key_size),
+                mode,
+                iv=randbytes(iv_size),
+                ad=randbytes(ad_size),
+            )
+            data = randbytes(
+                cipher.block_size
+                if cipher.mode is Mode.ECB
+                else cipher.block_size * 128
+            )
+            msg, tag = cipher.encrypt(data)
+            assert cipher.decrypt(msg, tag) == data
+
+    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
+    def test_encrypt_nothing_raises(self, module, ad_size, randbytes):
+        for key_size, mode, iv_size in gen_aead_cipher_data(module):
+            cipher = module.new(
+                randbytes(key_size),
+                mode,
+                iv=randbytes(iv_size),
+                ad=randbytes(ad_size),
+            )
+            with pytest.raises(TLSError):
+                cipher.encrypt(b"")
+
+    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
+    def test_decrypt_nothing_raises(self, module, ad_size, randbytes):
+        for key_size, mode, iv_size in gen_aead_cipher_data(module):
+            cipher = module.new(
+                randbytes(key_size),
+                mode,
+                iv=randbytes(iv_size),
+                ad=randbytes(ad_size),
+            )
+            data = randbytes(
+                cipher.block_size
+                if cipher.mode is Mode.ECB
+                else cipher.block_size * 128
+            )
+            msg, tag = cipher.encrypt(data)
+            with pytest.raises(TLSError):
+                cipher.decrypt(b"", tag)

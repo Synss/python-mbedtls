@@ -37,7 +37,7 @@ def new(key, mode, iv=None, ad=None):
         ad (bytes or None): The associated data for ChaCha/Poly mode.
 
     """
-    if len(key) != 32:
+    if len(key) != key_size:
         raise TLSError(msg="key size must 32 bytes, got %r" % len(key))
     if mode == _cipher.Mode.STREAM:
         assert ad is None
