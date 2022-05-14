@@ -10,11 +10,19 @@ import pickle
 import pytest  # type: ignore
 
 import mbedtls
-import mbedtls.cipher as mb
 from mbedtls.cipher import (  # type: ignore
+    AES,
+    ARC4,
+    ARIA,
+    CHACHA20,
+    DES,
+    DES3,
     MODE_CBC,
     MODE_CFB,
+    Blowfish,
+    Camellia,
     Cipher,
+    DES3dbl,
     Mode,
     get_supported_ciphers,
 )
@@ -217,7 +225,7 @@ class _TestAESBase(_TestCipher):
 
     @pytest.fixture
     def module(self):
-        return mb.AES
+        return AES
 
 
 class TestAES(_TestAESBase):
@@ -275,7 +283,7 @@ class TestAES_AEAD(_TestAEADCipher):
 
     @pytest.fixture
     def module(self):
-        return mb.AES
+        return AES
 
 
 @pytest.mark.skipif(
@@ -301,7 +309,7 @@ class TestARC4(_TestCipher):
 
     @pytest.fixture
     def module(self):
-        return mb.ARC4
+        return ARC4
 
 
 @pytest.mark.skipif(
@@ -347,7 +355,7 @@ class TestARIA(_TestCipher):
 
     @pytest.fixture
     def module(self):
-        return mb.ARIA
+        return ARIA
 
 
 @pytest.mark.skipif(
@@ -393,7 +401,7 @@ class TestBlowfish(_TestCipher):
 
     @pytest.fixture
     def module(self):
-        return mb.Blowfish
+        return Blowfish
 
     @pytest.mark.skip("Blowfish always returns key_size == 16")
     def test_key_size_accessor(self, cipher, key_size):
@@ -443,7 +451,7 @@ class TestCamellia(_TestCipher):
 
     @pytest.fixture
     def module(self):
-        return mb.Camellia
+        return Camellia
 
 
 @pytest.mark.skipif(
@@ -485,7 +493,7 @@ class TestDES(_TestDESBase):
 
     @pytest.fixture
     def module(self):
-        return mb.DES
+        return DES
 
 
 class TestDES3(_TestDESBase):
@@ -495,7 +503,7 @@ class TestDES3(_TestDESBase):
 
     @pytest.fixture
     def module(self):
-        return mb.DES3
+        return DES3
 
 
 class TestDES3dbl(_TestDESBase):
@@ -505,7 +513,7 @@ class TestDES3dbl(_TestDESBase):
 
     @pytest.fixture
     def module(self):
-        return mb.DES3dbl
+        return DES3dbl
 
 
 @pytest.mark.skipif(
@@ -546,7 +554,7 @@ class TestCHACHA20(_TestCipher):
 
     @pytest.fixture
     def module(self):
-        return mb.CHACHA20
+        return CHACHA20
 
 
 @pytest.mark.skipif(
@@ -589,4 +597,4 @@ class TestCHACHA20AEAD(_TestAEADCipher):
 
     @pytest.fixture
     def module(self):
-        return mb.CHACHA20
+        return CHACHA20
