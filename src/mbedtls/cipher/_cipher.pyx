@@ -107,34 +107,6 @@ class Mode(enum.Enum):
     CHACHAPOLY = _cipher.MBEDTLS_MODE_CHACHAPOLY
 
 
-# Add module-level aliases to comply with PEP 272.
-MODE_ECB = Mode.ECB
-MODE_CBC = Mode.CBC
-MODE_CFB = Mode.CFB
-MODE_OFB = Mode.OFB
-MODE_CTR = Mode.CTR
-MODE_GCM = Mode.GCM
-MODE_STREAM = Mode.STREAM
-MODE_CCM = Mode.CCM
-MODE_XTS = Mode.XTS
-MODE_CHACHAPOLY = Mode.CHACHAPOLY
-
-
-__all__ = (
-    "Mode",
-    "MODE_ECB",
-    "MODE_CBC",
-    "MODE_CFB",
-    "MODE_OFB",
-    "MODE_CTR",
-    "MODE_GCM",
-    "MODE_STREAM",
-    "MODE_CCM",
-    "MODE_XTS",
-    "MODE_CHACHAPOLY",
-)
-
-
 cpdef get_supported_ciphers():
     """Return the set of ciphers supported by the generic
     cipher module.

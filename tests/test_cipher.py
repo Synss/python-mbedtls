@@ -11,15 +11,15 @@ import pytest  # type: ignore
 
 import mbedtls
 import mbedtls.cipher as mb
-from mbedtls.cipher import Mode  # type: ignore
-from mbedtls.cipher._cipher import (  # type: ignore
-    CIPHER_NAME,
+from mbedtls.cipher import (  # type: ignore
     MODE_CBC,
     MODE_CFB,
     Cipher,
+    Mode,
     get_supported_ciphers,
 )
-from mbedtls.exceptions import *  # type: ignore
+from mbedtls.cipher._cipher import CIPHER_NAME  # type: ignore
+from mbedtls.exceptions import TLSError  # type: ignore
 
 
 def test_cipher_list():

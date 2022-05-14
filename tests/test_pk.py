@@ -7,14 +7,21 @@ import pytest  # type: ignore
 
 import mbedtls
 from mbedtls import hashlib
-from mbedtls.exceptions import *  # type: ignore
+from mbedtls.exceptions import TLSError  # type: ignore
 from mbedtls.mpi import MPI  # type: ignore
-from mbedtls.pk import *  # type: ignore
-from mbedtls.pk import (
+from mbedtls.pk import (  # type: ignore
+    ECC,
+    RSA,
     Curve,
+    DHClient,
+    DHServer,
+    ECDHClient,
+    ECDHNaive,
+    ECDHServer,
     ECPoint,
     _get_md_alg,
     _type_from_name,
+    check_pair,
     get_supported_ciphers,
     get_supported_curves,
 )
