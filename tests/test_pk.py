@@ -26,11 +26,6 @@ from mbedtls.pk import (  # type: ignore
     get_supported_curves,
 )
 
-try:
-    long
-except NameError:
-    long = int
-
 
 def test_supported_curves():
     assert get_supported_curves()

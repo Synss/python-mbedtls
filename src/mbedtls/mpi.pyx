@@ -18,11 +18,6 @@ import mbedtls.exceptions as _exc
 import mbedtls._platform as _plt
 import mbedtls._random as _rnd
 
-try:
-    long
-except NameError:
-    long = int
-
 
 cdef _rnd.Random __rng = _rnd.default_rng()
 
@@ -33,7 +28,7 @@ cdef to_bytes(value):
 
 
 cdef from_bytes(value):
-    return long(hexlify(value), 16)
+    return int(hexlify(value), 16)
 
 
 cdef from_mpi_p(_mpi.mbedtls_mpi *mpi_p):
@@ -87,10 +82,10 @@ cdef class MPI:
             _mpi.mbedtls_mpi_read_binary(&self._ctx, &data[0], data.shape[0]))
 
     def __str__(self):
-        return "%i" % long(self)
+        return "%i" % int(self)
 
     def __repr__(self):
-        return "%s(%i)" % (type(self).__name__, long(self))
+        return "%s(%i)" % (type(self).__name__, self)
 
     def bit_length(self):
         """Return the number of bits necessary to represent MPI in binary."""
@@ -135,7 +130,7 @@ cdef class MPI:
         return self_
 
     def __hash__(self):
-        return long(self)
+        return int(self)
 
     def __bool__(self):
         return self != 0
@@ -210,7 +205,7 @@ cdef class MPI:
         return mbedtls_mpi_cmp_mpi(&self._ctx, &other_._ctx) == 0
 
     def __float__(self):
-        return float(long(self))
+        return float(int(self))
 
     def __trunc__(self):
         return self
@@ -285,20 +280,20 @@ cdef class MPI:
             return 0
 
     def __index__(self):
-        return long(self)
+        return int(self)
 
     def __lshift__(MPI self, other):
-        _exc.check_error(mbedtls_mpi_shift_l(&self._ctx, long(other)))
+        _exc.check_error(mbedtls_mpi_shift_l(&self._ctx, int(other)))
         return self
 
     def __rshift__(MPI self, other):
-        _exc.check_error(mbedtls_mpi_shift_r(&self._ctx, long(other)))
+        _exc.check_error(mbedtls_mpi_shift_r(&self._ctx, int(other)))
         return self
 
     def __and__(MPI self, other):
         if not isinstance(other, MPI):
             other = MPI(other)
-        cdef size_t size = long(
+        cdef size_t size = int(
             math.ceil(max(self.bit_length(), other.bit_length()) / 8)
         )
         self_bin = bytearray(self.to_bytes(size, "big"))
@@ -316,7 +311,7 @@ cdef class MPI:
     def __xor__(MPI self, other):
         if not isinstance(other, MPI):
             other = MPI(other)
-        cdef size_t size = long(
+        cdef size_t size = int(
             math.ceil(max(self.bit_length(), other.bit_length()) / 8)
         )
         self_bin = bytearray(self.to_bytes(size, "big"))
@@ -334,7 +329,7 @@ cdef class MPI:
     def __or__(MPI self, other):
         if not isinstance(other, MPI):
             other = MPI(other)
-        cdef size_t size = long(
+        cdef size_t size = int(
             math.ceil(max(self.bit_length(), other.bit_length()) / 8)
         )
         self_bin = bytearray(self.to_bytes(size, "big"))

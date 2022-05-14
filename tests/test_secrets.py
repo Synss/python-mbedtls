@@ -2,12 +2,6 @@ import pytest  # type: ignore
 
 from mbedtls import secrets
 
-# For Python 2.7
-try:
-    unicode
-except NameError:
-    unicode = str
-
 
 def test_token_bytes_default_entropy():
     token = secrets.token_bytes()
@@ -25,13 +19,13 @@ def test_token_bytes(nbytes):
 def test_token_hex():
     token = secrets.token_hex()
     assert len(token) == 2 * secrets.DEFAULT_ENTROPY
-    assert isinstance(token, (str, unicode))
+    assert isinstance(token, str)
 
 
 def test_token_urlsafe():
     token = secrets.token_urlsafe()
     assert len(token) == pytest.approx(1.3 * secrets.DEFAULT_ENTROPY, rel=0.1)
-    assert isinstance(token, (str, unicode))
+    assert isinstance(token, str)
 
 
 @pytest.mark.repeat(100)
