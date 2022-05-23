@@ -64,6 +64,7 @@ SUPPORTED_SIZES: Mapping[str, Mapping[Mode, Size]] = {
     ),
     "mbedtls.cipher.ARC4": defaultdict(
         constant(Size(key_size=(ARC4.key_size,), iv_size=0)),
+        {Mode.CFB: Size((ARC4.key_size,), iv_size=ARC4.block_size)},
     ),
     "mbedtls.cipher.ARIA": defaultdict(
         constant(Size(key_size=(16, 24, 32), iv_size=16)),
@@ -228,6 +229,24 @@ class TestCipher:
             assert cipher.name in CIPHER_NAME
             assert CIPHER_NAME[cipher._type] == cipher.name
             assert str(cipher) == cipher.name.decode("ascii")
+
+    def test_unsupported_mode(self, module, randbytes):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module,
+            modes={
+                module.__name__: tuple(
+                    frozenset(Mode)
+                    - (
+                        set(SUPPORTED_MODES[module.__name__])
+                        | set(SUPPORTED_AEAD_MODES.get(module.__name__, set()))
+                    )
+                )
+            },
+        ):
+            with pytest.raises(TLSError) as excinfo:
+                module.new(randbytes(key_size), mode, randbytes(iv_size))
+
+            assert excinfo.value.msg.startswith("unsupported mode")
 
     def test_encrypt_decrypt(self, module, randbytes):
         for key_size, mode, iv_size in gen_cipher_data(
