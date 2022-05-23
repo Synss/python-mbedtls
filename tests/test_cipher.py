@@ -102,11 +102,7 @@ SUPPORTED_MODES: Mapping[str, Sequence[Mode]] = {
         Mode.XTS,
     ),
     "mbedtls.cipher.ARC4": (Mode.STREAM,),
-    "mbedtls.cipher.ARIA": (
-        (Mode.ECB, Mode.CBC, Mode.CTR, Mode.GCM)
-        if not sys.platform.startswith("win")
-        else ()
-    ),
+    "mbedtls.cipher.ARIA": (Mode.ECB, Mode.CBC, Mode.CTR, Mode.GCM),
     "mbedtls.cipher.Blowfish": (Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR),
     "mbedtls.cipher.Camellia": (
         Mode.ECB,
@@ -186,6 +182,8 @@ class TestCipher:
         ]
     )
     def module(self, request):
+        if request.param is ARIA and sys.platform.startswith("win"):
+            return pytest.skip()
         return request.param
 
     def test_pickle(self, module, randbytes):
