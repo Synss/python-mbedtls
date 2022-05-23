@@ -128,15 +128,8 @@ SUPPORTED_AEAD_MODES: Mapping[str, Sequence[Mode]] = {
 }
 
 
-def gen_cipher_data(module):
-    for mode in SUPPORTED_MODES[module.__name__]:
-        sizes = SUPPORTED_SIZES[module.__name__][mode]
-        for key_size in sizes.key_size:
-            yield key_size, mode, sizes.iv_size
-
-
-def gen_aead_cipher_data(module):
-    for mode in SUPPORTED_AEAD_MODES[module.__name__]:
+def gen_cipher_data(module, *, modes: Mapping[str, Sequence[Mode]]):
+    for mode in modes[module.__name__]:
         sizes = SUPPORTED_SIZES[module.__name__][mode]
         for key_size in sizes.key_size:
             yield key_size, mode, sizes.iv_size
@@ -196,7 +189,9 @@ class TestCipher:
         return request.param
 
     def test_pickle(self, module, randbytes):
-        for key_size, mode, iv_size in gen_cipher_data(module):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module, modes=SUPPORTED_MODES
+        ):
             cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
             with pytest.raises(TypeError) as excinfo:
                 pickle.dumps(cipher)
@@ -204,7 +199,9 @@ class TestCipher:
             assert str(excinfo.value).startswith("cannot pickle")
 
     def test_accessors(self, module, randbytes):
-        for key_size, mode, iv_size in gen_cipher_data(module):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module, modes=SUPPORTED_MODES
+        ):
             cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
             assert cipher.key_size == key_size
             assert cipher.mode == mode
@@ -213,14 +210,18 @@ class TestCipher:
             assert module.key_size in {module.key_size, None}
 
     def test_cipher_name(self, module, randbytes):
-        for key_size, mode, iv_size in gen_cipher_data(module):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module, modes=SUPPORTED_MODES
+        ):
             cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
             assert cipher.name in CIPHER_NAME
             assert CIPHER_NAME[cipher._type] == cipher.name
             assert str(cipher) == cipher.name.decode("ascii")
 
     def test_encrypt_decrypt(self, module, randbytes):
-        for key_size, mode, iv_size in gen_cipher_data(module):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module, modes=SUPPORTED_MODES
+        ):
             cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
             data = randbytes(
                 cipher.block_size
@@ -230,13 +231,17 @@ class TestCipher:
             assert cipher.decrypt(cipher.encrypt(data)) == data
 
     def test_encrypt_nothing_raises(self, module, randbytes):
-        for key_size, mode, iv_size in gen_cipher_data(module):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module, modes=SUPPORTED_MODES
+        ):
             cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
             with pytest.raises(TLSError):
                 cipher.encrypt(b"")
 
     def test_decrypt_nothing_raises(self, module, randbytes):
-        for key_size, mode, iv_size in gen_cipher_data(module):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module, modes=SUPPORTED_MODES
+        ):
             cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
             with pytest.raises(TLSError):
                 cipher.decrypt(b"")
@@ -271,7 +276,9 @@ class TestAEADCipher:
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
     def test_pickle(self, module, ad_size, randbytes):
-        for key_size, mode, iv_size in gen_aead_cipher_data(module):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module, modes=SUPPORTED_AEAD_MODES
+        ):
             cipher = module.new(
                 randbytes(key_size),
                 mode,
@@ -285,7 +292,9 @@ class TestAEADCipher:
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
     def test_accessors(self, module, ad_size, randbytes):
-        for key_size, mode, iv_size in gen_aead_cipher_data(module):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module, modes=SUPPORTED_AEAD_MODES
+        ):
             cipher = module.new(
                 randbytes(key_size),
                 mode,
@@ -300,7 +309,9 @@ class TestAEADCipher:
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
     def test_cipher_name(self, module, ad_size, randbytes):
-        for key_size, mode, iv_size in gen_aead_cipher_data(module):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module, modes=SUPPORTED_AEAD_MODES
+        ):
             cipher = module.new(
                 randbytes(key_size),
                 mode,
@@ -313,7 +324,9 @@ class TestAEADCipher:
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
     def test_encrypt_decrypt(self, module, ad_size, randbytes):
-        for key_size, mode, iv_size in gen_aead_cipher_data(module):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module, modes=SUPPORTED_AEAD_MODES
+        ):
             cipher = module.new(
                 randbytes(key_size),
                 mode,
@@ -330,7 +343,9 @@ class TestAEADCipher:
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
     def test_encrypt_nothing_raises(self, module, ad_size, randbytes):
-        for key_size, mode, iv_size in gen_aead_cipher_data(module):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module, modes=SUPPORTED_AEAD_MODES
+        ):
             cipher = module.new(
                 randbytes(key_size),
                 mode,
@@ -342,7 +357,9 @@ class TestAEADCipher:
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
     def test_decrypt_nothing_raises(self, module, ad_size, randbytes):
-        for key_size, mode, iv_size in gen_aead_cipher_data(module):
+        for key_size, mode, iv_size in gen_cipher_data(
+            module, modes=SUPPORTED_AEAD_MODES
+        ):
             cipher = module.new(
                 randbytes(key_size),
                 mode,
