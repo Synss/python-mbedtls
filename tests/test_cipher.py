@@ -8,7 +8,15 @@
 import pickle
 import sys
 from collections import defaultdict
-from typing import DefaultDict, Mapping, NamedTuple, Sequence
+from typing import (
+    Callable,
+    Iterator,
+    Mapping,
+    NamedTuple,
+    Sequence,
+    Tuple,
+    TypeVar,
+)
 
 import pytest  # type: ignore
 
@@ -37,11 +45,14 @@ class Size(NamedTuple):
     iv_size: int
 
 
-def constant(value):
+T = TypeVar("T")
+
+
+def constant(value: T) -> Callable[[], T]:
     return lambda: value
 
 
-SUPPORTED_SIZES: Mapping[str, DefaultDict[Mode, Size]] = {
+SUPPORTED_SIZES: Mapping[str, Mapping[Mode, Size]] = {
     "mbedtls.cipher.AES": defaultdict(
         constant(Size(key_size=(16, 24, 32), iv_size=16)),
         {
@@ -124,45 +135,47 @@ SUPPORTED_AEAD_MODES: Mapping[str, Sequence[Mode]] = {
 }
 
 
-def gen_cipher_data(module, *, modes: Mapping[str, Sequence[Mode]]):
+def gen_cipher_data(
+    module: type, *, modes: Mapping[str, Sequence[Mode]]
+) -> Iterator[Tuple[int, Mode, int]]:
     for mode in modes[module.__name__]:
         sizes = SUPPORTED_SIZES[module.__name__][mode]
         for key_size in sizes.key_size:
             yield key_size, mode, sizes.iv_size
 
 
-def test_cipher_list():
+def test_cipher_list() -> None:
     assert len(CIPHER_NAME) == 74
 
 
-def test_get_supported_ciphers():
+def test_get_supported_ciphers() -> None:
     cl = get_supported_ciphers()
     assert cl and set(cl).issubset(set(CIPHER_NAME))
 
 
-def test_wrong_size_raises_exception():
+def test_wrong_size_raises_exception() -> None:
     with pytest.raises(NotImplementedError):
         Cipher(b"AES-512-ECB", b"", Mode.ECB, b"")
 
 
-def test_random_name_raises_exception():
+def test_random_name_raises_exception() -> None:
     with pytest.raises(NotImplementedError):
         Cipher(b"RANDOM TEXT IS NOT A CIPHER", b"", Mode.ECB, b"")
 
 
-def test_zero_length_raises_exception():
+def test_zero_length_raises_exception() -> None:
     with pytest.raises(NotImplementedError):
         Cipher(b"", b"", Mode.ECB, b"")
 
 
 @pytest.mark.parametrize("mode", [MODE_CBC, Mode.CBC])
-def test_cbc_raises_value_error_without_iv(mode):
+def test_cbc_raises_value_error_without_iv(mode: Mode) -> None:
     with pytest.raises(ValueError):
         Cipher(b"AES-512-CBC", b"", mode, b"")
 
 
 @pytest.mark.parametrize("mode", [MODE_CFB, Mode.CFB])
-def test_cfb_raises_value_error_without_iv(mode):
+def test_cfb_raises_value_error_without_iv(mode: Mode) -> None:
     with pytest.raises(ValueError):
         Cipher(b"AES-512-CFB", b"", mode, b"")
 
