@@ -9,6 +9,7 @@ import pickle
 import sys
 from collections import defaultdict
 from typing import (
+    Any,
     Callable,
     Iterator,
     Mapping,
@@ -16,11 +17,13 @@ from typing import (
     Sequence,
     Tuple,
     TypeVar,
+    Union,
+    cast,
 )
 
 import pytest  # type: ignore
 
-from mbedtls.cipher import (  # type: ignore
+from mbedtls.cipher import (
     AES,
     ARC4,
     ARIA,
@@ -37,6 +40,7 @@ from mbedtls.cipher import (  # type: ignore
     get_supported_ciphers,
 )
 from mbedtls.cipher._cipher import CIPHER_NAME  # type: ignore
+from mbedtls.cipher.typing import AEADCipherType, CipherType
 from mbedtls.exceptions import TLSError  # type: ignore
 
 
@@ -137,7 +141,9 @@ SUPPORTED_AEAD_MODES: Mapping[str, Sequence[Mode]] = {
 
 
 def gen_cipher_data(
-    module: type, *, modes: Mapping[str, Sequence[Mode]]
+    module: Union[CipherType, AEADCipherType],
+    *,
+    modes: Mapping[str, Sequence[Mode]],
 ) -> Iterator[Tuple[int, Mode, int]]:
     for mode in modes[module.__name__]:
         sizes = SUPPORTED_SIZES[module.__name__][mode]
@@ -195,12 +201,14 @@ class TestCipher:
             DES3dbl,
         ]
     )
-    def module(self, request):
+    def module(self, request: Any) -> CipherType:
         if request.param is ARIA and sys.platform.startswith("win"):
             return pytest.skip()
-        return request.param
+        return cast(CipherType, request.param)
 
-    def test_pickle(self, module, randbytes):
+    def test_pickle(
+        self, module: CipherType, randbytes: Callable[[int], bytes]
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module, modes=SUPPORTED_MODES
         ):
@@ -210,7 +218,9 @@ class TestCipher:
 
             assert str(excinfo.value).startswith("cannot pickle")
 
-    def test_accessors(self, module, randbytes):
+    def test_accessors(
+        self, module: CipherType, randbytes: Callable[[int], bytes]
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module, modes=SUPPORTED_MODES
         ):
@@ -221,7 +231,9 @@ class TestCipher:
             assert module.block_size == cipher.block_size
             assert module.key_size in {module.key_size, None}
 
-    def test_cipher_name(self, module, randbytes):
+    def test_cipher_name(
+        self, module: CipherType, randbytes: Callable[[int], bytes]
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module, modes=SUPPORTED_MODES
         ):
@@ -230,7 +242,9 @@ class TestCipher:
             assert CIPHER_NAME[cipher._type] == cipher.name
             assert str(cipher) == cipher.name.decode("ascii")
 
-    def test_unsupported_mode(self, module, randbytes):
+    def test_unsupported_mode(
+        self, module: CipherType, randbytes: Callable[[int], bytes]
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module,
             modes={
@@ -248,7 +262,9 @@ class TestCipher:
 
             assert excinfo.value.msg.startswith("unsupported mode")
 
-    def test_encrypt_decrypt(self, module, randbytes):
+    def test_encrypt_decrypt(
+        self, module: CipherType, randbytes: Callable[[int], bytes]
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module, modes=SUPPORTED_MODES
         ):
@@ -260,7 +276,9 @@ class TestCipher:
             )
             assert cipher.decrypt(cipher.encrypt(data)) == data
 
-    def test_encrypt_nothing_raises(self, module, randbytes):
+    def test_encrypt_nothing_raises(
+        self, module: CipherType, randbytes: Callable[[int], bytes]
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module, modes=SUPPORTED_MODES
         ):
@@ -268,7 +286,9 @@ class TestCipher:
             with pytest.raises(TLSError):
                 cipher.encrypt(b"")
 
-    def test_decrypt_nothing_raises(self, module, randbytes):
+    def test_decrypt_nothing_raises(
+        self, module: CipherType, randbytes: Callable[[int], bytes]
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module, modes=SUPPORTED_MODES
         ):
@@ -276,10 +296,12 @@ class TestCipher:
             with pytest.raises(TLSError):
                 cipher.decrypt(b"")
 
-    def test_cbc_requires_padding(self, module, randbytes):
+    def test_cbc_requires_padding(
+        self, module: CipherType, randbytes: Callable[[int], bytes]
+    ) -> None:
         mode = Mode.CBC
         if mode not in SUPPORTED_MODES[module.__name__]:
-            return pytest.skip(
+            return pytest.skip(  # type: ignore[return-value]
                 f"unsupported mode for {module.__name__!r}: {mode!s}"
             )
 
@@ -301,11 +323,16 @@ class TestCipher:
 
 class TestAEADCipher:
     @pytest.fixture(params=[AES, CHACHA20])
-    def module(self, request):
-        return request.param
+    def module(self, request: Any) -> AEADCipherType:
+        return cast(AEADCipherType, request.param)
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_pickle(self, module, ad_size, randbytes):
+    def test_pickle(
+        self,
+        module: AEADCipherType,
+        ad_size: int,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module, modes=SUPPORTED_AEAD_MODES
         ):
@@ -321,7 +348,12 @@ class TestAEADCipher:
             assert str(excinfo.value).startswith("cannot pickle")
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_accessors(self, module, ad_size, randbytes):
+    def test_accessors(
+        self,
+        module: AEADCipherType,
+        ad_size: int,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module, modes=SUPPORTED_AEAD_MODES
         ):
@@ -338,7 +370,12 @@ class TestAEADCipher:
             assert module.key_size in {module.key_size, None}
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_cipher_name(self, module, ad_size, randbytes):
+    def test_cipher_name(
+        self,
+        module: AEADCipherType,
+        ad_size: int,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module, modes=SUPPORTED_AEAD_MODES
         ):
@@ -353,7 +390,12 @@ class TestAEADCipher:
             assert str(cipher) == cipher.name.decode("ascii")
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_encrypt_decrypt(self, module, ad_size, randbytes):
+    def test_encrypt_decrypt(
+        self,
+        module: AEADCipherType,
+        ad_size: int,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module, modes=SUPPORTED_AEAD_MODES
         ):
@@ -372,7 +414,12 @@ class TestAEADCipher:
             assert cipher.decrypt(msg, tag) == data
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_encrypt_nothing_raises(self, module, ad_size, randbytes):
+    def test_encrypt_nothing_raises(
+        self,
+        module: AEADCipherType,
+        ad_size: int,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module, modes=SUPPORTED_AEAD_MODES
         ):
@@ -386,7 +433,12 @@ class TestAEADCipher:
                 cipher.encrypt(b"")
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_decrypt_nothing_raises(self, module, ad_size, randbytes):
+    def test_decrypt_nothing_raises(
+        self,
+        module: AEADCipherType,
+        ad_size: int,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
         for key_size, mode, iv_size in gen_cipher_data(
             module, modes=SUPPORTED_AEAD_MODES
         ):
