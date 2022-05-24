@@ -56,6 +56,19 @@ def constant(value: T) -> Callable[[], T]:
     return lambda: value
 
 
+SUPPORTED_CIPHERS: Sequence[CipherType] = (
+    AES,
+    ARC4,
+    ARIA,
+    Blowfish,
+    Camellia,
+    CHACHA20,
+    DES,
+    DES3,
+    DES3dbl,
+)
+
+
 SUPPORTED_SIZES: Mapping[str, Mapping[Mode, Size]] = {
     "mbedtls.cipher.AES": defaultdict(
         constant(Size(key_size=(16, 24, 32), iv_size=16)),
@@ -134,6 +147,9 @@ SUPPORTED_MODES: Mapping[str, Sequence[Mode]] = {
 }
 
 
+SUPPORTED_AEAD_CIPHERS: Sequence[AEADCipherType] = (AES, CHACHA20)
+
+
 SUPPORTED_AEAD_MODES: Mapping[str, Sequence[Mode]] = {
     "mbedtls.cipher.AES": (Mode.GCM, Mode.CCM),
     "mbedtls.cipher.CHACHA20": (Mode.CHACHAPOLY,),
@@ -149,6 +165,23 @@ def gen_cipher_data(
         sizes = SUPPORTED_SIZES[module.__name__][mode]
         for key_size in sizes.key_size:
             yield key_size, mode, sizes.iv_size
+
+
+def gen_cipher(
+    modules: Sequence[Union[CipherType, AEADCipherType]],
+    *,
+    modes: Mapping[str, Sequence[Mode]],
+) -> Iterator[Tuple[Union[CipherType, AEADCipherType], int, Mode, int]]:
+    for module in modules:
+        for key_size, mode, iv_size in gen_cipher_data(module, modes=modes):
+            yield module, key_size, mode, iv_size
+
+
+def paramids(
+    params: Tuple[Union[CipherType, AEADCipherType], int, Mode, int]
+) -> str:
+    module, key_size, mode, iv_size = params
+    return f"{module.__name__}, key_size={key_size}, mode={mode!s}, iv_size={iv_size}"
 
 
 def test_cipher_list() -> None:
@@ -189,6 +222,221 @@ def test_cfb_raises_value_error_without_iv(mode: Mode) -> None:
 
 class TestCipher:
     @pytest.fixture(
+        params=gen_cipher(SUPPORTED_CIPHERS, modes=SUPPORTED_MODES),
+        ids=paramids,
+    )
+    def params(self, request: Any) -> Tuple[CipherType, int, Mode, int]:
+        module = request.param[0]
+        if module is ARIA and sys.platform.startswith("win"):
+            return pytest.skip("unsupported")
+
+        return cast(Tuple[CipherType, int, Mode, int], request.param)
+
+    def test_pickle(
+        self,
+        params: Tuple[Cipher, int, Mode, int],
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        module, key_size, mode, iv_size = params
+        cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
+        with pytest.raises(TypeError) as excinfo:
+            pickle.dumps(cipher)
+
+        assert str(excinfo.value).startswith("cannot pickle")
+
+    def test_accessors(
+        self,
+        params: Tuple[Cipher, int, Mode, int],
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        module, key_size, mode, iv_size = params
+        cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
+        assert cipher.key_size == key_size
+        assert cipher.mode == mode
+        assert cipher.iv_size == iv_size
+        assert module.block_size == cipher.block_size
+        assert module.key_size in {module.key_size, None}
+
+    def test_cipher_name(
+        self,
+        params: Tuple[Cipher, int, Mode, int],
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        module, key_size, mode, iv_size = params
+        cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
+        assert cipher.name in CIPHER_NAME
+        assert CIPHER_NAME[cipher._type] == cipher.name
+        assert str(cipher) == cipher.name.decode("ascii")
+
+    def test_encrypt_decrypt(
+        self,
+        params: Tuple[Cipher, int, Mode, int],
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        module, key_size, mode, iv_size = params
+        cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
+        data = randbytes(
+            cipher.block_size
+            if cipher.mode is Mode.ECB
+            else cipher.block_size * 128
+        )
+        assert cipher.decrypt(cipher.encrypt(data)) == data
+
+    def test_encrypt_nothing_raises(
+        self,
+        params: Tuple[Cipher, int, Mode, int],
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        module, key_size, mode, iv_size = params
+        cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
+        with pytest.raises(TLSError):
+            cipher.encrypt(b"")
+
+    def test_decrypt_nothing_raises(
+        self,
+        params: Tuple[Cipher, int, Mode, int],
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        module, key_size, mode, iv_size = params
+        cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
+        with pytest.raises(TLSError):
+            cipher.decrypt(b"")
+
+
+class TestAEADCipher:
+    @pytest.fixture(
+        params=gen_cipher(SUPPORTED_AEAD_CIPHERS, modes=SUPPORTED_AEAD_MODES),
+        ids=paramids,
+    )
+    def params(self, request: Any) -> Tuple[AEADCipherType, int, Mode, int]:
+        module = request.param[0]
+        if module is ARIA and sys.platform.startswith("win"):
+            return pytest.skip("unsupported")
+
+        return cast(Tuple[AEADCipherType, int, Mode, int], request.param)
+
+    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
+    def test_pickle(
+        self,
+        params: Tuple[AEADCipherType, int, Mode, int],
+        ad_size: int,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        module, key_size, mode, iv_size = params
+        cipher = module.new(
+            randbytes(key_size),
+            mode,
+            iv=randbytes(iv_size),
+            ad=randbytes(ad_size),
+        )
+        with pytest.raises(TypeError) as excinfo:
+            pickle.dumps(cipher)
+
+        assert str(excinfo.value).startswith("cannot pickle")
+
+    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
+    def test_accessors(
+        self,
+        params: Tuple[AEADCipherType, int, Mode, int],
+        ad_size: int,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        module, key_size, mode, iv_size = params
+        cipher = module.new(
+            randbytes(key_size),
+            mode,
+            iv=randbytes(iv_size),
+            ad=randbytes(ad_size),
+        )
+        assert cipher.key_size == key_size
+        assert cipher.mode == mode
+        assert cipher.iv_size == iv_size
+        assert module.block_size == cipher.block_size
+        assert module.key_size in {module.key_size, None}
+
+    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
+    def test_cipher_name(
+        self,
+        params: Tuple[AEADCipherType, int, Mode, int],
+        ad_size: int,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        module, key_size, mode, iv_size = params
+        cipher = module.new(
+            randbytes(key_size),
+            mode,
+            iv=randbytes(iv_size),
+            ad=randbytes(ad_size),
+        )
+        assert cipher.name in CIPHER_NAME
+        assert CIPHER_NAME[cipher._type] == cipher.name
+        assert str(cipher) == cipher.name.decode("ascii")
+
+    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
+    def test_encrypt_decrypt(
+        self,
+        params: Tuple[AEADCipherType, int, Mode, int],
+        ad_size: int,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        module, key_size, mode, iv_size = params
+        cipher = module.new(
+            randbytes(key_size),
+            mode,
+            iv=randbytes(iv_size),
+            ad=randbytes(ad_size),
+        )
+        data = randbytes(
+            cipher.block_size
+            if cipher.mode is Mode.ECB
+            else cipher.block_size * 128
+        )
+        msg, tag = cipher.encrypt(data)
+        assert cipher.decrypt(msg, tag) == data
+
+    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
+    def test_encrypt_nothing_raises(
+        self,
+        params: Tuple[AEADCipherType, int, Mode, int],
+        ad_size: int,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        module, key_size, mode, iv_size = params
+        cipher = module.new(
+            randbytes(key_size),
+            mode,
+            iv=randbytes(iv_size),
+            ad=randbytes(ad_size),
+        )
+        with pytest.raises(TLSError):
+            cipher.encrypt(b"")
+
+    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
+    def test_decrypt_nothing_raises(
+        self,
+        params: Tuple[AEADCipherType, int, Mode, int],
+        ad_size: int,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        module, key_size, mode, iv_size = params
+        cipher = module.new(
+            randbytes(key_size),
+            mode,
+            iv=randbytes(iv_size),
+            ad=randbytes(ad_size),
+        )
+        data = randbytes(
+            cipher.block_size
+            if cipher.mode is Mode.ECB
+            else cipher.block_size * 128
+        )
+        msg, tag = cipher.encrypt(data)
+        with pytest.raises(TLSError):
+            cipher.decrypt(b"", tag)
+
+
+class TestGenericCipher:
+    @pytest.fixture(
         params=[
             AES,
             ARC4,
@@ -205,42 +453,6 @@ class TestCipher:
         if request.param is ARIA and sys.platform.startswith("win"):
             return pytest.skip()
         return cast(CipherType, request.param)
-
-    def test_pickle(
-        self, module: CipherType, randbytes: Callable[[int], bytes]
-    ) -> None:
-        for key_size, mode, iv_size in gen_cipher_data(
-            module, modes=SUPPORTED_MODES
-        ):
-            cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
-            with pytest.raises(TypeError) as excinfo:
-                pickle.dumps(cipher)
-
-            assert str(excinfo.value).startswith("cannot pickle")
-
-    def test_accessors(
-        self, module: CipherType, randbytes: Callable[[int], bytes]
-    ) -> None:
-        for key_size, mode, iv_size in gen_cipher_data(
-            module, modes=SUPPORTED_MODES
-        ):
-            cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
-            assert cipher.key_size == key_size
-            assert cipher.mode == mode
-            assert cipher.iv_size == iv_size
-            assert module.block_size == cipher.block_size
-            assert module.key_size in {module.key_size, None}
-
-    def test_cipher_name(
-        self, module: CipherType, randbytes: Callable[[int], bytes]
-    ) -> None:
-        for key_size, mode, iv_size in gen_cipher_data(
-            module, modes=SUPPORTED_MODES
-        ):
-            cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
-            assert cipher.name in CIPHER_NAME
-            assert CIPHER_NAME[cipher._type] == cipher.name
-            assert str(cipher) == cipher.name.decode("ascii")
 
     def test_unsupported_mode(
         self, module: CipherType, randbytes: Callable[[int], bytes]
@@ -261,40 +473,6 @@ class TestCipher:
                 module.new(randbytes(key_size), mode, randbytes(iv_size))
 
             assert excinfo.value.msg.startswith("unsupported mode")
-
-    def test_encrypt_decrypt(
-        self, module: CipherType, randbytes: Callable[[int], bytes]
-    ) -> None:
-        for key_size, mode, iv_size in gen_cipher_data(
-            module, modes=SUPPORTED_MODES
-        ):
-            cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
-            data = randbytes(
-                cipher.block_size
-                if cipher.mode is Mode.ECB
-                else cipher.block_size * 128
-            )
-            assert cipher.decrypt(cipher.encrypt(data)) == data
-
-    def test_encrypt_nothing_raises(
-        self, module: CipherType, randbytes: Callable[[int], bytes]
-    ) -> None:
-        for key_size, mode, iv_size in gen_cipher_data(
-            module, modes=SUPPORTED_MODES
-        ):
-            cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
-            with pytest.raises(TLSError):
-                cipher.encrypt(b"")
-
-    def test_decrypt_nothing_raises(
-        self, module: CipherType, randbytes: Callable[[int], bytes]
-    ) -> None:
-        for key_size, mode, iv_size in gen_cipher_data(
-            module, modes=SUPPORTED_MODES
-        ):
-            cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
-            with pytest.raises(TLSError):
-                cipher.decrypt(b"")
 
     def test_cbc_requires_padding(
         self, module: CipherType, randbytes: Callable[[int], bytes]
@@ -319,140 +497,3 @@ class TestCipher:
             if cipher.mode is Mode.CBC:
                 with pytest.raises(ValueError):
                     cipher.encrypt(data)
-
-
-class TestAEADCipher:
-    @pytest.fixture(params=[AES, CHACHA20])
-    def module(self, request: Any) -> AEADCipherType:
-        return cast(AEADCipherType, request.param)
-
-    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_pickle(
-        self,
-        module: AEADCipherType,
-        ad_size: int,
-        randbytes: Callable[[int], bytes],
-    ) -> None:
-        for key_size, mode, iv_size in gen_cipher_data(
-            module, modes=SUPPORTED_AEAD_MODES
-        ):
-            cipher = module.new(
-                randbytes(key_size),
-                mode,
-                iv=randbytes(iv_size),
-                ad=randbytes(ad_size),
-            )
-            with pytest.raises(TypeError) as excinfo:
-                pickle.dumps(cipher)
-
-            assert str(excinfo.value).startswith("cannot pickle")
-
-    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_accessors(
-        self,
-        module: AEADCipherType,
-        ad_size: int,
-        randbytes: Callable[[int], bytes],
-    ) -> None:
-        for key_size, mode, iv_size in gen_cipher_data(
-            module, modes=SUPPORTED_AEAD_MODES
-        ):
-            cipher = module.new(
-                randbytes(key_size),
-                mode,
-                iv=randbytes(iv_size),
-                ad=randbytes(ad_size),
-            )
-            assert cipher.key_size == key_size
-            assert cipher.mode == mode
-            assert cipher.iv_size == iv_size
-            assert module.block_size == cipher.block_size
-            assert module.key_size in {module.key_size, None}
-
-    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_cipher_name(
-        self,
-        module: AEADCipherType,
-        ad_size: int,
-        randbytes: Callable[[int], bytes],
-    ) -> None:
-        for key_size, mode, iv_size in gen_cipher_data(
-            module, modes=SUPPORTED_AEAD_MODES
-        ):
-            cipher = module.new(
-                randbytes(key_size),
-                mode,
-                iv=randbytes(iv_size),
-                ad=randbytes(ad_size),
-            )
-            assert cipher.name in CIPHER_NAME
-            assert CIPHER_NAME[cipher._type] == cipher.name
-            assert str(cipher) == cipher.name.decode("ascii")
-
-    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_encrypt_decrypt(
-        self,
-        module: AEADCipherType,
-        ad_size: int,
-        randbytes: Callable[[int], bytes],
-    ) -> None:
-        for key_size, mode, iv_size in gen_cipher_data(
-            module, modes=SUPPORTED_AEAD_MODES
-        ):
-            cipher = module.new(
-                randbytes(key_size),
-                mode,
-                iv=randbytes(iv_size),
-                ad=randbytes(ad_size),
-            )
-            data = randbytes(
-                cipher.block_size
-                if cipher.mode is Mode.ECB
-                else cipher.block_size * 128
-            )
-            msg, tag = cipher.encrypt(data)
-            assert cipher.decrypt(msg, tag) == data
-
-    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_encrypt_nothing_raises(
-        self,
-        module: AEADCipherType,
-        ad_size: int,
-        randbytes: Callable[[int], bytes],
-    ) -> None:
-        for key_size, mode, iv_size in gen_cipher_data(
-            module, modes=SUPPORTED_AEAD_MODES
-        ):
-            cipher = module.new(
-                randbytes(key_size),
-                mode,
-                iv=randbytes(iv_size),
-                ad=randbytes(ad_size),
-            )
-            with pytest.raises(TLSError):
-                cipher.encrypt(b"")
-
-    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_decrypt_nothing_raises(
-        self,
-        module: AEADCipherType,
-        ad_size: int,
-        randbytes: Callable[[int], bytes],
-    ) -> None:
-        for key_size, mode, iv_size in gen_cipher_data(
-            module, modes=SUPPORTED_AEAD_MODES
-        ):
-            cipher = module.new(
-                randbytes(key_size),
-                mode,
-                iv=randbytes(iv_size),
-                ad=randbytes(ad_size),
-            )
-            data = randbytes(
-                cipher.block_size
-                if cipher.mode is Mode.ECB
-                else cipher.block_size * 128
-            )
-            msg, tag = cipher.encrypt(data)
-            with pytest.raises(TLSError):
-                cipher.decrypt(b"", tag)
