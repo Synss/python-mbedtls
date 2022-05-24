@@ -26,7 +26,3 @@ jobs:
       - name: Check format
         run: find src tests -name '*.py' | xargs python -m black --check --diff
         if: always()
-
-      - name: Check typing
-        run: mypy .
-        if: always()
