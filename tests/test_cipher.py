@@ -56,21 +56,13 @@ def constant(value: T) -> Callable[[], T]:
     return lambda: value
 
 
-SUPPORTED_CIPHERS: Sequence[CipherType] = (
-    AES,
-    ARC4,
-    ARIA,
-    Blowfish,
-    Camellia,
-    CHACHA20,
-    DES,
-    DES3,
-    DES3dbl,
-)
+M = TypeVar("M", bound=Union[CipherType, AEADCipherType])
 
 
-SUPPORTED_SIZES: Mapping[str, Mapping[Mode, Size]] = {
-    "mbedtls.cipher.AES": defaultdict(
+SUPPORTED_SIZES: Mapping[
+    Union[CipherType, AEADCipherType], Mapping[Mode, Size]
+] = {
+    AES: defaultdict(
         constant(Size(key_size=(16, 24, 32), iv_size=16)),
         {
             Mode.CCM: Size((16, 24, 32), 12),
@@ -79,11 +71,11 @@ SUPPORTED_SIZES: Mapping[str, Mapping[Mode, Size]] = {
             Mode.XTS: Size((32, 64), 16),
         },
     ),
-    "mbedtls.cipher.ARC4": defaultdict(
+    ARC4: defaultdict(
         constant(Size(key_size=(ARC4.key_size,), iv_size=0)),
         {Mode.CFB: Size((ARC4.key_size,), iv_size=ARC4.block_size)},
     ),
-    "mbedtls.cipher.ARIA": defaultdict(
+    ARIA: defaultdict(
         constant(Size(key_size=(16, 24, 32), iv_size=16)),
         {
             Mode.CBC: Size((16, 24, 32), 16),
@@ -91,38 +83,38 @@ SUPPORTED_SIZES: Mapping[str, Mapping[Mode, Size]] = {
             Mode.GCM: Size((16, 24, 32), 12),
         },
     ),
-    "mbedtls.cipher.Blowfish": defaultdict(
+    Blowfish: defaultdict(
         constant(Size(key_size=(16,), iv_size=8)),
         {Mode.ECB: Size((16,), 0)},
     ),
-    "mbedtls.cipher.Camellia": defaultdict(
+    Camellia: defaultdict(
         constant(Size(key_size=(16, 24, 32), iv_size=16)),
         {
             Mode.ECB: Size((16, 24, 32), 0),
             Mode.GCM: Size((16, 24, 32), 12),
         },
     ),
-    "mbedtls.cipher.CHACHA20": defaultdict(
+    CHACHA20: defaultdict(
         constant(Size(key_size=(CHACHA20.key_size,), iv_size=12)),
         {Mode.ECB: Size((CHACHA20.key_size,), 0)},
     ),
-    "mbedtls.cipher.DES": defaultdict(
+    DES: defaultdict(
         constant(Size(key_size=(DES.key_size,), iv_size=8)),
         {Mode.ECB: Size((DES.key_size,), 0)},
     ),
-    "mbedtls.cipher.DES3": defaultdict(
+    DES3: defaultdict(
         constant(Size(key_size=(DES3.key_size,), iv_size=8)),
         {Mode.ECB: Size((DES3.key_size,), 0)},
     ),
-    "mbedtls.cipher.DES3dbl": defaultdict(
+    DES3dbl: defaultdict(
         constant(Size(key_size=(DES3dbl.key_size,), iv_size=8)),
         {Mode.ECB: Size((DES3dbl.key_size,), 0)},
     ),
 }
 
 
-SUPPORTED_MODES: Mapping[str, Sequence[Mode]] = {
-    "mbedtls.cipher.AES": (
+SUPPORTED_MODES: Mapping[CipherType, Sequence[Mode]] = {
+    AES: (
         Mode.ECB,
         Mode.CBC,
         Mode.CFB,
@@ -130,56 +122,54 @@ SUPPORTED_MODES: Mapping[str, Sequence[Mode]] = {
         Mode.OFB,
         Mode.XTS,
     ),
-    "mbedtls.cipher.ARC4": (Mode.STREAM,),
-    "mbedtls.cipher.ARIA": (Mode.ECB, Mode.CBC, Mode.CTR, Mode.GCM),
-    "mbedtls.cipher.Blowfish": (Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR),
-    "mbedtls.cipher.Camellia": (
+    ARC4: (Mode.STREAM,),
+    ARIA: (Mode.ECB, Mode.CBC, Mode.CTR, Mode.GCM),
+    Blowfish: (Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR),
+    Camellia: (
         Mode.ECB,
         Mode.CBC,
         Mode.CFB,
         Mode.CTR,
         Mode.GCM,
     ),
-    "mbedtls.cipher.CHACHA20": (Mode.STREAM,),
-    "mbedtls.cipher.DES": (Mode.ECB, Mode.CBC),
-    "mbedtls.cipher.DES3": (Mode.ECB, Mode.CBC),
-    "mbedtls.cipher.DES3dbl": (Mode.ECB, Mode.CBC),
+    CHACHA20: (Mode.STREAM,),
+    DES: (Mode.ECB, Mode.CBC),
+    DES3: (Mode.ECB, Mode.CBC),
+    DES3dbl: (Mode.ECB, Mode.CBC),
 }
 
+SUPPORTED_CIPHERS: Sequence[CipherType] = tuple(SUPPORTED_MODES.keys())
 
-SUPPORTED_AEAD_CIPHERS: Sequence[AEADCipherType] = (AES, CHACHA20)
-
-
-SUPPORTED_AEAD_MODES: Mapping[str, Sequence[Mode]] = {
-    "mbedtls.cipher.AES": (Mode.GCM, Mode.CCM),
-    "mbedtls.cipher.CHACHA20": (Mode.CHACHAPOLY,),
+SUPPORTED_AEAD_MODES: Mapping[AEADCipherType, Sequence[Mode]] = {
+    AES: (Mode.GCM, Mode.CCM),
+    CHACHA20: (Mode.CHACHAPOLY,),
 }
+
+SUPPORTED_AEAD_CIPHERS: Sequence[AEADCipherType] = tuple(SUPPORTED_AEAD_MODES)
 
 
 def gen_cipher_data(
-    module: Union[CipherType, AEADCipherType],
+    module: M,
     *,
-    modes: Mapping[str, Sequence[Mode]],
+    modes: Mapping[M, Sequence[Mode]],
 ) -> Iterator[Tuple[int, Mode, int]]:
-    for mode in modes[module.__name__]:
-        sizes = SUPPORTED_SIZES[module.__name__][mode]
+    for mode in modes[module]:
+        sizes = SUPPORTED_SIZES[module][mode]
         for key_size in sizes.key_size:
             yield key_size, mode, sizes.iv_size
 
 
 def gen_cipher(
-    modules: Sequence[Union[CipherType, AEADCipherType]],
+    modules: Sequence[M],
     *,
-    modes: Mapping[str, Sequence[Mode]],
-) -> Iterator[Tuple[Union[CipherType, AEADCipherType], int, Mode, int]]:
+    modes: Mapping[M, Sequence[Mode]],
+) -> Iterator[Tuple[M, int, Mode, int]]:
     for module in modules:
         for key_size, mode, iv_size in gen_cipher_data(module, modes=modes):
             yield module, key_size, mode, iv_size
 
 
-def paramids(
-    params: Tuple[Union[CipherType, AEADCipherType], int, Mode, int]
-) -> str:
+def paramids(params: Tuple[M, int, Mode, int]) -> str:
     module, key_size, mode, iv_size = params
     return f"{module.__name__}, key_size={key_size}, mode={mode!s}, iv_size={iv_size}"
 
@@ -457,17 +447,12 @@ class TestGenericCipher:
     def test_unsupported_mode(
         self, module: CipherType, randbytes: Callable[[int], bytes]
     ) -> None:
+        supported_modes = frozenset(SUPPORTED_MODES[module]) | frozenset(
+            SUPPORTED_AEAD_MODES.get(module, ())  # type: ignore[call-overload]
+        )
         for key_size, mode, iv_size in gen_cipher_data(
             module,
-            modes={
-                module.__name__: tuple(
-                    frozenset(Mode)
-                    - (
-                        set(SUPPORTED_MODES[module.__name__])
-                        | set(SUPPORTED_AEAD_MODES.get(module.__name__, set()))
-                    )
-                )
-            },
+            modes={module: tuple(frozenset(Mode) - supported_modes)},
         ):
             with pytest.raises(TLSError) as excinfo:
                 module.new(randbytes(key_size), mode, randbytes(iv_size))
@@ -478,12 +463,12 @@ class TestGenericCipher:
         self, module: CipherType, randbytes: Callable[[int], bytes]
     ) -> None:
         mode = Mode.CBC
-        if mode not in SUPPORTED_MODES[module.__name__]:
+        if mode not in SUPPORTED_MODES[module]:
             return pytest.skip(  # type: ignore[return-value]
-                f"unsupported mode for {module.__name__!r}: {mode!s}"
+                f"unsupported mode for {module!r}: {mode!s}"
             )
 
-        sizes = SUPPORTED_SIZES[module.__name__][mode]
+        sizes = SUPPORTED_SIZES[module][mode]
         for key_size in sizes.key_size:
             cipher = module.new(
                 randbytes(key_size), mode, iv=randbytes(sizes.iv_size)
