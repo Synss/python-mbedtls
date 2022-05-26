@@ -334,14 +334,10 @@ class TestDTLSCookie:
         assert cookie.timeout == 1000
 
 
-class _BaseConfiguration:
-    @pytest.fixture
-    def conf(self):
-        raise NotImplementedError
-
-    @pytest.fixture
-    def version(self):
-        raise NotImplementedError
+class TestConfiguration:
+    @pytest.fixture(params=[DTLSConfiguration, TLSConfiguration])
+    def conf(self, request):
+        return request.param()
 
     @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
     def test_repr(self, repr_, conf):
@@ -376,14 +372,6 @@ class _BaseConfiguration:
             NextProtocol(_) for _ in inner_protocols
         )
 
-    def test_lowest_supported_version(self, conf, version):
-        conf_ = conf.update(lowest_supported_version=version)
-        assert conf_.lowest_supported_version is version
-
-    def test_highest_supported_version(self, conf, version):
-        conf_ = conf.update(highest_supported_version=version)
-        assert conf_.highest_supported_version is version
-
     @pytest.mark.parametrize("store", [TrustStore.system()])
     def test_trust_store(self, conf, store):
         conf_ = conf.update(trust_store=store)
@@ -409,24 +397,36 @@ class _BaseConfiguration:
         assert conf_.pre_shared_key_store == psk_store
 
 
-class TestTLSConfiguration(_BaseConfiguration):
+class TestTLSConfiguration:
     @pytest.fixture
     def conf(self):
         return TLSConfiguration()
 
-    @pytest.fixture(params=TLSVersion)
-    def version(self, request):
-        return request.param
+    @pytest.mark.parametrize("version", TLSVersion)
+    def test_lowest_supported_version(self, conf, version):
+        conf_ = conf.update(lowest_supported_version=version)
+        assert conf_.lowest_supported_version is version
+
+    @pytest.mark.parametrize("version", TLSVersion)
+    def test_highest_supported_version(self, conf, version):
+        conf_ = conf.update(highest_supported_version=version)
+        assert conf_.highest_supported_version is version
 
 
-class TestDTLSConfiguration(_BaseConfiguration):
+class TestDTLSConfiguration:
     @pytest.fixture
     def conf(self):
         return DTLSConfiguration()
 
-    @pytest.fixture(params=DTLSVersion)
-    def version(self, request):
-        return request.param
+    @pytest.mark.parametrize("version", DTLSVersion)
+    def test_lowest_supported_version(self, conf, version):
+        conf_ = conf.update(lowest_supported_version=version)
+        assert conf_.lowest_supported_version is version
+
+    @pytest.mark.parametrize("version", DTLSVersion)
+    def test_highest_supported_version(self, conf, version):
+        conf_ = conf.update(highest_supported_version=version)
+        assert conf_.highest_supported_version is version
 
     @pytest.mark.parametrize("anti_replay", [True, False])
     def test_set_anti_replay(self, conf, anti_replay):
