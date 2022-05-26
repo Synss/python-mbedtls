@@ -17,7 +17,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.BACKEND_DIR }}
-          key: ${{ runner.os }}-${{ env.BACKEND_VERSION }}-backend
+          key: ${{ runner.os }}-${{ env.GITHUB_REF_NAME }}-${{ env.BACKEND_VERSION }}-v1
 
       - name: Build backend
         if: steps.cache-backend.outputs.cache-hit != 'true'
