@@ -17,15 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache backend
-        id: cache-backend
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.BACKEND_DIR }}
-          key: ${{ runner.os }}-${{ env.GITHUB_REF_NAME }}-${{ env.BACKEND_VERSION }}-v1
-
       - name: Build backend
-        if: steps.cache-backend.outputs.cache-hit != 'true'
         run: |
           ./scripts/download-mbedtls.sh $BACKEND_VERSION $BACKEND_DIR/src
           ./scripts/install-mbedtls.sh $BACKEND_DIR/src $BACKEND_DIR
