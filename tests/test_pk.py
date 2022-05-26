@@ -28,11 +28,31 @@ from mbedtls.pk import (  # type: ignore
 
 
 def test_supported_curves():
-    assert get_supported_curves()
+    assert sorted(get_supported_curves()) == [
+        Curve.BRAINPOOLP256R1,
+        Curve.BRAINPOOLP384R1,
+        Curve.BRAINPOOLP512R1,
+        Curve.SECP192K1,
+        Curve.SECP192R1,
+        Curve.SECP224K1,
+        Curve.SECP224R1,
+        Curve.SECP256K1,
+        Curve.SECP256R1,
+        Curve.SECP384R1,
+        Curve.SECP521R1,
+        Curve.CURVE25519,
+        Curve.CURVE448,
+    ]
 
 
 def test_get_supported_ciphers():
-    assert get_supported_ciphers()
+    assert list(get_supported_ciphers()) == [
+        b"NONE",
+        b"RSA",
+        b"EC",
+        b"EC_DH",
+        b"ECDSA",
+    ]
 
 
 @pytest.mark.parametrize(
