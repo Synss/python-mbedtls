@@ -5,6 +5,14 @@
 
 """
 
+import sys
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Final, Literal
+else:
+    from typing import Final, Literal
+
+from typing import Optional, Union, overload
 
 from mbedtls.exceptions import TLSError  # type: ignore
 
@@ -13,11 +21,36 @@ from ._cipher import AEADCipher, Cipher, Mode
 __all__ = ["block_size", "key_size", "new"]
 
 
-block_size = 1
-key_size = 32
+block_size: Final = 1
+key_size: Final = 32
 
 
-def new(key, mode, iv=None, ad=None):
+@overload
+def new(
+    key: bytes,
+    mode: Literal[Mode.STREAM],
+    iv: Optional[bytes],
+    ad: Literal[None],
+) -> Cipher:
+    ...
+
+
+@overload
+def new(
+    key: bytes,
+    mode: Literal[Mode.CHACHAPOLY],
+    iv: Optional[bytes],
+    ad: Optional[bytes],
+) -> AEADCipher:
+    ...
+
+
+def new(
+    key: bytes,
+    mode: Union[Mode, int],
+    iv: Optional[bytes] = None,
+    ad: Optional[bytes] = None,
+) -> Union[Cipher, AEADCipher]:
     """Return a `Cipher` object that can perform ChaCha20 encryption and
     decryption.
 
@@ -27,22 +60,23 @@ def new(key, mode, iv=None, ad=None):
     in RFC 7539.
 
     Parameters:
-        key (bytes or None): The key to encrypt decrypt.  If None,
+        key: The key to encrypt decrypt.  If None,
             encryption and decryption are unavailable.
-        mode (Mode): The mode of operation of the cipher.
-        iv (bytes or None): The initialization vector (IV).  The IV is
+        mode: The mode of operation of the cipher.
+        iv: The initialization vector (IV).  The IV is
             required for every mode but ECB and CTR where it is ignored.
             If not set, the IV is initialized to all 0, which should not
             be used for encryption.
-        ad (bytes or None): The associated data for ChaCha/Poly mode.
+        ad: The associated data for ChaCha/Poly mode.
 
     """
+    mode_ = Mode(mode)
     if len(key) != key_size:
         raise TLSError(msg="key size must 32 bytes, got %r" % len(key))
-    if mode == Mode.STREAM:
+    if mode_ == Mode.STREAM:
         assert ad is None
-        return Cipher(b"CHACHA20", key, mode, iv)
-    if mode == Mode.CHACHAPOLY:
+        return Cipher(b"CHACHA20", key, mode_, iv)
+    if mode_ == Mode.CHACHAPOLY:
         ad = b"" if ad is None else ad
-        return AEADCipher(b"CHACHA20-POLY1305", key, mode, iv, ad)
-    raise TLSError(msg="unsupported mode %r" % mode)
+        return AEADCipher(b"CHACHA20-POLY1305", key, mode_, iv, ad)
+    raise TLSError(msg="unsupported mode %r" % mode_)

@@ -30,16 +30,15 @@ from mbedtls.cipher import (
     CHACHA20,
     DES,
     DES3,
-    MODE_CBC,
-    MODE_CFB,
     Blowfish,
     Camellia,
-    Cipher,
     DES3dbl,
+)
+from mbedtls.cipher._cipher import (  # type: ignore
+    CIPHER_NAME,
     Mode,
     get_supported_ciphers,
 )
-from mbedtls.cipher._cipher import CIPHER_NAME  # type: ignore
 from mbedtls.cipher.typing import AEADCipherType, CipherType
 from mbedtls.exceptions import TLSError  # type: ignore
 
@@ -183,33 +182,6 @@ def test_get_supported_ciphers() -> None:
     assert cl and set(cl).issubset(set(CIPHER_NAME))
 
 
-def test_wrong_size_raises_exception() -> None:
-    with pytest.raises(NotImplementedError):
-        Cipher(b"AES-512-ECB", b"", Mode.ECB, b"")
-
-
-def test_random_name_raises_exception() -> None:
-    with pytest.raises(NotImplementedError):
-        Cipher(b"RANDOM TEXT IS NOT A CIPHER", b"", Mode.ECB, b"")
-
-
-def test_zero_length_raises_exception() -> None:
-    with pytest.raises(NotImplementedError):
-        Cipher(b"", b"", Mode.ECB, b"")
-
-
-@pytest.mark.parametrize("mode", [MODE_CBC, Mode.CBC])
-def test_cbc_raises_value_error_without_iv(mode: Mode) -> None:
-    with pytest.raises(ValueError):
-        Cipher(b"AES-512-CBC", b"", mode, b"")
-
-
-@pytest.mark.parametrize("mode", [MODE_CFB, Mode.CFB])
-def test_cfb_raises_value_error_without_iv(mode: Mode) -> None:
-    with pytest.raises(ValueError):
-        Cipher(b"AES-512-CFB", b"", mode, b"")
-
-
 class TestCipher:
     @pytest.fixture(
         params=gen_cipher(SUPPORTED_CIPHERS, modes=SUPPORTED_MODES),
@@ -224,7 +196,7 @@ class TestCipher:
 
     def test_pickle(
         self,
-        params: Tuple[Cipher, int, Mode, int],
+        params: Tuple[CipherType, int, Mode, int],
         randbytes: Callable[[int], bytes],
     ) -> None:
         module, key_size, mode, iv_size = params
@@ -236,7 +208,7 @@ class TestCipher:
 
     def test_accessors(
         self,
-        params: Tuple[Cipher, int, Mode, int],
+        params: Tuple[CipherType, int, Mode, int],
         randbytes: Callable[[int], bytes],
     ) -> None:
         module, key_size, mode, iv_size = params
@@ -249,7 +221,7 @@ class TestCipher:
 
     def test_cipher_name(
         self,
-        params: Tuple[Cipher, int, Mode, int],
+        params: Tuple[CipherType, int, Mode, int],
         randbytes: Callable[[int], bytes],
     ) -> None:
         module, key_size, mode, iv_size = params
@@ -260,7 +232,7 @@ class TestCipher:
 
     def test_encrypt_decrypt(
         self,
-        params: Tuple[Cipher, int, Mode, int],
+        params: Tuple[CipherType, int, Mode, int],
         randbytes: Callable[[int], bytes],
     ) -> None:
         module, key_size, mode, iv_size = params
@@ -274,7 +246,7 @@ class TestCipher:
 
     def test_encrypt_nothing_raises(
         self,
-        params: Tuple[Cipher, int, Mode, int],
+        params: Tuple[CipherType, int, Mode, int],
         randbytes: Callable[[int], bytes],
     ) -> None:
         module, key_size, mode, iv_size = params
@@ -284,7 +256,7 @@ class TestCipher:
 
     def test_decrypt_nothing_raises(
         self,
-        params: Tuple[Cipher, int, Mode, int],
+        params: Tuple[CipherType, int, Mode, int],
         randbytes: Callable[[int], bytes],
     ) -> None:
         module, key_size, mode, iv_size = params

@@ -9,6 +9,14 @@ the IETF in *RFC 5794*.
 
 """
 
+import sys
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Final, Literal
+else:
+    from typing import Final, Literal
+
+from typing import Optional, Union
 
 from mbedtls.exceptions import TLSError  # type: ignore
 
@@ -17,11 +25,15 @@ from ._cipher import Cipher, Mode
 __all__ = ["block_size", "key_size", "new"]
 
 
-block_size = 16
-key_size = None
+block_size: Final = 16
+key_size: Final = None
 
 
-def new(key, mode, iv=None):
+def new(
+    key: bytes,
+    mode: Union[int, Literal[Mode.CBC, Mode.CTR, Mode.ECB, Mode.GCM]],
+    iv: Optional[bytes] = None,
+) -> Cipher:
     """Return a `Cipher` object that can perform ARIA encryption and
     decryption.
 
@@ -30,20 +42,20 @@ def new(key, mode, iv=None):
     Standards selected it as a standard cryptographic technique.
 
     Parameters:
-        key (bytes): The key to encrypt decrypt.
-        mode (int): The mode of operation of the cipher.
-        iv (bytes or None): The initialization vector (IV).  The IV is
+        key: The key to encrypt decrypt.
+        mode: The mode of operation of the cipher.
+        iv: The initialization vector (IV).  The IV is
             required for every mode but ECB and CTR where it is ignored.
             If not set, the IV is initialized to all 0, which should not
             be used for encryption.
 
     """
-    mode = Mode(mode)
-    if mode in {
-        Mode.ECB,
+    mode_ = Mode(mode)
+    if mode_ in {
         Mode.CBC,
         # Mode.CFB128,
         Mode.CTR,
+        Mode.ECB,
         Mode.GCM,
     }:
         if len(key) * 8 not in {128, 192, 256}:
@@ -51,6 +63,6 @@ def new(key, mode, iv=None):
                 msg="key size must 16, 24, or 32 bytes, got %i" % len(key)
             )
     else:
-        raise TLSError(msg="unsupported mode %r" % mode)
-    name = ("ARIA-%i-%s" % (len(key) * 8, mode.name)).encode("ascii")
-    return Cipher(name, key, mode, iv)
+        raise TLSError(msg="unsupported mode %r" % mode_)
+    name = ("ARIA-%i-%s" % (len(key) * 8, mode_.name)).encode("ascii")
+    return Cipher(name, key, mode_, iv)

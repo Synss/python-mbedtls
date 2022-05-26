@@ -9,6 +9,13 @@ Encryption Algorithms"
 
 """
 
+import sys
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Final
+else:
+    from typing import Final
+
 from . import (
     AES,
     ARC4,
@@ -21,34 +28,27 @@ from . import (
     DES3dbl,
     typing,
 )
-from ._cipher import (  # type: ignore
-    AEADCipher,
-    Cipher,
-    Mode,
-    get_supported_ciphers,
-)
+from ._cipher import AEADCipher, Cipher, Mode, get_supported_ciphers
 
 # Add module-level aliases to comply with PEP 272.
-MODE_ECB = Mode.ECB
-MODE_CBC = Mode.CBC
-MODE_CFB = Mode.CFB
-MODE_OFB = Mode.OFB
-MODE_CTR = Mode.CTR
-MODE_GCM = Mode.GCM
-MODE_STREAM = Mode.STREAM
-MODE_CCM = Mode.CCM
-MODE_XTS = Mode.XTS
-MODE_CHACHAPOLY = Mode.CHACHAPOLY
+MODE_ECB: Final = Mode.ECB.value
+MODE_CBC: Final = Mode.CBC.value
+MODE_CFB: Final = Mode.CFB.value
+MODE_OFB: Final = Mode.OFB.value
+MODE_CTR: Final = Mode.CTR.value
+MODE_GCM: Final = Mode.GCM.value
+MODE_STREAM: Final = Mode.STREAM.value
+MODE_CCM: Final = Mode.CCM.value
+MODE_XTS: Final = Mode.XTS.value
+MODE_CHACHAPOLY: Final = Mode.CHACHAPOLY.value
 
 
 __all__ = (
-    "AEADCipher",
     "AES",
     "ARC4",
     "ARIA",
     "Blowfish",
     "Camellia",
-    "Cipher",
     "DES",
     "DES3",
     "DES3dbl",

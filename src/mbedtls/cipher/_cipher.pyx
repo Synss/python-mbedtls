@@ -5,14 +5,14 @@
 """Ciphers for symmetric encryption and decryption."""
 
 
+from libc.stdlib cimport free, malloc
+
 cimport mbedtls.cipher._cipher as _cipher
-from libc.stdlib cimport malloc, free
 
 import enum
 from contextlib import suppress
 
 import mbedtls.exceptions as _exc
-
 
 CIPHER_NAME = (
     # Define as bytes to map to `const char*` without conversion.
@@ -108,10 +108,7 @@ class Mode(enum.Enum):
 
 
 cpdef get_supported_ciphers():
-    """Return the set of ciphers supported by the generic
-    cipher module.
-
-    """
+    """Return the ciphers supported by the generic cipher module."""
     cipher_lookup = {n: v for n, v in enumerate(CIPHER_NAME)}
     cdef const int* cipher_types = _cipher.mbedtls_cipher_list()
     cdef size_t n = 0

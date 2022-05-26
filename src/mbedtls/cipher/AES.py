@@ -7,6 +7,14 @@ NIST in 2001.
 
 """
 
+import sys
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Final, Literal
+else:
+    from typing import Final, Literal
+
+from typing import Optional, Union, overload
 
 from mbedtls.exceptions import TLSError  # type: ignore
 
@@ -15,11 +23,36 @@ from ._cipher import AEADCipher, Cipher, Mode
 __all__ = ["block_size", "key_size", "new"]
 
 
-block_size = 16
-key_size = None
+block_size: Final = 16
+key_size: Final = None
 
 
-def new(key, mode, iv=None, ad=None):
+@overload
+def new(
+    key: bytes,
+    mode: Literal[Mode.CCM, Mode.GCM],
+    iv: Optional[bytes],
+    ad: Optional[bytes],
+) -> AEADCipher:
+    ...
+
+
+@overload
+def new(
+    key: bytes,
+    mode: Literal[Mode.CBC, Mode.CFB, Mode.CTR, Mode.ECB, Mode.OFB],
+    iv: Optional[bytes],
+    ad: Optional[bytes],
+) -> Cipher:
+    ...
+
+
+def new(
+    key: bytes,
+    mode: Union[Mode, int],
+    iv: Optional[bytes] = None,
+    ad: Optional[bytes] = None,
+) -> Union[AEADCipher, Cipher]:
     """Return a `Cipher` object that can perform AES encryption and
     decryption.
 
@@ -27,47 +60,47 @@ def new(key, mode, iv=None, ad=None):
     NIST in 2001.
 
     Parameters:
-        key (bytes or None): The key to encrypt decrypt.  If None,
+        key: The key to encrypt decrypt.  If None,
             encryption and decryption are unavailable.
-        mode (int): The mode of operation of the cipher.
-        iv (bytes or None): The initialization vector (IV).  The IV is
+        mode: The mode of operation of the cipher.
+        iv: The initialization vector (IV).  The IV is
             required for every mode but ECB and CTR where it is ignored.
             If not set, the IV is initialized to all 0, which should not
             be used for encryption.
 
     """
-    mode = Mode(mode)
-    if mode in {
-        Mode.ECB,
+    mode_ = Mode(mode)
+    if mode_ in {
         Mode.CBC,
-        Mode.CFB,
-        Mode.OFB,
-        Mode.CTR,
-        Mode.GCM,
         Mode.CCM,
+        Mode.CFB,
+        Mode.CTR,
+        Mode.ECB,
+        Mode.GCM,
+        Mode.OFB,
     }:
         if len(key) not in {16, 24, 32}:
             raise TLSError(
                 msg="key size must 16, 24, or 32 bytes, got %i" % len(key)
             )
-    elif mode is Mode.XTS:
+    elif mode_ is Mode.XTS:
         if len(key) not in {32, 64}:
             raise TLSError(
                 msg="key size must 32, or 64 bytes, got %i" % len(key)
             )
     else:
-        raise TLSError(msg="unsupported mode %r" % mode)
-    if mode is Mode.XTS:
-        name = ("AES-%i-%s" % (len(key) * 4, mode.name)).encode("ascii")
+        raise TLSError(msg="unsupported mode %r" % mode_)
+    if mode_ is Mode.XTS:
+        name = ("AES-%i-%s" % (len(key) * 4, mode_.name)).encode("ascii")
     else:
         name = (
             "AES-%i-%s%s"
             % (
                 len(key) * 8,
-                mode.name,
-                "128" if mode is Mode.CFB else "",
+                mode_.name,
+                "128" if mode_ is Mode.CFB else "",
             )
         ).encode("ascii")
-    if mode in {Mode.GCM, Mode.CCM}:
-        return AEADCipher(name, key, mode, iv, ad)
-    return Cipher(name, key, mode, iv)
+    if mode_ in {Mode.GCM, Mode.CCM}:
+        return AEADCipher(name, key, mode_, iv, ad)
+    return Cipher(name, key, mode_, iv)

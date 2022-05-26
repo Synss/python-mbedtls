@@ -5,6 +5,14 @@
 """Alleged River Cipher 4 cipher (ARC4 or ARCFOUR) designed in 1987
 at RSA Security."""
 
+import sys
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Final, Literal
+else:
+    from typing import Final, Literal
+
+from typing import Optional, Union
 
 from mbedtls.exceptions import TLSError  # type: ignore
 
@@ -12,11 +20,15 @@ from ._cipher import Cipher, Mode
 
 __all__ = ["block_size", "key_size", "new"]
 
-block_size = 1
-key_size = 16
+block_size: Final = 1
+key_size: Final = 16
 
 
-def new(key, mode=None, iv=None):
+def new(
+    key: bytes,
+    mode: Optional[Union[int, Literal[Mode.STREAM]]] = None,
+    iv: Optional[bytes] = None,
+) -> Cipher:
     """Return a `Cipher` object that can perform ARC4 encryption and
     decryption.
 
@@ -24,10 +36,10 @@ def new(key, mode=None, iv=None):
     at RSA Security.
 
     Parameters:
-        key (bytes or None): The key to encrypt decrypt.  If None,
+        key: The key to encrypt decrypt.  If None,
             encryption and decryption are unavailable.
-        mode (None): The feedback mode is ignored for ARC4.
-        iv (None): ARC4 does not use IV.
+        mode: The feedback mode is ignored for ARC4.
+        iv: ARC4 does not use IV.
 
     """
     if len(key) != key_size:
@@ -37,4 +49,4 @@ def new(key, mode=None, iv=None):
     if mode not in {None, Mode.STREAM}:
         raise TLSError(msg="unsupported mode %r" % mode)
     name = ("ARC4-%i" % (len(key) * 8)).encode("ascii")
-    return Cipher(name, key, mode, iv)
+    return Cipher(name, key, Mode.STREAM, iv)

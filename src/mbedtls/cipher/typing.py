@@ -9,7 +9,7 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import Protocol
 
-from ._cipher import AEADCipher, Cipher, Mode  # type: ignore
+from ._cipher import AEADCipher, Cipher, Mode
 
 
 class CipherType(Protocol):
