@@ -8,7 +8,7 @@ at RSA Security."""
 
 from mbedtls.exceptions import TLSError  # type: ignore
 
-from . import _cipher
+from ._cipher import Cipher, Mode
 
 __all__ = ["block_size", "key_size", "new"]
 
@@ -34,7 +34,7 @@ def new(key, mode=None, iv=None):
         raise TLSError(
             msg="key size must be %i bytes, got %i" % (key_size, len(key))
         )
-    if mode not in {None, _cipher.Mode.STREAM}:
+    if mode not in {None, Mode.STREAM}:
         raise TLSError(msg="unsupported mode %r" % mode)
     name = ("ARC4-%i" % (len(key) * 8)).encode("ascii")
-    return _cipher.Cipher(name, key, mode, iv)
+    return Cipher(name, key, mode, iv)

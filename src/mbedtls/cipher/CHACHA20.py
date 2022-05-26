@@ -8,7 +8,7 @@
 
 from mbedtls.exceptions import TLSError  # type: ignore
 
-from . import _cipher
+from ._cipher import AEADCipher, Cipher, Mode
 
 __all__ = ["block_size", "key_size", "new"]
 
@@ -39,12 +39,10 @@ def new(key, mode, iv=None, ad=None):
     """
     if len(key) != key_size:
         raise TLSError(msg="key size must 32 bytes, got %r" % len(key))
-    if mode == _cipher.Mode.STREAM:
+    if mode == Mode.STREAM:
         assert ad is None
-        cipher = _cipher.Cipher(b"CHACHA20", key, mode, iv)
-    elif mode == _cipher.Mode.CHACHAPOLY:
+        return Cipher(b"CHACHA20", key, mode, iv)
+    if mode == Mode.CHACHAPOLY:
         ad = b"" if ad is None else ad
-        cipher = _cipher.AEADCipher(b"CHACHA20-POLY1305", key, mode, iv, ad)
-    else:
-        raise TLSError(msg="unsupported mode %r" % mode)
-    return cipher
+        return AEADCipher(b"CHACHA20-POLY1305", key, mode, iv, ad)
+    raise TLSError(msg="unsupported mode %r" % mode)

@@ -7,7 +7,7 @@
 
 from mbedtls.exceptions import TLSError  # type: ignore
 
-from . import _cipher
+from ._cipher import Cipher, Mode
 
 __all__ = ["block_size", "key_size", "new"]
 
@@ -31,21 +31,15 @@ def new(key, mode, iv=None):
             be used for encryption.
 
     """
-    mode = _cipher.Mode(mode)
+    mode = Mode(mode)
     if len(key) not in {16, 24, 32}:
         raise TLSError(
             msg="key size must 16, 24, or 32 bytes, got %r" % len(key)
         )
-    if mode not in {
-        _cipher.Mode.ECB,
-        _cipher.Mode.CBC,
-        _cipher.Mode.CFB,
-        _cipher.Mode.CTR,
-        _cipher.Mode.GCM,
-    }:
+    if mode not in {Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR, Mode.GCM}:
         raise TLSError(msg="unsupported mode %r" % mode)
     name = (
         "CAMELLIA-%i-%s%s"
-        % (len(key) * 8, mode.name, "128" if mode is _cipher.Mode.CFB else "")
+        % (len(key) * 8, mode.name, "128" if mode is Mode.CFB else "")
     ).encode("ascii")
-    return _cipher.Cipher(name, key, mode, iv)
+    return Cipher(name, key, mode, iv)

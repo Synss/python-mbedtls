@@ -7,7 +7,7 @@
 
 from mbedtls.exceptions import TLSError  # type: ignore
 
-from . import _cipher
+from ._cipher import Cipher, Mode
 
 __all__ = ["block_size", "key_size", "new"]
 
@@ -31,18 +31,13 @@ def new(key, mode, iv=None):
             be used for encryption.
 
     """
-    mode = _cipher.Mode(mode)
+    mode = Mode(mode)
     key_len = len(key)
     if key_len not in range(4, 57):
         raise TLSError(msg="key size must be 4 to 56 bytes, got %i" % key_len)
-    if mode not in {
-        _cipher.Mode.ECB,
-        _cipher.Mode.CBC,
-        _cipher.Mode.CFB,
-        _cipher.Mode.CTR,
-    }:
+    if mode not in {Mode.ECB, Mode.CBC, Mode.CFB, Mode.CTR}:
         raise TLSError(msg="unsupported mode %r" % mode)
     name = (
-        "BLOWFISH-%s%s" % (mode.name, "64" if mode is _cipher.Mode.CFB else "")
+        "BLOWFISH-%s%s" % (mode.name, "64" if mode is Mode.CFB else "")
     ).encode("ascii")
-    return _cipher.Cipher(name, key, mode, iv)
+    return Cipher(name, key, mode, iv)

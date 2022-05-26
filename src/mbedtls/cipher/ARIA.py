@@ -12,7 +12,7 @@ the IETF in *RFC 5794*.
 
 from mbedtls.exceptions import TLSError  # type: ignore
 
-from . import _cipher
+from ._cipher import Cipher, Mode
 
 __all__ = ["block_size", "key_size", "new"]
 
@@ -38,13 +38,13 @@ def new(key, mode, iv=None):
             be used for encryption.
 
     """
-    mode = _cipher.Mode(mode)
+    mode = Mode(mode)
     if mode in {
-        _cipher.Mode.ECB,
-        _cipher.Mode.CBC,
-        # _cipher.Mode.CFB128,
-        _cipher.Mode.CTR,
-        _cipher.Mode.GCM,
+        Mode.ECB,
+        Mode.CBC,
+        # Mode.CFB128,
+        Mode.CTR,
+        Mode.GCM,
     }:
         if len(key) * 8 not in {128, 192, 256}:
             raise TLSError(
@@ -53,4 +53,4 @@ def new(key, mode, iv=None):
     else:
         raise TLSError(msg="unsupported mode %r" % mode)
     name = ("ARIA-%i-%s" % (len(key) * 8, mode.name)).encode("ascii")
-    return _cipher.Cipher(name, key, mode, iv)
+    return Cipher(name, key, mode, iv)

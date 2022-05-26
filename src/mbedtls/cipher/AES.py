@@ -10,7 +10,7 @@ NIST in 2001.
 
 from mbedtls.exceptions import TLSError  # type: ignore
 
-from . import _cipher
+from ._cipher import AEADCipher, Cipher, Mode
 
 __all__ = ["block_size", "key_size", "new"]
 
@@ -36,28 +36,28 @@ def new(key, mode, iv=None, ad=None):
             be used for encryption.
 
     """
-    mode = _cipher.Mode(mode)
+    mode = Mode(mode)
     if mode in {
-        _cipher.Mode.ECB,
-        _cipher.Mode.CBC,
-        _cipher.Mode.CFB,
-        _cipher.Mode.OFB,
-        _cipher.Mode.CTR,
-        _cipher.Mode.GCM,
-        _cipher.Mode.CCM,
+        Mode.ECB,
+        Mode.CBC,
+        Mode.CFB,
+        Mode.OFB,
+        Mode.CTR,
+        Mode.GCM,
+        Mode.CCM,
     }:
         if len(key) not in {16, 24, 32}:
             raise TLSError(
                 msg="key size must 16, 24, or 32 bytes, got %i" % len(key)
             )
-    elif mode is _cipher.Mode.XTS:
+    elif mode is Mode.XTS:
         if len(key) not in {32, 64}:
             raise TLSError(
                 msg="key size must 32, or 64 bytes, got %i" % len(key)
             )
     else:
         raise TLSError(msg="unsupported mode %r" % mode)
-    if mode is _cipher.Mode.XTS:
+    if mode is Mode.XTS:
         name = ("AES-%i-%s" % (len(key) * 4, mode.name)).encode("ascii")
     else:
         name = (
@@ -65,9 +65,9 @@ def new(key, mode, iv=None, ad=None):
             % (
                 len(key) * 8,
                 mode.name,
-                "128" if mode is _cipher.Mode.CFB else "",
+                "128" if mode is Mode.CFB else "",
             )
         ).encode("ascii")
-    if mode in {_cipher.Mode.GCM, _cipher.Mode.CCM}:
-        return _cipher.AEADCipher(name, key, mode, iv, ad)
-    return _cipher.Cipher(name, key, mode, iv)
+    if mode in {Mode.GCM, Mode.CCM}:
+        return AEADCipher(name, key, mode, iv, ad)
+    return Cipher(name, key, mode, iv)
