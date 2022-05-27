@@ -11,7 +11,7 @@ import pytest  # type: ignore
 
 from mbedtls import hashlib
 from mbedtls._tls import _DTLSCookie as DTLSCookie  # type: ignore
-from mbedtls._tls import _PSKSToreProxy as PSKStoreProxy
+from mbedtls._tls import _PSKSToreProxy as PSKStoreProxy  # type: ignore
 from mbedtls.pk import RSA  # type: ignore
 from mbedtls.tls import (
     ClientContext,

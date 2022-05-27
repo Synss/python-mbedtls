@@ -1,18 +1,28 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2018, Mathias Laurin
 
+from __future__ import annotations
+
 import enum
 import socket as _socket
 import struct
+import sys
 
-from ._tls import (  # type: ignore
+if sys.version_info < (3, 10):
+    from typing_extensions import TypeAlias
+else:
+    from typing import TypeAlias
+
+from typing import Any, NoReturn, Optional, Tuple, Union
+
+from ._tls import (
     DTLSConfiguration,
     DTLSVersion,
     HandshakeStep,
     HelloVerifyRequest,
 )
 from ._tls import MbedTLSBuffer as TLSWrappedBuffer
-from ._tls import (  # type: ignore
+from ._tls import (
     NextProtocol,
     Purpose,
     RaggedEOF,
@@ -48,6 +58,10 @@ __all__ = (
 )
 
 
+# Stolen from `_socket.pyi`.
+_Address: TypeAlias = Union[Tuple[Any, ...], str]
+
+
 class TLSRecordHeader:
     """Encode/decode TLS record protocol format."""
 
@@ -60,12 +74,12 @@ class TLSRecordHeader:
         HANDSHAKE = 0x16
         APPLICATION_DATA = 0x17
 
-    def __init__(self, record_type, version, length):
+    def __init__(self, record_type: int, version: int, length: int) -> None:
         self.record_type = record_type
         self.version = version
         self.length = length
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s(%s, %s, %s)" % (
             type(self).__name__,
             self.record_type,
@@ -73,7 +87,7 @@ class TLSRecordHeader:
             self.length,
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "%s(%r, %r, %r)" % (
             type(self).__name__,
             self.record_type,
@@ -81,7 +95,7 @@ class TLSRecordHeader:
             self.length,
         )
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, TLSRecordHeader):
             return NotImplemented
         return (
@@ -90,19 +104,19 @@ class TLSRecordHeader:
             and self.length == other.length
         )
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return 0x5AFE ^ self.record_type ^ self.version ^ self.length
 
-    def __len__(self):
+    def __len__(self) -> int:
         return 5
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return struct.pack(
             TLSRecordHeader.fmt, self.record_type, self.version, self.length
         )
 
     @classmethod
-    def from_bytes(cls, header):
+    def from_bytes(cls, header: bytes) -> TLSRecordHeader:
         record_type, version, length = struct.unpack(
             TLSRecordHeader.fmt, header[:5]
         )
@@ -120,14 +134,16 @@ class ClientContext(_BaseContext):
     def _purpose(self) -> Purpose:
         return Purpose.CLIENT_AUTH
 
-    def wrap_socket(self, socket, server_hostname):
+    def wrap_socket(
+        self, socket: _socket.socket, server_hostname: Optional[str]
+    ) -> TLSWrappedSocket:
         """Wrap an existing Python socket object ``socket`` and return a
         ``TLSWrappedSocket`` object. ``socket`` must be a ``SOCK_STREAM``
         socket: all other socket types are unsupported.
 
         Args:
-            socket (socket.socket): The socket to wrap.
-            server_hostname (str, optional): The hostname of the service
+            socket: The socket to wrap.
+            server_hostname: The hostname of the service
                 which we are connecting to.  Pass ``None`` if hostname
                 validation is not desired.  This parameter has no
                 default value because opting-out hostname validation is
@@ -137,7 +153,7 @@ class ClientContext(_BaseContext):
         buffer = self.wrap_buffers(server_hostname)
         return TLSWrappedSocket(socket, buffer)
 
-    def wrap_buffers(self, server_hostname):
+    def wrap_buffers(self, server_hostname: Optional[str]) -> TLSWrappedBuffer:
         """Create an in-memory stream for TLS."""
         # PEP 543
         return TLSWrappedBuffer(self, server_hostname)
@@ -150,57 +166,59 @@ class ServerContext(_BaseContext):
     def _purpose(self) -> Purpose:
         return Purpose.SERVER_AUTH
 
-    def wrap_socket(self, socket):
+    def wrap_socket(self, socket: _socket.socket) -> TLSWrappedSocket:
         """Wrap an existing Python socket object ``socket``."""
         buffer = self.wrap_buffers()
         return TLSWrappedSocket(socket, buffer)
 
-    def wrap_buffers(self):
+    def wrap_buffers(self) -> TLSWrappedBuffer:
         # PEP 543
         return TLSWrappedBuffer(self)
 
 
 class TLSWrappedSocket:
     # _pep543.TLSWrappedSocket
-    def __init__(self, socket, buffer):
+    def __init__(
+        self, socket: _socket.socket, buffer: TLSWrappedBuffer
+    ) -> None:
         super().__init__()
         self._socket = socket
         self._buffer = buffer
         self._context = buffer.context
         self._closed = False
 
-    def __getstate__(self):
+    def __getstate__(self) -> NoReturn:
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
-    def __enter__(self):
+    def __enter__(self) -> TLSWrappedSocket:
         return self
 
-    def __exit__(self, *exc_info):
+    def __exit__(self, *exc_info: object) -> None:
         if not self._closed:
             self.close()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self._socket)
 
     @property
-    def _handshake_state(self):
+    def _handshake_state(self) -> HandshakeStep:
         return self._buffer._handshake_state
 
     # PEP 543 requires the full socket API.
 
     @property
-    def family(self):
+    def family(self) -> _socket.AddressFamily:
         return self._socket.family
 
     @property
-    def proto(self):
+    def proto(self) -> int:
         return self._socket.proto
 
     @property
-    def type(self):
+    def type(self) -> _socket.SocketKind:
         return self._socket.type
 
-    def accept(self):
+    def accept(self) -> Tuple[TLSWrappedSocket, _Address]:
         if self.type == _socket.SOCK_STREAM:
             conn, address = self._socket.accept()
         else:
@@ -218,62 +236,72 @@ class TLSWrappedSocket:
             self._socket = _socket.socket(family, type_, proto)
             self.setsockopt(_socket.SOL_SOCKET, _socket.SO_REUSEADDR, 1)
             self.bind(sockname)
+        if isinstance(self.context, ClientContext):
+            # Probably not very useful but there is not reason to forbid it.
+            return (
+                self.context.wrap_socket(conn, self._buffer._server_hostname),
+                address,
+            )
+        assert isinstance(self.context, ServerContext)
         return self.context.wrap_socket(conn), address
 
-    def bind(self, address):
+    def bind(self, address: _Address) -> None:
         self._socket.bind(address)
 
-    def close(self):
+    def close(self) -> None:
         self._closed = True
         self._buffer.shutdown()
         self._socket.close()
 
-    def connect(self, address):
+    def connect(self, address: _Address) -> None:
         self._socket.connect(address)
 
-    def connect_ex(self, address):
+    def connect_ex(self, address: _Address) -> None:
         self._socket.connect_ex(address)
 
-    def fileno(self):
+    def fileno(self) -> int:
         return self._socket.fileno()
 
-    def getpeername(self):
+    def getpeername(self) -> Any:
         return self._socket.getpeername()
 
-    def getsockname(self):
+    def getsockname(self) -> Any:
         return self._socket.getsockname()
 
-    def getsockopt(self, optname, buflen=None):
-        return self._socket.getsockopt(optname, buflen=buflen)
+    def getsockopt(self, *args):
+        return self._socket.getsockopt(*args)
 
-    def listen(self, backlog=None):
-        if backlog is None:
-            # Use 5 (Python default) or 10 (mbedtls defaults).
-            backlog = 5
+    def listen(self, backlog: int = 5) -> None:
         self._socket.listen(backlog)
 
     def makefile(self, *args, **kwargs):
         return self._socket.makefile(*args, **kwargs)
 
-    def recv(self, bufsize, flags=0):
+    def recv(self, bufsize: int, flags: int = 0) -> bytes:
         encrypted = self._socket.recv(bufsize, flags)
         if not encrypted:
             return b""
         self._buffer.receive_from_network(encrypted)
         return self._buffer.read(bufsize)
 
-    def recv_into(self, buffer, nbytes=None, flags=0):
+    def recv_into(
+        self, buffer: bytes, nbytes: Optional[int] = None, flags: int = 0
+    ) -> None:
         raise NotImplementedError
 
-    def recvfrom(self, bufsize, flags=0):
+    def recvfrom(self, bufsize: int, flags: int = 0) -> Tuple[bytes, _Address]:
         encrypted, addr = self._socket.recvfrom(bufsize, flags)
         if not encrypted:
             return b"", addr
         self._buffer.receive_from_network(encrypted)
         return self._buffer.read(bufsize), addr
 
-    def recvfrom_into(self, buffer, nbytes=None, flags=0):
-        encrypted, addr = self._socket.recvfrom(len(buffer), flags)
+    def recvfrom_into(
+        self, buffer: bytes, nbytes: Optional[int] = None, flags: int = 0
+    ) -> Tuple[int, _Address]:
+        encrypted, addr = self._socket.recvfrom(
+            nbytes if nbytes is not None else len(buffer), flags
+        )
         if not encrypted:
             return 0, addr
         self._buffer.receive_from_network(encrypted)
@@ -284,7 +312,7 @@ class TLSWrappedSocket:
             addr,
         )
 
-    def send(self, message, flags=0):
+    def send(self, message: bytes, flags: int = 0) -> int:
         # Maximum size supported by TLS is 16K (encrypted).
         # mbedTLS defines it in MBEDTLS_SSL_MAX_CONTENT_LEN and
         # MBEDTLS_SSL_IN_CONTENT_LEN/MBEDTLS_SSL_OUT_CONTENT_LEN.
@@ -294,13 +322,13 @@ class TLSWrappedSocket:
         self._buffer.consume_outgoing(amt)
         return len(message)
 
-    def sendall(self, message, flags=0):
+    def sendall(self, message: bytes, flags: int = 0) -> None:
         amt = self._buffer.write(message)
         encrypted = self._buffer.peek_outgoing(amt)
         self._buffer.consume_outgoing(amt)
         self._socket.sendall(encrypted)
 
-    def sendto(self, message, *args):
+    def sendto(self, message: bytes, *args) -> int:
         if not 1 <= len(args) <= 2:
             raise TypeError(
                 "sendto() takes 2 or 3 arguments (%i given)" % (1 + len(args))
@@ -319,25 +347,25 @@ class TLSWrappedSocket:
         self._buffer.consume_outgoing(amt)
         return len(message)
 
-    def setblocking(self, flag):
+    def setblocking(self, flag: bool) -> None:
         self._socket.setblocking(flag)
 
-    def settimeout(self, value):
+    def settimeout(self, value: int) -> None:
         self._socket.settimeout(value)
 
-    def gettimeout(self):
+    def gettimeout(self) -> Optional[float]:
         return self._socket.gettimeout()
 
-    def setsockopt(self, level, optname, value):
+    def setsockopt(self, level: int, optname: int, value: Any) -> None:
         self._socket.setsockopt(level, optname, value)
 
-    def shutdown(self, how):
+    def shutdown(self, how: int) -> None:
         self._buffer.shutdown()
         self._socket.shutdown(how)
 
     # PEP 543 adds the following methods.
 
-    def do_handshake(self):
+    def do_handshake(self) -> None:
         while self._handshake_state is not HandshakeStep.HANDSHAKE_OVER:
             try:
                 self._buffer.do_handshake()
@@ -349,22 +377,22 @@ class TLSWrappedSocket:
                 amt = self._socket.send(in_transit)
                 self._buffer.consume_outgoing(amt)
 
-    def setcookieparam(self, param):
+    def setcookieparam(self, param: bytes) -> None:
         self._buffer.setcookieparam(param)
 
-    def cipher(self):
+    def cipher(self) -> Any:
         return self._buffer.cipher()
 
-    def negotiated_protocol(self):
+    def negotiated_protocol(self) -> Any:
         return self._buffer.negotiated_protocol()
 
     @property
-    def context(self):
+    def context(self) -> _BaseContext:
         return self._buffer.context
 
-    def negotiated_tls_version(self):
+    def negotiated_tls_version(self) -> Union[TLSVersion, DTLSVersion]:
         return self._buffer.negotiated_tls_version()
 
-    def unwrap(self):
+    def unwrap(self) -> _socket.socket:
         self._buffer.shutdown()
         return self._socket

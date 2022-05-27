@@ -12,7 +12,7 @@ from contextlib import suppress
 
 from mbedtls._tls import _enable_debug_output, _set_debug_level  # type: ignore
 from mbedtls.exceptions import TLSError  # type: ignore
-from mbedtls.tls import (  # type: ignore
+from mbedtls.tls import (
     ClientContext,
     DTLSConfiguration,
     TLSConfiguration,

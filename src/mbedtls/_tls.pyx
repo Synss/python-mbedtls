@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2018, Mathias Laurin
 
+from typing import overload, Sequence
+
 cimport libc.stdio as c_stdio
 from libc.stdlib cimport malloc, free
 
@@ -255,7 +257,7 @@ class HelloVerifyRequest(_exc.TLSError):
     pass
 
 
-class TrustStore(abc.Sequence):
+class TrustStore:
     def __init__(self, db=None):
         if db is None:
             db = []
@@ -294,8 +296,10 @@ class TrustStore(abc.Sequence):
     def __len__(self):
         return len(self._db)
 
-    def __getitem__(self, index):
-        return self._db[index]
+    def __getitem__(self, item):
+        if isinstance(item, slice):
+            return TrustStore(self._db[slice])
+        return self._db[item]
 
     def add(self, _x509.CRT crt):
         if crt in self:
@@ -1285,17 +1289,18 @@ cdef class MbedTLSBuffer:
         read = _tls.mbedtls_ssl_read(&self._ctx, &buffer[0], amt)
         if read > 0:
             return read
-        elif read == 0:
+        if read == 0:
             raise RaggedEOF()
-        elif read == _tls.MBEDTLS_ERR_SSL_WANT_READ:
+        if read == _tls.MBEDTLS_ERR_SSL_WANT_READ:
             raise WantReadError()
-        elif read == _tls.MBEDTLS_ERR_SSL_WANT_WRITE:
+        if read == _tls.MBEDTLS_ERR_SSL_WANT_WRITE:
             raise WantWriteError()
-        elif read == _tls.MBEDTLS_ERR_SSL_CLIENT_RECONNECT:
-            _exc.check_error(read)
-        else:
-            self._reset()
-            _exc.check_error(read)
+        if read == _tls.MBEDTLS_ERR_SSL_CLIENT_RECONNECT:
+            _exc.check_error(read)  # raises
+            assert 0, "unreachable"
+        self._reset()
+        _exc.check_error(read)  # raises
+        assert 0, "unreachable"
 
     def write(self, const unsigned char[:] buffer not None):
         if buffer.size == 0:
