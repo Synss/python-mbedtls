@@ -5,16 +5,14 @@
 """Generic message digest wrapper (hash algorithm)."""
 
 
-import mbedtls._md as _md  # type: ignore
+from typing import Optional
 
-algorithms_guaranteed = _md.algorithms_guaranteed
-algorithms_available = _md.algorithms_available
-
-
-Hmac = _md.Hmac
+from mbedtls._md import Hmac, algorithms_available, algorithms_guaranteed
 
 
-def new(key, buffer=None, digestmod=None):
+def new(
+    key: bytes, buffer: Optional[bytes] = None, digestmod: Optional[str] = None
+) -> Hmac:
     """A generic constructor that takes the key algorithm as its first
     parameter.
 
@@ -35,47 +33,47 @@ def new(key, buffer=None, digestmod=None):
     return Hmac(key, digestmod, buffer, block_size=block_size)
 
 
-def md2(key, buffer=None):
+def md2(key: bytes, buffer: Optional[bytes] = None) -> Hmac:
     """MD2 message-digest algorithm."""
     return new(key, buffer, "md2")
 
 
-def md4(key, buffer=None):
+def md4(key: bytes, buffer: Optional[bytes] = None) -> Hmac:
     """MD4 message-digest algorithm."""
     return new(key, buffer, "md4")
 
 
-def md5(key, buffer=None):
+def md5(key: bytes, buffer: Optional[bytes] = None) -> Hmac:
     """MD5 message-digest algorithm."""
     return new(key, buffer, "md5")
 
 
-def sha1(key, buffer=None):
+def sha1(key: bytes, buffer: Optional[bytes] = None) -> Hmac:
     """Secure Hmac Algorithm 1 (SHA-1)."""
     return new(key, buffer, "sha1")
 
 
-def sha224(key, buffer=None):
+def sha224(key: bytes, buffer: Optional[bytes] = None) -> Hmac:
     """Secure Hmac Algorithm 2 (SHA-2) with 224 bits hash value."""
     return new(key, buffer, "sha224")
 
 
-def sha256(key, buffer=None):
+def sha256(key: bytes, buffer: Optional[bytes] = None) -> Hmac:
     """Secure Hmac Algorithm 2 (SHA-2) with 256 bits hash value."""
     return new(key, buffer, "sha256")
 
 
-def sha384(key, buffer=None):
+def sha384(key: bytes, buffer: Optional[bytes] = None) -> Hmac:
     """Secure Hmac Algorithm 2 (SHA-2) with 384 bits hash value."""
     return new(key, buffer, "sha384")
 
 
-def sha512(key, buffer=None):
+def sha512(key: bytes, buffer: Optional[bytes] = None) -> Hmac:
     """Secure Hmac Algorithm 2 (SHA-2) with 512 bits hash value."""
     return new(key, buffer, "sha512")
 
 
-def ripemd160(key, buffer=None):
+def ripemd160(key: bytes, buffer: Optional[bytes] = None) -> Hmac:
     """RACE Integrity Primitives Evaluation Message Digest (RIPEMD) with
     160 bits hash value."""
     return new(key, buffer, "ripemd160")
