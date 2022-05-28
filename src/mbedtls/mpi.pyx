@@ -6,17 +6,18 @@
 """Multi-precision integer library (MPI)."""
 
 
-cimport mbedtls.mpi as _mpi
+from libc.stdlib cimport free, malloc
+
 cimport mbedtls._random as _rnd
-from libc.stdlib cimport malloc, free
+cimport mbedtls.mpi as _mpi
 
 import math
 import numbers
 from binascii import hexlify, unhexlify
 
-import mbedtls.exceptions as _exc
 import mbedtls._platform as _plt
 import mbedtls._random as _rnd
+import mbedtls.exceptions as _exc
 
 
 cdef _rnd.Random __rng = _rnd.default_rng()

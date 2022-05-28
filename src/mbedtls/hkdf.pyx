@@ -9,14 +9,13 @@ by RFC 5869.
 """
 
 
-from libc.stdlib cimport malloc, free
+from libc.stdlib cimport free, malloc
 
 cimport mbedtls._md as _hmac
 cimport mbedtls.hkdf as _hkdf
 
 import mbedtls.exceptions as _exc
 import mbedtls.hmac as _hmac
-
 
 __all__ = ("hkdf", "extract", "expand")
 

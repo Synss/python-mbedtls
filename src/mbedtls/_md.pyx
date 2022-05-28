@@ -5,13 +5,13 @@
 """Generic message digest wrapper (hash algorithm)."""
 
 
+from libc.stdlib cimport free, malloc
+
 cimport mbedtls._md as _md
-from libc.stdlib cimport malloc, free
 
 import binascii
 
 import mbedtls.exceptions as _exc
-
 
 __MD_NAME = (
     # Define as bytes to map to `const char*` without conversion.

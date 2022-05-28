@@ -4,24 +4,23 @@
 """Structure and functions for parsing and writing X.509 certificates."""
 
 
-from libc.stdlib cimport malloc, free
+from libc.stdlib cimport free, malloc
 
-cimport mbedtls.x509 as x509
 cimport mbedtls.mpi as _mpi
 cimport mbedtls.pk as _pk
+cimport mbedtls.x509 as x509
 
 import base64
 import datetime as dt
+import enum
 from collections import namedtuple
 from contextlib import suppress
 
+import mbedtls._md as _md
 import mbedtls.exceptions as _exc
 import mbedtls.mpi as _mpi
 import mbedtls.pk as _pk
-import mbedtls._md as _md
 from mbedtls.hashlib import new as _new_hash
-
-import enum
 
 
 @enum.unique

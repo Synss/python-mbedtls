@@ -4,10 +4,9 @@
 """This module defines exceptions and errors."""
 
 
-from libc.stdlib cimport malloc, free
+from libc.stdlib cimport free, malloc
 
 cimport mbedtls.exceptions as _exc
-
 
 __all__ = ("TLSError",)
 

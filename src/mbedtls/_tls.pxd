@@ -8,7 +8,6 @@ cimport mbedtls._ringbuf as _rb
 cimport mbedtls.pk as _pk
 cimport mbedtls.x509 as _x509
 
-
 cdef:
     enum:
         MBEDTLS_SSL_TRANSPORT_STREAM = 0

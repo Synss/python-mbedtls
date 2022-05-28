@@ -5,7 +5,7 @@
 """Random number generator (RNG) wrapper."""
 
 
-from libc.stdlib cimport malloc, free
+from libc.stdlib cimport free, malloc
 
 cimport mbedtls._platform as _plt
 cimport mbedtls._random as _rnd
@@ -14,7 +14,6 @@ import numbers as _numbers
 
 import mbedtls.mpi as _mpi
 from mbedtls.exceptions import check_error
-
 
 BPF = 53  # Number of bits in a float
 RECIP_BPF = 2**-BPF

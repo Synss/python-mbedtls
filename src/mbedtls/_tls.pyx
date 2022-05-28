@@ -1,14 +1,14 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2018, Mathias Laurin
 
-from typing import overload, Sequence
+from typing import Sequence, overload
 
 cimport libc.stdio as c_stdio
-from libc.stdlib cimport malloc, free
+from libc.stdlib cimport free, malloc
 
 cimport mbedtls._random as _rnd
-cimport mbedtls.pk as _pk
 cimport mbedtls._tls as _tls
+cimport mbedtls.pk as _pk
 cimport mbedtls.x509 as _x509
 
 import enum

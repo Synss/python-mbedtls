@@ -11,7 +11,7 @@ See Also:
 """
 
 
-from libc.stdlib cimport malloc, free
+from libc.stdlib cimport free, malloc
 from libc.string cimport memcpy
 
 cimport mbedtls._ringbuf as _rb

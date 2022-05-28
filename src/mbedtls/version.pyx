@@ -3,13 +3,12 @@
 
 """Run-time version information"""
 
-from libc.stdlib cimport malloc, free
+from libc.stdlib cimport free, malloc
 from libc.string cimport strcpy
 
 cimport mbedtls.version as _ver
 
 from collections import namedtuple
-
 
 mbedtls_version = namedtuple("mbedtls_version", "major minor micro")
 
