@@ -275,9 +275,14 @@ class TLSWrappedSocket:
     def recvfrom_into(self, buffer, nbytes=None, flags=0):
         encrypted, addr = self._socket.recvfrom(len(buffer), flags)
         if not encrypted:
-            return buffer, addr
+            return 0, addr
         self._buffer.receive_from_network(encrypted)
-        return self._buffer.readinto(buffer, nbytes), addr
+        return (
+            self._buffer.readinto(
+                buffer, nbytes if nbytes is not None else len(buffer)
+            ),
+            addr,
+        )
 
     def send(self, message, flags=0):
         # Maximum size supported by TLS is 16K (encrypted).
