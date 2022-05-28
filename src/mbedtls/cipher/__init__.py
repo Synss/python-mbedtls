@@ -10,13 +10,9 @@ Encryption Algorithms"
 """
 
 import sys
+from typing import Optional
 
-if sys.version_info < (3, 8):
-    from typing_extensions import Final
-else:
-    from typing import Final
-
-from . import (
+from mbedtls.cipher import (
     AES,
     ARC4,
     ARIA,
@@ -26,9 +22,19 @@ from . import (
     Blowfish,
     Camellia,
     DES3dbl,
-    typing,
 )
-from ._cipher import AEADCipher, Cipher, Mode, get_supported_ciphers
+from mbedtls.cipher._cipher import AEADCipher as AEADCipher
+from mbedtls.cipher._cipher import Cipher as Cipher
+from mbedtls.cipher._cipher import Mode as Mode
+from mbedtls.cipher._cipher import (
+    get_supported_ciphers as get_supported_ciphers,
+)
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Final, Protocol
+else:
+    from typing import Final, Protocol
+
 
 # Add module-level aliases to comply with PEP 272.
 MODE_ECB: Final = Mode.ECB.value
@@ -43,7 +49,44 @@ MODE_XTS: Final = Mode.XTS.value
 MODE_CHACHAPOLY: Final = Mode.CHACHAPOLY.value
 
 
+class CipherType(Protocol):
+    @property
+    def __name__(self) -> str:
+        ...
+
+    @property
+    def block_size(self) -> int:
+        ...
+
+    @property
+    def key_size(self) -> int:
+        ...
+
+    def new(self, key: bytes, mode: Mode, iv: Optional[bytes]) -> Cipher:
+        ...
+
+
+class AEADCipherType(Protocol):
+    @property
+    def __name__(self) -> str:
+        ...
+
+    @property
+    def block_size(self) -> int:
+        ...
+
+    @property
+    def key_size(self) -> int:
+        ...
+
+    def new(
+        self, key: bytes, mode: Mode, iv: Optional[bytes], ad: Optional[bytes]
+    ) -> AEADCipher:
+        ...
+
+
 __all__ = (
+    "AEADCipherType",
     "AES",
     "ARC4",
     "ARIA",
@@ -53,6 +96,7 @@ __all__ = (
     "DES3",
     "DES3dbl",
     "CHACHA20",
+    "CipherType",
     "get_supported_ciphers",
     "Mode",
     "MODE_ECB",
@@ -65,5 +109,4 @@ __all__ = (
     "MODE_CCM",
     "MODE_XTS",
     "MODE_CHACHAPOLY",
-    "typing",
 )

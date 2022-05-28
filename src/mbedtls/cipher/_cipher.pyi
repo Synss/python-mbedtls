@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022, Mathias Laurin
+
 import enum
 from typing import FrozenSet, Optional, Tuple
 

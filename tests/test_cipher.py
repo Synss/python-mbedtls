@@ -30,16 +30,15 @@ from mbedtls.cipher import (
     CHACHA20,
     DES,
     DES3,
+    AEADCipherType,
     Blowfish,
     Camellia,
+    CipherType,
     DES3dbl,
-)
-from mbedtls.cipher._cipher import (  # type: ignore
-    CIPHER_NAME,
     Mode,
     get_supported_ciphers,
 )
-from mbedtls.cipher.typing import AEADCipherType, CipherType
+from mbedtls.cipher._cipher import CIPHER_NAME  # type: ignore
 from mbedtls.exceptions import TLSError  # type: ignore
 
 
