@@ -1,8 +1,11 @@
+from typing import Any, Callable, cast
+
 import pytest  # type: ignore
 
 import mbedtls
-import mbedtls.hkdf as _hkdf  # type: ignore
+import mbedtls.hkdf as _hkdf
 import mbedtls.hmac as _hmac
+from mbedtls.hmac import Algorithm
 
 
 @pytest.mark.skipif(
@@ -10,10 +13,6 @@ import mbedtls.hmac as _hmac
     reason="requires HKDF support in libmbedtls",
 )
 class TestHKDF:
-    @pytest.fixture(params=[0, 128])
-    def key(self, request, randbytes):
-        return randbytes(request.param)
-
     @pytest.fixture(
         params=[
             _hmac.md2,
@@ -27,57 +26,79 @@ class TestHKDF:
             _hmac.ripemd160,
         ]
     )
-    def hmac(self, request, key):
+    def hmac(self, request: Any) -> Algorithm:
         feature = request.param.__name__
         if not mbedtls.has_feature(
             {"sha224": "sha256", "sha384": "sha512"}.get(feature, feature)
         ):
             return pytest.skip("requires %s support in mbedtls" % feature)
-        return request.param
+        return cast(Algorithm, request.param)
 
-    @pytest.fixture
-    def salt(self, hmac, key, randbytes):
-        return randbytes(hmac(key).digest_size)
-
-    @pytest.fixture(params=[16, 128, 500, 1000])
-    def info(self, request, randbytes):
-        return randbytes(request.param)
-
-    @pytest.fixture(params=[16, 200, 500])
-    def length(self, request):
-        return request.param
-
-    def test_hkdf(self, key):
+    @pytest.mark.parametrize("key_length", [0, 128])
+    def test_hkdf(
+        self, key_length: int, randbytes: Callable[[int], bytes]
+    ) -> None:
+        key = randbytes(key_length)
         okm = _hkdf.hkdf(key, 32, b"")
         assert len(okm) == 32
 
-    def test_hkdf_with_options(self, key, salt, info, hmac, length):
-        okm = _hkdf.hkdf(key, length, info, salt, hmac)
-        assert len(okm) == length
+    @pytest.mark.parametrize("key_length", [0, 128])
+    @pytest.mark.parametrize("info_length", [16, 128, 500, 1000])
+    @pytest.mark.parametrize("output_length", [16, 200, 500])
+    def test_hkdf_with_options(
+        self,
+        key_length: int,
+        info_length: int,
+        output_length: int,
+        hmac: Algorithm,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        key = randbytes(key_length)
+        info = randbytes(info_length)
+        salt = randbytes(hmac(key).digest_size)
 
-    def test_extract_and_expand(self, key):
+        okm = _hkdf.hkdf(key, output_length, info, salt, hmac)
+        assert len(okm) == output_length
+
+    @pytest.mark.parametrize("key_length", [0, 128])
+    def test_extract_and_expand(
+        self, key_length: int, randbytes: Callable[[int], bytes]
+    ) -> None:
+        key = randbytes(key_length)
         prk = _hkdf.extract(key)
         assert len(prk) == _hmac.sha256(b"").digest_size
 
         okm = _hkdf.expand(prk, 32, b"")
         assert len(okm) == 32
 
+    @pytest.mark.parametrize("key_length", [0, 128])
+    @pytest.mark.parametrize("info_length", [16, 128, 500, 1000])
+    @pytest.mark.parametrize("output_length", [16, 200, 500])
     def test_extract_and_expand_with_options(
-        self, hmac, key, salt, info, length
-    ):
+        self,
+        key_length: int,
+        info_length: int,
+        output_length: int,
+        hmac: Algorithm,
+        randbytes: Callable[[int], bytes],
+    ) -> None:
+        key = randbytes(key_length)
+        info = randbytes(info_length)
+        salt = randbytes(hmac(key).digest_size)
+
         prk = _hkdf.extract(key, salt, hmac)
         assert len(prk) == hmac(b"").digest_size
 
-        okm = _hkdf.expand(prk, length, info, hmac)
-        assert len(okm) == length
+        okm = _hkdf.expand(prk, output_length, info, hmac)
+        assert len(okm) == output_length
 
 
-def to_bytes(number, size):
+def to_bytes(number: int, size: int) -> bytes:
     return number.to_bytes(size, byteorder="big")
 
 
 class TestHKDF_RFC5869_TestVectors:
-    def test_case_1(self):
+    def test_case_1(self) -> None:
         algorithm = _hmac.sha256
         ikm = to_bytes(0x0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B, 22)
         salt = to_bytes(0x000102030405060708090A0B0C, 13)
@@ -105,7 +126,7 @@ class TestHKDF_RFC5869_TestVectors:
         assert _hkdf.expand(prk, length, info, algorithm) == okm
         assert _hkdf.hkdf(ikm, length, info, salt, algorithm) == okm
 
-    def test_case_2(self):
+    def test_case_2(self) -> None:
         algorithm = _hmac.sha256
         ikm = to_bytes(
             int(
@@ -166,7 +187,7 @@ class TestHKDF_RFC5869_TestVectors:
         assert _hkdf.expand(prk, length, info, algorithm) == okm
         assert _hkdf.hkdf(ikm, length, info, salt, algorithm) == okm
 
-    def test_case_3(self):
+    def test_case_3(self) -> None:
         algorithm = _hmac.sha256
         ikm = to_bytes(0x0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B, 22)
         salt = b""
@@ -194,7 +215,7 @@ class TestHKDF_RFC5869_TestVectors:
         assert _hkdf.expand(prk, length, info, algorithm) == okm
         assert _hkdf.hkdf(ikm, length, info, salt, algorithm) == okm
 
-    def test_case_4(self):
+    def test_case_4(self) -> None:
         algorithm = _hmac.sha1
         ikm = to_bytes(0x0B0B0B0B0B0B0B0B0B0B0B, 11)
         salt = to_bytes(0x000102030405060708090A0B0C, 13)
@@ -215,7 +236,7 @@ class TestHKDF_RFC5869_TestVectors:
         assert _hkdf.expand(prk, length, info, algorithm) == okm
         assert _hkdf.hkdf(ikm, length, info, salt, algorithm) == okm
 
-    def test_case_5(self):
+    def test_case_5(self) -> None:
         algorithm = _hmac.sha1
         ikm = to_bytes(
             int(
@@ -269,7 +290,7 @@ class TestHKDF_RFC5869_TestVectors:
         assert _hkdf.expand(prk, length, info, algorithm) == okm
         assert _hkdf.hkdf(ikm, length, info, salt, algorithm) == okm
 
-    def test_case_6(self):
+    def test_case_6(self) -> None:
         algorithm = _hmac.sha1
         ikm = to_bytes(0x0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B, 22)
         salt = b""
@@ -290,7 +311,7 @@ class TestHKDF_RFC5869_TestVectors:
         assert _hkdf.expand(prk, length, info, algorithm) == okm
         assert _hkdf.hkdf(ikm, length, info, salt, algorithm) == okm
 
-    def test_case_7(self):
+    def test_case_7(self) -> None:
         algorithm = _hmac.sha1
         ikm = to_bytes(0x0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C, 22)
         info = b""
