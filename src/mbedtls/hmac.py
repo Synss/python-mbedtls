@@ -5,9 +5,20 @@
 """Generic message digest wrapper (hash algorithm)."""
 
 
+import sys
 from typing import Optional
 
 from mbedtls._md import Hmac, algorithms_available, algorithms_guaranteed
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Protocol
+else:
+    from typing import Protocol
+
+
+class Algorithm(Protocol):
+    def __call__(self, key: bytes, buffer: Optional[bytes] = ...) -> Hmac:
+        ...
 
 
 def new(
