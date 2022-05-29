@@ -6,7 +6,7 @@ import pytest  # type: ignore
 
 from mbedtls import hashlib
 from mbedtls.pk import ECC, RSA
-from mbedtls.x509 import CRL, CRT, CSR, BasicConstraints  # type: ignore
+from mbedtls.x509 import CRL, CRT, CSR, BasicConstraints
 
 CRL_PEM = """
 -----BEGIN X509 CRL-----

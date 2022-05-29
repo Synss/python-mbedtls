@@ -14,7 +14,7 @@ import mbedtls.pk as pk
 import mbedtls.secrets as secrets
 import mbedtls.tls as tls
 import mbedtls.version as version  # type: ignore
-import mbedtls.x509 as x509  # type: ignore
+import mbedtls.x509 as x509
 
 __version__ = "2.1.0"
 

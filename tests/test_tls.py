@@ -33,7 +33,7 @@ from mbedtls.tls import (
     WantWriteError,
     ciphers_available,
 )
-from mbedtls.x509 import CRT, CSR, BasicConstraints  # type: ignore
+from mbedtls.x509 import CRT, CSR, BasicConstraints
 
 
 @pytest.fixture(scope="module")
