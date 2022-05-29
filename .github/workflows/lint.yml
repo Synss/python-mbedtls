@@ -21,10 +21,12 @@ jobs:
 
       - name: Check imports
         run: >
-          find src tests -name '*.py' -o -name '*.pyx' -o -name '*.pxd'
+          find src tests -name '*.py' -o -name '*.pyi' -o -name '*.pyx' -o -name '*.pxd'
           | xargs python -m isort --check --diff
         if: always()
 
       - name: Check format
-        run: find src tests -name '*.py' | xargs python -m black --check --diff
+        run: >
+          find src tests -name '*.py' -o -name '*.pyi'
+          | xargs python -m black --check --diff
         if: always()
