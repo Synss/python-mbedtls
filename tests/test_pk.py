@@ -3,15 +3,18 @@
 import numbers
 import pickle
 from functools import partial
+from typing import Callable, Sequence, cast
 
 import pytest  # type: ignore
 
 from mbedtls import hashlib
 from mbedtls.exceptions import TLSError  # type: ignore
 from mbedtls.mpi import MPI  # type: ignore
-from mbedtls.pk import (  # type: ignore
+from mbedtls.pk import _get_md_alg  # type: ignore
+from mbedtls.pk import (
     ECC,
     RSA,
+    CipherBase,
     Curve,
     DHClient,
     DHServer,
@@ -19,8 +22,6 @@ from mbedtls.pk import (  # type: ignore
     ECDHNaive,
     ECDHServer,
     ECPoint,
-    _get_md_alg,
-    _type_from_name,
     check_pair,
     get_supported_ciphers,
     get_supported_curves,
@@ -53,16 +54,6 @@ def test_get_supported_ciphers():
         b"EC_DH",
         b"ECDSA",
     ]
-
-
-@pytest.mark.parametrize(
-    "md_algorithm",
-    [vars(hashlib)[name] for name in hashlib.algorithms_available],
-)
-def test_digestmod_from_ctor(md_algorithm):
-    assert callable(md_algorithm)
-    algorithm = _get_md_alg(md_algorithm)
-    assert isinstance(algorithm(), hashlib.Hash)
 
 
 def test_rsa_encryp_decrypt(randbytes):
@@ -122,8 +113,8 @@ class TestECPoint:
 
 class TestCipher:
     @pytest.fixture(
-        params=[RSA]
-        + [partial(ECC, curve) for curve in get_supported_curves()]
+        params=[cast(Callable[[], CipherBase], RSA)]
+        + [partial(ECC, curve) for curve in get_supported_curves()],
     )
     def cipher(self, request):
         return request.param()
@@ -133,13 +124,6 @@ class TestCipher:
 
     def test_hash(self, cipher):
         assert isinstance(hash(cipher), int)
-
-    def test_type_accessor(self, cipher):
-        assert cipher._type == _type_from_name(cipher.name)
-
-        do_generate(cipher)
-
-        assert cipher._type == _type_from_name(cipher.name)
 
     def test_export_private_key(self, cipher):
         assert cipher.export_key("DER") == b""

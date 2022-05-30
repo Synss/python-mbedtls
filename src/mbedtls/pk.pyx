@@ -738,6 +738,7 @@ cdef class ECC(CipherBase):
         return super().export_public_key(format)
 
     def to_ECDH_server(self):
+        # TODO: This method and the next one really do *not* belong here.
         """Return an ECDH server initialized with this context."""
         ecdh = ECDHServer(self.curve)
         _exc.check_error(_pk.mbedtls_ecdh_get_params(
