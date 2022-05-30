@@ -4,19 +4,16 @@
 from __future__ import annotations
 
 import enum
+import sys
 from pathlib import Path
-from typing import (
-    Any,
-    Literal,
-    Optional,
-    Sequence,
-    Tuple,
-    TypeVar,
-    Union,
-    overload,
-)
+from typing import Optional, Sequence, Tuple, TypeVar, Union, overload
 
 from mbedtls.x509 import CRT  # type: ignore
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Literal
+else:
+    from typing import Literal
 
 def ciphers_available() -> Sequence[bytes]: ...
 @enum.unique
