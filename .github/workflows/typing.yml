@@ -6,6 +6,9 @@ jobs:
   run-type-checkers:
     name: Run type checkers
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
     env:
       BACKEND_DIR: "${{ github.workspace }}/.local"
       BACKEND_VERSION: "2.28.0"
@@ -19,7 +22,7 @@ jobs:
 
       - uses: actions/setup-python@v3
         with:
-          python-version: 3.9
+          python-version: ${{ matrix.python-version }}
           cache: pip
           cache-dependency-path: |
             requirements.txt
