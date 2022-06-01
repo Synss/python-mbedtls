@@ -8,9 +8,9 @@
 import mbedtls.cipher as cipher
 import mbedtls.exceptions as exceptions  # type: ignore
 import mbedtls.hashlib as hashlib
-import mbedtls.hkdf as hkdf  # type: ignore
+import mbedtls.hkdf as hkdf
 import mbedtls.hmac as hmac
-import mbedtls.pk as pk  # type: ignore
+import mbedtls.pk as pk
 import mbedtls.secrets as secrets
 import mbedtls.tls as tls
 import mbedtls.version as version  # type: ignore

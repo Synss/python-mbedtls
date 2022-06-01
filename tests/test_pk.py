@@ -3,7 +3,7 @@
 import numbers
 import pickle
 from functools import partial
-from typing import Callable, Sequence, cast
+from typing import Callable, cast
 
 import pytest  # type: ignore
 
@@ -28,7 +28,7 @@ from mbedtls.pk import (
 )
 
 
-def test_supported_curves():
+def test_supported_curves() -> None:
     assert sorted(get_supported_curves()) == [
         Curve.BRAINPOOLP256R1,
         Curve.BRAINPOOLP384R1,
@@ -46,7 +46,7 @@ def test_supported_curves():
     ]
 
 
-def test_get_supported_ciphers():
+def test_get_supported_ciphers() -> None:
     assert list(get_supported_ciphers()) == [
         b"NONE",
         b"RSA",
@@ -56,14 +56,14 @@ def test_get_supported_ciphers():
     ]
 
 
-def test_rsa_encryp_decrypt(randbytes):
+def test_rsa_encryp_decrypt(randbytes) -> None:
     rsa = RSA()
     rsa.generate(1024)
     msg = randbytes(rsa.key_size - 11)
     assert rsa.decrypt(rsa.encrypt(msg)) == msg
 
 
-def do_generate(cipher):
+def do_generate(cipher: CipherBase):
     if isinstance(cipher, RSA):
         return cipher.generate(1024)
     if isinstance(cipher, ECC):
@@ -81,32 +81,32 @@ class TestECPoint:
         return ECPoint(*xyz)
 
     @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
-    def test_repr(self, repr_, point):
+    def test_repr(self, repr_, point) -> None:
         assert isinstance(repr_(point), str)
 
-    def test_pickle(self, point):
+    def test_pickle(self, point) -> None:
         assert point == pickle.loads(pickle.dumps(point))
 
-    def test_hash(self, point):
+    def test_hash(self, point) -> None:
         assert isinstance(hash(point), int)
 
-    def test_accessors(self, point, xyz):
+    def test_accessors(self, point, xyz) -> None:
         x, y, z = xyz
         assert point.x == x
         assert point.y == y
         assert point.z == z
 
-    def test_eq_point(self, point, xyz):
+    def test_eq_point(self, point, xyz) -> None:
         assert (point == ECPoint(*xyz)) is True
         assert (point == ECPoint(0, 0, 0)) is False
 
-    def test_eq_zero(self):
+    def test_eq_zero(self) -> None:
         zero = ECPoint(0, 0, 0)
         assert (zero == 1) is False
         assert (zero == 0) is True
         assert (zero == ECPoint(0, 0, 0)) is True
 
-    def test_bool(self, point):
+    def test_bool(self, point) -> None:
         assert bool(point) is True
         assert bool(ECPoint(0, 0, 0)) is False
 
@@ -119,13 +119,13 @@ class TestCipher:
     def cipher(self, request):
         return request.param()
 
-    def test_pickle(self, cipher):
+    def test_pickle(self, cipher) -> None:
         assert cipher == pickle.loads(pickle.dumps(cipher))
 
-    def test_hash(self, cipher):
+    def test_hash(self, cipher) -> None:
         assert isinstance(hash(cipher), int)
 
-    def test_export_private_key(self, cipher):
+    def test_export_private_key(self, cipher) -> None:
         assert cipher.export_key("DER") == b""
         assert cipher.export_key("PEM") == ""
         assert cipher.key_size == 0
@@ -142,7 +142,7 @@ class TestCipher:
         assert type(cipher).from_PEM(cipher.export_key("PEM")) == cipher
         assert cipher.key_size > 0
 
-    def test_import_private_key(self, cipher):
+    def test_import_private_key(self, cipher) -> None:
         assert not cipher.export_key()
         assert not cipher.export_public_key()
 
@@ -156,7 +156,7 @@ class TestCipher:
         assert check_pair(other, other) is True
         assert cipher == other
 
-    def test_export_public_key(self, cipher):
+    def test_export_public_key(self, cipher) -> None:
         assert cipher.export_public_key("DER") == b""
         assert cipher.export_public_key("PEM") == ""
 
@@ -170,7 +170,7 @@ class TestCipher:
             cipher.export_public_key("PEM")
         ) == cipher.export_public_key("PEM")
 
-    def test_import_public_key(self, cipher):
+    def test_import_public_key(self, cipher) -> None:
         assert not cipher.export_key()
         assert not cipher.export_public_key()
 
@@ -190,7 +190,7 @@ class TestCipher:
         [_get_md_alg(name) for name in hashlib.algorithms_guaranteed],
         ids=lambda dm: dm().name,
     )
-    def test_sign_verify(self, cipher, digestmod, randbytes):
+    def test_sign_verify(self, cipher, digestmod, randbytes) -> None:
         msg = randbytes(4096)
         assert cipher.sign(msg, digestmod) is None
 
@@ -207,14 +207,14 @@ class TestECCExportKey:
     def curve(self, request):
         return request.param
 
-    def test_export_private_key(self, curve):
+    def test_export_private_key(self, curve) -> None:
         ecc = ECC(curve)
         assert ecc.export_key("NUM") == 0
 
         ecc.generate()
         assert ecc.export_key("NUM") != 0
 
-    def test_export_public_key_to_point(self, curve):
+    def test_export_public_key_to_point(self, curve) -> None:
         ecc = ECC(curve)
         assert ecc.export_public_key("POINT") == 0
         assert ecc.export_public_key("POINT") == ECPoint(0, 0, 0)
@@ -222,6 +222,7 @@ class TestECCExportKey:
         ecc.generate()
 
         pub = ecc.export_public_key("POINT")
+        assert isinstance(pub, ECPoint)
         assert isinstance(pub.x, numbers.Integral)
         assert isinstance(pub.y, numbers.Integral)
         assert isinstance(pub.z, numbers.Integral)
@@ -232,11 +233,13 @@ class TestECCExportKey:
 
 class TestECCtoECDH:
     @pytest.mark.parametrize("curve", get_supported_curves())
-    def test_exchange(self, curve):
+    def test_exchange(self, curve) -> None:
         ecp = ECC(curve)
         ecp.generate()
 
-        srv, cli = ecp.to_ECDH_server(), ecp.to_ECDH_client()
+        # Ignore type here because that really is a bad API and
+        # should be removed!
+        srv, cli = ecp.to_ECDH_server(), ecp.to_ECDH_client()  # type: ignore
 
         cke = cli.generate()
         assert cli._has_public()
@@ -251,7 +254,7 @@ class TestECCtoECDH:
 
 class TestDH:
     @pytest.mark.parametrize("dh_cls", [DHServer, DHClient])
-    def test_pickle(self, dh_cls):
+    def test_pickle(self, dh_cls) -> None:
         dhentity = dh_cls(MPI.prime(64), MPI.prime(20))
 
         with pytest.raises(TypeError) as excinfo:
@@ -260,7 +263,7 @@ class TestDH:
         assert str(excinfo.value).startswith("cannot pickle")
 
     @pytest.mark.parametrize("dh_cls", [DHServer, DHClient])
-    def test_accessors(self, dh_cls):
+    def test_accessors(self, dh_cls) -> None:
         modulus = MPI.prime(64)
         generator = MPI.prime(20)
 
@@ -271,7 +274,7 @@ class TestDH:
         assert dhentity.key_size == 8
         assert dhentity.shared_secret == 0
 
-    def test_exchange(self):
+    def test_exchange(self) -> None:
         cli = DHClient(MPI.prime(64), MPI.prime(20))
         srv = DHServer(MPI.prime(64), MPI.prime(20))
 
@@ -293,7 +296,7 @@ class TestECDH:
         return request.param
 
     @pytest.mark.parametrize("peer_cls", [ECDHServer, ECDHClient])
-    def test_pickle(self, curve, peer_cls):
+    def test_pickle(self, curve, peer_cls) -> None:
         peer = peer_cls(curve)
 
         with pytest.raises(TypeError) as excinfo:
@@ -302,7 +305,7 @@ class TestECDH:
         assert str(excinfo.value).startswith("cannot pickle")
 
     @pytest.mark.parametrize("peer_cls", [ECDHServer, ECDHClient])
-    def test_key_accessors_without_key(self, curve, peer_cls):
+    def test_key_accessors_without_key(self, curve, peer_cls) -> None:
         peer = peer_cls(curve)
 
         assert not peer._has_private()
@@ -313,7 +316,7 @@ class TestECDH:
         assert peer.peers_public_key == 0
         assert peer.shared_secret == 0
 
-    def test_exchange(self, curve):
+    def test_exchange(self, curve) -> None:
         srv, cli = ECDHServer(curve), ECDHClient(curve)
 
         ske = srv.generate()
@@ -335,7 +338,7 @@ class TestECDH:
         assert srv_sec == cli_sec
         assert srv.shared_secret == cli.shared_secret
 
-    def test_generate_public(self, curve):
+    def test_generate_public(self, curve) -> None:
         srv, cli = ECDHServer(curve), ECDHClient(curve)
 
         srv.generate()
@@ -345,7 +348,7 @@ class TestECDH:
         assert cli.public_key == srv.public_key
 
 
-def do_exchange(alice, bob):
+def do_exchange(alice, bob) -> None:
     alice_to_bob = alice.generate()
     bob_to_alice = bob.generate()
     alice.import_peers_public(bob_to_alice)
@@ -359,7 +362,7 @@ class TestECDHNaive:
     def curve(self, request):
         return request.param
 
-    def test_key_accessors_without_key(self, curve):
+    def test_key_accessors_without_key(self, curve) -> None:
         peer = ECDHNaive(curve)
 
         assert not peer._has_private()
@@ -369,7 +372,7 @@ class TestECDHNaive:
         assert peer.public_key == 0
         assert peer.peers_public_key == 0
 
-    def test_exchange(self, curve):
+    def test_exchange(self, curve) -> None:
         alice, bob = ECDHNaive(curve), ECDHNaive(curve)
 
         alice_to_bob = alice.generate()
@@ -400,7 +403,7 @@ class TestECDHNaive:
         assert alice_secret == alice.shared_secret
         assert bob_secret == bob.shared_secret
 
-    def test_attacker_fails_with_public_keys(self, curve):
+    def test_attacker_fails_with_public_keys(self, curve) -> None:
         alice, bob = ECDHNaive(curve), ECDHNaive(curve)
         do_exchange(alice, bob)
 
@@ -410,7 +413,7 @@ class TestECDHNaive:
         with pytest.raises(TLSError):
             eve.generate_secret()
 
-    def test_attacker_succeeds_with_private_key(self, curve):
+    def test_attacker_succeeds_with_private_key(self, curve) -> None:
         alice, bob = ECDHNaive(curve), ECDHNaive(curve)
         do_exchange(alice, bob)
 
