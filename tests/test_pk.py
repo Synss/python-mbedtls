@@ -237,9 +237,7 @@ class TestECCtoECDH:
         ecp = ECC(curve)
         ecp.generate()
 
-        # Ignore type here because that really is a bad API and
-        # should be removed!
-        srv, cli = ecp.to_ECDH_server(), ecp.to_ECDH_client()  # type: ignore
+        srv, cli = ECDHServer(ecp), ECDHClient(ecp)
 
         cke = cli.generate()
         assert cli._has_public()
@@ -292,12 +290,14 @@ class TestDH:
 
 class TestECDH:
     @pytest.fixture(params=get_supported_curves())
-    def curve(self, request):
-        return request.param
+    def key(self, request):
+        key = ECC(request.param)
+        return key
 
     @pytest.mark.parametrize("peer_cls", [ECDHServer, ECDHClient])
-    def test_pickle(self, curve, peer_cls) -> None:
-        peer = peer_cls(curve)
+    def test_pickle(self, key, peer_cls) -> None:
+        key.generate()
+        peer = peer_cls(key)
 
         with pytest.raises(TypeError) as excinfo:
             pickle.dumps(peer)
@@ -305,8 +305,8 @@ class TestECDH:
         assert str(excinfo.value).startswith("cannot pickle")
 
     @pytest.mark.parametrize("peer_cls", [ECDHServer, ECDHClient])
-    def test_key_accessors_without_key(self, curve, peer_cls) -> None:
-        peer = peer_cls(curve)
+    def test_key_accessors_without_key(self, key, peer_cls) -> None:
+        peer = peer_cls(key)
 
         assert not peer._has_private()
         assert not peer._has_public()
@@ -316,8 +316,36 @@ class TestECDH:
         assert peer.peers_public_key == 0
         assert peer.shared_secret == 0
 
-    def test_exchange(self, curve) -> None:
-        srv, cli = ECDHServer(curve), ECDHClient(curve)
+    def test_client_accessors_with_key(self, key) -> None:
+        der = key.generate()
+        assert der == key.export_key("DER")
+
+        peer = ECDHClient(key)
+
+        assert not peer._has_private()
+        assert not peer._has_public()
+        assert peer._has_peers_public()
+        assert peer.private_key == 0
+        assert peer.public_key == 0
+        assert peer.peers_public_key == key.export_public_key("POINT")
+        assert peer.shared_secret == 0
+
+    def test_server_accessors_with_key(self, key) -> None:
+        der = key.generate()
+        assert der == key.export_key("DER")
+
+        peer = ECDHServer(key)
+
+        assert peer._has_private()
+        assert peer._has_public()
+        assert not peer._has_peers_public()
+        assert peer.private_key == key.export_key("NUM")
+        assert peer.public_key == key.export_public_key("POINT")
+        assert peer.peers_public_key == 0
+        assert peer.shared_secret == 0
+
+    def test_exchange(self, key) -> None:
+        srv, cli = ECDHServer(key), ECDHClient(key)
 
         ske = srv.generate()
         assert srv._has_public()
@@ -338,8 +366,8 @@ class TestECDH:
         assert srv_sec == cli_sec
         assert srv.shared_secret == cli.shared_secret
 
-    def test_generate_public(self, curve) -> None:
-        srv, cli = ECDHServer(curve), ECDHClient(curve)
+    def test_generate_public(self, key) -> None:
+        srv, cli = ECDHServer(key), ECDHClient(key)
 
         srv.generate()
         cli._private_key = srv.private_key

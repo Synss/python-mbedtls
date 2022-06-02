@@ -737,21 +737,6 @@ cdef class ECC(CipherBase):
             return self._public_to_point()
         return super().export_public_key(format)
 
-    def to_ECDH_server(self):
-        # TODO: This method and the next one really do *not* belong here.
-        """Return an ECDH server initialized with this context."""
-        ecdh = ECDHServer(self.curve)
-        _exc.check_error(_pk.mbedtls_ecdh_get_params(
-            &ecdh._ctx, _pk.mbedtls_pk_ec(self._ctx), MBEDTLS_ECDH_OURS))
-        return ecdh
-
-    def to_ECDH_client(self):
-        """Return an ECDH client initialized with this context."""
-        ecdh = ECDHClient(self.curve)
-        _exc.check_error(_pk.mbedtls_ecdh_get_params(
-            &ecdh._ctx, _pk.mbedtls_pk_ec(self._ctx), MBEDTLS_ECDH_THEIRS))
-        return ecdh
-
 
 cdef class DHBase:
 
@@ -1030,12 +1015,14 @@ cdef class ECDHBase:
 
 cdef class ECDHServer(ECDHBase):
 
-    """The server side of the ECDH key exchange.
+    """The server side of the ECDH key exchange."""
 
-    Args:
-        (Curve, optional): A curve returned by `get_supported_curves()`.
+    def __init__(self, ecc: ECC):
+        super().__init__(ecc.curve)
+        if ecc.export_key():
+            _exc.check_error(_pk.mbedtls_ecdh_get_params(
+                &self._ctx, _pk.mbedtls_pk_ec(ecc._ctx), MBEDTLS_ECDH_OURS))
 
-    """
     def generate(self):
         """Generate a public key.
 
@@ -1067,12 +1054,14 @@ cdef class ECDHServer(ECDHBase):
 
 cdef class ECDHClient(ECDHBase):
 
-    """The client side of the ephemeral ECDH key exchange.
+    """The client side of the ephemeral ECDH key exchange."""
 
-    Args:
-        (Curve, optional): A curve returned by `get_supported_curves()`.
+    def __init__(self, ecc: ECC):
+        super().__init__(ecc.curve)
+        if ecc.export_key():
+            _exc.check_error(_pk.mbedtls_ecdh_get_params(
+                &self._ctx, _pk.mbedtls_pk_ec(ecc._ctx), MBEDTLS_ECDH_THEIRS))
 
-    """
     def generate(self):
         """Generate a public key.
 
@@ -1106,12 +1095,8 @@ cdef class ECDHClient(ECDHBase):
 
 cdef class ECDHNaive(ECDHBase):
 
-    """Naive ECDH key exchange.
+    """Naive ECDH key exchange."""
 
-    Args:
-        (Curve, optional): b'curve25519' or b'curve448'.
-
-    """
     def __init__(self, curve=None):
         if curve is None:
             curve = Curve.CURVE25519

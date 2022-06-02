@@ -1,6 +1,10 @@
 [next]
 
+* pk: ECDHClient and ECDHServer take an ECC key in `__init__()`.
+* pk: Remove `to_ECDH_{client,server}` methods from ECC.
+
 * docs: Resurrect gh-pages.
+
 * *: Add typing information.  The typing information is in an alpha
 stage, incomplete, and subject to change.
 

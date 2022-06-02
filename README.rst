@@ -271,8 +271,10 @@ True
 The classes ``ECDHServer`` and ``ECDHClient`` may be used for ephemeral
 ECDH.  The key exchange is as follows:
 
->>> ecdh_srv = pk.ECDHServer()
->>> ecdh_cli = pk.ECDHClient()
+>>> ecdh_key = pk.ECC()
+>>> ecdh_key.generate()
+>>> ecdh_srv = pk.ECDHServer(ecdh_key)
+>>> ecdh_cli = pk.ECDHClient(ecdh_key)
 
 The server generates the ServerKeyExchange encrypted payload and
 passes it to the client:
