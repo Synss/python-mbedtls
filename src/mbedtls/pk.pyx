@@ -939,10 +939,19 @@ cdef class ECDHBase:
         _exc.check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Q))
         return ecp
 
+    @public_key.setter
+    def public_key(self, ECPoint ecp):
+        _exc.check_error(_pk.mbedtls_ecp_copy(&self._ctx.Q, &ecp._ctx))
+
     @property
     def private_key(self):
         """The private key (int)"""
         return _mpi.from_mpi_p(&self._ctx.d)
+
+    @private_key.setter
+    def private_key(self, priv):
+        cdef _mpi.MPI c_priv = _mpi.MPI(priv)
+        _mpi.mbedtls_mpi_copy(&self._ctx.d, &c_priv._ctx)
 
     @property
     def peers_public_key(self):
@@ -950,6 +959,10 @@ cdef class ECDHBase:
         ecp = ECPoint(0, 0, 0)
         _exc.check_error(_pk.mbedtls_ecp_copy(&ecp._ctx, &self._ctx.Qp))
         return ecp
+
+    @peers_public_key.setter
+    def peers_public_key(self, ECPoint ecp):
+        _exc.check_error(_pk.mbedtls_ecp_copy(&self._ctx.Qp, &ecp._ctx))
 
     @property
     def shared_secret(self):
@@ -986,31 +999,6 @@ cdef class ECDHBase:
         _exc.check_error(_pk.mbedtls_ecp_mul(
             &self._ctx.grp, &self._ctx.Q, &self._ctx.d, &self._ctx.grp.G,
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
-
-    @property
-    def _private_key(self):
-        return self.private_key
-
-    @_private_key.setter
-    def _private_key(self, priv):
-        cdef _mpi.MPI c_priv = _mpi.MPI(priv)
-        _mpi.mbedtls_mpi_copy(&self._ctx.d, &c_priv._ctx)
-
-    @property
-    def _public_key(self):
-        return self.public_key
-
-    @_public_key.setter
-    def _public_key(self, ECPoint ecp):
-        _exc.check_error(_pk.mbedtls_ecp_copy(&self._ctx.Q, &ecp._ctx))
-
-    @property
-    def _peer_public_key(self):
-        return self.peers_public_key
-
-    @_peer_public_key.setter
-    def _peer_public_key(self, ECPoint ecp):
-        _exc.check_error(_pk.mbedtls_ecp_copy(&self._ctx.Qp, &ecp._ctx))
 
 
 cdef class ECDHServer(ECDHBase):

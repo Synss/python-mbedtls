@@ -370,7 +370,7 @@ class TestECDH:
         srv, cli = ECDHServer(key), ECDHClient(key)
 
         srv.generate()
-        cli._private_key = srv.private_key
+        cli.private_key = srv.private_key
         assert cli.public_key != srv.public_key
         cli.generate_public_key()
         assert cli.public_key == srv.public_key
@@ -436,8 +436,8 @@ class TestECDHNaive:
         do_exchange(alice, bob)
 
         eve = ECDHNaive(curve)
-        eve._public_key = alice.public_key
-        eve._peer_public_key = bob.public_key
+        eve.public_key = alice.public_key
+        eve.peers_public_key = bob.public_key
         with pytest.raises(TLSError):
             eve.generate_secret()
 
@@ -446,6 +446,6 @@ class TestECDHNaive:
         do_exchange(alice, bob)
 
         eve = ECDHNaive(curve)
-        eve._peer_public_key = bob.public_key
-        eve._private_key = alice.private_key
+        eve.peers_public_key = bob.public_key
+        eve.private_key = alice.private_key
         assert eve.generate_secret() == alice.shared_secret

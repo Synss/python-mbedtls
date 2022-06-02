@@ -2,6 +2,7 @@
 
 * pk: ECDHClient and ECDHServer take an ECC key in `__init__()`.
 * pk: Remove `to_ECDH_{client,server}` methods from ECC.
+* pk: Make key accessors public (and remove the private ones).
 
 * docs: Resurrect gh-pages.
 
