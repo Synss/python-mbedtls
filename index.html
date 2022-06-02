@@ -299,8 +299,10 @@ signature algorithm (ECDSA):</p>
 </div>
 <p>The classes <code class="docutils literal notranslate"><span class="pre">ECDHServer</span></code> and <code class="docutils literal notranslate"><span class="pre">ECDHClient</span></code> may be used for ephemeral
 ECDH.  The key exchange is as follows:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_srv</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECDHServer</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_cli</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECDHClient</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_key</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECC</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_key</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_srv</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECDHServer</span><span class="p">(</span><span class="n">ecdh_key</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ecdh_cli</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECDHClient</span><span class="p">(</span><span class="n">ecdh_key</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The server generates the ServerKeyExchange encrypted payload and
