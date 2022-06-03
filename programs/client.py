@@ -26,7 +26,7 @@ def _echo_tls(sock, buffer, chunksize):
     received = bytearray()
     for idx in range(0, len(view), chunksize):
         part = view[idx : idx + chunksize]
-        _sent = sock.send(part)
+        sock.send(part)
         received += sock.recv(chunksize)
     return received
 
@@ -36,7 +36,7 @@ def _echo_dtls(sock, buffer, chunksize):
     received = bytearray()
     while len(received) != len(buffer):
         part = view[len(received) : len(received) + chunksize]
-        _sent = sock.send(part)
+        sock.send(part)
         data, _addr = sock.recvfrom(chunksize)
         received += data
         if not data:

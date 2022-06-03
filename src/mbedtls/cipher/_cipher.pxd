@@ -149,12 +149,16 @@ cdef class Cipher(_CipherBase):
 cdef class AEADCipher(_CipherBase):
     cdef const unsigned char[:] _ad
     cdef const unsigned char[:] _iv
-    cdef _aead_encrypt(self,
-                const unsigned char[:] iv,
-                const unsigned char[:] ad,
-                const unsigned char[:] input)
-    cdef _aead_decrypt(self,
-                const unsigned char[:] iv,
-                const unsigned char[:] ad,
-                const unsigned char[:] input,
-                const unsigned char[:] tag)
+    cdef _aead_encrypt(
+        self,
+        const unsigned char[:] iv,
+        const unsigned char[:] ad,
+        const unsigned char[:] input,
+    )
+    cdef _aead_decrypt(
+        self,
+        const unsigned char[:] iv,
+        const unsigned char[:] ad,
+        const unsigned char[:] input,
+        const unsigned char[:] tag,
+    )

@@ -18,7 +18,7 @@ cdef __version_info():
     cdef unsigned int version = _ver.mbedtls_version_get_number()
     major = version >> 24 & 0xff
     minor = version >> 16 & 0xff
-    micro = version >> 8  & 0xff
+    micro = version >> 8 & 0xff
     assert version & 0xff == 0
     return mbedtls_version(major, minor, micro)
 

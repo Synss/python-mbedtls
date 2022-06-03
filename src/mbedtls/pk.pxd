@@ -81,7 +81,7 @@ cdef extern from "mbedtls/ecp.h" nogil:
         _mpi.mbedtls_mpi Z
 
     ctypedef struct mbedtls_ecp_group:
-        mbedtls_ecp_group_id id;
+        mbedtls_ecp_group_id id
         _mpi.mbedtls_mpi P
         _mpi.mbedtls_mpi A
         _mpi.mbedtls_mpi B
@@ -324,7 +324,7 @@ cdef extern from "mbedtls/pk.h" nogil:
 
     ctypedef struct mbedtls_pk_info_t:
         pass
-    
+
     ctypedef struct mbedtls_pk_context:
         pass
 

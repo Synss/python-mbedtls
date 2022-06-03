@@ -51,8 +51,9 @@ def _digestmod(sig_md):
 
 
 algorithms_guaranteed = ("md5", "sha1", "sha224", "sha256", "sha384", "sha512")
-algorithms_available = {name.decode("ascii").lower()
-                        for name in  __get_supported_mds()}
+algorithms_available = {
+    name.decode("ascii").lower() for name in __get_supported_mds()
+}
 
 
 __all__ = algorithms_guaranteed + ("new", "algorithms_guaranteed",
@@ -80,7 +81,7 @@ cdef class MDBase:
         except (AttributeError, ValueError) as exc:
             # Not `str`-like.
             raise TypeError(name) from exc
-        if not name in algorithms_available:
+        if name not in algorithms_available:
             raise ValueError("{} not available".format(name))
         cdef char *c_name = name_
         self._info = _md.mbedtls_md_info_from_string(c_name)
@@ -222,12 +223,19 @@ cdef class Hmac(_md.MDBase):
 
     """
     def __init__(
-        self, const unsigned char[:] key not None, name, buffer=None, *, block_size
+        self,
+        const unsigned char[:] key not None,
+        name,
+        buffer=None,
+        *,
+        block_size,
     ):
         super().__init__(name, 1, block_size=block_size)
         if not key.size:
             key = b"\0"
-        _exc.check_error(_md.mbedtls_md_hmac_starts(&self._ctx, &key[0], key.size))
+        _exc.check_error(
+            _md.mbedtls_md_hmac_starts(&self._ctx, &key[0], key.size)
+        )
         self.update(buffer)
 
     def update(self, const unsigned char[:] buffer):

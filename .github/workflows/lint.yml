@@ -30,3 +30,7 @@ jobs:
           find src tests -name '*.py' -o -name '*.pyi'
           | xargs python -m black --check --diff
         if: always()
+
+      - name: Check with flake8
+        run: flake8 programs src tests
+        if: always()

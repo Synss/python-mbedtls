@@ -268,11 +268,13 @@ cdef extern from "mbedtls/ssl.h" nogil:
 
     void mbedtls_ssl_conf_rng(
         mbedtls_ssl_config *conf,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng
+    )
     void mbedtls_ssl_conf_dbg(
         mbedtls_ssl_config *conf,
         void (*f_dbg)(void *, int, const char *, int, const char *),
-        void  *p_dbg )
+        void *p_dbg
+    )
 
     # mbedtls_ssl_conf_read_timeout
     # mbedtls_ssl_conf_session_tickets_cb
@@ -288,7 +290,12 @@ cdef extern from "mbedtls/ssl.h" nogil:
     # mbedtls_ssl_conf_session_cache
     void mbedtls_ssl_conf_psk_cb(
         mbedtls_ssl_config *conf,
-        int (*f_psk)(void *, mbedtls_ssl_context *, const unsigned char *, size_t),
+        int (*f_psk)(
+            void *,
+            mbedtls_ssl_context *,
+            const unsigned char *,
+            size_t
+        ),
         void *psk_store)
     void mbedtls_ssl_conf_sni(
         mbedtls_ssl_config *conf,

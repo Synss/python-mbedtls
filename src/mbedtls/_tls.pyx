@@ -234,7 +234,9 @@ class HandshakeStep(enum.Enum):
     HANDSHAKE_WRAPUP = _tls.MBEDTLS_SSL_HANDSHAKE_WRAPUP
     HANDSHAKE_OVER = _tls.MBEDTLS_SSL_HANDSHAKE_OVER
     SERVER_NEW_SESSION_TICKET = _tls.MBEDTLS_SSL_SERVER_NEW_SESSION_TICKET
-    SERVER_HELLO_VERIFY_REQUEST_SENT = _tls.MBEDTLS_SSL_SERVER_HELLO_VERIFY_REQUEST_SENT
+    SERVER_HELLO_VERIFY_REQUEST_SENT = (
+        _tls.MBEDTLS_SSL_SERVER_HELLO_VERIFY_REQUEST_SENT
+    )
 
 
 PEM_HEADER = "-----BEGIN CERTIFICATE-----"
@@ -475,7 +477,8 @@ cdef class _BaseConfiguration:
         Args:
             ciphers (Tuple[Union[CipherSuite, int]]): The ciphers.
 
-        """ # PEP 543
+        """
+        # PEP 543
         if ciphers is None:
             return
         if not frozenset(ciphers).issubset(ciphers_available()):
@@ -583,7 +586,8 @@ cdef class _BaseConfiguration:
         Args:
             store (TrustStore): The trust store.
 
-        """ # PEP 543
+        """
+        # PEP 543
         if not store:
             return
         cdef _x509.CRT crt = TrustStore(store)[0]
@@ -697,29 +701,32 @@ cdef class TLSConfiguration(_BaseConfiguration):
         return TLSVersion.from_major_minor(*self._highest_supported_version)
 
     def __repr__(self):
-        return ("%s("
-                "validate_certificates=%r, "
-                "certificate_chain=%r, "
-                "ciphers=%r, "
-                "inner_protocols=%r, "
-                "lowest_supported_version=%s, "
-                "highest_supported_version=%s, "
-                "trust_store=%r, "
-                "sni_callback=%r, "
-                "pre_shared_key=%r, "
-                "pre_shared_key_store=%r)"
-                % (type(self).__name__,
-                   self.validate_certificates,
-                   self.certificate_chain,
-                   self.ciphers,
-                   self.inner_protocols,
-                   self.lowest_supported_version,
-                   self.highest_supported_version,
-                   self.trust_store,
-                   self.sni_callback,
-                   self.pre_shared_key,
-                   self.pre_shared_key_store,
-                  ))
+        return (
+            "%s("
+            "validate_certificates=%r, "
+            "certificate_chain=%r, "
+            "ciphers=%r, "
+            "inner_protocols=%r, "
+            "lowest_supported_version=%s, "
+            "highest_supported_version=%s, "
+            "trust_store=%r, "
+            "sni_callback=%r, "
+            "pre_shared_key=%r, "
+            "pre_shared_key_store=%r)"
+            % (
+                type(self).__name__,
+                self.validate_certificates,
+                self.certificate_chain,
+                self.ciphers,
+                self.inner_protocols,
+                self.lowest_supported_version,
+                self.highest_supported_version,
+                self.trust_store,
+                self.sni_callback,
+                self.pre_shared_key,
+                self.pre_shared_key_store,
+            )
+        )
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
@@ -730,8 +737,10 @@ cdef class TLSConfiguration(_BaseConfiguration):
                 self.certificate_chain == other.certificate_chain,
                 self.ciphers == other.ciphers,
                 self.inner_protocols == other.inner_protocols,
-                self.lowest_supported_version == other.lowest_supported_version,
-                self.highest_supported_version == other.highest_supported_version,
+                self.lowest_supported_version
+                == other.lowest_supported_version,
+                self.highest_supported_version
+                == other.highest_supported_version,
                 self.trust_store == other.trust_store,
                 self.sni_callback == other.sni_callback,
                 self.pre_shared_key == other.pre_shared_key,
@@ -852,7 +861,9 @@ cdef class DTLSConfiguration(_BaseConfiguration):
             _transport=_tls.MBEDTLS_SSL_TRANSPORT_DATAGRAM,
         )
         self._set_anti_replay(anti_replay)
-        self._set_handshake_timeout(handshake_timeout_min, handshake_timeout_max)
+        self._set_handshake_timeout(
+            handshake_timeout_min, handshake_timeout_max
+        )
         # For security reasons, we do not make cookie optional here.
         cdef _tls._DTLSCookie cookie = _tls._DTLSCookie()
         cookie.generate()
@@ -875,8 +886,10 @@ cdef class DTLSConfiguration(_BaseConfiguration):
                 self.certificate_chain == other.certificate_chain,
                 self.ciphers == other.ciphers,
                 self.inner_protocols == other.inner_protocols,
-                self.lowest_supported_version == other.lowest_supported_version,
-                self.highest_supported_version == other.highest_supported_version,
+                self.lowest_supported_version
+                == other.lowest_supported_version,
+                self.highest_supported_version
+                == other.highest_supported_version,
                 self.trust_store == other.trust_store,
                 self.anti_replay == other.anti_replay,
                 self.handshake_timeout_min == other.handshake_timeout_min,
@@ -888,35 +901,38 @@ cdef class DTLSConfiguration(_BaseConfiguration):
         )
 
     def __repr__(self):
-        return ("%s("
-                "validate_certificates=%r, "
-                "certificate_chain=%r, "
-                "ciphers=%r, "
-                "inner_protocols=%r, "
-                "lowest_supported_version=%s, "
-                "highest_supported_version=%s, "
-                "trust_store=%r, "
-                "anti_replay=%r, "
-                "handshake_timeout_min=%r, "
-                "handshake_timeout_max=%r, "
-                "sni_callback=%r, "
-                "pre_shared_key=%r, "
-                "pre_shared_key_store=%r)"
-                % (type(self).__name__,
-                   self.validate_certificates,
-                   self.certificate_chain,
-                   self.ciphers,
-                   self.inner_protocols,
-                   self.lowest_supported_version,
-                   self.highest_supported_version,
-                   self.trust_store,
-                   self.anti_replay,
-                   self.handshake_timeout_min,
-                   self.handshake_timeout_max,
-                   self.sni_callback,
-                   self.pre_shared_key,
-                   self.pre_shared_key_store,
-                  ))
+        return (
+            "%s("
+            "validate_certificates=%r, "
+            "certificate_chain=%r, "
+            "ciphers=%r, "
+            "inner_protocols=%r, "
+            "lowest_supported_version=%s, "
+            "highest_supported_version=%s, "
+            "trust_store=%r, "
+            "anti_replay=%r, "
+            "handshake_timeout_min=%r, "
+            "handshake_timeout_max=%r, "
+            "sni_callback=%r, "
+            "pre_shared_key=%r, "
+            "pre_shared_key_store=%r)"
+            % (
+                type(self).__name__,
+                self.validate_certificates,
+                self.certificate_chain,
+                self.ciphers,
+                self.inner_protocols,
+                self.lowest_supported_version,
+                self.highest_supported_version,
+                self.trust_store,
+                self.anti_replay,
+                self.handshake_timeout_min,
+                self.handshake_timeout_max,
+                self.sni_callback,
+                self.pre_shared_key,
+                self.pre_shared_key_store,
+            )
+        )
 
     def __reduce__(self):
         return (
@@ -1143,7 +1159,9 @@ TLS_BUFFER_CAPACITY = 2 << 14
 cdef class MbedTLSBuffer:
     def __init__(self, _BaseContext context, server_hostname=None):
         self._context = context
-        _exc.check_error(_tls.mbedtls_ssl_setup(&self._ctx, &self._context._conf._ctx))
+        _exc.check_error(
+            _tls.mbedtls_ssl_setup(&self._ctx, &self._context._conf._ctx)
+        )
         self._c_output_buffer = _rb.RingBuffer(TLS_BUFFER_CAPACITY)
         self._c_input_buffer = _rb.RingBuffer(TLS_BUFFER_CAPACITY)
         self._c_buffers = _tls._C_Buffers(
@@ -1186,7 +1204,9 @@ cdef class MbedTLSBuffer:
             raise MemoryError()
         try:
             if mbedtls_ssl_context_save(&self._ctx, c_buf, olen, &olen) != 0:
-                raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+                raise TypeError(
+                    f"cannot pickle {self.__class__.__name__!r} object"
+                )
             return {
                 "connection": c_buf[:olen],
                 "context": self.context,
@@ -1201,7 +1221,9 @@ cdef class MbedTLSBuffer:
         ret = mbedtls_ssl_context_load(&self._ctx, &buf[0], buf.size)
         if ret != 0:
             self._reset()
-            raise TypeError(f"cannot unpickle {self.__class__.__name__!r} object")
+            raise TypeError(
+                f"cannot unpickle {self.__class__.__name__!r} object"
+            )
 
     def __repr__(self):
         return "%s(%r)" % (type(self).__name__, self.context)
@@ -1385,7 +1407,9 @@ cdef class MbedTLSBuffer:
 
     def _renegotiate(self):
         """Initialize an SSL renegotiation on the running connection."""
-        self._handle_handshake_response(_tls.mbedtls_ssl_renegotiate(&self._ctx))
+        self._handle_handshake_response(
+            _tls.mbedtls_ssl_renegotiate(&self._ctx)
+        )
 
     def _handle_handshake_response(self, ret):
         if ret == _tls.MBEDTLS_ERR_SSL_WANT_READ:
@@ -1395,7 +1419,10 @@ cdef class MbedTLSBuffer:
         if ret == _tls.MBEDTLS_ERR_SSL_HELLO_VERIFY_REQUIRED:
             self._reset()
             raise HelloVerifyRequest()
-        if ret == -0x7100 and self._handshake_state is HandshakeStep.HANDSHAKE_OVER:
+        if (
+            ret == -0x7100
+            and self._handshake_state is HandshakeStep.HANDSHAKE_OVER
+        ):
             raise ValueError("handshake already over")
         if ret < 0:
             self._reset()

@@ -205,15 +205,15 @@ cdef class CipherBase:
             return hash(self.export_public_key(format="DER"))
 
     def __eq__(self, other):
-        if type(other) is not type(self):
-            try:
-                other = other.encode("ascii")
-            except:
-                pass
+        if isinstance(other, str):
+            other = other.encode("ascii")
+        if isinstance(other, bytes):
             try:
                 other = type(self).from_buffer(other)
-            except:
+            except (_exc.TLSError, ValueError, TypeError):
                 return False
+        if type(other) is not type(self):
+            return False
         if self._has_private() or other._has_private():
             return other.export_key() == self.export_key()
         elif not (self._has_private() and other._has_private()):
@@ -246,7 +246,7 @@ cdef class CipherBase:
     def _type(self):
         """Return the type of the cipher."""
         return _pk.mbedtls_pk_get_type(&self._ctx)
-    
+
     @property
     def name(self):
         """Return the name of the cipher."""
@@ -547,7 +547,9 @@ cdef class RSA(CipherBase):
 
     def _has_private(self):
         """Return `True` if the key contains a valid private half."""
-        return _pk.mbedtls_rsa_check_privkey(_pk.mbedtls_pk_rsa(self._ctx)) == 0
+        return _pk.mbedtls_rsa_check_privkey(
+            _pk.mbedtls_pk_rsa(self._ctx)
+        ) == 0
 
     def _has_public(self):
         """Return `True` if the key contains a valid public half."""
@@ -818,7 +820,7 @@ cdef class DHBase:
         finally:
             free(output)
 
-    
+
 cdef class DHServer(DHBase):
 
     """The server side of the DH key exchange."""

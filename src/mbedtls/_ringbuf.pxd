@@ -24,7 +24,7 @@ cdef size_t c_len(ring_buffer_ctx *) nogil
 cdef c_peek(ring_buffer_ctx *, size_t)
 cdef size_t c_peekinto(ring_buffer_ctx *, unsigned char *, size_t) nogil
 cdef c_read(ring_buffer_ctx *, size_t)
-cdef size_t c_readinto(ring_buffer_ctx *, unsigned char *,  size_t) nogil
+cdef size_t c_readinto(ring_buffer_ctx *, unsigned char *, size_t) nogil
 cdef size_t c_consume(ring_buffer_ctx *, size_t) nogil
 cdef size_t c_write(ring_buffer_ctx *, const unsigned char *, size_t) nogil
 

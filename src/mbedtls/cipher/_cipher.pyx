@@ -27,7 +27,7 @@ CIPHER_NAME = (
     b"AES-128-CFB128",
     b"AES-192-CFB128",
     b"AES-256-CFB128",
-    b"AES-128-CTR" ,
+    b"AES-128-CTR",
     b"AES-192-CTR",
     b"AES-256-CTR",
     b"AES-128-GCM",
@@ -252,7 +252,9 @@ cdef class Cipher(_CipherBase):
             _exc.check_error(_cipher.mbedtls_cipher_reset(ctx))
             _exc.check_error(_cipher.mbedtls_cipher_update(
                 ctx, &input[0], input.size, output, &olen))
-            err = _cipher.mbedtls_cipher_finish(ctx, output + olen, &finish_olen)
+            err = _cipher.mbedtls_cipher_finish(
+                ctx, output + olen, &finish_olen
+            )
             if err == -0x6280:
                 raise ValueError("expected a full block")
             _exc.check_error(err)
@@ -278,16 +280,18 @@ cdef class AEADCipher(_CipherBase):
         self._iv = iv
         self._ad = ad
 
-    cdef _aead_encrypt(self,
-                const unsigned char[:] iv,
-                const unsigned char[:] ad,
-                const unsigned char[:] input):
+    cdef _aead_encrypt(
+        self,
+        const unsigned char[:] iv,
+        const unsigned char[:] ad,
+        const unsigned char[:] input
+    ):
         if input.size == 0:
             _exc.check_error(-0x6280)  # Raise full block expected error.
         assert iv.size != 0
         cdef size_t olen
         cdef size_t sz = input.size + self.block_size
-        cdef unsigned char tag[16];
+        cdef unsigned char tag[16]
         cdef unsigned char* output = <unsigned char*>malloc(
             sz * sizeof(unsigned char))
         if not output:
@@ -306,11 +310,13 @@ cdef class AEADCipher(_CipherBase):
         finally:
             free(output)
 
-    cdef _aead_decrypt(self,
-                const unsigned char[:] iv,
-                const unsigned char[:] ad,
-                const unsigned char[:] input,
-                const unsigned char[:] tag):
+    cdef _aead_decrypt(
+        self,
+        const unsigned char[:] iv,
+        const unsigned char[:] ad,
+        const unsigned char[:] input,
+        const unsigned char[:] tag,
+    ):
         if input.size == 0:
             _exc.check_error(-0x6280)  # Raise full block expected error.
         assert iv.size != 0

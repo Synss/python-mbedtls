@@ -31,9 +31,9 @@ class KeyUsage(enum.IntEnum):
         RFC 5280 - 4.2.1.3 Key Usage.
 
     """
-    DIGITAL_SIGNATURE  = 0x80
+    DIGITAL_SIGNATURE = 0x80
     NON_REPUDIATION = 0x40
-    KEY_ENCIPHERMENT  = 0x20
+    KEY_ENCIPHERMENT = 0x20
     DATA_ENCIPHERMENT = 0x10
     KEY_AGREEMENT = 0x08
     KEY_CERT_SIGN = 0x04
@@ -622,7 +622,8 @@ cdef class _CRTWriter:
         x509.mbedtls_x509write_crt_set_issuer_key(
             &self._ctx, &key._ctx)
         _exc.check_error(
-            x509.mbedtls_x509write_crt_set_authority_key_identifier(&self._ctx))
+            x509.mbedtls_x509write_crt_set_authority_key_identifier(&self._ctx)
+        )
 
     def set_basic_constraints(self, basic_constraints):
         """Set the basic constraints extension for a CRT.

@@ -17,8 +17,8 @@ cdef extern from "mbedtls/bignum.h" nogil:
 
     # mbedtls_mpi
     # -----------
-    void mbedtls_mpi_init( mbedtls_mpi *X )
-    void mbedtls_mpi_free( mbedtls_mpi *X );
+    void mbedtls_mpi_init(mbedtls_mpi *X)
+    void mbedtls_mpi_free(mbedtls_mpi *X)
 
     # mbedtls_mpi_grow
     # mbedtls_mpi_shrink
@@ -97,12 +97,14 @@ cdef extern from "mbedtls/bignum.h" nogil:
         mbedtls_mpi *_RR)
     int mbedtls_mpi_fill_random(
         mbedtls_mpi *X, size_t size,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng
+    )
     # mbedtls_mpi_gcd
     # mbedtls_mpi_inv_mod
     int mbedtls_mpi_gen_prime(
         mbedtls_mpi *X, size_t size, int dh_flag,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng
+    )
 
 
 cdef from_mpi_p(mbedtls_mpi *)

@@ -169,7 +169,12 @@ def gen_cipher(
 
 def paramids(params: Tuple[M, int, Mode, int]) -> str:
     module, key_size, mode, iv_size = params
-    return f"{module.__name__}, key_size={key_size}, mode={mode!s}, iv_size={iv_size}"
+    return (
+        f"{module.__name__}, "
+        f"key_size={key_size}, "
+        f"mode={mode!s}, "
+        f"iv_size={iv_size}"
+    )
 
 
 def test_cipher_list() -> None:

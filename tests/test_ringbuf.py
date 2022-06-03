@@ -66,7 +66,7 @@ class TestRingBuf:
     @pytest.mark.usefixtures("randomize_start")
     def test_pickle(self, buffer, maxlen, randbytes):
         data = randbytes(maxlen // 2)
-        written = buffer.write(data)
+        assert buffer.write(data) == len(data)
 
         other = pickle.loads(pickle.dumps(buffer))
         assert other
@@ -75,7 +75,7 @@ class TestRingBuf:
     @pytest.mark.usefixtures("randomize_start")
     def test_consume_zero(self, buffer, maxlen, randbytes):
         data = randbytes(maxlen)
-        written = buffer.write(data)
+        assert buffer.write(data) == len(data)
         buffer.consume(0)
 
         assert buffer.full()
@@ -84,7 +84,7 @@ class TestRingBuf:
     @pytest.mark.usefixtures("randomize_start")
     def test_peek_zero(self, buffer, maxlen, randbytes):
         data = randbytes(maxlen)
-        written = buffer.write(data)
+        assert buffer.write(data) == len(data)
 
         peeked = buffer.peek(0)
         assert peeked == b""
