@@ -297,10 +297,7 @@ cdef class AEADCipher(_CipherBase):
         if not output:
             raise MemoryError()
         try:
-            if ad.size:
-                pad = <const unsigned char*> &ad[0]
-            else:
-                pad = NULL
+            pad = <const unsigned char*> (&ad[0] if ad.size else NULL)
             _exc.check_error(_cipher.mbedtls_cipher_auth_encrypt(
                 &self._enc_ctx,
                 &iv[0], iv.size, pad, ad.size,
