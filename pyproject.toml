@@ -22,6 +22,9 @@ force_grid_wrap = 0
 use_parentheses = true
 line_length = 79
 
+[tool.mypy]
+show_error_codes = true
+
 [tool.pylint.master]
 extension-pkg-whitelist='mbedtls'
 
