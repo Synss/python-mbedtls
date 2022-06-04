@@ -8,9 +8,9 @@
 import sys
 from typing import Optional
 
+from mbedtls._md import Hash as Hash
 from mbedtls._md import algorithms_available  # noqa: F401
 from mbedtls._md import algorithms_guaranteed  # noqa: F401
-from mbedtls._md import Hash
 
 if sys.version_info < (3, 8):
     from typing_extensions import Protocol

@@ -4,16 +4,10 @@
 from __future__ import annotations
 
 import enum
-import socket as _socket
+import socket as _pysocket
 import struct
 import sys
-
-if sys.version_info < (3, 10):
-    from typing_extensions import TypeAlias
-else:
-    from typing import TypeAlias
-
-from typing import Any, NoReturn, Optional, Tuple, Union
+from typing import Any, NoReturn, Optional, Tuple, Union, cast
 
 from ._tls import (
     DTLSConfiguration,
@@ -35,6 +29,12 @@ from ._tls import (
     _BaseContext,
     ciphers_available,
 )
+
+if sys.version_info < (3, 10):
+    from typing_extensions import TypeAlias
+else:
+    from typing import TypeAlias
+
 
 __all__ = (
     "ClientContext",
@@ -135,7 +135,7 @@ class ClientContext(_BaseContext):
         return Purpose.CLIENT_AUTH
 
     def wrap_socket(
-        self, socket: _socket.socket, server_hostname: Optional[str]
+        self, socket: _pysocket.socket, server_hostname: Optional[str]
     ) -> TLSWrappedSocket:
         """Wrap an existing Python socket object ``socket`` and return a
         ``TLSWrappedSocket`` object. ``socket`` must be a ``SOCK_STREAM``
@@ -166,7 +166,7 @@ class ServerContext(_BaseContext):
     def _purpose(self) -> Purpose:
         return Purpose.SERVER_AUTH
 
-    def wrap_socket(self, socket: _socket.socket) -> TLSWrappedSocket:
+    def wrap_socket(self, socket: _pysocket.socket) -> TLSWrappedSocket:
         """Wrap an existing Python socket object ``socket``."""
         buffer = self.wrap_buffers()
         return TLSWrappedSocket(socket, buffer)
@@ -179,13 +179,38 @@ class ServerContext(_BaseContext):
 class TLSWrappedSocket:
     # _pep543.TLSWrappedSocket
     def __init__(
-        self, socket: _socket.socket, buffer: TLSWrappedBuffer
+        self, socket: _pysocket.socket, buffer: TLSWrappedBuffer
     ) -> None:
         super().__init__()
         self._socket = socket
         self._buffer = buffer
         self._context = buffer.context
         self._closed = False
+
+    @property
+    def _socket(self) -> _pysocket.socket:
+        return cast(_pysocket.socket, self.__dict__["_socket"])
+
+    @_socket.setter
+    def _socket(self, __socket: _pysocket.socket) -> None:
+        self.__dict__["_socket"] = __socket
+        # PEP 543 requires the full socket API.
+        self.family = __socket.family
+        self.proto = __socket.proto
+        self.type = __socket.type
+        self.bind = __socket.bind
+        self.connect = __socket.connect
+        self.connect_ex = __socket.connect_ex
+        self.fileno = __socket.fileno
+        self.getpeername = __socket.getpeername
+        self.getsockname = __socket.getsockname
+        self.getsockopt = __socket.getsockopt
+        self.listen = __socket.listen
+        self.makefile = __socket.makefile
+        self.setblocking = __socket.setblocking
+        self.settimeout = __socket.settimeout
+        self.gettimeout = __socket.gettimeout
+        self.setsockopt = __socket.setsockopt
 
     def __getstate__(self) -> NoReturn:
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
@@ -204,37 +229,23 @@ class TLSWrappedSocket:
     def _handshake_state(self) -> HandshakeStep:
         return self._buffer._handshake_state
 
-    # PEP 543 requires the full socket API.
-
-    @property
-    def family(self) -> _socket.AddressFamily:
-        return self._socket.family
-
-    @property
-    def proto(self) -> int:
-        return self._socket.proto
-
-    @property
-    def type(self) -> _socket.SocketKind:
-        return self._socket.type
-
     def accept(self) -> Tuple[TLSWrappedSocket, _Address]:
-        if self.type == _socket.SOCK_STREAM:
+        if self.type == _pysocket.SOCK_STREAM:
             conn, address = self._socket.accept()
         else:
-            _, address = self._socket.recvfrom(1024, _socket.MSG_PEEK)
+            _, address = self._socket.recvfrom(1024, _pysocket.MSG_PEEK)
             # Use this socket to communicate with the client and bind
             # another one for the next connection.  This procedure is
             # adapted from `mbedtls_net_accept()`.
             sockname = self.getsockname()
-            conn = _socket.fromfd(self.fileno(), self.family, self.type)
+            conn = _pysocket.fromfd(self.fileno(), self.family, self.type)
             conn.connect(address)
             # Closing the socket on Python 2.7 and 3.4 invalidates
             # the accessors.  So we should get the values first.
             family, type_, proto = self.family, self.type, self.proto
             self.close()
-            self._socket = _socket.socket(family, type_, proto)
-            self.setsockopt(_socket.SOL_SOCKET, _socket.SO_REUSEADDR, 1)
+            self._socket = _pysocket.socket(family, type_, proto)
+            self.setsockopt(_pysocket.SOL_SOCKET, _pysocket.SO_REUSEADDR, 1)
             self.bind(sockname)
         if isinstance(self.context, ClientContext):
             # Probably not very useful but there is not reason to forbid it.
@@ -245,37 +256,10 @@ class TLSWrappedSocket:
         assert isinstance(self.context, ServerContext)
         return self.context.wrap_socket(conn), address
 
-    def bind(self, address: _Address) -> None:
-        self._socket.bind(address)
-
     def close(self) -> None:
         self._closed = True
         self._buffer.shutdown()
         self._socket.close()
-
-    def connect(self, address: _Address) -> None:
-        self._socket.connect(address)
-
-    def connect_ex(self, address: _Address) -> None:
-        self._socket.connect_ex(address)
-
-    def fileno(self) -> int:
-        return self._socket.fileno()
-
-    def getpeername(self) -> Any:
-        return self._socket.getpeername()
-
-    def getsockname(self) -> Any:
-        return self._socket.getsockname()
-
-    def getsockopt(self, *args):
-        return self._socket.getsockopt(*args)
-
-    def listen(self, backlog: int = 5) -> None:
-        self._socket.listen(backlog)
-
-    def makefile(self, *args, **kwargs):
-        return self._socket.makefile(*args, **kwargs)
 
     def recv(self, bufsize: int, flags: int = 0) -> bytes:
         encrypted = self._socket.recv(bufsize, flags)
@@ -328,7 +312,9 @@ class TLSWrappedSocket:
         self._buffer.consume_outgoing(amt)
         self._socket.sendall(encrypted)
 
-    def sendto(self, message: bytes, *args) -> int:
+    def sendto(  # type: ignore[no-untyped-def]
+        self, message: bytes, *args
+    ) -> int:
         if not 1 <= len(args) <= 2:
             raise TypeError(
                 "sendto() takes 2 or 3 arguments (%i given)" % (1 + len(args))
@@ -346,18 +332,6 @@ class TLSWrappedSocket:
             self._socket.sendto(encrypted, address)
         self._buffer.consume_outgoing(amt)
         return len(message)
-
-    def setblocking(self, flag: bool) -> None:
-        self._socket.setblocking(flag)
-
-    def settimeout(self, value: int) -> None:
-        self._socket.settimeout(value)
-
-    def gettimeout(self) -> Optional[float]:
-        return self._socket.gettimeout()
-
-    def setsockopt(self, level: int, optname: int, value: Any) -> None:
-        self._socket.setsockopt(level, optname, value)
 
     def shutdown(self, how: int) -> None:
         self._buffer.shutdown()
@@ -393,6 +367,6 @@ class TLSWrappedSocket:
     def negotiated_tls_version(self) -> Union[TLSVersion, DTLSVersion]:
         return self._buffer.negotiated_tls_version()
 
-    def unwrap(self) -> _socket.socket:
+    def unwrap(self) -> _pysocket.socket:
         self._buffer.shutdown()
         return self._socket

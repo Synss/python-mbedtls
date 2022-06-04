@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from typing import Optional, Sequence, Tuple, TypeVar, Union, overload
 
-from mbedtls.x509 import CRT  # type: ignore
+from mbedtls.x509 import CRT
 
 if sys.version_info < (3, 8):
     from typing_extensions import Literal
