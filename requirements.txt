@@ -4,4 +4,4 @@
 #
 #    pip-compile --no-annotate setup.py
 #
-certifi==2021.10.8
+certifi==2022.5.18.1
