@@ -14,6 +14,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -80,7 +81,7 @@
            <div itemprop="articleBody">
              
   <section id="cryptographic-library-for-python-with-mbed-tls-back-end">
-<h1>Cryptographic library for Python with Mbed TLS back end<a class="headerlink" href="#cryptographic-library-for-python-with-mbed-tls-back-end" title="Permalink to this headline"></a></h1>
+<h1>Cryptographic library for Python with Mbed TLS back end<a class="headerlink" href="#cryptographic-library-for-python-with-mbed-tls-back-end" title="Permalink to this heading"></a></h1>
 <a class="reference external image-reference" href="https://github.com/Synss/python-mbedtls/actions/"><img alt="https://github.com/Synss/python-mbedtls/actions/workflows/main.yml/badge.svg?branch=master" src="https://github.com/Synss/python-mbedtls/actions/workflows/main.yml/badge.svg?branch=master" /></a>
 <a class="reference external image-reference" href="https://coveralls.io/github/Synss/python-mbedtls?branch=master"><img alt="https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=master" src="https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=master" /></a>
 <p><a class="reference external" href="https://synss.github.io/python-mbedtls">python-mbedtls</a> is a free cryptographic library for Python that uses
@@ -101,28 +102,28 @@ coding footprint.</p>
 <p>and therefore plays well with the <a class="reference external" href="https://docs.python.org/3/library/crypto.html">cryptographic services</a> from the
 Python standard library and many other cryptography libraries as well.</p>
 <section id="license">
-<h2>License<a class="headerlink" href="#license" title="Permalink to this headline"></a></h2>
+<h2>License<a class="headerlink" href="#license" title="Permalink to this heading"></a></h2>
 <p><em>python-mbedtls</em> is licensed under the MIT License (see LICENSE.txt).
 This enables the use of <em>python-mbedtls</em> in both open source and closed
 source projects.  The MIT License is compatible with both GPL and Apache
 2.0 license under which mbed TLS is distributed.</p>
 </section>
 <section id="api-documentation">
-<h2>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline"></a></h2>
+<h2>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this heading"></a></h2>
 <p><a class="reference external" href="https://synss.github.io/python-mbedtls/">https://synss.github.io/python-mbedtls/</a></p>
 </section>
 <section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
 <p>The bindings are tested with mbedTLS 2.28.0 for Python 3.7,
 3.8, 3.9, and 3.10 on Linux, macOS, and Windows.</p>
 <p><a class="reference external" href="https://www.python.org/dev/peps/pep-0513/">manylinux</a> wheels are available for 64-bit Linux systems.  Install
 with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">python-mbedtls</span></code>.</p>
 </section>
 <section id="usage-and-examples">
-<h2>Usage and examples<a class="headerlink" href="#usage-and-examples" title="Permalink to this headline"></a></h2>
+<h2>Usage and examples<a class="headerlink" href="#usage-and-examples" title="Permalink to this heading"></a></h2>
 <p>Now, let us see examples using the various parts of the library.</p>
 <section id="check-which-version-of-mbed-tls-is-being-used-by-python-mbedtls">
-<h3>Check which version of mbed TLS is being used by python-mbedtls<a class="headerlink" href="#check-which-version-of-mbed-tls-is-being-used-by-python-mbedtls" title="Permalink to this headline"></a></h3>
+<h3>Check which version of mbed TLS is being used by python-mbedtls<a class="headerlink" href="#check-which-version-of-mbed-tls-is-being-used-by-python-mbedtls" title="Permalink to this heading"></a></h3>
 <p>The <em>mbedtls.version</em> module shows the run-time version
 information to mbed TLS.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">version</span>
@@ -132,7 +133,7 @@ information to mbed TLS.</p>
 </div>
 </section>
 <section id="message-digest">
-<h3>Message digest<a class="headerlink" href="#message-digest" title="Permalink to this headline"></a></h3>
+<h3>Message digest<a class="headerlink" href="#message-digest" title="Permalink to this heading"></a></h3>
 <p>The <em>mbedtls.hashlib</em> module supports MD2, MD4, MD5, SHA-1, SHA-2
 (in 224, 256, 384, and 512-bits), and RIPEMD-160 secure hashes
 and message digests.  Note that MD2 and MD4 are not included
@@ -165,7 +166,7 @@ to <em>python-mbedtls</em>:</p>
 </div>
 </section>
 <section id="hmac-algorithm">
-<h3>HMAC algorithm<a class="headerlink" href="#hmac-algorithm" title="Permalink to this headline"></a></h3>
+<h3>HMAC algorithm<a class="headerlink" href="#hmac-algorithm" title="Permalink to this heading"></a></h3>
 <p>The <em>mbedtls.hmac</em> module computes HMAC.</p>
 <p>Example:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">hmac</span>
@@ -182,7 +183,7 @@ to <em>python-mbedtls</em>:</p>
 once per message.</p>
 </section>
 <section id="hmac-based-key-derivation-function-hkdf">
-<h3>HMAC-based key derivation function (HKDF)<a class="headerlink" href="#hmac-based-key-derivation-function-hkdf" title="Permalink to this headline"></a></h3>
+<h3>HMAC-based key derivation function (HKDF)<a class="headerlink" href="#hmac-based-key-derivation-function-hkdf" title="Permalink to this heading"></a></h3>
 <p>The <em>mbedtls.hkdf</em> module exposes extract-and-expand key derivation
 functions.  The main function is <code class="docutils literal notranslate"><span class="pre">hkdf()</span></code> but <code class="docutils literal notranslate"><span class="pre">extract()</span></code> and
 <code class="docutils literal notranslate"><span class="pre">expand()</span></code> may be used as well.</p>
@@ -202,7 +203,7 @@ functions.  The main function is <code class="docutils literal notranslate"><spa
 (at least) <em>info</em> is highly recommended.</p>
 </section>
 <section id="symmetric-cipher">
-<h3>Symmetric cipher<a class="headerlink" href="#symmetric-cipher" title="Permalink to this headline"></a></h3>
+<h3>Symmetric cipher<a class="headerlink" href="#symmetric-cipher" title="Permalink to this heading"></a></h3>
 <p>The <em>mbedtls.cipher</em> module provides symmetric encryption.  The API
 follows the recommendations from PEP 272 so that it can be used as a
 drop-in replacement to other libraries.</p>
@@ -232,7 +233,7 @@ CFB128, CTR, or GCM mode;</p></li>
 </div>
 </section>
 <section id="rsa-public-key">
-<h3>RSA public key<a class="headerlink" href="#rsa-public-key" title="Permalink to this headline"></a></h3>
+<h3>RSA public key<a class="headerlink" href="#rsa-public-key" title="Permalink to this heading"></a></h3>
 <p>The <em>mbedtls.pk</em> module provides the RSA cryptosystem.  This includes:</p>
 <ul class="simple">
 <li><p>Public-private key generation and key import/export in PEM and DER
@@ -268,7 +269,7 @@ formats;</p></li>
 </div>
 </section>
 <section id="static-and-ephemeral-elliptic-curve-diffie-hellman">
-<h3>Static and ephemeral elliptic curve Diffie-Hellman<a class="headerlink" href="#static-and-ephemeral-elliptic-curve-diffie-hellman" title="Permalink to this headline"></a></h3>
+<h3>Static and ephemeral elliptic curve Diffie-Hellman<a class="headerlink" href="#static-and-ephemeral-elliptic-curve-diffie-hellman" title="Permalink to this heading"></a></h3>
 <p>The <em>mbedtls.pk</em> module provides the ECC cryptosystem.  This includes:</p>
 <ul class="simple">
 <li><p>Public-private key generation and key import/export in the PEM and DER
@@ -327,7 +328,7 @@ passes it back to the server:</p>
 </div>
 </section>
 <section id="diffie-hellman-merkle-key-exchange">
-<h3>Diffie-Hellman-Merkle key exchange<a class="headerlink" href="#diffie-hellman-merkle-key-exchange" title="Permalink to this headline"></a></h3>
+<h3>Diffie-Hellman-Merkle key exchange<a class="headerlink" href="#diffie-hellman-merkle-key-exchange" title="Permalink to this heading"></a></h3>
 <p>The classes <code class="docutils literal notranslate"><span class="pre">DHServer</span></code> and <code class="docutils literal notranslate"><span class="pre">DHClient</span></code> may be used for DH Key
 exchange.  The classes have the same API as <code class="docutils literal notranslate"><span class="pre">ECDHServer</span></code>
 and <code class="docutils literal notranslate"><span class="pre">ECDHClient</span></code>, respectively.</p>
@@ -364,7 +365,7 @@ transported over the network.</p>
 </div>
 </section>
 <section id="x-509-certificate-writing-and-parsing">
-<h3>X.509 certificate writing and parsing<a class="headerlink" href="#x-509-certificate-writing-and-parsing" title="Permalink to this headline"></a></h3>
+<h3>X.509 certificate writing and parsing<a class="headerlink" href="#x-509-certificate-writing-and-parsing" title="Permalink to this heading"></a></h3>
 <p>The <em>mbedtls.x509</em> module can be used to parse X.509 certificates
 or create and verify a certificate chain.</p>
 <p>Here, the trusted root is a self-signed CA certificate
@@ -422,7 +423,7 @@ the chain:</p>
 infrastructure and does not take CRLs, path length, etc. into account.</p>
 </section>
 <section id="tls-client-and-server">
-<h3>TLS client and server<a class="headerlink" href="#tls-client-and-server" title="Permalink to this headline"></a></h3>
+<h3>TLS client and server<a class="headerlink" href="#tls-client-and-server" title="Permalink to this heading"></a></h3>
 <p>The <em>mbedtls.tls</em> module provides TLS clients and servers.  The API
 follows the recommendations of <a class="reference external" href="https://www.python.org/dev/peps/pep-0543/">PEP 543</a>.  Note, however, that the
 Python standard SSL library does not follow the PEP so that this
@@ -431,7 +432,7 @@ library may not be a drop-in replacement.</p>
 and <cite>tests/test_tls.py</cite>.</p>
 </section>
 <section id="dtls-client-and-server">
-<h3>DTLS client and server<a class="headerlink" href="#dtls-client-and-server" title="Permalink to this headline"></a></h3>
+<h3>DTLS client and server<a class="headerlink" href="#dtls-client-and-server" title="Permalink to this heading"></a></h3>
 <p>The <em>mbedtls.tls</em> module further provides DTLS (encrypted UDP
 traffic).  Client and server must be bound and connected for
 the handshake so that DTLS should use <code class="docutils literal notranslate"><span class="pre">recv()</span></code> and <code class="docutils literal notranslate"><span class="pre">send()</span></code>
@@ -441,7 +442,7 @@ and <cite>tests/test_tls.py</cite>.</p>
 </section>
 </section>
 <section id="id2">
-<h2>API documentation<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
+<h2>API documentation<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="apisecrets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mbedtls.secrets</span></code> Module</a></li>
@@ -464,7 +465,7 @@ and <cite>tests/test_tls.py</cite>.</p>
 </div>
 </section>
 <section id="indices-and-tables">
-<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline"></a></h2>
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
