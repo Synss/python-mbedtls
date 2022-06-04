@@ -5,7 +5,7 @@ import certifi  # type: ignore
 import pytest  # type: ignore
 
 from mbedtls import hashlib
-from mbedtls.pk import ECC, RSA  # type: ignore
+from mbedtls.pk import ECC, RSA
 from mbedtls.x509 import CRL, CRT, CSR, BasicConstraints  # type: ignore
 
 CRL_PEM = """

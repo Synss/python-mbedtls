@@ -13,7 +13,7 @@ import pytest  # type: ignore
 
 from mbedtls import hashlib
 from mbedtls import hmac as hmaclib
-from mbedtls._md import Hash  # type: ignore
+from mbedtls._md import Hash
 
 
 class Size(NamedTuple):
