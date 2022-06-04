@@ -15,12 +15,12 @@ class TestRingBuf:
     def chunk_size(self, request):
         return request.param
 
-    @pytest.fixture
+    @pytest.fixture()
     def buffer(self, maxlen):
         return RingBuffer(maxlen)
 
-    @pytest.fixture
-    def randomize_start(self, buffer, maxlen, randbytes):
+    @pytest.fixture()
+    def _randomize_start(self, buffer, maxlen, randbytes):
         # Randomize start of the buffer.
         size = randint(0, maxlen)
         buffer.write(randbytes(size))
@@ -37,7 +37,7 @@ class TestRingBuf:
 
         assert buffer == b""
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_clear(self, buffer, maxlen, randbytes):
         data = randbytes(maxlen)
         written = buffer.write(data)
@@ -52,7 +52,7 @@ class TestRingBuf:
 
         assert buffer == b""
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_write_empty(self, buffer):
         written = buffer.write(b"")
         assert not written
@@ -63,7 +63,7 @@ class TestRingBuf:
 
         assert buffer == b""
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_pickle(self, buffer, maxlen, randbytes):
         data = randbytes(maxlen // 2)
         assert buffer.write(data) == len(data)
@@ -72,7 +72,7 @@ class TestRingBuf:
         assert other
         assert other == buffer
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_consume_zero(self, buffer, maxlen, randbytes):
         data = randbytes(maxlen)
         assert buffer.write(data) == len(data)
@@ -81,7 +81,7 @@ class TestRingBuf:
         assert buffer.full()
         assert buffer == data
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_peek_zero(self, buffer, maxlen, randbytes):
         data = randbytes(maxlen)
         assert buffer.write(data) == len(data)
@@ -92,7 +92,7 @@ class TestRingBuf:
         assert buffer.full()
         assert buffer == data
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_read_zero(self, buffer, maxlen, randbytes):
         data = randbytes(maxlen)
         written = buffer.write(data)
@@ -100,7 +100,7 @@ class TestRingBuf:
         assert written == maxlen
         assert buffer.read(0) == b""
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_write_full(self, buffer, maxlen, randbytes):
         data = randbytes(maxlen)
         written = buffer.write(data)
@@ -113,7 +113,7 @@ class TestRingBuf:
 
         assert buffer == data
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_write_chunks(self, buffer, maxlen, chunk_size, randbytes):
         data = randbytes(maxlen)
         written = 0
@@ -124,7 +124,7 @@ class TestRingBuf:
         assert buffer.full()
         assert buffer == data
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_peek(self, buffer, maxlen, chunk_size, randbytes):
         data = randbytes(maxlen)
         written = buffer.write(data)
@@ -134,7 +134,7 @@ class TestRingBuf:
         assert written == maxlen
         assert buffer == data
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_read_chunks(self, buffer, maxlen, chunk_size, randbytes):
         data = randbytes(maxlen)
         written = buffer.write(data)
@@ -144,7 +144,7 @@ class TestRingBuf:
         assert written == maxlen
         assert buffer.empty()
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_read_write_with_wraparound(
         self, buffer, maxlen, chunk_size, randbytes
     ):
@@ -157,7 +157,7 @@ class TestRingBuf:
             assert buffer.empty()
         assert written >= maxlen * (wraparound - 1)
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_read_write_with_wraparound_long(self, buffer, maxlen, randbytes):
         size = randint(2, 42) * maxlen
         step = randint(1, maxlen)
@@ -172,7 +172,7 @@ class TestRingBuf:
             assert buffer.read(len(data)) == data
             assert buffer.empty()
 
-    @pytest.mark.usefixtures("randomize_start")
+    @pytest.mark.usefixtures("_randomize_start")
     def test_write_overflow_raises_buffererror(
         self, buffer, maxlen, randbytes
     ):

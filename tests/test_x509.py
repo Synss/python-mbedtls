@@ -92,7 +92,7 @@ class TestCertificate:
     def cert(self, request):
         return request.param
 
-    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(self, repr_, cert):
         assert isinstance(repr_(cert), str)
 
@@ -131,27 +131,27 @@ class TestCertificate:
 
 
 class TestCRT:
-    @pytest.fixture
+    @pytest.fixture()
     def issuer(self):
         return "C=NL, O=PolarSSL, CN=PolarSSL Test CA"
 
-    @pytest.fixture
+    @pytest.fixture()
     def issuer_key(self):
         issuer_key = RSA()
         issuer_key.generate(key_size=1024)
         return issuer_key
 
-    @pytest.fixture
+    @pytest.fixture()
     def subject(self):
         return "C=NL"
 
-    @pytest.fixture
+    @pytest.fixture()
     def subject_key(self):
         subject_key = RSA()
         subject_key.generate(key_size=1024)
         return subject_key
 
-    @pytest.fixture
+    @pytest.fixture()
     def serial_number(self):
         return 0x1234567890
 
@@ -163,7 +163,7 @@ class TestCRT:
     def basic_constraints(self, request):
         return request.param
 
-    @pytest.fixture
+    @pytest.fixture()
     def crt(
         self,
         now,
@@ -231,17 +231,17 @@ class TestCRT:
 
 
 class TestCSR:
-    @pytest.fixture
+    @pytest.fixture()
     def subject(self):
         return "C=NL, O=PolarSSL, CN=PolarSSL Server 1"
 
-    @pytest.fixture
+    @pytest.fixture()
     def subject_key(self):
         subject_key = RSA()
         subject_key.generate(key_size=1024)
         return subject_key
 
-    @pytest.fixture
+    @pytest.fixture()
     def csr(self, subject, subject_key):
         return CSR.new(subject_key, subject, hashlib.sha1())
 
@@ -256,7 +256,7 @@ class TestCSR:
 
 
 class TestCRL:
-    @pytest.fixture
+    @pytest.fixture()
     def crl(self):
         return CRL.from_PEM(CRL_PEM)
 
@@ -299,25 +299,25 @@ class TestCRL:
 
 
 class TestVerifyCertificateChain:
-    @pytest.fixture
+    @pytest.fixture()
     def ca0_key(self):
         ca0_key = RSA()
         ca0_key.generate()
         return ca0_key
 
-    @pytest.fixture
+    @pytest.fixture()
     def ca1_key(self):
         ca1_key = ECC()
         ca1_key.generate()
         return ca1_key
 
-    @pytest.fixture
+    @pytest.fixture()
     def ee0_key(self):
         ee0_key = ECC()
         ee0_key.generate()
         return ee0_key
 
-    @pytest.fixture
+    @pytest.fixture()
     def ca0_crt(self, ca0_key, now):
         ca0_csr = CSR.new(ca0_key, "CN=Trusted CA", hashlib.sha256())
         return CRT.selfsign(
@@ -329,7 +329,7 @@ class TestVerifyCertificateChain:
             basic_constraints=BasicConstraints(True, -1),
         )
 
-    @pytest.fixture
+    @pytest.fixture()
     def ca1_crt(self, ca1_key, ca0_crt, ca0_key, now):
         ca1_csr = CSR.new(ca1_key, "CN=Intermediate CA", hashlib.sha256())
         return ca0_crt.sign(
@@ -341,7 +341,7 @@ class TestVerifyCertificateChain:
             basic_constraints=BasicConstraints(True, 1),
         )
 
-    @pytest.fixture
+    @pytest.fixture()
     def ee0_crt(self, ee0_key, ca1_crt, ca1_key, now):
         ee0_csr = CSR.new(ee0_key, "CN=End Entity", hashlib.sha256())
         return ca1_crt.sign(

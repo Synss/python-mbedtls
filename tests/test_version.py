@@ -19,7 +19,7 @@ def test_feature_false(feature):
 
 @pytest.mark.parametrize(
     "feature",
-    (
+    [
         "md5",
         "md5_c",
         "mbedtls_md5",
@@ -28,7 +28,7 @@ def test_feature_false(feature):
         "MD5_C",
         "MBEDTLS_MD5",
         "MBEDTLS_MD5_C",
-    ),
+    ],
 )
 def test_feature_true(feature):
     assert version.has_feature(feature) is True

@@ -183,7 +183,8 @@ def test_cipher_list() -> None:
 
 def test_get_supported_ciphers() -> None:
     cl = get_supported_ciphers()
-    assert cl and set(cl).issubset(set(CIPHER_NAME))
+    assert cl
+    assert set(cl).issubset(set(CIPHER_NAME))
 
 
 class TestCipher:

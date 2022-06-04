@@ -68,7 +68,7 @@ def do_generate(cipher: CipherBase):
         return cipher.generate(1024)
     if isinstance(cipher, ECC):
         return cipher.generate()
-    assert 0
+    pytest.fail("unreachable")
 
 
 class TestECPoint:
@@ -76,11 +76,11 @@ class TestECPoint:
     def xyz(self, request):
         return request.param
 
-    @pytest.fixture
+    @pytest.fixture()
     def point(self, xyz):
         return ECPoint(*xyz)
 
-    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(self, repr_, point) -> None:
         assert isinstance(repr_(point), str)
 

@@ -115,14 +115,14 @@ def make_crt(
 class TestPickle:
     @pytest.mark.parametrize(
         "obj",
-        (
+        [
             TLSConfiguration(),
             DTLSConfiguration(),
             ClientContext(TLSConfiguration()),
             ClientContext(DTLSConfiguration()),
             ServerContext(TLSConfiguration()),
             ServerContext(DTLSConfiguration()),
-        ),
+        ],
         ids=type,
     )
     def test_picklable(self, obj):
@@ -130,7 +130,7 @@ class TestPickle:
 
     @pytest.mark.parametrize(
         "obj",
-        (
+        [
             TLSSession(),
             TLSWrappedBuffer(ClientContext(DTLSConfiguration())),
             TLSWrappedBuffer(ClientContext(TLSConfiguration())),
@@ -152,7 +152,7 @@ class TestPickle:
                 socket.socket(),
                 TLSWrappedBuffer(ServerContext(TLSConfiguration())),
             ),
-        ),
+        ],
         ids=type,
     )
     def test_unpicklable(self, obj):
@@ -163,15 +163,15 @@ class TestPickle:
 
 
 class TestPSKStoreProxy:
-    @pytest.fixture
+    @pytest.fixture()
     def psk_store(self):
         return {"client": b"the secret key"}
 
-    @pytest.fixture
+    @pytest.fixture()
     def proxy(self, psk_store):
         return PSKStoreProxy(psk_store)
 
-    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(self, repr_, psk_store):
         assert isinstance(repr_(psk_store), str)
 
@@ -244,15 +244,15 @@ class TestTLSRecordHeader:
     def version(self, request):
         return request.param
 
-    @pytest.fixture
+    @pytest.fixture()
     def length(self):
         return 42
 
-    @pytest.fixture
+    @pytest.fixture()
     def header(self, record_type, version, length):
         return TLSRecordHeader(record_type, version, length)
 
-    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(self, repr_, record_type):
         assert isinstance(repr_(record_type), str)
 
@@ -273,7 +273,7 @@ class TestTLSRecordHeader:
 
 
 class TestTLSSession:
-    @pytest.fixture
+    @pytest.fixture()
     def session(self):
         return TLSSession()
 
@@ -282,11 +282,11 @@ class TestTLSSession:
 
 
 class TestTrustStore:
-    @pytest.fixture
+    @pytest.fixture()
     def store(self):
         return TrustStore.system()
 
-    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(self, repr_, store):
         assert isinstance(repr_(store), str)
 
@@ -321,7 +321,7 @@ class TestTrustStore:
 
 
 class TestDTLSCookie:
-    @pytest.fixture
+    @pytest.fixture()
     def cookie(self):
         return DTLSCookie()
 
@@ -339,7 +339,7 @@ class TestConfiguration:
     def conf(self, request):
         return request.param()
 
-    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(self, repr_, conf):
         assert isinstance(repr_(conf), str)
 
@@ -357,8 +357,8 @@ class TestConfiguration:
         conf_ = conf.update(certificate_chain=chain)
         assert conf_.certificate_chain == chain
 
-    @pytest.mark.parametrize("ciphers", (ciphers_available(),))
-    def test_set_ciphers(self, conf, ciphers):
+    def test_set_ciphers(self, conf):
+        ciphers = tuple(ciphers_available())
         conf_ = conf.update(ciphers=ciphers)
         assert conf_.ciphers == ciphers
 
@@ -398,7 +398,7 @@ class TestConfiguration:
 
 
 class TestTLSConfiguration:
-    @pytest.fixture
+    @pytest.fixture()
     def conf(self):
         return TLSConfiguration()
 
@@ -414,7 +414,7 @@ class TestTLSConfiguration:
 
 
 class TestDTLSConfiguration:
-    @pytest.fixture
+    @pytest.fixture()
     def conf(self):
         return DTLSConfiguration()
 
@@ -435,9 +435,10 @@ class TestDTLSConfiguration:
         assert conf_.anti_replay is anti_replay
 
     @pytest.mark.parametrize(
-        "hs_min, hs_max", [(1, 60), (42, 69), (4.2, 6.9), (42.0, 69.0)]
+        "hs_min_max", [(1, 60), (42, 69), (4.2, 6.9), (42.0, 69.0)]
     )
-    def test_handshake_timeout_minmax(self, conf, hs_min, hs_max):
+    def test_handshake_timeout_minmax(self, conf, hs_min_max):
+        hs_min, hs_max = hs_min_max
         assert conf.handshake_timeout_min == 1.0
         assert conf.handshake_timeout_max == 60.0
         conf_ = conf.update(
@@ -448,9 +449,10 @@ class TestDTLSConfiguration:
         assert conf_.handshake_timeout_max == hs_max
 
     @pytest.mark.parametrize(
-        "hs_min, hs_max", [(None, None), (1, None), (None, 60)]
+        "hs_min_max", [(None, None), (1, None), (None, 60)]
     )
-    def test_handshake_timeout_default(self, conf, hs_min, hs_max):
+    def test_handshake_timeout_default(self, conf, hs_min_max):
+        hs_min, hs_max = hs_min_max
         conf_ = conf.update(
             handshake_timeout_min=hs_min,
             handshake_timeout_max=hs_max,
@@ -486,7 +488,7 @@ class TestClientContext(TestBaseContext):
     def hostname(self, request):
         return request.param
 
-    @pytest.fixture
+    @pytest.fixture()
     def context(self, conf, hostname):
         return ClientContext(conf)
 
@@ -502,7 +504,7 @@ class TestClientContext(TestBaseContext):
 
 
 class TestServerContext(TestBaseContext):
-    @pytest.fixture
+    @pytest.fixture()
     def context(self, conf):
         return ServerContext(conf)
 
@@ -765,7 +767,7 @@ class TestDTLSHandshake:
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
 class TestProgramsTLS:
-    @pytest.fixture
+    @pytest.fixture()
     def port(self):
         """Return a free port
 
@@ -779,7 +781,7 @@ class TestProgramsTLS:
             port = sock.getsockname()[1]
         return port
 
-    @pytest.fixture
+    @pytest.fixture()
     def server(self, rootpath, port):
         args = [
             sys.executable,
@@ -815,7 +817,7 @@ class TestProgramsTLS:
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
 class TestProgramsDTLS:
-    @pytest.fixture
+    @pytest.fixture()
     def port(self):
         """Return a free port
 
@@ -829,7 +831,7 @@ class TestProgramsDTLS:
             port = sock.getsockname()[1]
         return port
 
-    @pytest.fixture
+    @pytest.fixture()
     def server(self, rootpath, port):
         args = [
             sys.executable,

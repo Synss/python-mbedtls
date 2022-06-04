@@ -3,15 +3,15 @@ import pytest  # type: ignore
 
 @pytest.mark.xfail(reason="Test assertion rewriting")
 class TestMemoryviewAssertion:
-    @pytest.fixture
+    @pytest.fixture()
     def value(self):
         return bytes(_ % 256 for _ in range(10000))
 
-    @pytest.fixture
+    @pytest.fixture()
     def text(self, value):
         return value.decode("latin1")
 
-    @pytest.fixture
+    @pytest.fixture()
     def memview(self, value):
         return memoryview(value)
 

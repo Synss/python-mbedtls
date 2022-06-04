@@ -61,7 +61,7 @@ def pytest_assertrepr_compare(config, op, left, right):
     return None
 
 
-@pytest.fixture
+@pytest.fixture()
 def randbytes():
     def function(length):
         return bytes(

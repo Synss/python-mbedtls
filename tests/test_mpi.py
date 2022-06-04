@@ -7,7 +7,7 @@ import pytest  # type: ignore
 from mbedtls.mpi import MPI  # type: ignore
 
 
-@pytest.mark.parametrize("value", (12, 2**32 - 1, 10**100))
+@pytest.mark.parametrize("value", [12, 2**32 - 1, 10**100])
 def test_from_int(value):
     mpi = MPI.from_int(value)
     assert mpi == value
@@ -15,7 +15,7 @@ def test_from_int(value):
     assert mpi == mpi
 
 
-@pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+@pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
 def test_repr(repr_):
     assert isinstance(repr_(MPI(69)), str)
 
@@ -191,7 +191,7 @@ def test_mod():
     assert 12 % MPI(10) == 2
 
 
-@pytest.mark.parametrize("value", (12, 2**32 - 1, 10**100))
+@pytest.mark.parametrize("value", [12, 2**32 - 1, 10**100])
 def test_bit_length(value):
     mpi = MPI(value)
     assert mpi == value

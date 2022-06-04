@@ -61,7 +61,7 @@ class TestHash:
     def algorithm(self, request):
         return request.param
 
-    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(self, repr_, algorithm):
         assert isinstance(repr_(hashlib.new(algorithm, b"")), str)
 
@@ -123,7 +123,7 @@ class TestHmac:
     def algorithm(self, request):
         return request.param
 
-    @pytest.mark.parametrize("repr_", (repr, str), ids=lambda f: f.__name__)
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(self, repr_, algorithm):
         assert isinstance(repr_(hmaclib.new(b"", digestmod=algorithm)), str)
 

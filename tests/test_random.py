@@ -16,7 +16,7 @@ def sample(start, end, k=20):
 
 
 class TestEntropy:
-    @pytest.fixture
+    @pytest.fixture()
     def entropy(self):
         return _drbg.Random()._entropy
 
@@ -34,7 +34,7 @@ class TestEntropy:
     def test_retrieve(self, entropy, length):
         assert len(entropy.retrieve(length)) == length
 
-    @pytest.mark.parametrize("length", (100,))
+    @pytest.mark.parametrize("length", [100])
     def test_retrieve_long_block_raises_exception(self, entropy, length):
         with pytest.raises(TLSError):
             entropy.retrieve(length)
@@ -57,7 +57,7 @@ class TestEntropy:
 
 
 class TestRandom:
-    @pytest.fixture
+    @pytest.fixture()
     def random(self):
         return _drbg.Random()
 
