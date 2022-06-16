@@ -414,7 +414,7 @@ cdef class RSA(CipherBase):
 
 
 cdef class ECC(CipherBase):
-    cdef curve
+    cdef _curve
 
 
 cdef class ECPoint:

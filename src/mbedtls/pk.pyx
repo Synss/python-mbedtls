@@ -661,7 +661,11 @@ cdef class ECC(CipherBase):
         super().__init__(b"EC", key, password)
         if curve is None:
             curve = get_supported_curves()[0]
-        self.curve = curve
+        self._curve = curve
+
+    @property
+    def curve(self):
+        return self._curve
 
     @classmethod
     def from_buffer(cls, const unsigned char[:] key not None):
