@@ -122,7 +122,7 @@ cdef curve_name_to_grp_id(curve):
     idx = 0
     while info[idx].name != NULL:
         if info[idx].name == curve:
-            return info.grp_id
+            return info[idx].grp_id
         idx += 1
     raise LookupError(curve.decode("ascii") + " not found")
 
