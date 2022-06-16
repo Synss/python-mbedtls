@@ -2,8 +2,7 @@
 
 import numbers
 import pickle
-from functools import partial
-from typing import Callable, cast
+from typing import Any, List, Union, cast
 
 import pytest  # type: ignore
 
@@ -113,11 +112,12 @@ class TestECPoint:
 
 class TestCipher:
     @pytest.fixture(
-        params=[cast(Callable[[], CipherBase], RSA)]
-        + [partial(ECC, curve) for curve in get_supported_curves()],
+        params=[cast(object, RSA)] + cast(List[object], get_supported_curves())
     )
-    def cipher(self, request):
-        return request.param()
+    def cipher(self, request: Any) -> Union[ECC, RSA]:
+        if request.param is RSA:
+            return cast(RSA, request.param())
+        return ECC(request.param)
 
     def test_pickle(self, cipher) -> None:
         assert cipher == pickle.loads(pickle.dumps(cipher))
