@@ -21,7 +21,7 @@ from typing import (
     cast,
 )
 
-import pytest  # type: ignore
+import pytest
 
 from mbedtls.cipher import (
     AES,

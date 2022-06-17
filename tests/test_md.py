@@ -9,7 +9,7 @@ import pickle
 from collections.abc import Collection
 from typing import Mapping, NamedTuple
 
-import pytest  # type: ignore
+import pytest
 
 from mbedtls import hashlib
 from mbedtls import hmac as hmaclib

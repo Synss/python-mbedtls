@@ -7,7 +7,7 @@ import time
 from contextlib import suppress
 from pathlib import Path
 
-import pytest  # type: ignore
+import pytest
 
 from mbedtls import hashlib
 from mbedtls._tls import _DTLSCookie as DTLSCookie  # type: ignore

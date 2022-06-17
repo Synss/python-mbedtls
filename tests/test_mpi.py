@@ -2,7 +2,7 @@ import numbers
 import pickle
 from binascii import hexlify, unhexlify
 
-import pytest  # type: ignore
+import pytest
 
 from mbedtls.mpi import MPI  # type: ignore
 

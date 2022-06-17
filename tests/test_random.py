@@ -4,7 +4,7 @@ import pickle
 import random
 from collections import defaultdict
 
-import pytest  # type: ignore
+import pytest
 
 import mbedtls._random as _drbg  # type: ignore
 import mbedtls.mpi as _mpi  # type: ignore

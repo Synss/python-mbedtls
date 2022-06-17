@@ -1,8 +1,8 @@
 import datetime as dt
 import pickle
 
-import certifi  # type: ignore
-import pytest  # type: ignore
+import certifi  # type: ignore[import]
+import pytest
 
 from mbedtls import hashlib
 from mbedtls.pk import ECC, RSA

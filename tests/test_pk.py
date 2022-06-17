@@ -4,7 +4,7 @@ import numbers
 import pickle
 from typing import Any, List, Union, cast
 
-import pytest  # type: ignore
+import pytest
 
 from mbedtls import hashlib
 from mbedtls.exceptions import TLSError

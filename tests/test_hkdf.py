@@ -1,6 +1,6 @@
 from typing import Any, Callable, cast
 
-import pytest  # type: ignore
+import pytest
 
 import mbedtls
 import mbedtls.hkdf as _hkdf

@@ -3,7 +3,7 @@ import reprlib
 import sys
 from collections.abc import Sequence
 
-import pytest  # type: ignore
+import pytest
 
 import mbedtls
 

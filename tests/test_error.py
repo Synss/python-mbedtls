@@ -1,6 +1,6 @@
 """Unit test mbedtls.exceptions."""
 
-import pytest  # type: ignore
+import pytest
 
 from mbedtls.exceptions import check_error  # type: ignore
 from mbedtls.exceptions import TLSError

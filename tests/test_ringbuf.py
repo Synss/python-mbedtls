@@ -1,7 +1,7 @@
 import pickle
 from random import randint
 
-import pytest  # type: ignore
+import pytest
 
 from mbedtls._ringbuf import RingBuffer  # type: ignore
 
