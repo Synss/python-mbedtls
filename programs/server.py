@@ -5,11 +5,15 @@ Run ./programs/server.py --help.
 
 """
 
+from __future__ import annotations
+
 import argparse
 import socket
+import sys
 import time
 from contextlib import suppress
 from functools import partial
+from typing import Any, Callable, NoReturn, Optional, Tuple, Union
 
 from mbedtls._tls import _enable_debug_output, _set_debug_level  # type: ignore
 from mbedtls.tls import (
@@ -17,19 +21,33 @@ from mbedtls.tls import (
     HelloVerifyRequest,
     ServerContext,
     TLSConfiguration,
+    TLSWrappedSocket,
 )
+
+if sys.version_info < (3, 10):
+    from typing_extensions import TypeAlias
+else:
+    from typing import TypeAlias
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Final
+else:
+    from typing import Final
+
 
 __all__ = ["Server"]
 
+_Address: TypeAlias = Union[Tuple[Any, ...], str]
 
-def _make_tls_connection(sock):
+
+def _make_tls_connection(sock: TLSWrappedSocket) -> TLSWrappedSocket:
     assert sock
     conn, _addr = sock.accept()
     conn.do_handshake()
     return conn
 
 
-def _make_dtls_connection(sock):
+def _make_dtls_connection(sock: TLSWrappedSocket) -> TLSWrappedSocket:
     assert sock
     conn, addr = sock.accept()
     conn.setcookieparam(addr[0].encode("ascii"))
@@ -44,34 +62,40 @@ def _make_dtls_connection(sock):
 
 
 class Server:
-    def __init__(self, srv_conf, proto, address):
+    def __init__(
+        self,
+        srv_conf: Union[TLSConfiguration, DTLSConfiguration],
+        proto: socket.SocketKind,
+        address: _Address,
+    ) -> None:
         super().__init__()
-        self.srv_conf = srv_conf
-        self.proto = proto
-        self.address = address
-        self._make_connection = {
+        self.srv_conf: Final = srv_conf
+        self.proto: Final = proto
+        self.address: Final = address
+        self._make_connection: Final = {
             socket.SOCK_STREAM: _make_tls_connection,
             socket.SOCK_DGRAM: _make_dtls_connection,
         }[self.proto]
-        self._sock = None
+        self._sock: Optional[TLSWrappedSocket] = None
 
-    def __enter__(self):
+    def __enter__(self) -> Server:
         self.start()
         return self
 
-    def __exit__(self, *exc_info):
+    def __exit__(self, *exc_info: object) -> None:
         self.stop()
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.stop()
 
     @property
-    def context(self):
+    def context(self) -> Optional[ServerContext]:
         if self._sock is None:
             return None
+        assert isinstance(self._sock.context, ServerContext)
         return self._sock.context
 
-    def start(self):
+    def start(self) -> None:
         if self._sock:
             self.stop()
 
@@ -83,26 +107,29 @@ class Server:
         if self.proto is socket.SOCK_STREAM:
             self._sock.listen(1)
 
-    def stop(self):
+    def stop(self) -> None:
         if not self._sock:
             return
 
         self._sock.close()
         self._sock = None
 
-    def run(self, conn_handler):
+    def run(
+        self, conn_handler: Callable[[TLSWrappedSocket], None]
+    ) -> NoReturn:
         if not self._sock:
             raise ConnectionRefusedError("server not started")
 
         while True:
             self._run(conn_handler)
 
-    def _run(self, conn_handler):
+    def _run(self, conn_handler: Callable[[TLSWrappedSocket], None]) -> None:
+        assert self._sock is not None
         with self._make_connection(self._sock) as conn:
             conn_handler(conn)
 
 
-def echo_handler(conn, *, packet_size):
+def echo_handler(conn: TLSWrappedSocket, *, packet_size: int) -> None:
     while True:
         data = conn.recv(packet_size)
         if data:
@@ -115,10 +142,16 @@ def echo_handler(conn, *, packet_size):
         sent += conn.send(view[sent:])
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     class PSKStoreArg(argparse.Action):
-        def __call__(self, parser, namespace, values, option_string=None):
-            def entry(kv):
+        def __call__(
+            self,
+            parser: object,
+            namespace: argparse.Namespace,
+            values: Any,
+            option_string: Optional[str] = None,
+        ) -> None:
+            def entry(kv: bytes) -> Tuple[str, bytes]:
                 k, v = kv.split(b"=")
                 return k.decode("utf-8"), v
 
@@ -148,14 +181,18 @@ def parse_args():
     return parser.parse_args()
 
 
-def main(args):
-    conf = {
-        socket.SOCK_STREAM: TLSConfiguration,
-        socket.SOCK_DGRAM: DTLSConfiguration,
-    }[args.proto](
-        pre_shared_key_store=args.psk_store,
-        validate_certificates=False,
-    )
+def main(args: argparse.Namespace) -> NoReturn:
+    conf: Union[TLSConfiguration, DTLSConfiguration]
+    if args.proto is socket.SOCK_STREAM:
+        conf = TLSConfiguration(
+            pre_shared_key_store=args.psk_store, validate_certificates=False
+        )
+    elif args.proto is socket.SOCK_DGRAM:
+        conf = DTLSConfiguration(
+            pre_shared_key_store=args.psk_store, validate_certificates=False
+        )
+    else:
+        raise NotImplementedError(args.proto)
 
     if args.debug is not None:
         _enable_debug_output(conf)

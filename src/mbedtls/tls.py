@@ -57,7 +57,6 @@ __all__ = (
     "ciphers_available",
 )
 
-
 # Stolen from `_socket.pyi`.
 _Address: TypeAlias = Union[Tuple[Any, ...], str]
 

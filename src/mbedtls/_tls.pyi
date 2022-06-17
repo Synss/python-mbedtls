@@ -6,7 +6,7 @@ from __future__ import annotations
 import enum
 import sys
 from pathlib import Path
-from typing import Optional, Sequence, Tuple, TypeVar, Union, overload
+from typing import Mapping, Optional, Sequence, Tuple, Union, overload
 
 from mbedtls.x509 import CRT
 
@@ -117,6 +117,8 @@ class TLSConfiguration:
         highest_supported_version: Optional[TLSVersion] = ...,
         trust_store: Optional[TrustStore] = ...,
         sni_callback: Optional[ServerNameCallback] = ...,
+        pre_shared_key: Optional[Tuple[str, bytes]] = ...,
+        pre_shared_key_store: Optional[Mapping[str, bytes]] = ...,
     ) -> TLSConfiguration: ...
     validate_certificates: Optional[bool]
     certificate_chain: Optional[Tuple[Tuple[Certificate], PrivateKey]]
@@ -140,6 +142,8 @@ class DTLSConfiguration:
         highest_supported_version: Optional[TLSVersion] = ...,
         trust_store: Optional[TrustStore] = ...,
         sni_callback: Optional[ServerNameCallback] = ...,
+        pre_shared_key: Optional[Tuple[str, bytes]] = ...,
+        pre_shared_key_store: Optional[Mapping[str, bytes]] = ...,
     ) -> DTLSConfiguration: ...
     validate_certificates: Optional[bool]
     certificate_chain: Optional[Tuple[Tuple[Certificate], PrivateKey]]
@@ -150,15 +154,13 @@ class DTLSConfiguration:
     trust_store: Optional[TrustStore]
     sni_callback: Optional[ServerNameCallback]
 
-Configuration = TypeVar(
-    "Configuration", bound=Union[DTLSConfiguration, TLSConfiguration]
-)
-
 class _BaseContext:
-    def __init__(self, configuration: Configuration) -> None: ...
+    def __init__(
+        self, configuration: Union[TLSConfiguration, DTLSConfiguration]
+    ) -> None: ...
     def __eq__(self, other: object) -> bool: ...
     @property
-    def configuration(self) -> Configuration: ...
+    def configuration(self) -> Union[TLSConfiguration, DTLSConfiguration]: ...
     @property
     def _purpose(self) -> Purpose: ...
 
