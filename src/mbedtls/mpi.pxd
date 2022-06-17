@@ -50,6 +50,15 @@ cdef extern from "mbedtls/bignum.h" nogil:
         unsigned char *buf,
         size_t buflen)
 
+    int mbedtls_mpi_read_binary_le(
+        mbedtls_mpi *X,
+        const unsigned char *buf,
+        size_t buflen)
+    int mbedtls_mpi_write_binary_le(
+        mbedtls_mpi *X,
+        unsigned char *buf,
+        size_t buflen)
+
     int mbedtls_mpi_shift_l(
         mbedtls_mpi *X,
         size_t count)
