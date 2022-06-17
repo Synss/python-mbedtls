@@ -39,7 +39,7 @@ from mbedtls.cipher import (
     get_supported_ciphers,
 )
 from mbedtls.cipher._cipher import CIPHER_NAME  # type: ignore
-from mbedtls.exceptions import TLSError  # type: ignore
+from mbedtls.exceptions import TLSError
 
 
 class Size(NamedTuple):

@@ -14,7 +14,7 @@ else:
 
 from typing import Optional, Union
 
-from mbedtls.exceptions import TLSError  # type: ignore
+from mbedtls.exceptions import TLSError
 
 from ._cipher import Cipher, Mode
 

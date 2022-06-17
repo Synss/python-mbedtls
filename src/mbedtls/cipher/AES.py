@@ -16,7 +16,7 @@ else:
 
 from typing import Optional, Union, overload
 
-from mbedtls.exceptions import TLSError  # type: ignore
+from mbedtls.exceptions import TLSError
 
 from ._cipher import AEADCipher, Cipher, Mode
 

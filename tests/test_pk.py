@@ -7,7 +7,7 @@ from typing import Any, List, Union, cast
 import pytest  # type: ignore
 
 from mbedtls import hashlib
-from mbedtls.exceptions import TLSError  # type: ignore
+from mbedtls.exceptions import TLSError
 from mbedtls.mpi import MPI  # type: ignore
 from mbedtls.pk import _get_md_alg  # type: ignore
 from mbedtls.pk import (

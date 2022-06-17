@@ -2,7 +2,8 @@
 
 import pytest  # type: ignore
 
-from mbedtls.exceptions import TLSError, check_error  # type: ignore
+from mbedtls.exceptions import check_error  # type: ignore
+from mbedtls.exceptions import TLSError
 
 
 @pytest.mark.parametrize(

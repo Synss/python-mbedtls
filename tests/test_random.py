@@ -8,7 +8,7 @@ import pytest  # type: ignore
 
 import mbedtls._random as _drbg  # type: ignore
 import mbedtls.mpi as _mpi  # type: ignore
-from mbedtls.exceptions import TLSError  # type: ignore
+from mbedtls.exceptions import TLSError
 
 
 def sample(start, end, k=20):

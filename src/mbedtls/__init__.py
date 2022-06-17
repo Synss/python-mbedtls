@@ -6,7 +6,7 @@
 
 
 import mbedtls.cipher as cipher
-import mbedtls.exceptions as exceptions  # type: ignore
+import mbedtls.exceptions as exceptions
 import mbedtls.hashlib as hashlib
 import mbedtls.hkdf as hkdf
 import mbedtls.hmac as hmac
