@@ -1,14 +1,14 @@
 import random
 import reprlib
 import sys
-from collections.abc import Sequence
+from typing import Callable, Optional, Sequence
 
 import pytest
 
 import mbedtls
 
 
-def pytest_report_header(config, startdir):
+def pytest_report_header(config: object, startdir: object) -> None:
     sys.stdout.write(
         "python-mbedtls {0}, {1}\n".format(
             mbedtls.__version__, mbedtls.version.version
@@ -19,7 +19,7 @@ def pytest_report_header(config, startdir):
 class _Repr(reprlib.Repr):
     """Repr with support for memoryview."""
 
-    def repr_memoryview(self, obj, level):
+    def repr_memoryview(self, obj: memoryview, level: object) -> str:
         return "%s(%s)" % (type(obj).__name__, self.repr(obj.tobytes()))
 
 
@@ -27,19 +27,13 @@ _repr_instance = _Repr()
 _repr = _repr_instance.repr
 
 
-def issequence(x):
-    # Adapted from pytest.
-    if bytes != str:
-        return isinstance(x, Sequence) and not isinstance(x, str)
-    else:
-        return isinstance(x, Sequence)
-
-
-def _compare_memoryviews(_config, op, left, right):
+def _compare_memoryviews(
+    _config: object, op: object, left: object, right: object
+) -> Sequence[str]:
     # Adapted from pytest.
     summary = ["{} != {}".format(_repr(left), _repr(right))]
     explanation = []
-    if issequence(left) and issequence(right):
+    if isinstance(left, Sequence) and isinstance(right, Sequence):
         for i in range(min(len(left), len(right))):
             if left[i] != right[i]:
                 left_value = left[i : i + 1]
@@ -53,7 +47,9 @@ def _compare_memoryviews(_config, op, left, right):
     return summary + explanation
 
 
-def pytest_assertrepr_compare(config, op, left, right):
+def pytest_assertrepr_compare(
+    config: object, op: object, left: object, right: object
+) -> Optional[Sequence[str]]:
     if op == "==" and any(
         (isinstance(left, memoryview), isinstance(right, memoryview))
     ):
@@ -62,22 +58,10 @@ def pytest_assertrepr_compare(config, op, left, right):
 
 
 @pytest.fixture()
-def randbytes():
-    def function(length):
+def randbytes() -> Callable[[int], bytes]:
+    def function(length: int) -> bytes:
         return bytes(
             bytearray(random.randrange(0, 256) for _ in range(length))
         )
 
     return function
-
-
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    # execute all other hooks to obtain the report object
-    outcome = yield
-    rep = outcome.get_result()
-
-    # set a report attribute for each phase of a call, which can
-    # be "setup", "call", "teardown"
-
-    setattr(item, "rep_" + rep.when, rep)
