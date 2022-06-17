@@ -995,7 +995,11 @@ cdef class ECDHBase:
                 &self._ctx, &olen, &output[0], _mpi.MBEDTLS_MPI_MAX_SIZE,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert olen != 0
-            _mpi.mbedtls_mpi_read_binary(&mpi._ctx, &output[0], olen)
+            curve_type = _pk.mbedtls_ecp_get_type(&self._ctx.grp)
+            if curve_type == _pk.MBEDTLS_ECP_TYPE_MONTGOMERY:
+                _mpi.mbedtls_mpi_read_binary_le(&mpi._ctx, &output[0], olen)
+            else:
+                _mpi.mbedtls_mpi_read_binary(&mpi._ctx, &output[0], olen)
             return mpi
         finally:
             free(output)
