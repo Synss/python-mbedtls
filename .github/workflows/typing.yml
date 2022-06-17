@@ -38,7 +38,7 @@ jobs:
         env:
           C_INCLUDE_PATH: "${{ env.BACKEND_DIR }}/include"
           LIBRARY_PATH: "${{ env.BACKEND_DIR }}/lib"
-        run: python setup.py --with-coverage build_ext --inplace
+        run: python setup.py build_ext --inplace
 
       - name: Check typing
         run: |
