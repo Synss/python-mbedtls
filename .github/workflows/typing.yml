@@ -41,4 +41,6 @@ jobs:
         run: python setup.py --with-coverage build_ext --inplace
 
       - name: Check typing
-        run: mypy .
+        run: |
+          mypy .
+          mypy --strict programs src
