@@ -70,6 +70,11 @@ cdef extern from "mbedtls/ecp.h" nogil:
         MBEDTLS_ECP_DP_SECP256K1
         MBEDTLS_ECP_DP_CURVE448
 
+    ctypedef enum mbedtls_ecp_curve_type:
+        MBEDTLS_ECP_TYPE_NONE = 0
+        MBEDTLS_ECP_TYPE_SHORT_WEIERSTRASS
+        MBEDTLS_ECP_TYPE_MONTGOMERY
+
     ctypedef struct mbedtls_ecp_curve_info:
         mbedtls_ecp_group_id grp_id
         int bit_size
@@ -112,6 +117,7 @@ cdef extern from "mbedtls/ecp.h" nogil:
     # mbedtls_ecp_curve_info_from_grp_id
     # mbedtls_ecp_curve_info_from_tls_id
     # mbedtls_ecp_curve_info_from_name
+    mbedtls_ecp_curve_type mbedtls_ecp_get_type(const mbedtls_ecp_group *grp);
 
     # mbedtls_ecp_point
     # -----------------
