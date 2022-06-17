@@ -227,7 +227,10 @@ class TestECCExportKey:
         assert isinstance(pub.y, numbers.Integral)
         assert isinstance(pub.z, numbers.Integral)
         assert pub.x not in (0, pub.y, pub.z)
-        assert pub.y not in (0, pub.x, pub.z)
+        if curve in (Curve.CURVE25519, Curve.CURVE448):
+            assert pub.y == 0
+        else:
+            assert pub.y not in (0, pub.x, pub.z)
         assert pub.z in (0, 1)
 
 
