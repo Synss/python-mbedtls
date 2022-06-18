@@ -704,7 +704,8 @@ cdef class ECC(CipherBase):
         _exc.check_error(_pk.mbedtls_ecp_gen_key(
             grp_id, _pk.mbedtls_pk_ec(self._ctx),
             &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
-        return self.export_key("DER")
+        format = "NUM" if self.curve in (Curve.CURVE25519, Curve.CURVE448) else "DER"
+        return self.export_key(format)
 
     def _private_to_num(self):
         try:
@@ -712,7 +713,7 @@ cdef class ECC(CipherBase):
         except ValueError:
             return _mpi.MPI()
 
-    def export_key(self, format="DER"):
+    def export_key(self, format=None):
         """Return the private key.
 
         If not key is present, return a falsy value.
@@ -721,8 +722,12 @@ cdef class ECC(CipherBase):
             format (str): One of "DER", "PEM", or "NUM".
 
         """
+        if format is None:
+            format = "NUM" if self.curve in (Curve.CURVE25519, Curve.CURVE448) else "DER"
         if format == "NUM":
             return self._private_to_num()
+        elif self.curve in (Curve.CURVE25519, Curve.CURVE448):
+            raise ValueError("Curve25519 and Curve448 only support export as NUM")
         return super().export_key(format)
 
     def _public_to_point(self):
