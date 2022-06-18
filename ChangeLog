@@ -1,4 +1,4 @@
-[next]
+[2.2.0] - 2022-06-18
 
 * pk: Fix choice of the curve in ECC (PR 63).  Before this, the
 curve chosen was ignored and the `ECC.generate()` would always
