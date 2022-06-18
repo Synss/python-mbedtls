@@ -7,7 +7,7 @@
 
 import pickle
 from collections.abc import Collection
-from typing import Mapping, NamedTuple
+from typing import Any, Callable, Mapping, NamedTuple
 
 import pytest
 
@@ -34,7 +34,7 @@ SUPPORTED_SIZES: Mapping[str, Size] = {
 }
 
 
-def test_algorithms():
+def test_algorithms() -> None:
     assert isinstance(hashlib.algorithms_guaranteed, Collection)
     assert hashlib.algorithms_guaranteed
 
@@ -46,38 +46,47 @@ def test_algorithms():
     )
 
 
-def test_invalid_name_raises_TypeError():
+def test_invalid_name_raises_TypeError() -> None:
     with pytest.raises(TypeError):
-        Hash(42)
+        Hash(42)  # type: ignore[arg-type]
 
 
-def test_unavailable_cipher_raises_ValueError():
+def test_unavailable_cipher_raises_ValueError() -> None:
     with pytest.raises(ValueError):
         Hash("unavailable")
 
 
 class TestHash:
     @pytest.fixture(params=tuple(hashlib.algorithms_available))
-    def algorithm(self, request):
+    def algorithm(self, request: Any) -> str:
+        assert isinstance(request.param, str)
         return request.param
 
-    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
-    def test_repr(self, repr_, algorithm):
+    @pytest.mark.parametrize(
+        "repr_",
+        [repr, str],
+        ids=lambda f: f.__name__,  # type: ignore[no-any-return]
+    )
+    def test_repr(
+        self, repr_: Callable[[object], str], algorithm: str
+    ) -> None:
         assert isinstance(repr_(hashlib.new(algorithm, b"")), str)
 
-    def test_pickle(self, algorithm):
+    def test_pickle(self, algorithm: str) -> None:
         with pytest.raises(TypeError) as excinfo:
             pickle.dumps(hashlib.new(algorithm, b""))
 
         assert str(excinfo.value).startswith("cannot pickle")
 
-    def test_accessors(self, algorithm):
+    def test_accessors(self, algorithm: str) -> None:
         obj = hashlib.new(algorithm, b"")
 
         assert obj.digest_size == SUPPORTED_SIZES[algorithm].digest_size
         assert obj.block_size == SUPPORTED_SIZES[algorithm].block_size
 
-    def test_new_and_update(self, algorithm, randbytes):
+    def test_new_and_update(
+        self, algorithm: str, randbytes: Callable[[int], bytes]
+    ) -> None:
         buffer = randbytes(512)
 
         obj = hashlib.new(algorithm, b"")
@@ -87,7 +96,9 @@ class TestHash:
         assert obj.digest() == other.digest()
         assert obj.hexdigest() == other.hexdigest()
 
-    def test_update_and_copy(self, algorithm, randbytes):
+    def test_update_and_copy(
+        self, algorithm: str, randbytes: Callable[[int], bytes]
+    ) -> None:
         buffer = randbytes(512)
 
         obj = hashlib.new(algorithm, buffer)
@@ -96,7 +107,9 @@ class TestHash:
         assert obj.digest() == other.digest()
         assert obj.hexdigest() == other.hexdigest()
 
-    def test_copy_and_update(self, algorithm, randbytes):
+    def test_copy_and_update(
+        self, algorithm: str, randbytes: Callable[[int], bytes]
+    ) -> None:
         buffer = randbytes(512)
 
         obj = hashlib.new(algorithm, buffer)
@@ -107,7 +120,9 @@ class TestHash:
         assert obj.digest() == other.digest()
         assert obj.hexdigest() == other.hexdigest()
 
-    def test_copy_and_update_nothing(self, algorithm, randbytes):
+    def test_copy_and_update_nothing(
+        self, algorithm: str, randbytes: Callable[[int], bytes]
+    ) -> None:
         buffer = randbytes(512)
 
         obj = hashlib.new(algorithm, buffer)
@@ -120,26 +135,35 @@ class TestHash:
 
 class TestHmac:
     @pytest.fixture(params=tuple(hmaclib.algorithms_available))
-    def algorithm(self, request):
+    def algorithm(self, request: Any) -> str:
+        assert isinstance(request.param, str)
         return request.param
 
-    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
-    def test_repr(self, repr_, algorithm):
+    @pytest.mark.parametrize(
+        "repr_",
+        [repr, str],
+        ids=lambda f: f.__name__,  # type: ignore[no-any-return]
+    )
+    def test_repr(
+        self, repr_: Callable[[object], str], algorithm: str
+    ) -> None:
         assert isinstance(repr_(hmaclib.new(b"", digestmod=algorithm)), str)
 
-    def test_pickle(self, algorithm):
+    def test_pickle(self, algorithm: str) -> None:
         with pytest.raises(TypeError) as excinfo:
             pickle.dumps(hmaclib.new(b"", digestmod=algorithm))
 
         assert str(excinfo.value).startswith("cannot pickle")
 
-    def test_accessors(self, algorithm):
+    def test_accessors(self, algorithm: str) -> None:
         obj = hmaclib.new(b"", digestmod=algorithm)
 
         assert obj.digest_size == SUPPORTED_SIZES[algorithm].digest_size
         assert obj.block_size == SUPPORTED_SIZES[algorithm].block_size
 
-    def test_new_and_update(self, algorithm, randbytes):
+    def test_new_and_update(
+        self, algorithm: str, randbytes: Callable[[int], bytes]
+    ) -> None:
         key = b"key"
         buffer = randbytes(512)
 
@@ -150,7 +174,9 @@ class TestHmac:
         assert obj.digest() == other.digest()
         assert obj.hexdigest() == other.hexdigest()
 
-    def test_copy_and_update_nothing(self, algorithm, randbytes):
+    def test_copy_and_update_nothing(
+        self, algorithm: str, randbytes: Callable[[int], bytes]
+    ) -> None:
         key = b"key"
         buffer = randbytes(512)
 
