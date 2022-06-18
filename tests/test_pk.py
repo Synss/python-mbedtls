@@ -321,7 +321,10 @@ class TestECDH:
 
     def test_client_accessors_with_key(self, key) -> None:
         der = key.generate()
-        assert der == key.export_key("DER")
+        format = (
+            "NUM" if key.curve in (Curve.CURVE25519, Curve.CURVE448) else "DER"
+        )
+        assert der == key.export_key(format)
 
         peer = ECDHClient(key)
 
@@ -335,7 +338,10 @@ class TestECDH:
 
     def test_server_accessors_with_key(self, key) -> None:
         der = key.generate()
-        assert der == key.export_key("DER")
+        format = (
+            "NUM" if key.curve in (Curve.CURVE25519, Curve.CURVE448) else "DER"
+        )
+        assert der == key.export_key(format)
 
         peer = ECDHServer(key)
 
