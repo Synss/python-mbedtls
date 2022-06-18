@@ -5,9 +5,11 @@ from __future__ import annotations
 
 import enum
 import sys
+from collections import abc
 from pathlib import Path
 from typing import Mapping, Optional, Sequence, Tuple, Union, overload
 
+from mbedtls.pk import ECC, RSA
 from mbedtls.x509 import CRT
 
 if sys.version_info < (3, 8):
@@ -15,7 +17,7 @@ if sys.version_info < (3, 8):
 else:
     from typing import Literal
 
-def ciphers_available() -> Sequence[bytes]: ...
+def ciphers_available() -> Sequence[str]: ...
 @enum.unique
 class NextProtocol(enum.Enum):
     H2: bytes
@@ -77,8 +79,10 @@ class WantReadError(TLSError): ...
 class RaggedEOF(TLSError): ...
 class HelloVerifyRequest(TLSError): ...
 
-class TrustStore:
-    def __init__(self, db: Optional[Sequence[CRT]] = ...) -> None: ...
+class TrustStore(abc.Sequence[CRT]):
+    def __init__(
+        self, db: Optional[Union[Sequence[CRT], TrustStore]] = ...
+    ) -> None: ...
     @classmethod
     def system(cls) -> TrustStore: ...
     @classmethod
@@ -96,10 +100,10 @@ class Purpose(enum.IntEnum):
     SERVER_AUTH: int
     CLIENT_AUTH: int
 
-# TODO: Type these.
-Certificate = object
-PrivateKey = object
-CipherSuite = object
+_Key = Union[RSA, ECC]
+Certificate = CRT
+PrivateKey = _Key
+CipherSuite = str
 ServerNameCallback = object
 
 class TLSConfiguration:
@@ -109,10 +113,25 @@ class TLSConfiguration:
         cls,
         validate_certificates: Optional[bool] = ...,
         certificate_chain: Optional[
-            Tuple[Tuple[Certificate], PrivateKey]
+            Tuple[Tuple[Certificate, ...], PrivateKey]
         ] = ...,
-        ciphers: Optional[Tuple[Union[CipherSuite, int]]] = ...,
-        inner_protocols: Optional[Tuple[Union[NextProtocol, bytes]]] = ...,
+        ciphers: Optional[Sequence[Union[CipherSuite, int]]] = ...,
+        inner_protocols: Optional[Sequence[Union[NextProtocol, bytes]]] = ...,
+        lowest_supported_version: Optional[TLSVersion] = ...,
+        highest_supported_version: Optional[TLSVersion] = ...,
+        trust_store: Optional[TrustStore] = ...,
+        sni_callback: Optional[ServerNameCallback] = ...,
+        pre_shared_key: Optional[Tuple[str, bytes]] = ...,
+        pre_shared_key_store: Optional[Mapping[str, bytes]] = ...,
+    ) -> TLSConfiguration: ...
+    def update(
+        self,
+        validate_certificates: Optional[bool] = ...,
+        certificate_chain: Optional[
+            Tuple[Tuple[Certificate, ...], PrivateKey]
+        ] = ...,
+        ciphers: Optional[Sequence[Union[CipherSuite, int]]] = ...,
+        inner_protocols: Optional[Sequence[Union[NextProtocol, bytes]]] = ...,
         lowest_supported_version: Optional[TLSVersion] = ...,
         highest_supported_version: Optional[TLSVersion] = ...,
         trust_store: Optional[TrustStore] = ...,
@@ -121,26 +140,49 @@ class TLSConfiguration:
         pre_shared_key_store: Optional[Mapping[str, bytes]] = ...,
     ) -> TLSConfiguration: ...
     validate_certificates: Optional[bool]
-    certificate_chain: Optional[Tuple[Tuple[Certificate], PrivateKey]]
+    certificate_chain: Optional[Tuple[Tuple[Certificate, ...], PrivateKey]]
     ciphers: Optional[Tuple[Union[CipherSuite, int]]]
     inner_protocols: Optional[Tuple[Union[NextProtocol, bytes]]]
     lowest_supported_version: Optional[TLSVersion]
     highest_supported_version: Optional[TLSVersion]
     trust_store: Optional[TrustStore]
     sni_callback: Optional[ServerNameCallback]
+    pre_shared_key: Optional[Tuple[str, bytes]]
+    pre_shared_key_store: Optional[Mapping[str, bytes]]
 
 class DTLSConfiguration:
     def __new__(
         cls,
         validate_certificates: Optional[bool] = ...,
         certificate_chain: Optional[
-            Tuple[Tuple[Certificate], PrivateKey]
+            Tuple[Tuple[Certificate, ...], PrivateKey]
         ] = ...,
-        ciphers: Optional[Tuple[Union[CipherSuite, int]]] = ...,
-        inner_protocols: Optional[Tuple[Union[NextProtocol, bytes]]] = ...,
-        lowest_supported_version: Optional[TLSVersion] = ...,
-        highest_supported_version: Optional[TLSVersion] = ...,
+        ciphers: Optional[Sequence[Union[CipherSuite, int]]] = ...,
+        inner_protocols: Optional[Sequence[Union[NextProtocol, bytes]]] = ...,
+        lowest_supported_version: Optional[DTLSVersion] = ...,
+        highest_supported_version: Optional[DTLSVersion] = ...,
         trust_store: Optional[TrustStore] = ...,
+        anti_replay: Optional[bool] = ...,
+        handshake_timeout_min: Optional[int] = ...,
+        handshake_timeout_max: Optional[int] = ...,
+        sni_callback: Optional[ServerNameCallback] = ...,
+        pre_shared_key: Optional[Tuple[str, bytes]] = ...,
+        pre_shared_key_store: Optional[Mapping[str, bytes]] = ...,
+    ) -> DTLSConfiguration: ...
+    def update(
+        self,
+        validate_certificates: Optional[bool] = ...,
+        certificate_chain: Optional[
+            Tuple[Tuple[Certificate, ...], PrivateKey]
+        ] = ...,
+        ciphers: Optional[Sequence[Union[CipherSuite, int]]] = ...,
+        inner_protocols: Optional[Sequence[Union[NextProtocol, bytes]]] = ...,
+        lowest_supported_version: Optional[DTLSVersion] = ...,
+        highest_supported_version: Optional[DTLSVersion] = ...,
+        trust_store: Optional[TrustStore] = ...,
+        anti_replay: Optional[bool] = ...,
+        handshake_timeout_min: Optional[int] = ...,
+        handshake_timeout_max: Optional[int] = ...,
         sni_callback: Optional[ServerNameCallback] = ...,
         pre_shared_key: Optional[Tuple[str, bytes]] = ...,
         pre_shared_key_store: Optional[Mapping[str, bytes]] = ...,
@@ -149,10 +191,15 @@ class DTLSConfiguration:
     certificate_chain: Optional[Tuple[Tuple[Certificate], PrivateKey]]
     ciphers: Optional[Tuple[Union[CipherSuite, int]]]
     inner_protocols: Optional[Tuple[Union[NextProtocol, bytes]]]
-    lowest_supported_version: Optional[TLSVersion]
-    highest_supported_version: Optional[TLSVersion]
+    lowest_supported_version: Optional[DTLSVersion]
+    highest_supported_version: Optional[DTLSVersion]
     trust_store: Optional[TrustStore]
+    anti_replay: Optional[bool]
+    handshake_timeout_min: Optional[int]
+    handshake_timeout_max: Optional[int]
     sni_callback: Optional[ServerNameCallback]
+    pre_shared_key: Optional[Tuple[str, bytes]]
+    pre_shared_key_store: Optional[Mapping[str, bytes]]
 
 class _BaseContext:
     def __init__(
@@ -168,6 +215,10 @@ class MbedTLSBuffer:
     def __init__(
         self, context: _BaseContext, server_hostname: Optional[str] = None
     ) -> None: ...
+    @property
+    def _input_buffer(self) -> bytes: ...
+    @property
+    def _output_buffer(self) -> bytes: ...
     @property
     def context(self) -> _BaseContext: ...
     @property

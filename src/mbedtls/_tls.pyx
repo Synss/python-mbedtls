@@ -259,7 +259,7 @@ class HelloVerifyRequest(_exc.TLSError):
     pass
 
 
-class TrustStore:
+class TrustStore(abc.Sequence):
     def __init__(self, db=None):
         if db is None:
             db = []

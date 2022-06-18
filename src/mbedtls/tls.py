@@ -9,12 +9,9 @@ import struct
 import sys
 from typing import Any, NoReturn, Optional, Tuple, Union, cast
 
-from ._tls import (
-    DTLSConfiguration,
-    DTLSVersion,
-    HandshakeStep,
-    HelloVerifyRequest,
-)
+from ._tls import DTLSConfiguration, DTLSVersion
+from ._tls import HandshakeStep as HandshakeStep
+from ._tls import HelloVerifyRequest
 from ._tls import MbedTLSBuffer as TLSWrappedBuffer
 from ._tls import (
     NextProtocol,
