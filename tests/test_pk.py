@@ -112,7 +112,9 @@ class TestECPoint:
 
 class TestCipher:
     @pytest.fixture(
-        params=[cast(object, RSA)] + cast(List[object], get_supported_curves())
+        params=[cast(object, RSA)] + cast(List[object], [
+            curve for curve in get_supported_curves()
+            if curve not in (Curve.CURVE25519, Curve.CURVE448)])
     )
     def cipher(self, request: Any) -> Union[ECC, RSA]:
         if request.param is RSA:
