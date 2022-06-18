@@ -1,10 +1,10 @@
 [next]
 
-* pk: Fix choice of the curve in ECC.  (PR 63)  Before this, the
+* pk: Fix choice of the curve in ECC (PR 63).  Before this, the
 curve chosen was ignored and the `ECC.generate()` would always
 use the same one.
 
-* pk: Improve handling of CURVE25519 and CURVE448 in ECC.
+* pk: Improve handling of CURVE25519 and CURVE448 in ECC (PR 63).
 * pk: ECDHClient and ECDHServer take an ECC key in `__init__()`.
 * pk: Remove `to_ECDH_{client,server}` methods from ECC.
 * pk: Make key accessors public (and remove the private ones).
@@ -12,7 +12,7 @@ use the same one.
 * docs: Resurrect gh-pages.
 
 * *: Add typing information.  The typing information is in an alpha
-stage, incomplete, and subject to change.
+stage, incomplete, and subject to change.  We also welcome pull requests.
 
 [2.1.0] - 2022-04-28
 
