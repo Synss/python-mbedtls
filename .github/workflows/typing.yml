@@ -43,6 +43,4 @@ jobs:
         run: python setup.py build_ext --inplace
 
       - name: Check typing
-        run: |
-          mypy .
-          mypy --strict programs src
+        run: mypy --strict programs src tests
