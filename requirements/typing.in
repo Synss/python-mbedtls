@@ -1,3 +1,2 @@
 mypy
-pytest
 typing_extensions
