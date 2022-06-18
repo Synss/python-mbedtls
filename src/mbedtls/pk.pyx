@@ -691,6 +691,13 @@ cdef class ECC(CipherBase):
         cdef mbedtls_ecp_keypair* ecp = _pk.mbedtls_pk_ec(self._ctx)
         return not _pk.mbedtls_ecp_is_zero(&ecp.Q)
 
+    def sign(self,
+             const unsigned char[:] message not None,
+             digestmod=None):
+        if self._curve in (Curve.CURVE25519, Curve.CURVE448):
+            raise ValueError("ECDSA does not support Curve25519 or Curve448.")
+        return super().sign(message, digestmod)
+
     def generate(self):
         """Generate an EC keypair.
 
