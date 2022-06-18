@@ -1,5 +1,10 @@
 [next]
 
+* pk: Fix choice of the curve in ECC.  (PR 63)  Before this, the
+curve chosen was ignored and the `ECC.generate()` would always
+use the same one.
+
+* pk: Improve handling of CURVE25519 and CURVE448 in ECC.
 * pk: ECDHClient and ECDHServer take an ECC key in `__init__()`.
 * pk: Remove `to_ECDH_{client,server}` methods from ECC.
 * pk: Make key accessors public (and remove the private ones).
