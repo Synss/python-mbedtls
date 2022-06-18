@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 if sys.version_info < (3, 9):
-    from readme_renderer.rst import render  # type: ignore
+    from readme_renderer.rst import render
 else:
     render = None
 

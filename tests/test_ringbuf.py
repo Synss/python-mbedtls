@@ -2,7 +2,7 @@ import pickle
 from random import randint
 from typing import Any, Callable
 
-import pytest  # type: ignore[import]
+import pytest
 
 from mbedtls._ringbuf import RingBuffer  # type: ignore
 
