@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2018, Mathias Laurin
 
-from typing import Sequence, overload
-
 cimport libc.stdio as c_stdio
 from libc.stdlib cimport free, malloc
 
