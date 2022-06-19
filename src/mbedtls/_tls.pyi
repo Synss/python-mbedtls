@@ -9,6 +9,7 @@ from collections import abc
 from pathlib import Path
 from typing import Mapping, Optional, Sequence, Tuple, Union, overload
 
+from mbedtls._tlsi import NextProtocol
 from mbedtls.pk import ECC, RSA
 from mbedtls.x509 import CRT
 
@@ -18,16 +19,6 @@ else:
     from typing import Literal
 
 def ciphers_available() -> Sequence[str]: ...
-@enum.unique
-class NextProtocol(enum.Enum):
-    H2: bytes
-    H2C: bytes
-    HTTP1: bytes
-    WEBRTC: bytes
-    C_WEBRTC: bytes
-    FTP: bytes
-    STUN: bytes
-    TURN: bytes
 
 class TLSVersion(enum.IntEnum):
     TLSv1: int

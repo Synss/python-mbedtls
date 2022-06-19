@@ -12,6 +12,7 @@ cimport mbedtls.x509 as _x509
 import enum
 from collections import abc
 from itertools import tee
+from mbedtls._tlsi import NextProtocol
 
 import certifi
 import cython
@@ -159,18 +160,6 @@ def ciphers_available():
         n += 1
     return tuple(ciphersuites)
 
-
-@enum.unique
-class NextProtocol(enum.Enum):
-    # PEP 543
-    H2 = b'h2'
-    H2C = b'h2c'
-    HTTP1 = b'http/1.1'
-    WEBRTC = b'webrtc'
-    C_WEBRTC = b'c-webrtc'
-    FTP = b'ftp'
-    STUN = b'stun.nat-discovery'
-    TURN = b'stun.turn'
 
 
 class TLSVersion(enum.IntEnum):

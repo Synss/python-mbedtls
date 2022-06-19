@@ -14,7 +14,6 @@ from ._tls import HandshakeStep as HandshakeStep
 from ._tls import HelloVerifyRequest
 from ._tls import MbedTLSBuffer as TLSWrappedBuffer
 from ._tls import (
-    NextProtocol,
     Purpose,
     RaggedEOF,
     TLSConfiguration,
@@ -26,6 +25,7 @@ from ._tls import (
     _BaseContext,
     ciphers_available,
 )
+from ._tlsi import NextProtocol as NextProtocol
 
 if sys.version_info < (3, 10):
     from typing_extensions import TypeAlias
