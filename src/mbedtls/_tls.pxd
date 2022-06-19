@@ -427,7 +427,7 @@ cdef class _PSKSToreProxy:
     cdef object _mapping
 
 
-cdef class _BaseConfiguration:
+cdef class MbedTLSConfiguration:
     cdef mbedtls_ssl_config _ctx
     cdef _chain
     cdef int *_ciphers
@@ -446,11 +446,11 @@ cdef class _BaseConfiguration:
     cdef _set_pre_shared_key_store(self, psk_store)
 
 
-cdef class TLSConfiguration(_BaseConfiguration):
+cdef class TLSConfiguration(MbedTLSConfiguration):
     pass
 
 
-cdef class DTLSConfiguration(_BaseConfiguration):
+cdef class DTLSConfiguration(MbedTLSConfiguration):
     cdef _DTLSCookie _cookie
     cdef _set_anti_replay(self, mode)
     cdef _set_handshake_timeout(self, minimum, maximum)
@@ -467,7 +467,7 @@ cdef struct _C_Buffers:
 
 
 cdef class _BaseContext:
-    cdef _BaseConfiguration _conf
+    cdef MbedTLSConfiguration _conf
 
 
 cdef class MbedTLSBuffer:

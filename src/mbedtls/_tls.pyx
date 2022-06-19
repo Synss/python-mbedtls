@@ -61,7 +61,7 @@ cdef void _my_debug(void *ctx, int level,
     c_stdio.fflush(<c_stdio.FILE *> ctx)
 
 
-def _enable_debug_output(_BaseConfiguration conf):
+def _enable_debug_output(MbedTLSConfiguration conf):
     _tls.mbedtls_ssl_conf_dbg(&conf._ctx, _my_debug, c_stdio.stdout)
 
 
@@ -342,7 +342,7 @@ cdef class _DTLSCookie:
             &self._ctx, _rnd.mbedtls_ctr_drbg_random, &__rng._ctx)
 
 
-cdef class _BaseConfiguration:
+cdef class MbedTLSConfiguration:
 
     """(D)TLS configuration."""
 
@@ -661,7 +661,7 @@ cdef class _BaseConfiguration:
         raise NotImplementedError
 
 
-cdef class TLSConfiguration(_BaseConfiguration):
+cdef class TLSConfiguration(MbedTLSConfiguration):
     """TLS configuration."""
     def __init__(
         self,
@@ -826,7 +826,7 @@ cdef class TLSConfiguration(_BaseConfiguration):
         )
 
 
-cdef class DTLSConfiguration(_BaseConfiguration):
+cdef class DTLSConfiguration(MbedTLSConfiguration):
     """DTLS configuration."""
     def __init__(
         self,
@@ -1124,7 +1124,7 @@ cdef class _BaseContext:
         configuration (TLSConfiguration): The configuration.
 
     """
-    def __init__(self, _BaseConfiguration configuration not None):
+    def __init__(self, MbedTLSConfiguration configuration not None):
         self._conf = configuration
         _tls.mbedtls_ssl_conf_endpoint(
             &self._conf._ctx,
