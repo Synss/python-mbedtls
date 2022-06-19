@@ -31,8 +31,8 @@ key_size: Final = None
 def new(
     key: bytes,
     mode: Literal[Mode.CCM, Mode.GCM],
-    iv: Optional[bytes],
-    ad: Optional[bytes],
+    iv: Optional[bytes] = ...,
+    ad: Optional[bytes] = ...,
 ) -> AEADCipher:
     ...
 
@@ -40,9 +40,8 @@ def new(
 @overload
 def new(
     key: bytes,
-    mode: Literal[Mode.CBC, Mode.CFB, Mode.CTR, Mode.ECB, Mode.OFB],
-    iv: Optional[bytes],
-    ad: Optional[bytes],
+    mode: Literal[Mode.CBC, Mode.CFB, Mode.CTR, Mode.ECB, Mode.OFB, Mode.XTS],
+    iv: Optional[bytes] = ...,
 ) -> Cipher:
     ...
 

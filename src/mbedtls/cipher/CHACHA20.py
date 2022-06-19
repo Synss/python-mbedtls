@@ -30,8 +30,7 @@ key_size: Final = 32
 def new(
     key: bytes,
     mode: Literal[Mode.STREAM],
-    iv: Optional[bytes],
-    ad: Literal[None],
+    iv: Optional[bytes] = ...,
 ) -> Cipher:
     ...
 
@@ -40,15 +39,15 @@ def new(
 def new(
     key: bytes,
     mode: Literal[Mode.CHACHAPOLY],
-    iv: Optional[bytes],
-    ad: Optional[bytes],
+    iv: Optional[bytes] = ...,
+    ad: Optional[bytes] = ...,
 ) -> AEADCipher:
     ...
 
 
 def new(
     key: bytes,
-    mode: Union[Mode, int],
+    mode: Union[Literal[Mode.STREAM], Literal[Mode.CHACHAPOLY], int],
     iv: Optional[bytes] = None,
     ad: Optional[bytes] = None,
 ) -> Union[Cipher, AEADCipher]:
