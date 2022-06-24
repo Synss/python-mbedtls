@@ -9,7 +9,7 @@ import struct
 import sys
 from typing import Any, NoReturn, Optional, Tuple, Union, cast
 
-from ._tls import DTLSConfiguration, DTLSVersion
+from ._tls import DTLSConfiguration
 from ._tls import HandshakeStep as HandshakeStep
 from ._tls import HelloVerifyRequest
 from ._tls import MbedTLSBuffer as TLSWrappedBuffer
@@ -18,14 +18,17 @@ from ._tls import (
     RaggedEOF,
     TLSConfiguration,
     TLSSession,
-    TLSVersion,
     TrustStore,
     WantReadError,
     WantWriteError,
     _BaseContext,
+    _tls_from_version,
+    _tls_to_version,
     ciphers_available,
 )
+from ._tlsi import DTLSVersion as DTLSVersion
 from ._tlsi import NextProtocol as NextProtocol
+from ._tlsi import TLSVersion as TLSVersion
 
 if sys.version_info < (3, 8):
     from typing_extensions import Final
@@ -120,24 +123,30 @@ class TLSRecordHeader:
         )
 
     def __hash__(self) -> int:
-        return 0x5AFE ^ self.record_type ^ self.version ^ self.length
+        return 0x5AFE ^ self.record_type ^ self.version.value ^ self.length
 
     def __len__(self) -> int:
         return 5
 
     def __bytes__(self) -> bytes:
+        maj, min = _tls_from_version(self.version)
+        version = ((maj & 0xFF) << 8) + (min & 0xFF)
         return struct.pack(
-            TLSRecordHeader.fmt, self.record_type, self.version, self.length
+            TLSRecordHeader.fmt,
+            self.record_type,
+            version,
+            self.length,
         )
 
     @classmethod
     def from_bytes(cls, header: bytes) -> TLSRecordHeader:
-        record_type, version, length = struct.unpack(
+        record_type, maj_min_version, length = struct.unpack(
             TLSRecordHeader.fmt, header[:5]
         )
+        maj, min = (maj_min_version >> 8) & 0xFF, maj_min_version & 0xFF
         return cls(
             TLSRecordHeader.RecordType(record_type),
-            TLSVersion(version),
+            _tls_to_version((maj, min)),
             length,
         )
 

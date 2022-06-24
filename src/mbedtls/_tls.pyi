@@ -9,7 +9,7 @@ from collections import abc
 from pathlib import Path
 from typing import Mapping, Optional, Sequence, Tuple, Union, overload
 
-from mbedtls._tlsi import NextProtocol
+from mbedtls._tlsi import DTLSVersion, NextProtocol, TLSVersion
 from mbedtls.pk import ECC, RSA
 from mbedtls.x509 import CRT
 
@@ -18,30 +18,16 @@ if sys.version_info < (3, 8):
 else:
     from typing import Literal
 
+_VERSION = Tuple[int, int]
+
 def ciphers_available() -> Sequence[str]: ...
+def _tls_to_version(maj_min_version: _VERSION) -> TLSVersion: ...
+def _dtls_to_version(maj_min_version: _VERSION) -> DTLSVersion: ...
+def _tls_from_version(version: TLSVersion) -> Tuple[int, int]: ...
+def _dtls_from_version(version: DTLSVersion) -> Tuple[int, int]: ...
 
-class TLSVersion(enum.IntEnum):
-    TLSv1: int
-    TLSv1_1: int
-    TLSv1_2: int
-    TLSv1_3: int
-    MINIMUM_SUPPORTED: int
-    MAXIMUM_SUPPORTED: int
-    @classmethod
-    def from_major_minor(cls, major: int, minor: int) -> TLSVersion: ...
-    def major(self) -> int: ...
-    def minor(self) -> int: ...
-
-class DTLSVersion(enum.IntEnum):
-    DTLSv1_0: int
-    DTLSv1_2: int
-    MINIMUM_SUPPORTED: int
-    MAXIMUM_SUPPORTED: int
-
-    @classmethod
-    def from_major_minor(cls, major: int, minor: int) -> DTLSVersion: ...
-    def major(self) -> int: ...
-    def minor(self) -> int: ...
+_SUPPORTED_TLS_VERSION: Sequence[TLSVersion]
+_SUPPORTED_DTLS_VERSION: Sequence[DTLSVersion]
 
 class HandshakeStep(enum.Enum):
     HELLO_REQUEST: int

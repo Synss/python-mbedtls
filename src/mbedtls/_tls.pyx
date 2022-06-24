@@ -11,8 +11,8 @@ cimport mbedtls.x509 as _x509
 
 import enum
 from collections import abc
+from functools import partial
 from itertools import tee
-from mbedtls._tlsi import NextProtocol
 
 import certifi
 import cython
@@ -21,6 +21,7 @@ import mbedtls._random as _rnd
 import mbedtls._ringbuf as _rb
 import mbedtls.exceptions as _exc
 import mbedtls.pk as _pk
+from mbedtls._tlsi import DTLSVersion, NextProtocol, TLSVersion
 
 
 cdef _rnd.Random __rng = _rnd.default_rng()
@@ -161,45 +162,79 @@ def ciphers_available():
     return tuple(ciphersuites)
 
 
+__TLSVersion = {
+    (0x02, 0x00): TLSVersion.SSLv2,
+    (0x03, 0x00): TLSVersion.SSLv3,
+    (0x03, 0x01): TLSVersion.TLSv1,
+    (0x03, 0x02): TLSVersion.TLSv1_1,
+    (0x03, 0x03): TLSVersion.TLSv1_2,
+    (0x03, 0x04): TLSVersion.TLSv1_3,
+}
 
-class TLSVersion(enum.IntEnum):
-    # MBEDTLS_SSL_|MAJOR|MINOR|_VERSION
-    # PEP 543
-    # SSLv3 is not safe and is disabled by default.
-    # SSLv3 = 0x300
-    TLSv1 = 0x301
-    TLSv1_1 = 0x302
-    TLSv1_2 = 0x303
-    TLSv1_3 = 0x304
-    MINIMUM_SUPPORTED = TLSv1
-    MAXIMUM_SUPPORTED = TLSv1_3
-
-    @classmethod
-    def from_major_minor(cls, major, minor):
-        return cls((major << 8) + minor)
-
-    def major(self):
-        return (self >> 8) & 0xFF
-
-    def minor(self):
-        return self & 0xFF
+__DTLSVersion = {
+    (0x03, 0x02): DTLSVersion.DTLSv1_0,
+    (0x03, 0x03): DTLSVersion.DTLSv1_2,
+}
 
 
-class DTLSVersion(enum.IntEnum):
-    DTLSv1_0 = 0x302
-    DTLSv1_2 = 0x303
-    MINIMUM_SUPPORTED = DTLSv1_0
-    MAXIMUM_SUPPORTED = DTLSv1_2
+def __to_version(maj_min_version, mapping):
+    try:
+        return mapping[maj_min_version]
+    except KeyError as exc:
+        raise ValueError(f"0x{maj_min_version[0]:02x}{maj_min_version[1]:02x}")
 
-    @classmethod
-    def from_major_minor(cls, major, minor):
-        return cls((major << 8) + minor)
 
-    def major(self):
-        return (self >> 8) & 0xFF
+def __from_version(version, mapping):
+    if not isinstance(version, (TLSVersion, DTLSVersion)):
+        raise TypeError(version)
+    try:
+        return {v: k for k, v in mapping.items()}[version]
+    except KeyError as exc:
+        raise ValueError(str(version)) from exc
 
-    def minor(self):
-        return self & 0xFF
+
+_tls_to_version = partial(__to_version, mapping=__TLSVersion)
+_dtls_to_version = partial(__to_version, mapping=__DTLSVersion)
+_tls_from_version = partial(__from_version, mapping=__TLSVersion)
+_dtls_from_version = partial(__from_version, mapping=__DTLSVersion)
+
+
+_SUPPORTED_TLS_VERSION = [
+    TLSVersion.TLSv1,
+    TLSVersion.TLSv1_1,
+    TLSVersion.TLSv1_2,
+    # TLSVersion.TLSv1_3,  # experimental in 2.28.0
+]
+
+
+_SUPPORTED_DTLS_VERSION = [
+    DTLSVersion.DTLSv1_0,
+    DTLSVersion.DTLSv1_2,
+]
+
+
+def _check_tls_version(version):
+    if not isinstance(version, TLSVersion):
+        raise TypeError(version)
+    if version is TLSVersion.MINIMUM_SUPPORTED:
+        version = _SUPPORTED_TLS_VERSION[0]
+    if version is TLSVersion.MAXIMUM_SUPPORTED:
+        version = _SUPPORTED_TLS_VERSION[-1]
+    if version not in _SUPPORTED_TLS_VERSION:
+        raise ValueError(version)
+    return version
+
+
+def _check_dtls_version(version):
+    if not isinstance(version, DTLSVersion):
+        raise TypeError(version)
+    if version is DTLSVersion.MINIMUM_SUPPORTED:
+        version = _SUPPORTED_DTLS_VERSION[0]
+    if version is DTLSVersion.MAXIMUM_SUPPORTED:
+        version = _SUPPORTED_DTLS_VERSION[-1]
+    if version not in _SUPPORTED_DTLS_VERSION:
+        raise ValueError(version)
+    return version
 
 
 class HandshakeStep(enum.Enum):
@@ -337,17 +372,17 @@ cdef class MbedTLSConfiguration:
 
     def __init__(
         self,
-        validate_certificates=None,
-        certificate_chain=None,
-        ciphers=None,
-        inner_protocols=None,
-        lowest_supported_version=None,
-        highest_supported_version=None,
-        trust_store=None,
-        sni_callback=None,
-        pre_shared_key=None,
-        pre_shared_key_store=None,
-        _transport=None,
+        validate_certificates,
+        certificate_chain,
+        ciphers,
+        inner_protocols,
+        lowest_supported_version,
+        highest_supported_version,
+        trust_store,
+        sni_callback,
+        pre_shared_key,
+        pre_shared_key_store,
+        _transport,
     ):
         _exc.check_error(_tls.mbedtls_ssl_config_defaults(
             &self._ctx,
@@ -536,13 +571,15 @@ cdef class MbedTLSConfiguration:
             version (TLSVersion, or DTLSVersion): The minimum version.
 
         """  # PEP 543
-        if version is None:
-            return
-        _tls.mbedtls_ssl_conf_min_version(
-            &self._ctx,
-            version.major(),
-            version.minor(),
-        )
+        try:
+            major, minor = {
+                TLSVersion: _tls_from_version,
+                DTLSVersion: _dtls_from_version,
+            }[type(version)](version)
+        except KeyError as exc:
+            raise TypeError(version) from exc
+
+        _tls.mbedtls_ssl_conf_min_version(&self._ctx, major, minor)
 
     @property
     def _lowest_supported_version(self):
@@ -557,11 +594,16 @@ cdef class MbedTLSConfiguration:
         """  # PEP 543
         if version is None:
             return
-        _tls.mbedtls_ssl_conf_max_version(
-            &self._ctx,
-            version.major(),
-            version.minor(),
-        )
+
+        try:
+            major, minor = {
+                TLSVersion: _tls_from_version,
+                DTLSVersion: _dtls_from_version,
+            }[type(version)](version)
+        except KeyError as exc:
+            raise TypeError(version) from exc
+
+        _tls.mbedtls_ssl_conf_max_version(&self._ctx, major, minor)
 
     @property
     def _highest_supported_version(self):
@@ -670,8 +712,16 @@ cdef class TLSConfiguration(MbedTLSConfiguration):
             certificate_chain=certificate_chain,
             ciphers=ciphers,
             inner_protocols=inner_protocols,
-            lowest_supported_version=lowest_supported_version,
-            highest_supported_version=highest_supported_version,
+            lowest_supported_version=_check_tls_version(
+                lowest_supported_version
+                if lowest_supported_version is not None
+                else TLSVersion.MINIMUM_SUPPORTED
+            ),
+            highest_supported_version=_check_tls_version(
+                highest_supported_version
+                if highest_supported_version is not None
+                else TLSVersion.MAXIMUM_SUPPORTED
+            ),
             trust_store=trust_store,
             sni_callback=sni_callback,
             pre_shared_key=pre_shared_key,
@@ -681,11 +731,11 @@ cdef class TLSConfiguration(MbedTLSConfiguration):
 
     @property
     def lowest_supported_version(self):
-        return TLSVersion.from_major_minor(*self._lowest_supported_version)
+        return _tls_to_version(self._lowest_supported_version)
 
     @property
     def highest_supported_version(self):
-        return TLSVersion.from_major_minor(*self._highest_supported_version)
+        return _tls_to_version(self._highest_supported_version)
 
     def __repr__(self):
         return (
@@ -839,8 +889,16 @@ cdef class DTLSConfiguration(MbedTLSConfiguration):
             certificate_chain=certificate_chain,
             ciphers=ciphers,
             inner_protocols=inner_protocols,
-            lowest_supported_version=lowest_supported_version,
-            highest_supported_version=highest_supported_version,
+            lowest_supported_version=_check_dtls_version(
+                lowest_supported_version
+                if lowest_supported_version is not None
+                else DTLSVersion.MINIMUM_SUPPORTED
+            ),
+            highest_supported_version=_check_dtls_version(
+                highest_supported_version
+                if highest_supported_version is not None
+                else DTLSVersion.MAXIMUM_SUPPORTED
+            ),
             trust_store=trust_store,
             sni_callback=sni_callback,
             pre_shared_key=pre_shared_key,
@@ -858,11 +916,11 @@ cdef class DTLSConfiguration(MbedTLSConfiguration):
 
     @property
     def lowest_supported_version(self):
-        return DTLSVersion.from_major_minor(*self._lowest_supported_version)
+        return _dtls_to_version(self._lowest_supported_version)
 
     @property
     def highest_supported_version(self):
-        return DTLSVersion.from_major_minor(*self._highest_supported_version)
+        return _dtls_to_version(self._highest_supported_version)
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):

@@ -22,8 +22,15 @@ from typing import (
 import pytest
 
 from mbedtls import hashlib
+from mbedtls._tls import (
+    _SUPPORTED_DTLS_VERSION,
+    _SUPPORTED_TLS_VERSION,
+    _dtls_from_version,
+    _dtls_to_version,
+)
 from mbedtls._tls import _DTLSCookie as DTLSCookie  # type: ignore
 from mbedtls._tls import _PSKSToreProxy as PSKStoreProxy  # type: ignore
+from mbedtls._tls import _tls_from_version, _tls_to_version
 from mbedtls.pk import ECC, RSA
 from mbedtls.tls import (
     ClientContext,
@@ -213,53 +220,14 @@ class TestPSKStoreProxy:
         assert len(proxy) == len(psk_store)
 
 
-class TestTLSVersion:
-    @pytest.mark.parametrize("version", TLSVersion)
-    def test_major(self, version: TLSVersion) -> None:
-        assert version.major() == 3
+class TestVersion:
+    @pytest.mark.parametrize("version", _SUPPORTED_TLS_VERSION)
+    def test_tls_enum_to_protocol_version(self, version: TLSVersion) -> None:
+        assert _tls_to_version(_tls_from_version(version)) is version
 
-    def test_minor(self) -> None:
-        # assert TLSVersion.SSLv3.minor() == 0
-        assert TLSVersion.TLSv1.minor() == 1
-        assert TLSVersion.TLSv1_1.minor() == 2
-        assert TLSVersion.TLSv1_2.minor() == 3
-
-    @pytest.mark.parametrize("version", TLSVersion)
-    def test_from_major_minor(self, version: TLSVersion) -> None:
-        assert (
-            TLSVersion.from_major_minor(version.major(), version.minor())
-            is version
-        )
-
-    @pytest.mark.parametrize(
-        "version", [TLSVersion.MINIMUM_SUPPORTED, TLSVersion.MAXIMUM_SUPPORTED]
-    )
-    def test_minmax_supported(self, version: TLSVersion) -> None:
-        assert version in TLSVersion
-
-
-class TestDTLSVersion:
-    @pytest.mark.parametrize("version", DTLSVersion)
-    def test_major(self, version: DTLSVersion) -> None:
-        assert version.major() == 3
-
-    def test_minor(self) -> None:
-        assert DTLSVersion.DTLSv1_0.minor() == 2
-        assert DTLSVersion.DTLSv1_2.minor() == 3
-
-    @pytest.mark.parametrize("version", DTLSVersion)
-    def test_from_major_minor(self, version: DTLSVersion) -> None:
-        assert (
-            DTLSVersion.from_major_minor(version.major(), version.minor())
-            is version
-        )
-
-    @pytest.mark.parametrize(
-        "version",
-        [DTLSVersion.MINIMUM_SUPPORTED, DTLSVersion.MAXIMUM_SUPPORTED],
-    )
-    def test_minmax_supported(self, version: DTLSVersion) -> None:
-        assert version in DTLSVersion
+    @pytest.mark.parametrize("version", _SUPPORTED_DTLS_VERSION)
+    def test_dtls_enum_to_protocol_version(self, version: DTLSVersion) -> None:
+        assert _dtls_to_version(_dtls_from_version(version)) is version
 
 
 class TestTLSRecordHeader:
@@ -268,7 +236,7 @@ class TestTLSRecordHeader:
         assert isinstance(request.param, TLSRecordHeader.RecordType)
         return request.param
 
-    @pytest.fixture(params=TLSVersion)
+    @pytest.fixture(params=_SUPPORTED_TLS_VERSION)
     def version(self, request: Any) -> TLSVersion:
         assert isinstance(request.param, TLSVersion)
         return request.param
@@ -496,14 +464,18 @@ class TestTLSConfiguration:
     def conf(self) -> TLSConfiguration:
         return TLSConfiguration()
 
-    @pytest.mark.parametrize("version", TLSVersion)
+    def test_default_supported_versions(self, conf: TLSConfiguration) -> None:
+        assert conf.lowest_supported_version is TLSVersion.TLSv1
+        assert conf.highest_supported_version is TLSVersion.TLSv1_2
+
+    @pytest.mark.parametrize("version", _SUPPORTED_TLS_VERSION)
     def test_lowest_supported_version(
         self, conf: TLSConfiguration, version: TLSVersion
     ) -> None:
         conf_ = conf.update(lowest_supported_version=version)
         assert conf_.lowest_supported_version is version
 
-    @pytest.mark.parametrize("version", TLSVersion)
+    @pytest.mark.parametrize("version", _SUPPORTED_TLS_VERSION)
     def test_highest_supported_version(
         self, conf: TLSConfiguration, version: TLSVersion
     ) -> None:
@@ -516,14 +488,18 @@ class TestDTLSConfiguration:
     def conf(self) -> DTLSConfiguration:
         return DTLSConfiguration()
 
-    @pytest.mark.parametrize("version", DTLSVersion)
+    def test_default_supported_versions(self, conf: DTLSConfiguration) -> None:
+        assert conf.lowest_supported_version is DTLSVersion.DTLSv1_0
+        assert conf.highest_supported_version is DTLSVersion.DTLSv1_2
+
+    @pytest.mark.parametrize("version", _SUPPORTED_DTLS_VERSION)
     def test_lowest_supported_version(
         self, conf: DTLSConfiguration, version: DTLSVersion
     ) -> None:
         conf_ = conf.update(lowest_supported_version=version)
         assert conf_.lowest_supported_version is version
 
-    @pytest.mark.parametrize("version", DTLSVersion)
+    @pytest.mark.parametrize("version", _SUPPORTED_DTLS_VERSION)
     def test_highest_supported_version(
         self, conf: DTLSConfiguration, version: DTLSVersion
     ) -> None:
