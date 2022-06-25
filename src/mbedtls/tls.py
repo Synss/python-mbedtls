@@ -27,6 +27,11 @@ from ._tls import (
 )
 from ._tlsi import NextProtocol as NextProtocol
 
+if sys.version_info < (3, 8):
+    from typing_extensions import Final
+else:
+    from typing import Final
+
 if sys.version_info < (3, 10):
     from typing_extensions import TypeAlias
 else:
@@ -70,10 +75,24 @@ class TLSRecordHeader:
         HANDSHAKE = 0x16
         APPLICATION_DATA = 0x17
 
-    def __init__(self, record_type: int, version: int, length: int) -> None:
-        self.record_type = record_type
-        self.version = version
-        self.length = length
+    def __init__(
+        self,
+        record_type: Union[int, TLSRecordHeader.RecordType],
+        version: Union[int, Tuple[int, int], TLSVersion],
+        length: int,
+    ) -> None:
+        def parse_version(
+            v: Union[int, Tuple[int, int], TLSVersion]
+        ) -> TLSVersion:
+            if isinstance(v, TLSVersion):
+                return v
+            if isinstance(v, int):
+                return TLSVersion(v)
+            return TLSVersion(((v[0] & 0xFF) << 8) + v[1] & 0xFF)
+
+        self.record_type: Final = TLSRecordHeader.RecordType(record_type)
+        self.version: Final = parse_version(version)
+        self.length: Final = length
 
     def __str__(self) -> str:
         return "%s(%s, %s, %s)" % (
