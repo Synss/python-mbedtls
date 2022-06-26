@@ -406,17 +406,15 @@ class TestConfiguration:
 
     @pytest.mark.parametrize(
         "inner_protocols",
-        [[], (), [NextProtocol.H2, NextProtocol.H2C], [b"h2", b"h2c", b"ftp"]],
+        [(), (NextProtocol.H2, NextProtocol.H2C), (b"h2", b"h2c", b"ftp")],
     )
     def test_set_inner_protocols(
         self,
         conf: Union[TLSConfiguration, DTLSConfiguration],
-        inner_protocols: Sequence[Union[NextProtocol, bytes]],
+        inner_protocols: Tuple[Union[NextProtocol, bytes]],
     ) -> None:
         conf_ = conf.update(inner_protocols=inner_protocols)
-        assert conf_.inner_protocols == tuple(
-            NextProtocol(_) for _ in inner_protocols
-        )
+        assert conf_.inner_protocols == inner_protocols
 
     @pytest.mark.parametrize("store", [TrustStore.system()])
     def test_trust_store(
@@ -446,15 +444,13 @@ class TestConfiguration:
         conf_ = conf.update(pre_shared_key=psk)
         assert conf_.pre_shared_key == psk
 
-    @pytest.mark.parametrize(
-        "psk_store", [None, {"client": b"the secret key"}]
-    )
+    @pytest.mark.parametrize("psk_store", [{}, {"client": b"the secret key"}])
     def test_psk_store(
         self,
         conf: Union[TLSConfiguration, DTLSConfiguration],
         psk_store: Mapping[str, bytes],
     ) -> None:
-        assert conf.pre_shared_key_store is None
+        assert not conf.pre_shared_key_store
         conf_ = conf.update(pre_shared_key_store=psk_store)
         assert conf_.pre_shared_key_store == psk_store
 
@@ -466,7 +462,7 @@ class TestTLSConfiguration:
 
     def test_default_supported_versions(self, conf: TLSConfiguration) -> None:
         assert conf.lowest_supported_version is TLSVersion.TLSv1
-        assert conf.highest_supported_version is TLSVersion.TLSv1_2
+        assert conf.highest_supported_version is TLSVersion.MAXIMUM_SUPPORTED
 
     @pytest.mark.parametrize("version", _SUPPORTED_TLS_VERSION)
     def test_lowest_supported_version(
@@ -490,7 +486,7 @@ class TestDTLSConfiguration:
 
     def test_default_supported_versions(self, conf: DTLSConfiguration) -> None:
         assert conf.lowest_supported_version is DTLSVersion.DTLSv1_0
-        assert conf.highest_supported_version is DTLSVersion.DTLSv1_2
+        assert conf.highest_supported_version is DTLSVersion.MAXIMUM_SUPPORTED
 
     @pytest.mark.parametrize("version", _SUPPORTED_DTLS_VERSION)
     def test_lowest_supported_version(
@@ -580,8 +576,7 @@ class TestContext:
         context: Union[ServerContext, ClientContext],
         conf: Union[TLSConfiguration, DTLSConfiguration],
     ) -> None:
-        assert conf
-        assert context.configuration is conf
+        assert context.configuration == conf
 
 
 CLIENT_HELLO = (HandshakeStep.CLIENT_HELLO,)
@@ -838,7 +833,7 @@ class TestDTLSHandshake:
         client = make_client(
             DTLSConfiguration(
                 pre_shared_key=psk,
-                ciphers=["TLS-ECDHE-PSK-WITH-CHACHA20-POLY1305-SHA256"],
+                ciphers=("TLS-ECDHE-PSK-WITH-CHACHA20-POLY1305-SHA256",),
                 lowest_supported_version=DTLSVersion.DTLSv1_2,
                 validate_certificates=False,
             ),

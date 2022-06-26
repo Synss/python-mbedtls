@@ -9,14 +9,12 @@ import struct
 import sys
 from typing import Any, NoReturn, Optional, Tuple, Union, cast
 
-from ._tls import DTLSConfiguration
 from ._tls import HandshakeStep as HandshakeStep
 from ._tls import HelloVerifyRequest
 from ._tls import MbedTLSBuffer as TLSWrappedBuffer
 from ._tls import (
     Purpose,
     RaggedEOF,
-    TLSConfiguration,
     TLSSession,
     TrustStore,
     WantReadError,
@@ -26,8 +24,10 @@ from ._tls import (
     _tls_to_version,
     ciphers_available,
 )
+from ._tlsi import DTLSConfiguration as DTLSConfiguration
 from ._tlsi import DTLSVersion as DTLSVersion
 from ._tlsi import NextProtocol as NextProtocol
+from ._tlsi import TLSConfiguration as TLSConfiguration
 from ._tlsi import TLSVersion as TLSVersion
 
 if sys.version_info < (3, 8):

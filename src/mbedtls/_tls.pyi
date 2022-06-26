@@ -9,7 +9,13 @@ from collections import abc
 from pathlib import Path
 from typing import Mapping, Optional, Sequence, Tuple, Union, overload
 
-from mbedtls._tlsi import DTLSVersion, NextProtocol, TLSVersion
+from mbedtls._tlsi import (
+    DTLSConfiguration,
+    DTLSVersion,
+    NextProtocol,
+    TLSConfiguration,
+    TLSVersion,
+)
 from mbedtls.pk import ECC, RSA
 from mbedtls.x509 import CRT
 
@@ -83,7 +89,7 @@ PrivateKey = _Key
 CipherSuite = str
 ServerNameCallback = object
 
-class TLSConfiguration:
+class _TLSConfiguration:
     # TODO: Split writer / configuration in implementation file
     #       and use frozen dataclasses for the configuration.
     def __new__(
@@ -100,7 +106,7 @@ class TLSConfiguration:
         sni_callback: Optional[ServerNameCallback] = ...,
         pre_shared_key: Optional[Tuple[str, bytes]] = ...,
         pre_shared_key_store: Optional[Mapping[str, bytes]] = ...,
-    ) -> TLSConfiguration: ...
+    ) -> _TLSConfiguration: ...
     def update(
         self,
         validate_certificates: Optional[bool] = ...,
@@ -115,7 +121,7 @@ class TLSConfiguration:
         sni_callback: Optional[ServerNameCallback] = ...,
         pre_shared_key: Optional[Tuple[str, bytes]] = ...,
         pre_shared_key_store: Optional[Mapping[str, bytes]] = ...,
-    ) -> TLSConfiguration: ...
+    ) -> _TLSConfiguration: ...
     validate_certificates: Optional[bool]
     certificate_chain: Optional[Tuple[Tuple[Certificate, ...], PrivateKey]]
     ciphers: Optional[Tuple[Union[CipherSuite, int]]]
@@ -127,7 +133,7 @@ class TLSConfiguration:
     pre_shared_key: Optional[Tuple[str, bytes]]
     pre_shared_key_store: Optional[Mapping[str, bytes]]
 
-class DTLSConfiguration:
+class _DTLSConfiguration:
     def __new__(
         cls,
         validate_certificates: Optional[bool] = ...,
@@ -145,7 +151,7 @@ class DTLSConfiguration:
         sni_callback: Optional[ServerNameCallback] = ...,
         pre_shared_key: Optional[Tuple[str, bytes]] = ...,
         pre_shared_key_store: Optional[Mapping[str, bytes]] = ...,
-    ) -> DTLSConfiguration: ...
+    ) -> _DTLSConfiguration: ...
     def update(
         self,
         validate_certificates: Optional[bool] = ...,
@@ -163,7 +169,7 @@ class DTLSConfiguration:
         sni_callback: Optional[ServerNameCallback] = ...,
         pre_shared_key: Optional[Tuple[str, bytes]] = ...,
         pre_shared_key_store: Optional[Mapping[str, bytes]] = ...,
-    ) -> DTLSConfiguration: ...
+    ) -> _DTLSConfiguration: ...
     validate_certificates: Optional[bool]
     certificate_chain: Optional[Tuple[Tuple[Certificate], PrivateKey]]
     ciphers: Optional[Tuple[Union[CipherSuite, int]]]

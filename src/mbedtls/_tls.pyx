@@ -21,7 +21,13 @@ import mbedtls._random as _rnd
 import mbedtls._ringbuf as _rb
 import mbedtls.exceptions as _exc
 import mbedtls.pk as _pk
-from mbedtls._tlsi import DTLSVersion, NextProtocol, TLSVersion
+from mbedtls._tlsi import (
+    DTLSConfiguration,
+    DTLSVersion,
+    NextProtocol,
+    TLSConfiguration,
+    TLSVersion,
+)
 
 
 cdef _rnd.Random __rng = _rnd.default_rng()
@@ -702,7 +708,7 @@ cdef class MbedTLSConfiguration:
         raise NotImplementedError
 
 
-cdef class TLSConfiguration(MbedTLSConfiguration):
+cdef class _TLSConfiguration(MbedTLSConfiguration):
     """TLS configuration."""
     def __init__(
         self,
@@ -825,7 +831,7 @@ cdef class TLSConfiguration(MbedTLSConfiguration):
         pre_shared_key=_DEFAULT_VALUE,
         pre_shared_key_store=_DEFAULT_VALUE,
     ):
-        """Create a new ``TLSConfiguration``.
+        """Create a new ``_TLSConfiguration``.
 
         Override some of the settings on the original configuration
         with the new settings.
@@ -875,7 +881,7 @@ cdef class TLSConfiguration(MbedTLSConfiguration):
         )
 
 
-cdef class DTLSConfiguration(MbedTLSConfiguration):
+cdef class _DTLSConfiguration(MbedTLSConfiguration):
     """DTLS configuration."""
     def __init__(
         self,
@@ -1092,7 +1098,7 @@ cdef class DTLSConfiguration(MbedTLSConfiguration):
         pre_shared_key=_DEFAULT_VALUE,
         pre_shared_key_store=_DEFAULT_VALUE,
     ):
-        """Create a new ``DTLSConfiguration``.
+        """Create a new ``_DTLSConfiguration``.
 
         Override some of the settings on the original configuration
         with the new settings.
@@ -1175,14 +1181,52 @@ cdef class TLSSession:
 
 cdef class _BaseContext:
     # _pep543._BaseContext
-    """Context base class.
+    """Context base class."""
 
-    Args:
-        configuration (TLSConfiguration): The configuration.
+    def __init__(self, configuration not None):
+        self._configuration = configuration
+        if isinstance(configuration, TLSConfiguration):
+            self._conf = _TLSConfiguration(
+                validate_certificates=configuration.validate_certificates,
+                certificate_chain=configuration.certificate_chain,
+                ciphers=configuration.ciphers,
+                inner_protocols=configuration.inner_protocols,
+                lowest_supported_version=(
+                    configuration.lowest_supported_version
+                ),
+                highest_supported_version=(
+                    configuration.highest_supported_version
+                ),
+                trust_store=configuration.trust_store,
+                sni_callback=configuration.sni_callback,
+                pre_shared_key=configuration.pre_shared_key,
+                pre_shared_key_store=configuration.pre_shared_key_store,
+            )
+        elif isinstance(configuration, DTLSConfiguration):
+            self._conf = _DTLSConfiguration(
+                validate_certificates=configuration.validate_certificates,
+                certificate_chain=configuration.certificate_chain,
+                ciphers=configuration.ciphers,
+                inner_protocols=configuration.inner_protocols,
+                lowest_supported_version=(
+                    configuration.lowest_supported_version
+                ),
+                highest_supported_version=(
+                    configuration.highest_supported_version
+                ),
+                trust_store=configuration.trust_store,
+                anti_replay=configuration.anti_replay,
+                handshake_timeout_min=configuration.handshake_timeout_min,
+                handshake_timeout_max=configuration.handshake_timeout_max,
+                sni_callback=configuration.sni_callback,
+                pre_shared_key=configuration.pre_shared_key,
+                pre_shared_key_store=configuration.pre_shared_key_store,
+            )
+        else:
+            # Setting `_conf` is required for delocate on macOS.
+            self._conf = None
+            raise TypeError(configuration)
 
-    """
-    def __init__(self, MbedTLSConfiguration configuration not None):
-        self._conf = configuration
         _tls.mbedtls_ssl_conf_endpoint(
             &self._conf._ctx,
             {
@@ -1200,7 +1244,7 @@ cdef class _BaseContext:
     @property
     def configuration(self):
         # PEP 543
-        return self._conf
+        return self._configuration
 
     @property
     def _purpose(self) -> Purpose:

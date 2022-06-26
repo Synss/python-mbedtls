@@ -446,11 +446,11 @@ cdef class MbedTLSConfiguration:
     cdef _set_pre_shared_key_store(self, psk_store)
 
 
-cdef class TLSConfiguration(MbedTLSConfiguration):
+cdef class _TLSConfiguration(MbedTLSConfiguration):
     pass
 
 
-cdef class DTLSConfiguration(MbedTLSConfiguration):
+cdef class _DTLSConfiguration(MbedTLSConfiguration):
     cdef _DTLSCookie _cookie
     cdef _set_anti_replay(self, mode)
     cdef _set_handshake_timeout(self, minimum, maximum)
@@ -467,6 +467,7 @@ cdef struct _C_Buffers:
 
 
 cdef class _BaseContext:
+    cdef object _configuration
     cdef MbedTLSConfiguration _conf
 
 
