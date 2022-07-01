@@ -140,8 +140,8 @@ class DTLSConfiguration:
         highest_supported_version: Optional[DTLSVersion] = ...,
         trust_store: Optional[TrustStore] = ...,
         anti_replay: Optional[bool] = ...,
-        handshake_timeout_min: Optional[int] = ...,
-        handshake_timeout_max: Optional[int] = ...,
+        handshake_timeout_min: float = ...,
+        handshake_timeout_max: float = ...,
         sni_callback: Optional[ServerNameCallback] = ...,
         pre_shared_key: Optional[Tuple[str, bytes]] = ...,
         pre_shared_key_store: Optional[Mapping[str, bytes]] = ...,
@@ -158,8 +158,8 @@ class DTLSConfiguration:
         highest_supported_version: Optional[DTLSVersion] = ...,
         trust_store: Optional[TrustStore] = ...,
         anti_replay: Optional[bool] = ...,
-        handshake_timeout_min: Optional[int] = ...,
-        handshake_timeout_max: Optional[int] = ...,
+        handshake_timeout_min: float = ...,
+        handshake_timeout_max: float = ...,
         sni_callback: Optional[ServerNameCallback] = ...,
         pre_shared_key: Optional[Tuple[str, bytes]] = ...,
         pre_shared_key_store: Optional[Mapping[str, bytes]] = ...,
@@ -172,8 +172,8 @@ class DTLSConfiguration:
     highest_supported_version: Optional[DTLSVersion]
     trust_store: Optional[TrustStore]
     anti_replay: Optional[bool]
-    handshake_timeout_min: Optional[int]
-    handshake_timeout_max: Optional[int]
+    handshake_timeout_min: float
+    handshake_timeout_max: float
     sni_callback: Optional[ServerNameCallback]
     pre_shared_key: Optional[Tuple[str, bytes]]
     pre_shared_key_store: Optional[Mapping[str, bytes]]
