@@ -27,6 +27,11 @@ from mbedtls._tlsi import DTLSVersion, NextProtocol, TLSVersion
 cdef _rnd.Random __rng = _rnd.default_rng()
 
 
+class Transport(enum.Enum):
+    STREAM = _tls.MBEDTLS_SSL_TRANSPORT_STREAM
+    DATAGRAM = _tls.MBEDTLS_SSL_TRANSPORT_DATAGRAM
+
+
 cdef class _PSKSToreProxy:
     def __init__(self, psk_store):
         if not isinstance(psk_store, abc.Mapping):
@@ -384,10 +389,11 @@ cdef class MbedTLSConfiguration:
         pre_shared_key_store,
         _transport,
     ):
+        assert isinstance(_transport, Transport)
         _exc.check_error(_tls.mbedtls_ssl_config_defaults(
             &self._ctx,
             endpoint=0,  # server / client is not known here...
-            transport=_transport,
+            transport=_transport.value,
             preset=_tls.MBEDTLS_SSL_PRESET_DEFAULT))
 
         self._set_validate_certificates(validate_certificates)
@@ -432,6 +438,10 @@ cdef class MbedTLSConfiguration:
         _tls.mbedtls_ssl_config_free(&self._ctx)
         free(self._ciphers)
         free(self._protos)
+
+    @property
+    def _transport(self):
+        return Transport(self._ctx.transport)
 
     cdef _set_validate_certificates(self, validate):
         """Set the certificate verification mode.
@@ -726,7 +736,7 @@ cdef class TLSConfiguration(MbedTLSConfiguration):
             sni_callback=sni_callback,
             pre_shared_key=pre_shared_key,
             pre_shared_key_store=pre_shared_key_store,
-            _transport=_tls.MBEDTLS_SSL_TRANSPORT_STREAM,
+            _transport=Transport.STREAM,
         )
 
     @property
@@ -903,7 +913,7 @@ cdef class DTLSConfiguration(MbedTLSConfiguration):
             sni_callback=sni_callback,
             pre_shared_key=pre_shared_key,
             pre_shared_key_store=pre_shared_key_store,
-            _transport=_tls.MBEDTLS_SSL_TRANSPORT_DATAGRAM,
+            _transport=Transport.DATAGRAM,
         )
         self._set_anti_replay(anti_replay)
         self._set_handshake_timeout(
