@@ -15,6 +15,7 @@ import datetime as dt
 import enum
 from collections import namedtuple
 from contextlib import suppress
+from pathlib import Path
 
 import mbedtls._md as _md
 import mbedtls.exceptions as _exc
@@ -388,7 +389,7 @@ cdef class CRT(Certificate):
 
     @classmethod
     def from_file(cls, path):
-        path_ = str(path).encode("utf8")
+        path_ = str(Path(path)).encode("utf8")
         cdef const char* c_path = path_
         cdef CRT self = cls(None)
         _exc.check_error(x509.mbedtls_x509_crt_parse_file(&self._ctx, c_path))
@@ -738,7 +739,7 @@ cdef class CSR(Certificate):
 
     @classmethod
     def from_file(cls, path):
-        path_ = str(path).encode("utf8")
+        path_ = str(Path(path)).encode("utf8")
         cdef const char* c_path = path_
         cdef CSR self = cls(None)
         _exc.check_error(x509.mbedtls_x509_csr_parse_file(&self._ctx, c_path))
@@ -1007,7 +1008,7 @@ cdef class CRL(Certificate):
 
     @classmethod
     def from_file(cls, path):
-        path_ = str(path).encode("utf8")
+        path_ = str(Path(path)).encode("utf8")
         cdef const char* c_path = path_
         cdef CRL self = cls(None)
         _exc.check_error(x509.mbedtls_x509_crl_parse_file(&self._ctx, c_path))

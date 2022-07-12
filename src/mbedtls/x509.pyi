@@ -6,8 +6,8 @@ from __future__ import annotations
 import abc
 import datetime as dt
 import enum
+import os
 import sys
-from pathlib import Path
 from typing import NamedTuple, Sequence, Tuple, Type, TypeVar, Union
 
 from mbedtls.hashlib import Hash as _Hash
@@ -18,7 +18,7 @@ if sys.version_info < (3, 8):
 else:
     from typing import Literal
 
-_Path = Union[str, Path]
+_Path = Union[str, os.PathLike[str]]
 _DER = bytes
 _PEM = str
 _KEY = Union[_DER, _PEM]

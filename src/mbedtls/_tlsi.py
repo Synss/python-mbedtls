@@ -63,7 +63,32 @@ class TrustStore(Protocol):
         """Initializes a trust store from a single file full of PEMs."""
 
 
-Certificate = object
+class Certificate(Protocol):
+    @classmethod
+    def from_buffer(cls, buffer: bytes) -> Certificate:
+        """Creates a Certificate object from a byte buffer.
+
+        This byte buffer may be either PEM-encoded or DER-encoded. If the
+        buffer is PEM encoded it *must* begin with the standard PEM
+        preamble (a series of dashes followed by the ASCII bytes "BEGIN
+        CERTIFICATE" and another series of dashes). In the absence of that
+        preamble, the implementation may assume that the certificate is
+        DER-encoded instead.
+
+        """
+
+    @classmethod
+    def from_file(cls, path: Union[str, os.PathLike[str]]) -> Certificate:
+        """Creates a Certificate object from a file on disk.
+
+        This method may be a convenience method that wraps ``open`` and
+        ``from_buffer``, but some TLS implementations may be able to
+        provide more-secure or faster methods of loading certificates that
+        do not involve Python code.
+
+        """
+
+
 PrivateKey = object
 CipherSuite = object
 DEFAULT_CIPHER_LIST = ()
