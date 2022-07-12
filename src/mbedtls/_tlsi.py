@@ -6,14 +6,15 @@
 from __future__ import annotations
 
 import enum
+import os
 import sys
 from dataclasses import dataclass, field
 from typing import Mapping, Optional, Tuple, TypeVar, Union
 
 if sys.version_info < (3, 8):
-    from typing_extensions import Literal
+    from typing_extensions import Literal, Protocol
 else:
-    from typing import Literal
+    from typing import Literal, Protocol
 
 __all__ = ["NextProtocol", "TLSVersion", "DTLSVersion"]
 
@@ -49,7 +50,19 @@ class DTLSVersion(enum.Enum):
     MAXIMUM_SUPPORTED = enum.auto()
 
 
-TrustStore = object
+class TrustStore(Protocol):
+    @classmethod
+    def system(cls) -> TrustStore:
+        """Returns a TrustStore object that represents the system
+        trust database.
+
+        """
+
+    @classmethod
+    def from_pem_file(cls, path: Union[str, os.PathLike[str]]) -> TrustStore:
+        """Initializes a trust store from a single file full of PEMs."""
+
+
 Certificate = object
 PrivateKey = object
 CipherSuite = object

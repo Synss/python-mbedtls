@@ -4,9 +4,9 @@
 from __future__ import annotations
 
 import enum
+import os
 import sys
 from collections import abc
-from pathlib import Path
 from typing import Optional, Sequence, Tuple, Union, overload
 
 from mbedtls._tlsi import (
@@ -68,7 +68,7 @@ class TrustStore(abc.Sequence[CRT]):
     @classmethod
     def system(cls) -> TrustStore: ...
     @classmethod
-    def from_pem_file(cls, path: Path) -> TrustStore: ...
+    def from_pem_file(cls, path: Union[str, os.PathLike[str]]) -> TrustStore: ...
     def __eq__(self, other: object) -> bool: ...
     def __bool__(self) -> bool: ...
     def __len__(self) -> int: ...

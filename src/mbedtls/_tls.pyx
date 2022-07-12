@@ -13,6 +13,7 @@ import enum
 from collections import abc
 from functools import partial
 from itertools import tee
+from pathlib import Path
 
 import certifi
 import cython
@@ -308,7 +309,7 @@ class TrustStore(abc.Sequence):
     @classmethod
     def from_pem_file(cls, path):
         self = cls()
-        with open(str(path)) as cacert:
+        with Path(path).open() as cacert:
             pem = None
             for line in cacert.readlines():
                 if line.startswith(PEM_HEADER):
