@@ -26,6 +26,7 @@ cimport mbedtls.pk as _pk
 import enum
 from collections import namedtuple
 from functools import partial
+from pathlib import Path
 
 import mbedtls._random as _rnd
 import mbedtls.exceptions as _exc
@@ -220,7 +221,11 @@ cdef class CipherBase:
             return other.export_public_key() == self.export_public_key()
 
     @classmethod
-    def from_buffer(cls, const unsigned char[:] key not None):
+    def from_buffer(
+        cls,
+        const unsigned char[:] key not None,
+        password=None,
+    ):
         """Import a key (public or private half).
 
         The public half is generated upon importing a private key.
@@ -231,7 +236,13 @@ cdef class CipherBase:
                 password-protected private keys.
 
         """
-        raise NotImplementedError
+        if callable(password):
+            return cls(key=key, password=password())
+        return cls(key=key, password=password)
+
+    @classmethod
+    def from_file(cls, path, password=None):
+        return cls.from_buffer(Path(path).read_bytes(), password)
 
     @classmethod
     def from_DER(cls, const unsigned char[:] key not None):
@@ -531,20 +542,6 @@ cdef class RSA(CipherBase):
                  const unsigned char[:] password=None):
         super().__init__(b"RSA", key, password)
 
-    @classmethod
-    def from_buffer(cls, const unsigned char[:] key):
-        """Import a key (public or private half).
-
-        The public half is generated upon importing a private key.
-
-        Arguments:
-            key (bytes): The key in PEM or DER format.
-            password (bytes, optional): The password for
-                password-protected private keys.
-
-        """
-        return cls(key)
-
     def _has_private(self):
         """Return `True` if the key contains a valid private half."""
         return _pk.mbedtls_rsa_check_privkey(
@@ -666,20 +663,6 @@ cdef class ECC(CipherBase):
     @property
     def curve(self):
         return self._curve
-
-    @classmethod
-    def from_buffer(cls, const unsigned char[:] key not None):
-        """Import a key (public or private half).
-
-        The public half is generated upon importing a private key.
-
-        Arguments:
-            key (bytes): The key in PEM or DER format.
-            password (bytes, optional): The password for
-                password-protected private keys.
-
-        """
-        return cls(None, key)
 
     def _has_private(self):
         """Return `True` if the key contains a valid private half."""

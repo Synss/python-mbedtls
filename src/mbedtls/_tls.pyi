@@ -16,7 +16,6 @@ from mbedtls._tlsi import (
     TLSConfiguration,
     TLSVersion,
 )
-from mbedtls.pk import ECC, RSA
 
 if sys.version_info < (3, 8):
     from typing_extensions import Literal
@@ -84,8 +83,6 @@ class Purpose(enum.IntEnum):
     SERVER_AUTH: int
     CLIENT_AUTH: int
 
-_Key = Union[RSA, ECC]
-PrivateKey = _Key
 CipherSuite = str
 ServerNameCallback = object
 

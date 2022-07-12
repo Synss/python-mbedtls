@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import enum
+import os
 import sys
 from typing import (
+    Callable,
     NamedTuple,
     NoReturn,
     Optional,
@@ -21,6 +23,12 @@ if sys.version_info < (3, 8):
 else:
     from typing import Final, Literal
 
+if sys.version_info < (3, 9):
+    _PathLike = os.PathLike
+else:
+    _PathLike = os.PathLike[str]
+
+_Path = Union[_PathLike, str]
 CIPHER_NAME: Final[Sequence[bytes]] = ...
 _DER = bytes
 _PEM = str
@@ -72,7 +80,21 @@ class CipherBase:
     def __hash__(self) -> int: ...
     def __eq__(self, other: object) -> bool: ...
     @classmethod
-    def from_buffer(cls: Type[_TCipherBase], key: bytes) -> _TCipherBase: ...
+    def from_buffer(
+        cls: Type[_TCipherBase],
+        buffer: bytes,
+        password: Optional[
+            Union[Callable[[], Union[bytes, bytearray]], bytes, bytearray]
+        ] = None,
+    ) -> _TCipherBase: ...
+    @classmethod
+    def from_file(
+        cls: Type[_TCipherBase],
+        path: _Path,
+        password: Optional[
+            Union[Callable[[], Union[bytes, bytearray]], bytes, bytearray]
+        ] = None,
+    ) -> _TCipherBase: ...
     @classmethod
     def from_DER(cls: Type[_TCipherBase], key: bytes) -> _TCipherBase: ...
     @classmethod
