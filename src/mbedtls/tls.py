@@ -212,6 +212,22 @@ class TLSWrappedSocket:
         self._closed = False
 
     @property
+    def context(self) -> _BaseContext:
+        return self._buffer.context
+
+    @property
+    def _buffer(self) -> TLSWrappedBuffer:
+        return cast(TLSWrappedBuffer, self.__dict__["_buffer"])
+
+    @_buffer.setter
+    def _buffer(self, __buffer: TLSWrappedBuffer) -> None:
+        self.__dict__["_buffer"] = __buffer
+        self.setcookieparam = __buffer.setcookieparam
+        self.cipher = __buffer.cipher
+        self.negotiated_protocol = __buffer.negotiated_protocol
+        self.negotiated_tls_version = __buffer.negotiated_tls_version
+
+    @property
     def _socket(self) -> _pysocket.socket:
         return cast(_pysocket.socket, self.__dict__["_socket"])
 
@@ -374,22 +390,6 @@ class TLSWrappedSocket:
                 in_transit = self._buffer.peek_outgoing(1024)
                 amt = self._socket.send(in_transit)
                 self._buffer.consume_outgoing(amt)
-
-    def setcookieparam(self, param: bytes) -> None:
-        self._buffer.setcookieparam(param)
-
-    def cipher(self) -> Any:
-        return self._buffer.cipher()
-
-    def negotiated_protocol(self) -> Any:
-        return self._buffer.negotiated_protocol()
-
-    @property
-    def context(self) -> _BaseContext:
-        return self._buffer.context
-
-    def negotiated_tls_version(self) -> Union[TLSVersion, DTLSVersion]:
-        return self._buffer.negotiated_tls_version()
 
     def unwrap(self) -> _pysocket.socket:
         self._buffer.shutdown()
