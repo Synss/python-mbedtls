@@ -83,9 +83,6 @@ class Purpose(enum.IntEnum):
     SERVER_AUTH: int
     CLIENT_AUTH: int
 
-CipherSuite = str
-ServerNameCallback = object
-
 class _BaseContext:
     def __init__(
         self, configuration: Union[TLSConfiguration, DTLSConfiguration]

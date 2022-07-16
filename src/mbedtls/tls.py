@@ -28,6 +28,7 @@ from ._tlsi import DTLSConfiguration as DTLSConfiguration
 from ._tlsi import DTLSVersion as DTLSVersion
 from ._tlsi import NextProtocol as NextProtocol
 from ._tlsi import PrivateKey as PrivateKey
+from ._tlsi import ServerNameCallback as ServerNameCallback
 from ._tlsi import TLSConfiguration as TLSConfiguration
 from ._tlsi import TLSVersion as TLSVersion
 
@@ -52,6 +53,7 @@ __all__ = (
     "Purpose",
     "RaggedEOF",
     "ServerContext",
+    "ServerNameCallback",
     "TLSConfiguration",
     "TLSRecordHeader",
     "TLSSession",
