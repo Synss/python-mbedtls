@@ -24,6 +24,7 @@ line_length = 79
 
 [tool.mypy]
 show_error_codes = true
+strict = true
 
 [tool.pylint.master]
 extension-pkg-whitelist='mbedtls'
