@@ -1,4 +1,4 @@
-[next]
+[2.3.0] - 2022-07-20
 
 * tls: Improve typing and remove base class to TLSConfiguration
 and DTLSConfiguration.
