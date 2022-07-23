@@ -29,23 +29,10 @@ jobs:
         env:
           CIBW_BUILD: cp3{7,8,9,10}-*
           CIBW_ENVIRONMENT: VERSION=${{ matrix.version }}
-          CIBW_BEFORE_ALL_LINUX: >
-            ./scripts/download-mbedtls.sh $VERSION ~/.local/src
-            && ./scripts/install-mbedtls.sh ~/.local/src
-          CIBW_BEFORE_ALL_MACOS: >
-            ./scripts/download-mbedtls.sh $VERSION ~/.local/src
-            && ./scripts/install-mbedtls.sh ~/.local/src
-            && cp /usr/local/lib/libmbed*dylib .
           CIBW_ENVIRONMENT_WINDOWS: >
             VERSION=${{ matrix.version }}
             LIB=$HOMEDRIVE$HOMEPATH\\mbedtls\\visualc\\VS2010\\x64\\Release
             INCLUDE=$HOMEDRIVE$HOMEPATH\\mbedtls\\include
-          CIBW_BEFORE_ALL_WINDOWS: >
-            powershell -Command Get-Host
-            && powershell %CD%\scripts\download-mbedtls.ps1 %VERSION% %HOMEDRIVE%%HOMEPATH%\mbedtls
-            && powershell %CD%\scripts\install-mbedtls.ps1 -ConfigurationType StaticLibrary %HOMEDRIVE%%HOMEPATH%\mbedtls
-            && powershell %CD%\scripts\install-mbedtls.ps1 -ConfigurationType DynamicLibrary %HOMEDRIVE%%HOMEPATH%\mbedtls
-            && dir %LIB%
       - name: Inventory
         run: ls wheelhouse
       - name: Upload wheels

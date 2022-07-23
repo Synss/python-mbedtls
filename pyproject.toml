@@ -7,6 +7,28 @@ skip = "*-manylinux_i686 *-musllinux_* *-win32"
 test-requires = "-rrequirements/tests.txt"
 test-command = "pytest {project}/tests"
 
+[tool.cibuildwheel.linux]
+before-all = '''
+./scripts/download-mbedtls.sh $VERSION ~/.local/src \
+&& ./scripts/install-mbedtls.sh ~/.local/src
+'''
+
+[tool.cibuildwheel.macos]
+before-all = '''
+./scripts/download-mbedtls.sh $VERSION ~/.local/src \
+&& ./scripts/install-mbedtls.sh ~/.local/src \
+&& cp /usr/local/lib/libmbed*dylib .
+'''
+
+[tool.cibuildwheel.windows]
+before-all = """
+powershell -Command Get-Host \
+&& powershell %CD%\\scripts\\download-mbedtls.ps1 %VERSION% %HOMEDRIVE%%HOMEPATH%\\mbedtls \
+&& powershell %CD%\\scripts\\install-mbedtls.ps1 -ConfigurationType StaticLibrary %HOMEDRIVE%%HOMEPATH%\\mbedtls \
+&& powershell %CD%\\scripts\\install-mbedtls.ps1 -ConfigurationType DynamicLibrary %HOMEDRIVE%%HOMEPATH%\\mbedtls \
+&& dir %LIB%
+"""
+
 [tool.coverage.report]
 exclude_lines = [
   'pragma: no cover',
