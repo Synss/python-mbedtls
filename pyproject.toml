@@ -2,6 +2,11 @@
 line-length = 79
 target-version = ['py36', 'py37', 'py38']
 
+[tool.cibuildwheel]
+skip = "*-manylinux_i686 *-musllinux_* *-win32"
+test-requires = "-rrequirements/tests.txt"
+test-command = "pytest {project}/tests"
+
 [tool.coverage.report]
 exclude_lines = [
   'pragma: no cover',

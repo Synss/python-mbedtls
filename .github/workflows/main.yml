@@ -28,7 +28,6 @@ jobs:
         uses: pypa/cibuildwheel@v2.8.1
         env:
           CIBW_BUILD: cp3{7,8,9,10}-*
-          CIBW_SKIP: "*-manylinux_i686 *-musllinux_* *-win32"
           CIBW_ENVIRONMENT: VERSION=${{ matrix.version }}
           CIBW_BEFORE_ALL_LINUX: >
             ./scripts/download-mbedtls.sh $VERSION ~/.local/src
@@ -47,8 +46,6 @@ jobs:
             && powershell %CD%\scripts\install-mbedtls.ps1 -ConfigurationType StaticLibrary %HOMEDRIVE%%HOMEPATH%\mbedtls
             && powershell %CD%\scripts\install-mbedtls.ps1 -ConfigurationType DynamicLibrary %HOMEDRIVE%%HOMEPATH%\mbedtls
             && dir %LIB%
-          CIBW_TEST_REQUIRES: -rrequirements/tests.txt
-          CIBW_TEST_COMMAND: pytest {project}/tests
       - name: Inventory
         run: ls wheelhouse
       - name: Upload wheels
