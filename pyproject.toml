@@ -23,9 +23,9 @@ before-all = '''
 [tool.cibuildwheel.windows]
 before-all = """
 powershell -Command Get-Host \
-&& powershell %CD%\\scripts\\download-mbedtls.ps1 %VERSION% %HOMEDRIVE%%HOMEPATH%\\mbedtls \
-&& powershell %CD%\\scripts\\install-mbedtls.ps1 -ConfigurationType StaticLibrary %HOMEDRIVE%%HOMEPATH%\\mbedtls \
-&& powershell %CD%\\scripts\\install-mbedtls.ps1 -ConfigurationType DynamicLibrary %HOMEDRIVE%%HOMEPATH%\\mbedtls \
+&& powershell %CD%\\scripts\\download-mbedtls.ps1 %VERSION% %TEMP%\\mbedtls \
+&& powershell %CD%\\scripts\\install-mbedtls.ps1 -ConfigurationType StaticLibrary %TEMP%\\mbedtls \
+&& powershell %CD%\\scripts\\install-mbedtls.ps1 -ConfigurationType DynamicLibrary %TEMP%\\mbedtls \
 && dir %LIB%
 """
 

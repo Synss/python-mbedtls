@@ -31,8 +31,8 @@ jobs:
           CIBW_ENVIRONMENT: VERSION=${{ matrix.version }}
           CIBW_ENVIRONMENT_WINDOWS: >
             VERSION=${{ matrix.version }}
-            LIB=$HOMEDRIVE$HOMEPATH\\mbedtls\\visualc\\VS2010\\x64\\Release
-            INCLUDE=$HOMEDRIVE$HOMEPATH\\mbedtls\\include
+            LIB=$TEMP\\mbedtls\\visualc\\VS2010\\x64\\Release
+            INCLUDE=$TEMP\\mbedtls\\include
       - name: Inventory
         run: ls wheelhouse
       - name: Upload wheels
