@@ -1,4 +1,4 @@
-import mbedtls._platform as _plt  # type: ignore
+import mbedtls._platform as _plt
 
 
 def test_platform() -> None:
