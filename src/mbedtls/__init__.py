@@ -13,7 +13,7 @@ import mbedtls.hmac as hmac
 import mbedtls.pk as pk
 import mbedtls.secrets as secrets
 import mbedtls.tls as tls
-import mbedtls.version as version  # type: ignore
+import mbedtls.version as version
 import mbedtls.x509 as x509
 
 __version__ = "2.3.0"
