@@ -15,7 +15,7 @@ import binascii as _binascii
 import sys
 from typing import Callable, Sequence, TypeVar, cast
 
-import mbedtls._random as _rnd  # type: ignore
+import mbedtls._random as _rnd
 
 if sys.version_info < (3, 8):
     from typing_extensions import Final

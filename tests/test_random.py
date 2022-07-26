@@ -7,7 +7,7 @@ from typing import Callable, MutableMapping, Sequence
 
 import pytest
 
-import mbedtls._random as _drbg  # type: ignore
+import mbedtls._random as _drbg
 import mbedtls.mpi as _mpi  # type: ignore
 from mbedtls.exceptions import TLSError
 
@@ -116,4 +116,4 @@ class TestRandom:
     def test_getrandbits_nonint_k_raises_type_error(self) -> None:
         random = _drbg.Random()
         with pytest.raises(TypeError):
-            random.getrandbits("a")
+            random.getrandbits("a")  # type: ignore[arg-type]
