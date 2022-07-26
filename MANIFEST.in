@@ -2,6 +2,7 @@ recursive-include src *.pxd
 recursive-include src *.pyx
 recursive-include src *.pyi
 recursive-include src *.py
+include src/mbedtls/py.typed
 include LICENSE*
 include *.md
 include *.toml
