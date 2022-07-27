@@ -8,7 +8,7 @@ from typing import Callable, MutableMapping, Sequence
 import pytest
 
 import mbedtls._random as _drbg
-import mbedtls.mpi as _mpi  # type: ignore
+import mbedtls.mpi as _mpi
 from mbedtls.exceptions import TLSError
 
 

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import enum
+import numbers
 import os
 import sys
 from typing import (
@@ -33,7 +34,7 @@ CIPHER_NAME: Final[Sequence[bytes]] = ...
 _DER = bytes
 _PEM = str
 _NUM = int
-_MPI = int
+_MPI = Union[numbers.Integral, int]
 
 class CipherType(enum.Enum):
     NONE: int

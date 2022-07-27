@@ -9,7 +9,7 @@ import pytest
 
 from mbedtls import hashlib
 from mbedtls.exceptions import TLSError
-from mbedtls.mpi import MPI  # type: ignore
+from mbedtls.mpi import MPI
 from mbedtls.pk import _get_md_alg  # type: ignore
 from mbedtls.pk import (
     ECC,
@@ -261,7 +261,7 @@ class TestECCExportKey:
             assert pub.y == 0
         else:
             assert pub.y not in (0, pub.x, pub.z)
-        assert pub.z in (0, 1)
+        assert pub.z == 0 or pub.z == 1
 
 
 class TestECCtoECDH:

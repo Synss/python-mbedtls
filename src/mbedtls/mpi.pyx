@@ -51,7 +51,7 @@ cdef class MPI:
             value_ = <MPI> value
             _exc.check_error(mbedtls_mpi_copy(&self._ctx, &value_._ctx))
         else:
-            value = to_bytes(value)
+            value = to_bytes(int(value))
             self._read_bytes(value)
 
     def __cinit__(self):
@@ -179,6 +179,8 @@ cdef class MPI:
         return NotImplemented
 
     def __pow__(MPI self, exponent, modulus):
+        if modulus is None:
+            modulus = 0
         if not isinstance(exponent, numbers.Integral):
             return TypeError("exponent should be an integer")
         if not isinstance(modulus, numbers.Integral):
@@ -202,7 +204,9 @@ cdef class MPI:
     def __eq__(MPI self, other):
         if not isinstance(other, numbers.Integral):
             return NotImplemented
-        cdef MPI other_ = MPI(other)
+        if not isinstance(other, MPI):
+            other = MPI(other)
+        cdef MPI other_ = other
         return mbedtls_mpi_cmp_mpi(&self._ctx, &other_._ctx) == 0
 
     def __float__(self):
@@ -218,7 +222,13 @@ cdef class MPI:
         return self
 
     def __round__(self, ndigits=None):
-        return self
+        if ndigits is None:
+            return self
+        if not isinstance(ndigits, numbers.Integral):
+            raise TypeError(ndigits)
+        if ndigits <= 0:
+            return self
+        return round(int(self), ndigits)
 
     def __divmod__(self, other):
         if not all((isinstance(self, numbers.Integral),
@@ -249,7 +259,9 @@ cdef class MPI:
     def __lt__(MPI self, other):
         if not isinstance(other, numbers.Integral):
             return NotImplemented
-        cdef MPI other_ = MPI(other)
+        if not isinstance(other, MPI):
+            other = MPI(other)
+        cdef MPI other_ = other
         return mbedtls_mpi_cmp_mpi(&self._ctx, &other_._ctx) == -1
 
     def __le__(MPI self, other):
