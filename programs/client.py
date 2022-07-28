@@ -184,13 +184,13 @@ def main(args: argparse.Namespace) -> None:
     else:
         raise NotImplementedError(args.proto)
 
-    if args.debug is not None:
-        _enable_debug_output(conf)
-        _set_debug_level(args.debug)
-
     with Client(
         conf, args.proto, (args.address, args.port), args.server_name
     ) as cli:
+        if args.debug is not None:
+            _enable_debug_output(cli.context)
+            _set_debug_level(args.debug)
+
         cli.do_handshake()
         received = cli.echo(args.message.encode("utf-8"), 1024)
     print(received.decode("utf-8"))

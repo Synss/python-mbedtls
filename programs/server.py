@@ -194,11 +194,11 @@ def main(args: argparse.Namespace) -> NoReturn:
     else:
         raise NotImplementedError(args.proto)
 
-    if args.debug is not None:
-        _enable_debug_output(conf)
-        _set_debug_level(args.debug)
-
     with Server(conf, args.proto, (args.address, args.port)) as srv:
+        if args.debug is not None:
+            _enable_debug_output(srv.context)
+            _set_debug_level(args.debug)
+
         srv.run(partial(echo_handler, packet_size=4069))
 
 

@@ -75,8 +75,8 @@ cdef void _my_debug(void *ctx, int level,
     c_stdio.fflush(<c_stdio.FILE *> ctx)
 
 
-def _enable_debug_output(MbedTLSConfiguration conf):
-    _tls.mbedtls_ssl_conf_dbg(&conf._ctx, _my_debug, c_stdio.stdout)
+def _enable_debug_output(_BaseContext context):
+    _tls.mbedtls_ssl_conf_dbg(&context._conf._ctx, _my_debug, c_stdio.stdout)
 
 
 @cython.boundscheck(False)
