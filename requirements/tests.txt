@@ -5,10 +5,10 @@
 #    pip-compile --no-annotate requirements/tests.in
 #
 astroid==2.11.7
-attrs==21.4.0
+attrs==22.1.0
 bleach==5.0.1
 coverage[toml]==6.4.2
-cython==0.29.30
+cython==0.29.32
 dill==0.3.5.1
 docutils==0.19
 importlib-metadata==4.12.0

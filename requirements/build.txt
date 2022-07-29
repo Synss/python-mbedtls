@@ -6,11 +6,11 @@
 #
 build==0.8.0
 click==8.1.3
-cython==0.29.30
+cython==0.29.32
 delocate==0.10.2 ; sys_platform == "darwin"
 importlib-metadata==4.12.0
 packaging==21.3
-pep517==0.12.0
+pep517==0.13.0
 pip-tools==6.8.0
 pyparsing==3.0.9
 tomli==2.0.1
