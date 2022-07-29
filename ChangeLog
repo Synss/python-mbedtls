@@ -2,6 +2,7 @@
 
 * tls: Fix argument to `_enable_debug_output()`.  The function
 now takes a configured context instead of a MbedTLSConfiguration.
+* typing: Add type annotations to more modules.
 
 [2.3.0] - 2022-07-20
 
