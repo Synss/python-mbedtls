@@ -4,6 +4,7 @@
 
 """python-mbedtls is a this wrapper to ARM's mbed TLS library."""
 
+from __future__ import annotations
 
 import mbedtls.cipher as cipher
 import mbedtls.exceptions as exceptions

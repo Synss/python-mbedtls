@@ -1,4 +1,5 @@
 """Unit test mbedtls.exceptions."""
+from __future__ import annotations
 
 from typing import Tuple
 

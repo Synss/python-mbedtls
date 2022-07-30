@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2022, Mathias Laurin
 
+from __future__ import annotations
+
 from typing import NoReturn, Optional, Sequence, TypeVar
 
 T_co = TypeVar("T_co", covariant=True)

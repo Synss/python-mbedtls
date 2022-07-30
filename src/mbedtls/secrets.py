@@ -10,6 +10,8 @@ This module is compatibale with the standard `secrets` (PEP 506) module.
 
 """
 
+from __future__ import annotations
+
 import base64 as _base64
 import binascii as _binascii
 import sys

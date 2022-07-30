@@ -5,18 +5,20 @@
 """Two-key triple DES cipher (also known as DES3, 3DES, Triple DES,
 or DES-EDE)."""
 
+from __future__ import annotations
+
 import sys
+from typing import Optional, Union
+
+from mbedtls.exceptions import TLSError
+
+from ._cipher import Cipher, Mode
 
 if sys.version_info < (3, 8):
     from typing_extensions import Final, Literal
 else:
     from typing import Final, Literal
 
-from typing import Optional, Union
-
-from mbedtls.exceptions import TLSError
-
-from ._cipher import Cipher, Mode
 
 __all__ = ["block_size", "key_size", "new"]
 

@@ -4,6 +4,7 @@
 
 """Generic message digest wrapper (hash algorithm)."""
 
+from __future__ import annotations
 
 import sys
 from typing import Optional

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pickle
 from random import randint
 from typing import Any, Callable

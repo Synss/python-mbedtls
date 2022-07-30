@@ -5,18 +5,19 @@
 """Camellia cipher developed by Japan's Mitsubishi an NTT in 2000."""
 
 
+from __future__ import annotations
+
 import sys
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Final, Literal
-else:
-    from typing import Final, Literal
-
 from typing import Optional, Union
 
 from mbedtls.exceptions import TLSError
 
 from ._cipher import Cipher, Mode
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Final, Literal
+else:
+    from typing import Final, Literal
 
 __all__ = ["block_size", "key_size", "new"]
 

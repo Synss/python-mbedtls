@@ -1,4 +1,5 @@
 """Unit tests for mbedtls.random."""
+from __future__ import annotations
 
 import pickle
 import random
