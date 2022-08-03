@@ -5,4 +5,4 @@
 #    pip-compile --no-annotate setup.py
 #
 certifi==2022.6.15
-typing-extensions==4.3.0 ; python_version < "3.8"
+typing-extensions==4.3.0

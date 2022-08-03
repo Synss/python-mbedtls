@@ -47,7 +47,7 @@ setup_requires = [
 ]
 install_requires = [
     "certifi",
-    'typing_extensions; python_version < "3.8"',
+    "typing_extensions",
 ]
 tests_require = [
     "readme_renderer",
