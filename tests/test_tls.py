@@ -748,7 +748,7 @@ class TestTLSHandshake:
         )
         make_full_handshake(client=client, server=server)
 
-        secret = "a very secret message".encode("utf8")
+        secret = b"a very secret message"
         assert do_send(secret, src=client, dst=server) == secret
         assert do_send(secret, src=server, dst=client) == secret
 
@@ -773,7 +773,7 @@ class TestTLSHandshake:
         )
         make_full_handshake(client=client, server=server)
 
-        secret = "a very secret message".encode("utf8")
+        secret = b"a very secret message"
         assert do_send(secret, src=client, dst=server) == secret
         assert do_send(secret, src=server, dst=client) == secret
 
@@ -794,7 +794,7 @@ class TestTLSHandshake:
         )
         make_full_handshake(client=client, server=server)
 
-        secret = "a very secret message".encode("utf8")
+        secret = b"a very secret message"
         assert do_send(secret, src=client, dst=server) == secret
         assert do_send(secret, src=server, dst=client) == secret
 
@@ -816,11 +816,11 @@ class TestDTLSHandshake:
             "hostname",
         )
         make_hello_verify_request(
-            client=client, server=server, cookie="🍪🍪🍪".encode("utf-8")
+            client=client, server=server, cookie="🍪🍪🍪".encode()
         )
         make_full_handshake(client=client, server=server)
 
-        secret = "a very secret message".encode("utf8")
+        secret = b"a very secret message"
         assert do_send(secret, src=client, dst=server) == secret
         assert do_send(secret, src=server, dst=client) == secret
 
@@ -842,11 +842,11 @@ class TestDTLSHandshake:
             "hostname",
         )
         make_hello_verify_request(
-            client=client, server=server, cookie="🍪🍪🍪".encode("utf-8")
+            client=client, server=server, cookie="🍪🍪🍪".encode()
         )
         make_full_handshake(client=client, server=server)
 
-        secret = "a very secret message".encode("utf8")
+        secret = b"a very secret message"
         do_send(secret, src=client, dst=server)
         do_send(secret, src=server, dst=client)
 

@@ -51,6 +51,6 @@ def new(
     if mode_ not in {Mode.CBC, Mode.CFB, Mode.CTR, Mode.ECB}:
         raise TLSError(msg="unsupported mode %r" % mode_)
     name = (
-        "BLOWFISH-%s%s" % (mode_.name, "64" if mode_ is Mode.CFB else "")
+        "BLOWFISH-{}{}".format(mode_.name, "64" if mode_ is Mode.CFB else "")
     ).encode("ascii")
     return Cipher(name, key, mode_, iv)

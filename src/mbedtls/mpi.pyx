@@ -24,7 +24,7 @@ cdef _rnd.Random __rng = _rnd.default_rng()
 
 
 cdef to_bytes(value):
-    xx = "{0:02x}".format(value)
+    xx = "{:02x}".format(value)
     return unhexlify((xx if not len(xx) % 2 else "0" + xx).encode("ascii"))
 
 

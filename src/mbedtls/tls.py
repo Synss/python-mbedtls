@@ -102,7 +102,7 @@ class TLSRecordHeader:
         self.length: Final = length
 
     def __str__(self) -> str:
-        return "%s(%s, %s, %s)" % (
+        return "{}({}, {}, {})".format(
             type(self).__name__,
             self.record_type,
             self.version,
@@ -110,7 +110,7 @@ class TLSRecordHeader:
         )
 
     def __repr__(self) -> str:
-        return "%s(%r, %r, %r)" % (
+        return "{}({!r}, {!r}, {!r})".format(
             type(self).__name__,
             self.record_type,
             self.version,
