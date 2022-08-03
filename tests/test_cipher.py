@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 """Unit tests for mbedtls.cipher."""
 
 # Disable checks for violations that are acceptable in tests.

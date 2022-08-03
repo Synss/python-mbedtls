@@ -1,4 +1,7 @@
+# SPDX-License-Identifier: MIT
+
 """Unit tests for mbedtls.random."""
+
 from __future__ import annotations
 
 import pickle

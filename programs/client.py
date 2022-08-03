@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# SPDX-License-Identifier: MIT
 """An example DTLS/TLS client.
 
 Run ./programs/client.py --help.

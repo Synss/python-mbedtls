@@ -29,6 +29,10 @@ jobs:
         run: scripts/check-future-annotations.sh
         if: always()
 
+      - name: Check license header
+        run: scripts/check-license-header.sh
+        if: always()
+
       - name: Check format
         run: >
           find src tests -name '*.py' -o -name '*.pyi'

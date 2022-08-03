@@ -1,4 +1,7 @@
+# SPDX-License-Identifier: MIT
+
 """Unit test mbedtls.exceptions."""
+
 from __future__ import annotations
 
 from typing import Tuple

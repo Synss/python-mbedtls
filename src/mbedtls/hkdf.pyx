@@ -1,4 +1,4 @@
-# SPDX-license-identifier: MIT
+# SPDX-License-Identifier: MIT
 # Copyright (c) 2019, Mathias Laurin
 
 """HMAC-based key derivation function (HKDF).
