@@ -1,5 +1,5 @@
 auditwheel; sys_platform == 'linux'
 cython
-delocate
+delocate; sys_platform == 'darwin'
 pip-tools
 wheel
