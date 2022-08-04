@@ -358,24 +358,15 @@ class TLSWrappedSocket:
         self._buffer.consume_outgoing(amt)
         self._socket.sendall(encrypted)
 
-    def sendto(  # type: ignore[no-untyped-def]
-        self, message: bytes, *args
-    ) -> int:
+    def sendto(self, message: bytes, *args: Any) -> int:
         if not 1 <= len(args) <= 2:
             raise TypeError(
                 "sendto() takes 2 or 3 arguments (%i given)" % (1 + len(args))
             )
-        if len(args) == 1:
-            flags, address = 0, args[0]
-        else:
-            flags, address = args
 
         amt = self._buffer.write(message)
         encrypted = self._buffer.peek_outgoing(amt)
-        if flags:
-            self._socket.sendto(encrypted, flags, address)
-        else:
-            self._socket.sendto(encrypted, address)
+        self._socket.sendto(encrypted, *args)
         self._buffer.consume_outgoing(amt)
         return len(message)
 
