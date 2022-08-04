@@ -1,5 +1,5 @@
 black
-flake8 < 5  # https://github.com/kmaehashi/flake8-force/issues/3
+flake8
 flake8-force
 flake8-pytest-style
 isort
