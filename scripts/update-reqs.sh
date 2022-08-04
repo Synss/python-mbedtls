@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 die() {
     printf "%s\n" "$*"
     exit 1
