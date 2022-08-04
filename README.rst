@@ -26,7 +26,7 @@ Cryptographic library for Python with Mbed TLS back end
 * `PEP 272`_ -- API for Block Encryption Algorithms v1.0
 * `PEP 452`_ -- API for Cryptographic Hash Functions v2.0
 * `PEP 506`_ -- Adding a Secret Module to the Standard Library
-* `PEP 543`_ -- A Unified TLS API for Python
+* `PEP 543`_ -- A Unified TLS API for Python (`completed and modernized`_)
 
 and therefore plays well with the `cryptographic services`_ from the
 Python standard library and many other cryptography libraries as well.
@@ -41,6 +41,7 @@ Python standard library and many other cryptography libraries as well.
 .. _PyCrypto: https://www.dlitz.net/software/pycrypto/
 .. _hashlib: https://docs.python.org/3.6/library/hashlib.html
 .. _hmac: https://docs.python.org/3.6/library/hmac.html
+.. _completed and modernized: https://github.com/Synss/python-mbedtls/blob/master/src/mbedtls/_tlsi.py
 
 
 License
