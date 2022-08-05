@@ -608,19 +608,6 @@ HANDSHAKE_OVER = (
 )
 
 
-def make_server(
-    conf: Union[TLSConfiguration, DTLSConfiguration]
-) -> TLSWrappedBuffer:
-    return ServerContext(conf).wrap_buffers()
-
-
-def make_client(
-    conf: Union[TLSConfiguration, DTLSConfiguration],
-    hostname: Optional[_HostName],
-) -> TLSWrappedBuffer:
-    return ClientContext(conf).wrap_buffers(hostname)
-
-
 def do_io(
     *, src: TLSWrappedBuffer, dst: TLSWrappedBuffer, amt: int = 1024
 ) -> None:
@@ -738,15 +725,15 @@ class TestTLSHandshake:
     def test_cert_without_validation(
         self, certificate_chain: Tuple[Tuple[CRT, ...], _Key]
     ) -> None:
-        server = make_server(
+        server = ServerContext(
             TLSConfiguration(
                 certificate_chain=certificate_chain,
                 validate_certificates=False,
             )
-        )
-        client = make_client(
-            TLSConfiguration(validate_certificates=False), "hostname"
-        )
+        ).wrap_buffers()
+        client = ClientContext(
+            TLSConfiguration(validate_certificates=False)
+        ).wrap_buffers("hostname")
         make_full_handshake(client=client, server=server)
 
         secret = b"a very secret message"
@@ -762,16 +749,16 @@ class TestTLSHandshake:
         crt: CRT
         for crt in certificate_chain[0][1:]:
             trust_store.add(crt)
-        server = make_server(
+        server = ServerContext(
             TLSConfiguration(
                 certificate_chain=certificate_chain,
                 validate_certificates=False,
             )
-        )
+        ).wrap_buffers()
         # Host name must now be the common name (CN) of the leaf certificate.
-        client = make_client(
-            TLSConfiguration(trust_store=trust_store), hostname
-        )
+        client = ClientContext(
+            TLSConfiguration(trust_store=trust_store)
+        ).wrap_buffers(hostname)
         make_full_handshake(client=client, server=server)
 
         secret = b"a very secret message"
@@ -780,19 +767,18 @@ class TestTLSHandshake:
 
     def test_psk(self) -> None:
         psk = ("cli", b"secret")
-        server = make_server(
+        server = ServerContext(
             TLSConfiguration(
                 pre_shared_key_store=dict((psk,)),
                 validate_certificates=False,
             )
-        )
-        client = make_client(
+        ).wrap_buffers()
+        client = ClientContext(
             TLSConfiguration(
                 pre_shared_key=psk,
                 validate_certificates=False,
             ),
-            "hostname",
-        )
+        ).wrap_buffers("hostname")
         make_full_handshake(client=client, server=server)
 
         secret = b"a very secret message"
@@ -803,19 +789,18 @@ class TestTLSHandshake:
 class TestDTLSHandshake:
     def test_psk(self) -> None:
         psk = ("cli", b"secret")
-        server = make_server(
+        server = ServerContext(
             DTLSConfiguration(
                 pre_shared_key_store=dict((psk,)),
                 validate_certificates=False,
             )
-        )
-        client = make_client(
+        ).wrap_buffers()
+        client = ClientContext(
             DTLSConfiguration(
                 pre_shared_key=psk,
                 validate_certificates=False,
             ),
-            "hostname",
-        )
+        ).wrap_buffers("hostname")
         make_hello_verify_request(
             client=client, server=server, cookie="🍪🍪🍪".encode()
         )
@@ -827,21 +812,20 @@ class TestDTLSHandshake:
 
     def test_resume_from_pickle(self) -> None:
         psk = ("cli", b"secret")
-        server = make_server(
+        server = ServerContext(
             DTLSConfiguration(
                 pre_shared_key_store=dict((psk,)),
                 validate_certificates=False,
             )
-        )
-        client = make_client(
+        ).wrap_buffers()
+        client = ClientContext(
             DTLSConfiguration(
                 pre_shared_key=psk,
                 ciphers=("TLS-ECDHE-PSK-WITH-CHACHA20-POLY1305-SHA256",),
                 lowest_supported_version=DTLSVersion.DTLSv1_2,
                 validate_certificates=False,
             ),
-            "hostname",
-        )
+        ).wrap_buffers("hostname")
         make_hello_verify_request(
             client=client, server=server, cookie="🍪🍪🍪".encode()
         )
