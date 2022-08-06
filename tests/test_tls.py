@@ -929,6 +929,27 @@ class TestProgramsTLS:
 
     @pytest.mark.usefixtures("server")
     @pytest.mark.timeout(2)
+    def test_raw_socket_send_recv_into(self, port: int) -> None:
+        secret = b"a very secret message"
+        buffer = bytearray(b"\0" * 256)
+        with ClientContext(
+            TLSConfiguration(
+                pre_shared_key=("cli", b"secret"),
+                validate_certificates=False,
+            ),
+        ).wrap_socket(
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM), "localhost"
+        ) as client:
+            client.connect(("127.0.0.1", port))
+            client.do_handshake()
+            sent = client.send(secret)
+            assert sent == len(secret)
+
+            received = client.recv_into(buffer, 1024)
+        assert buffer[:received] == secret
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(2)
     def test_raw_socket_sendall_recv(self, port: int) -> None:
         secret = b"a very secret message"
         with ClientContext(
@@ -1076,3 +1097,25 @@ class TestProgramsDTLS:
             data, addr = client.recvfrom(1024, 0)
             assert addr == address
         assert data == secret
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(2)
+    def test_raw_socket_sendto_recvfrom_into(self, port: int) -> None:
+        address = ("127.0.0.1", port)
+        secret = b"a very secret message"
+        buffer = bytearray(b"\0" * 256)
+        with ClientContext(
+            DTLSConfiguration(
+                pre_shared_key=("cli", b"secret"),
+                validate_certificates=False,
+            ),
+        ).wrap_socket(
+            socket.socket(socket.AF_INET, socket.SOCK_DGRAM), "localhost"
+        ) as client:
+            client.do_handshake(address)
+            sent = client.sendto(secret, address)
+            assert sent == len(secret)
+
+            received, addr = client.recvfrom_into(buffer, 1024)
+            assert addr == address
+        assert buffer[:received] == secret

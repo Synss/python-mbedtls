@@ -68,8 +68,9 @@ __all__ = (
     "ciphers_available",
 )
 
-# Stolen from `_socket.pyi`.
+# `_Address` stolen from `_socket.pyi`.
 _Address: TypeAlias = Union[Tuple[Any, ...], str]
+_WriteableBuffer: TypeAlias = Union[memoryview, bytearray]
 
 
 class TLSRecordHeader:
@@ -315,9 +316,20 @@ class TLSWrappedSocket:
         return self._buffer.read(bufsize)
 
     def recv_into(
-        self, buffer: bytes, nbytes: Optional[int] = None, flags: int = 0
-    ) -> None:
-        raise NotImplementedError
+        self,
+        buffer: _WriteableBuffer,
+        nbytes: Optional[int] = None,
+        flags: int = 0,
+    ) -> int:
+        if nbytes is None:
+            bufsize = len(buffer)
+        else:
+            bufsize = min(len(buffer), nbytes)
+        encrypted = self._socket.recv(bufsize, flags)
+        if not encrypted:
+            return 0
+        self._buffer.receive_from_network(encrypted)
+        return self._buffer.readinto(buffer, len(encrypted))
 
     def recvfrom(self, bufsize: int, flags: int = 0) -> Tuple[bytes, _Address]:
         encrypted, addr = self._socket.recvfrom(bufsize, flags)
@@ -327,7 +339,10 @@ class TLSWrappedSocket:
         return self._buffer.read(bufsize), addr
 
     def recvfrom_into(
-        self, buffer: bytes, nbytes: Optional[int] = None, flags: int = 0
+        self,
+        buffer: _WriteableBuffer,
+        nbytes: Optional[int] = None,
+        flags: int = 0,
     ) -> Tuple[int, _Address]:
         encrypted, addr = self._socket.recvfrom(
             nbytes if nbytes is not None else len(buffer), flags

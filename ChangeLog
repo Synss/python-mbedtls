@@ -2,6 +2,8 @@
 
 * typing: Complete typing.
 * tls: Improve support for connectionless DTLS.
+* tls: Implement and fix type of `TLSWrappedSocket.recv_into()`.
+* tls: Fix type of `TLSWrappedSocket.recvfrom_into()`.
 
 [2.3.1] - 2022-07-29
 
