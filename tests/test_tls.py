@@ -1080,6 +1080,8 @@ class TestProgramsDTLS:
     @pytest.mark.usefixtures("server")
     @pytest.mark.timeout(2)
     def test_raw_socket_sendto_recvfrom_with_flags(self, port: int) -> None:
+        # Note that flags is always 0 (noop) here because we are only
+        # interested in testing the API.  See also issue #62.
         address = ("127.0.0.1", port)
         secret = b"a very secret message"
         with ClientContext(
@@ -1090,7 +1092,7 @@ class TestProgramsDTLS:
         ).wrap_socket(
             socket.socket(socket.AF_INET, socket.SOCK_DGRAM), "localhost"
         ) as client:
-            client.do_handshake(address)
+            client.do_handshake(0, address)
             sent = client.sendto(secret, 0, address)
             assert sent == len(secret)
 

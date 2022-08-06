@@ -9,7 +9,7 @@ import os
 import socket as _pysocket
 import struct
 import sys
-from typing import Any, NoReturn, Optional, Tuple, Union, cast
+from typing import Any, NoReturn, Optional, Tuple, Union, cast, overload
 
 from ._tls import HandshakeStep as HandshakeStep
 from ._tls import HelloVerifyRequest
@@ -390,19 +390,40 @@ class TLSWrappedSocket:
         self._socket.shutdown(how)
 
     # PEP 543 adds the following methods.
+    @overload
+    def do_handshake(self) -> None:
+        ...
 
-    def do_handshake(self, address: Optional[_Address] = None) -> None:
-        if address is not None and self.type is not _pysocket.SOCK_DGRAM:
+    @overload
+    def do_handshake(self, address: _Address) -> None:
+        ...
+
+    @overload
+    def do_handshake(self, flags: int, address: _Address) -> None:
+        ...
+
+    def do_handshake(self, *args):  # type: ignore[no-untyped-def]
+        if args and self.type is not _pysocket.SOCK_DGRAM:
             raise OSError(errno.ENOTCONN, os.strerror(errno.ENOTCONN))
+
+        if len(args) == 0:
+            flags, address = 0, None
+        elif len(args) == 1:
+            flags, address = 0, args[0]
+        elif len(args) == 2:
+            assert isinstance(args[0], int)
+            flags, address = args
+        else:
+            raise TypeError("do_handshake() takes 0, 1, or 2 arguments")
 
         while self._handshake_state is not HandshakeStep.HANDSHAKE_OVER:
             try:
                 self._buffer.do_handshake()
             except WantReadError:
                 if address is None:
-                    data = self._socket.recv(1024)
+                    data = self._socket.recv(1024, flags)
                 else:
-                    data, addr = self._socket.recvfrom(1024)
+                    data, addr = self._socket.recvfrom(1024, flags)
                     if addr != address:
                         # The error may not be the clearest but we'd better
                         # bail out in any case.
@@ -413,9 +434,9 @@ class TLSWrappedSocket:
             except WantWriteError:
                 in_transit = self._buffer.peek_outgoing(1024)
                 if address is None:
-                    amt = self._socket.send(in_transit)
+                    amt = self._socket.send(in_transit, flags)
                 else:
-                    amt = self._socket.sendto(in_transit, address)
+                    amt = self._socket.sendto(in_transit, flags, address)
                 self._buffer.consume_outgoing(amt)
 
     def unwrap(self) -> _pysocket.socket:
