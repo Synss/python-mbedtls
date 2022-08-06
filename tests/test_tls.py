@@ -713,10 +713,10 @@ def do_communicate(args: Any) -> str:
             encoding="utf8",
         ) as proc:
             out, err = proc.communicate()
-            if "ConnectionRefusedError" not in err:
-                return out
-            time.sleep(0.01)  # Avoid tight CPU loop.
-            continue
+            if "ConnectionRefusedError" in err:
+                time.sleep(0.01)  # Avoid tight CPU loop.
+                continue
+            return out
 
 
 class TestTLSHandshake:
