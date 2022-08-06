@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import enum
+import errno
+import os
 import socket as _pysocket
 import struct
 import sys
@@ -383,16 +385,31 @@ class TLSWrappedSocket:
 
     # PEP 543 adds the following methods.
 
-    def do_handshake(self) -> None:
+    def do_handshake(self, address: Optional[_Address] = None) -> None:
+        if address is not None and self.type is not _pysocket.SOCK_DGRAM:
+            raise OSError(errno.ENOTCONN, os.strerror(errno.ENOTCONN))
+
         while self._handshake_state is not HandshakeStep.HANDSHAKE_OVER:
             try:
                 self._buffer.do_handshake()
             except WantReadError:
-                data = self._socket.recv(1024)
+                if address is None:
+                    data = self._socket.recv(1024)
+                else:
+                    data, addr = self._socket.recvfrom(1024)
+                    if addr != address:
+                        # The error may not be the clearest but we'd better
+                        # bail out in any case.
+                        raise OSError(
+                            errno.ENOTCONN, os.strerror(errno.ENOTCONN)
+                        )
                 self._buffer.receive_from_network(data)
             except WantWriteError:
                 in_transit = self._buffer.peek_outgoing(1024)
-                amt = self._socket.send(in_transit)
+                if address is None:
+                    amt = self._socket.send(in_transit)
+                else:
+                    amt = self._socket.sendto(in_transit, address)
                 self._buffer.consume_outgoing(amt)
 
     def unwrap(self) -> _pysocket.socket:

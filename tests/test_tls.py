@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import errno
 import pickle
 import socket
 import subprocess
@@ -857,7 +858,7 @@ class TestDTLSHandshake:
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
 class TestProgramsTLS:
-    @pytest.fixture()
+    @pytest.fixture(scope="class")
     def port(self) -> int:
         """Return a free port
 
@@ -871,7 +872,7 @@ class TestProgramsTLS:
             port = sock.getsockname()[1]
         return port
 
-    @pytest.fixture()
+    @pytest.fixture(scope="class")
     def server(
         self, rootpath: Path, port: int
     ) -> Iterator[subprocess.Popen[str]]:
@@ -891,7 +892,7 @@ class TestProgramsTLS:
 
     @pytest.mark.usefixtures("server")
     @pytest.mark.timeout(10)
-    def test_communicate(self, rootpath: Path, port: int) -> None:
+    def test_client(self, rootpath: Path, port: int) -> None:
         secret = "a very secret message"
         args = [
             sys.executable,
@@ -906,10 +907,65 @@ class TestProgramsTLS:
         for _ in range(3):
             assert do_communicate(args) == secret + "\n"
 
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(2)
+    def test_raw_socket_send_recv(self, port: int) -> None:
+        secret = b"a very secret message"
+        with ClientContext(
+            TLSConfiguration(
+                pre_shared_key=("cli", b"secret"),
+                validate_certificates=False,
+            ),
+        ).wrap_socket(
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM), "localhost"
+        ) as client:
+            client.connect(("127.0.0.1", port))
+            client.do_handshake()
+            sent = client.send(secret)
+            assert sent == len(secret)
+
+            data = client.recv(1024)
+        assert data == secret
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(2)
+    def test_raw_socket_sendall_recv(self, port: int) -> None:
+        secret = b"a very secret message"
+        with ClientContext(
+            TLSConfiguration(
+                pre_shared_key=("cli", b"secret"),
+                validate_certificates=False,
+            ),
+        ).wrap_socket(
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM), "localhost"
+        ) as client:
+            client.connect(("127.0.0.1", port))
+            client.do_handshake()
+            client.sendall(secret)
+            data = client.recv(1024)
+        assert data == secret
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(2)
+    def test_raw_socket_connectionless_unavailable(self, port: int) -> None:
+        address = ("127.0.0.1", port)
+        with ClientContext(
+            TLSConfiguration(
+                pre_shared_key=("cli", b"secret"),
+                validate_certificates=False,
+            ),
+        ).wrap_socket(
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM), "localhost"
+        ) as client:
+            with pytest.raises(OSError) as excinfo:
+                client.do_handshake(address)
+
+        assert excinfo.value.errno is errno.ENOTCONN
+
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
 class TestProgramsDTLS:
-    @pytest.fixture()
+    @pytest.fixture(scope="class")
     def port(self) -> int:
         """Return a free port
 
@@ -923,7 +979,7 @@ class TestProgramsDTLS:
             port = sock.getsockname()[1]
         return port
 
-    @pytest.fixture()
+    @pytest.fixture(scope="class")
     def server(
         self, rootpath: Path, port: int
     ) -> Iterator[subprocess.Popen[str]]:
@@ -943,7 +999,7 @@ class TestProgramsDTLS:
 
     @pytest.mark.usefixtures("server")
     @pytest.mark.timeout(10)
-    def test_communication(self, rootpath: Path, port: int) -> None:
+    def test_client(self, rootpath: Path, port: int) -> None:
         secret = "a very secret message"
         args = [
             sys.executable,
@@ -957,3 +1013,66 @@ class TestProgramsDTLS:
         ]
         for _ in range(3):
             assert do_communicate(args) == secret + "\n"
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(2)
+    def test_raw_socket_send_recv(self, port: int) -> None:
+        address = ("127.0.0.1", port)
+        secret = b"a very secret message"
+        with ClientContext(
+            DTLSConfiguration(
+                pre_shared_key=("cli", b"secret"),
+                validate_certificates=False,
+            ),
+        ).wrap_socket(
+            socket.socket(socket.AF_INET, socket.SOCK_DGRAM), "localhost"
+        ) as client:
+            client.connect(address)
+            client.do_handshake()
+            sent = client.send(secret)
+            assert sent == len(secret)
+
+            data = client.recv(1024)
+        assert data == secret
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(2)
+    def test_raw_socket_sendto_recvfrom(self, port: int) -> None:
+        address = ("127.0.0.1", port)
+        secret = b"a very secret message"
+        with ClientContext(
+            DTLSConfiguration(
+                pre_shared_key=("cli", b"secret"),
+                validate_certificates=False,
+            ),
+        ).wrap_socket(
+            socket.socket(socket.AF_INET, socket.SOCK_DGRAM), "localhost"
+        ) as client:
+            client.do_handshake(address)
+            sent = client.sendto(secret, address)
+            assert sent == len(secret)
+
+            data, addr = client.recvfrom(1024)
+            assert addr == address
+        assert data == secret
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(2)
+    def test_raw_socket_sendto_recvfrom_with_flags(self, port: int) -> None:
+        address = ("127.0.0.1", port)
+        secret = b"a very secret message"
+        with ClientContext(
+            DTLSConfiguration(
+                pre_shared_key=("cli", b"secret"),
+                validate_certificates=False,
+            ),
+        ).wrap_socket(
+            socket.socket(socket.AF_INET, socket.SOCK_DGRAM), "localhost"
+        ) as client:
+            client.do_handshake(address)
+            sent = client.sendto(secret, 0, address)
+            assert sent == len(secret)
+
+            data, addr = client.recvfrom(1024, 0)
+            assert addr == address
+        assert data == secret

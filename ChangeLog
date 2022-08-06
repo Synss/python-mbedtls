@@ -1,6 +1,7 @@
 [next]
 
 * typing: Complete typing.
+* tls: Improve support for connectionless DTLS.
 
 [2.3.1] - 2022-07-29
 
