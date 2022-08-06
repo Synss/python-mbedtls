@@ -31,11 +31,15 @@ powershell -Command Get-Host \
 
 [tool.coverage.report]
 exclude_lines = [
-  'pragma: no cover',
+  '\.\.\.',
   'def __repr__',
-  'raise MemoryError()',
+  'free\(\w+\)',
+  'from typing import ',
+  'from typing_extensions import ',
+  'if sys\.version_info',
+  'pragma: no cover',
+  'raise MemoryError',
   'raise NotImplementedError',
-  'free(\w)',
 ]
 include = ['src/*']
 
