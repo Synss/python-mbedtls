@@ -1,4 +1,4 @@
-[next]
+[2.4.0] - 2022-08-07
 
 * typing: Complete typing.
 * tls: Improve support for connectionless DTLS.
