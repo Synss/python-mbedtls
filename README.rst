@@ -400,8 +400,8 @@ Note, however, that this verification is only one step in a private key
 infrastructure and does not take CRLs, path length, etc. into account.
 
 
-TLS client and server
----------------------
+TLS and DTLS client and server
+------------------------------
 
 The *mbedtls.tls* module provides TLS clients and servers.  The API
 follows the recommendations of `PEP 543`_.  Note, however, that the
@@ -410,17 +410,10 @@ library may not be a drop-in replacement.
 
 .. _PEP 543: https://www.python.org/dev/peps/pep-0543/
 
-See examples in the `programs/` directory of the repository
-and `tests/test_tls.py`.
+Connectionless DTLS is supported as well.
 
+See examples in the `programs/`_ directory of the repository
+and `tests/test_tls.py`_.
 
-DTLS client and server
-----------------------
-
-The *mbedtls.tls* module further provides DTLS (encrypted UDP
-traffic).  Client and server must be bound and connected for
-the handshake so that DTLS should use ``recv()`` and ``send()``
-as well.
-
-See examples in the `programs/` directory of the repository
-and `tests/test_tls.py`.
+.. _programs/: https://github.com/Synss/python-mbedtls/tree/master/programs
+.. _tests/test_tls.py: https://github.com/Synss/python-mbedtls/blob/master/tests/test_tls.py
