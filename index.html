@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cryptographic library for Python with Mbed TLS back end &mdash; python-mbedtls 2.3.1 documentation</title>
+  <title>Cryptographic library for Python with Mbed TLS back end &mdash; python-mbedtls 2.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -422,23 +422,15 @@ the chain:</p>
 <p>Note, however, that this verification is only one step in a private key
 infrastructure and does not take CRLs, path length, etc. into account.</p>
 </section>
-<section id="tls-client-and-server">
-<h3>TLS client and server<a class="headerlink" href="#tls-client-and-server" title="Permalink to this heading"></a></h3>
+<section id="tls-and-dtls-client-and-server">
+<h3>TLS and DTLS client and server<a class="headerlink" href="#tls-and-dtls-client-and-server" title="Permalink to this heading"></a></h3>
 <p>The <em>mbedtls.tls</em> module provides TLS clients and servers.  The API
 follows the recommendations of <a class="reference external" href="https://www.python.org/dev/peps/pep-0543/">PEP 543</a>.  Note, however, that the
 Python standard SSL library does not follow the PEP so that this
 library may not be a drop-in replacement.</p>
-<p>See examples in the <cite>programs/</cite> directory of the repository
-and <cite>tests/test_tls.py</cite>.</p>
-</section>
-<section id="dtls-client-and-server">
-<h3>DTLS client and server<a class="headerlink" href="#dtls-client-and-server" title="Permalink to this heading"></a></h3>
-<p>The <em>mbedtls.tls</em> module further provides DTLS (encrypted UDP
-traffic).  Client and server must be bound and connected for
-the handshake so that DTLS should use <code class="docutils literal notranslate"><span class="pre">recv()</span></code> and <code class="docutils literal notranslate"><span class="pre">send()</span></code>
-as well.</p>
-<p>See examples in the <cite>programs/</cite> directory of the repository
-and <cite>tests/test_tls.py</cite>.</p>
+<p>Connectionless DTLS is supported as well.</p>
+<p>See examples in the <a class="reference external" href="https://github.com/Synss/python-mbedtls/tree/master/programs">programs/</a> directory of the repository
+and <a class="reference external" href="https://github.com/Synss/python-mbedtls/blob/master/tests/test_tls.py">tests/test_tls.py</a>.</p>
 </section>
 </section>
 <section id="id2">
