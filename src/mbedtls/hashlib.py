@@ -50,12 +50,12 @@ def new(name: str, buffer: Optional[bytes] = None) -> Hash:
 
 def md2(buffer: Optional[bytes] = None) -> Hash:
     """MD2 message-digest algorithm."""
-    return new("md2", buffer)
+    return new("md2", buffer)  # pragma: no cover
 
 
 def md4(buffer: Optional[bytes] = None) -> Hash:
     """MD4 message-digest algorithm."""
-    return new("md4", buffer)
+    return new("md4", buffer)  # pragma: no cover
 
 
 def md5(buffer: Optional[bytes] = None) -> Hash:

@@ -54,12 +54,12 @@ def new(
 
 def md2(key: bytes, buffer: Optional[bytes] = None) -> Hmac:
     """MD2 message-digest algorithm."""
-    return new(key, buffer, "md2")
+    return new(key, buffer, "md2")  # pragma: no cover
 
 
 def md4(key: bytes, buffer: Optional[bytes] = None) -> Hmac:
     """MD4 message-digest algorithm."""
-    return new(key, buffer, "md4")
+    return new(key, buffer, "md4")  # pragma: no cover
 
 
 def md5(key: bytes, buffer: Optional[bytes] = None) -> Hmac:
