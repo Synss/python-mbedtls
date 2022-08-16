@@ -32,6 +32,7 @@ powershell -Command Get-Host \
 [tool.coverage.report]
 exclude_lines = [
   '\.\.\.',
+  'assert 0',
   'def __repr__',
   'free\(\w+\)',
   'from typing import ',
