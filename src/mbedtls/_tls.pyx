@@ -532,16 +532,13 @@ cdef class MbedTLSConfiguration:
         while c_ctx is not NULL:
             chain.append(_x509.CRT.from_DER(c_ctx.raw.p[0:c_ctx.raw.len]))
             c_ctx = c_ctx.next
-        cdef _pk.mbedtls_pk_context *c_key = key_cert.key
         cdef unsigned char[:] buf = bytearray(_pk.PRV_DER_MAX_BYTES)
         olen = _exc.check_error(
-            _pk.mbedtls_pk_write_key_der(c_key, &buf[0], buf.size))
-        cls = {
-            0: _pk.ECC,
-            1: _pk.RSA,
-        }[_pk.mbedtls_pk_can_do(c_key, _pk.MBEDTLS_PK_RSA)]
-        key = cls.from_DER(buf[buf.size - olen:buf.size])
-        return tuple(chain), key
+            _pk.mbedtls_pk_write_key_der(key_cert.key, &buf[0], buf.size))
+        der = buf[buf.size - olen:buf.size]
+        if _pk.mbedtls_pk_can_do(key_cert.key, _pk.MBEDTLS_PK_RSA) == 0:
+            return tuple(chain), _pk.ECC.from_DER(der)
+        return tuple(chain), _pk.RSA.from_DER(der)
 
     cdef _set_ciphers(self, ciphers):
         """The available ciphers for the TLS connections.
