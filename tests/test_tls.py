@@ -359,6 +359,24 @@ class TestDTLSCookie:
         assert cookie.timeout == 1000
 
 
+def assert_conf_invariant(
+    conf: Union[TLSConfiguration, DTLSConfiguration],
+    default: Optional[Any] = None,
+    **elem: Any,
+) -> None:
+    # The point is:  We need to make sure that the context gets
+    # configured properly. However, some elements of the configuration
+    # cannot be transformed back accurately from the mbedtls
+    # configuration to the PEP 543 configuration.
+    __tracebackhide__ = True
+    assert len(elem) == 1
+
+    key, value = next(iter(elem.items()))
+    assert getattr(ServerContext(conf.update(**elem))._conf, key) == (
+        default or value
+    )
+
+
 class TestConfiguration:
     @pytest.fixture(params=[DTLSConfiguration, TLSConfiguration])
     def conf(self, request: Any) -> Union[TLSConfiguration, DTLSConfiguration]:
@@ -368,44 +386,29 @@ class TestConfiguration:
         )
         return conf
 
-    @pytest.mark.parametrize(
-        "repr_",
-        [repr, str],
-        ids=lambda f: f.__name__,  # type: ignore[no-any-return]
-    )
-    def test_repr(
-        self,
-        repr_: Callable[[object], str],
-        conf: Union[TLSConfiguration, DTLSConfiguration],
-    ) -> None:
-        assert isinstance(repr_(conf), str)
-
     @pytest.mark.parametrize("validate", [True, False])
     def test_set_validate_certificates(
         self, conf: Union[TLSConfiguration, DTLSConfiguration], validate: bool
     ) -> None:
-        conf_ = conf.update(validate_certificates=validate)
-        assert conf_.validate_certificates is validate
+        assert_conf_invariant(conf, validate_certificates=validate)
 
-    @pytest.mark.parametrize("chain", [((), None), None])
+    def test_set_empty_certificate_chain(
+        self, conf: Union[TLSConfiguration, DTLSConfiguration]
+    ) -> None:
+        assert_conf_invariant(conf, certificate_chain=None, default=((), None))
+
     def test_set_certificate_chain(
-        self,
-        conf: Union[TLSConfiguration, DTLSConfiguration],
-        chain: Tuple[Tuple[CRT, ...], _Key],
+        self, conf: Union[TLSConfiguration, DTLSConfiguration]
     ) -> None:
         root_crt, root_key = make_root_ca()
         ee_crt, ee_key = make_crt(root_crt, root_key)
-        if chain is None:
-            chain = (ee_crt, root_crt), ee_key
-        conf_ = conf.update(certificate_chain=chain)
-        assert conf_.certificate_chain == chain
+        chain = (ee_crt, root_crt), ee_key
+        assert_conf_invariant(conf, certificate_chain=chain)
 
     def test_set_ciphers(
         self, conf: Union[TLSConfiguration, DTLSConfiguration]
     ) -> None:
-        ciphers = tuple(ciphers_available())
-        conf_ = conf.update(ciphers=ciphers)
-        assert conf_.ciphers == ciphers
+        assert_conf_invariant(conf, ciphers=tuple(ciphers_available()))
 
     @pytest.mark.parametrize(
         "inner_protocols",
@@ -416,18 +419,20 @@ class TestConfiguration:
         conf: Union[TLSConfiguration, DTLSConfiguration],
         inner_protocols: Tuple[Union[NextProtocol, bytes]],
     ) -> None:
-        conf_ = conf.update(inner_protocols=inner_protocols)
-        assert conf_.inner_protocols == inner_protocols
+        assert_conf_invariant(
+            conf,
+            inner_protocols=inner_protocols,
+            default=tuple(map(NextProtocol, inner_protocols)),
+        )
 
-    @pytest.mark.parametrize("store", [TrustStore.system()])
+    @pytest.mark.parametrize("trust_store", [TrustStore.system()])
     def test_trust_store(
         self,
         conf: Union[TLSConfiguration, DTLSConfiguration],
-        store: TrustStore,
+        trust_store: TrustStore,
     ) -> None:
-        conf_ = conf.update(trust_store=store)
-        assert store
-        assert conf_.trust_store == store
+        assert trust_store
+        assert_conf_invariant(conf, trust_store=trust_store)
 
     @pytest.mark.parametrize("callback", [None])
     def test_set_sni_callback(
@@ -444,8 +449,7 @@ class TestConfiguration:
         psk: Tuple[str, bytes],
     ) -> None:
         assert conf.pre_shared_key is None
-        conf_ = conf.update(pre_shared_key=psk)
-        assert conf_.pre_shared_key == psk
+        assert_conf_invariant(conf, pre_shared_key=psk)
 
     @pytest.mark.parametrize("psk_store", [{}, {"client": b"the secret key"}])
     def test_psk_store(
@@ -454,8 +458,7 @@ class TestConfiguration:
         psk_store: Mapping[str, bytes],
     ) -> None:
         assert not conf.pre_shared_key_store
-        conf_ = conf.update(pre_shared_key_store=psk_store)
-        assert conf_.pre_shared_key_store == psk_store
+        assert_conf_invariant(conf, pre_shared_key_store=psk_store)
 
 
 class TestTLSConfiguration:
@@ -471,15 +474,13 @@ class TestTLSConfiguration:
     def test_lowest_supported_version(
         self, conf: TLSConfiguration, version: TLSVersion
     ) -> None:
-        conf_ = conf.update(lowest_supported_version=version)
-        assert conf_.lowest_supported_version is version
+        assert_conf_invariant(conf, lowest_supported_version=version)
 
     @pytest.mark.parametrize("version", _SUPPORTED_TLS_VERSION)
     def test_highest_supported_version(
         self, conf: TLSConfiguration, version: TLSVersion
     ) -> None:
-        conf_ = conf.update(highest_supported_version=version)
-        assert conf_.highest_supported_version is version
+        assert_conf_invariant(conf, highest_supported_version=version)
 
 
 class TestDTLSConfiguration:
@@ -495,23 +496,20 @@ class TestDTLSConfiguration:
     def test_lowest_supported_version(
         self, conf: DTLSConfiguration, version: DTLSVersion
     ) -> None:
-        conf_ = conf.update(lowest_supported_version=version)
-        assert conf_.lowest_supported_version is version
+        assert_conf_invariant(conf, lowest_supported_version=version)
 
     @pytest.mark.parametrize("version", _SUPPORTED_DTLS_VERSION)
     def test_highest_supported_version(
         self, conf: DTLSConfiguration, version: DTLSVersion
     ) -> None:
-        conf_ = conf.update(highest_supported_version=version)
-        assert conf_.highest_supported_version is version
+        assert_conf_invariant(conf, highest_supported_version=version)
 
     @pytest.mark.parametrize("anti_replay", [True, False])
     def test_set_anti_replay(
         self, conf: DTLSConfiguration, anti_replay: bool
     ) -> None:
         assert conf.anti_replay is True
-        conf_ = conf.update(anti_replay=anti_replay)
-        assert conf_.anti_replay is anti_replay
+        assert_conf_invariant(conf, anti_replay=anti_replay)
 
     @pytest.mark.parametrize(
         "hs_min_max", [(1, 60), (42, 69), (4.2, 6.9), (42.0, 69.0)]
@@ -531,6 +529,9 @@ class TestDTLSConfiguration:
         assert conf_.handshake_timeout_min == hs_min
         assert conf_.handshake_timeout_max == hs_max
 
+        assert_conf_invariant(conf, handshake_timeout_min=hs_min)
+        assert_conf_invariant(conf, handshake_timeout_max=hs_max)
+
     @pytest.mark.parametrize("hs_min_max", [(1, 60), (42, 69), (4.2, 6.9)])
     def test_handshake_timeout_default(
         self,
@@ -547,6 +548,9 @@ class TestDTLSConfiguration:
         )
         assert conf_.handshake_timeout_min == hs_min
         assert conf_.handshake_timeout_max == hs_max
+
+        assert_conf_invariant(conf, handshake_timeout_min=hs_min)
+        assert_conf_invariant(conf, handshake_timeout_max=hs_max)
 
 
 class TestContext:

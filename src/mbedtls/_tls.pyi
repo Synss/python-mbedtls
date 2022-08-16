@@ -7,7 +7,7 @@ import enum
 import os
 import sys
 from collections import abc
-from typing import Optional, Sequence, Tuple, Union, overload
+from typing import Any, Optional, Sequence, Tuple, Union, overload
 
 from mbedtls._tlsi import (
     Certificate,
@@ -90,6 +90,9 @@ class _BaseContext:
     def __eq__(self, other: object) -> bool: ...
     @property
     def configuration(self) -> Union[TLSConfiguration, DTLSConfiguration]: ...
+    # Don't use `_conf`, for testing purpose only.
+    @property
+    def _conf(self) -> Union[TLSConfiguration, DTLSConfiguration]: ...
     @property
     def _purpose(self) -> Purpose: ...
 

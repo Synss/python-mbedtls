@@ -939,6 +939,38 @@ cdef class _BaseContext:
         return self.configuration == other.configuration
 
     @property
+    def _conf(self):
+        if self._conf._transport is Transport.STREAM:
+            return TLSConfiguration(
+                validate_certificates=self._conf.validate_certificates,
+                certificate_chain=self._conf.certificate_chain,
+                ciphers=self._conf.ciphers,
+                inner_protocols=self._conf.inner_protocols,
+                lowest_supported_version=self._conf.lowest_supported_version,
+                highest_supported_version=self._conf.highest_supported_version,
+                trust_store=self._conf.trust_store,
+                sni_callback=self._conf.sni_callback,
+                pre_shared_key=self._conf.pre_shared_key,
+                pre_shared_key_store=self._conf.pre_shared_key_store,
+            )
+        assert self._conf._transport is Transport.DATAGRAM
+        return DTLSConfiguration(
+            validate_certificates=self._conf.validate_certificates,
+            certificate_chain=self._conf.certificate_chain,
+            ciphers=self._conf.ciphers,
+            inner_protocols=self._conf.inner_protocols,
+            lowest_supported_version=self._conf.lowest_supported_version,
+            highest_supported_version=self._conf.highest_supported_version,
+            trust_store=self._conf.trust_store,
+            anti_replay=self._conf.anti_replay,
+            handshake_timeout_min=self._conf.handshake_timeout_min,
+            handshake_timeout_max=self._conf.handshake_timeout_max,
+            sni_callback=self._conf.sni_callback,
+            pre_shared_key=self._conf.pre_shared_key,
+            pre_shared_key_store=self._conf.pre_shared_key_store,
+        )
+
+    @property
     def configuration(self):
         # PEP 543
         return self._configuration
