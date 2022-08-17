@@ -526,7 +526,7 @@ cdef class MbedTLSConfiguration:
     def certificate_chain(self):
         key_cert = self._ctx.key_cert
         if key_cert is NULL:
-            return ((), None)
+            return None
         chain = []
         cdef _x509.mbedtls_x509_crt *c_ctx = key_cert.cert
         while c_ctx is not NULL:
@@ -873,7 +873,6 @@ cdef class _BaseContext:
     """Context base class."""
 
     def __init__(self, configuration not None):
-        self._configuration = configuration
         if isinstance(configuration, TLSConfiguration):
             self._conf = MbedTLSConfiguration(
                 validate_certificates=configuration.validate_certificates,
@@ -936,7 +935,7 @@ cdef class _BaseContext:
         return self.configuration == other.configuration
 
     @property
-    def _conf(self):
+    def configuration(self):
         if self._conf._transport is Transport.STREAM:
             return TLSConfiguration(
                 validate_certificates=self._conf.validate_certificates,
@@ -966,11 +965,6 @@ cdef class _BaseContext:
             pre_shared_key=self._conf.pre_shared_key,
             pre_shared_key_store=self._conf.pre_shared_key_store,
         )
-
-    @property
-    def configuration(self):
-        # PEP 543
-        return self._configuration
 
     @property
     def _purpose(self) -> Purpose:

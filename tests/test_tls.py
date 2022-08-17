@@ -361,19 +361,19 @@ class TestDTLSCookie:
 
 def assert_conf_invariant(
     conf: Union[TLSConfiguration, DTLSConfiguration],
-    default: Optional[Any] = None,
     **elem: Any,
 ) -> None:
-    # The point is:  We need to make sure that the context gets
-    # configured properly. However, some elements of the configuration
-    # cannot be transformed back accurately from the mbedtls
-    # configuration to the PEP 543 configuration.
+    # For the context, the configuration is converted into an
+    # internal MbedTLSConfiguration and the accessors then
+    # converts the MbedTLSConfiguration back into a
+    # TLSConfiguration (or DTLSConfiguration).  These conversions
+    # are what we actually check here.
     __tracebackhide__ = True
     assert len(elem) == 1
 
     key, value = next(iter(elem.items()))
-    assert getattr(ServerContext(conf.update(**elem))._conf, key) == (
-        default or value
+    assert (
+        getattr(ServerContext(conf.update(**elem)).configuration, key) == value
     )
 
 
@@ -395,7 +395,7 @@ class TestConfiguration:
     def test_set_empty_certificate_chain(
         self, conf: Union[TLSConfiguration, DTLSConfiguration]
     ) -> None:
-        assert_conf_invariant(conf, certificate_chain=None, default=((), None))
+        assert_conf_invariant(conf, certificate_chain=None)
 
     def test_set_certificate_chain(
         self, conf: Union[TLSConfiguration, DTLSConfiguration]
@@ -412,7 +412,11 @@ class TestConfiguration:
 
     @pytest.mark.parametrize(
         "inner_protocols",
-        [(), (NextProtocol.H2, NextProtocol.H2C), (b"h2", b"h2c", b"ftp")],
+        [
+            (),
+            (NextProtocol.H2, NextProtocol.H2C),
+            (NextProtocol.H2, NextProtocol.H2C, NextProtocol.FTP),
+        ],
     )
     def test_set_inner_protocols(
         self,
@@ -422,7 +426,6 @@ class TestConfiguration:
         assert_conf_invariant(
             conf,
             inner_protocols=inner_protocols,
-            default=tuple(map(NextProtocol, inner_protocols)),
         )
 
     @pytest.mark.parametrize("trust_store", [TrustStore.system()])

@@ -185,6 +185,59 @@ class TLSConfiguration:
     pre_shared_key: Optional[Tuple[str, bytes]] = None
     pre_shared_key_store: Mapping[str, bytes] = field(default_factory=dict)
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, TLSConfiguration):
+            return NotImplemented
+        return all(
+            (
+                self.validate_certificates == other.validate_certificates,
+                self.certificate_chain == other.certificate_chain
+                or (
+                    not self.certificate_chain and not other.certificate_chain
+                ),
+                self.ciphers == other.ciphers
+                or (not self.ciphers and not other.ciphers),
+                self.inner_protocols == other.inner_protocols
+                or (not self.inner_protocols and not other.inner_protocols),
+                self.lowest_supported_version == other.lowest_supported_version
+                or (
+                    self.lowest_supported_version
+                    in {
+                        TLSVersion.MINIMUM_SUPPORTED,
+                        TLSVersion.MAXIMUM_SUPPORTED,
+                    }
+                )
+                or (
+                    other.lowest_supported_version
+                    in {
+                        TLSVersion.MINIMUM_SUPPORTED,
+                        TLSVersion.MAXIMUM_SUPPORTED,
+                    }
+                ),
+                self.highest_supported_version
+                == other.highest_supported_version
+                or (
+                    self.highest_supported_version
+                    in {
+                        TLSVersion.MINIMUM_SUPPORTED,
+                        TLSVersion.MAXIMUM_SUPPORTED,
+                    }
+                )
+                or (
+                    other.highest_supported_version
+                    in {
+                        TLSVersion.MINIMUM_SUPPORTED,
+                        TLSVersion.MAXIMUM_SUPPORTED,
+                    }
+                ),
+                self.trust_store == other.trust_store
+                or (not self.trust_store and not other.trust_store),
+                self.sni_callback == other.sni_callback,
+                self.pre_shared_key == other.pre_shared_key,
+                self.pre_shared_key_store == other.pre_shared_key_store,
+            )
+        )
+
     def update(
         self,
         validate_certificates: _Wrap[bool] = _DEFAULT_VALUE,
@@ -231,6 +284,63 @@ class DTLSConfiguration:
     sni_callback: Optional[ServerNameCallback] = None
     pre_shared_key: Optional[Tuple[str, bytes]] = None
     pre_shared_key_store: Mapping[str, bytes] = field(default_factory=dict)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, DTLSConfiguration):
+            return NotImplemented
+        return all(
+            (
+                self.validate_certificates == other.validate_certificates,
+                self.certificate_chain == other.certificate_chain
+                or (
+                    not self.certificate_chain and not other.certificate_chain
+                ),
+                self.ciphers == other.ciphers
+                or (not self.ciphers and not other.ciphers),
+                self.inner_protocols == other.inner_protocols
+                or (not self.inner_protocols and not other.inner_protocols),
+                self.lowest_supported_version == other.lowest_supported_version
+                or (
+                    self.lowest_supported_version
+                    in {
+                        DTLSVersion.MINIMUM_SUPPORTED,
+                        DTLSVersion.MAXIMUM_SUPPORTED,
+                    }
+                )
+                or (
+                    other.lowest_supported_version
+                    in {
+                        DTLSVersion.MINIMUM_SUPPORTED,
+                        DTLSVersion.MAXIMUM_SUPPORTED,
+                    }
+                ),
+                self.highest_supported_version
+                == other.highest_supported_version
+                or (
+                    self.highest_supported_version
+                    in {
+                        DTLSVersion.MINIMUM_SUPPORTED,
+                        DTLSVersion.MAXIMUM_SUPPORTED,
+                    }
+                )
+                or (
+                    other.highest_supported_version
+                    in {
+                        DTLSVersion.MINIMUM_SUPPORTED,
+                        DTLSVersion.MAXIMUM_SUPPORTED,
+                    }
+                ),
+                self.trust_store == other.trust_store
+                or (not self.trust_store and not other.trust_store)
+                or (not self.trust_store and not other.trust_store),
+                self.anti_replay == other.anti_replay,
+                self.handshake_timeout_min == other.handshake_timeout_min,
+                self.handshake_timeout_max == other.handshake_timeout_max,
+                self.sni_callback == other.sni_callback,
+                self.pre_shared_key == other.pre_shared_key,
+                self.pre_shared_key_store == other.pre_shared_key_store,
+            )
+        )
 
     def update(
         self,

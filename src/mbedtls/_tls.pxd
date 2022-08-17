@@ -460,7 +460,6 @@ cdef struct _C_Buffers:
 
 
 cdef class _BaseContext:
-    cdef object _configuration
     cdef MbedTLSConfiguration _conf
 
 
