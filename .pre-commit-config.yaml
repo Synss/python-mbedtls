@@ -1,0 +1,58 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+# See https://pre-commit.ci for CI config
+
+ci:
+  autoupdate_schedule: monthly
+repos:
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes
+  - repo: local
+    hooks:
+      - id: check-future-annotations
+        name: check future annotations
+        language: script
+        entry: scripts/check-future-annotations.sh
+        types: [python]
+        exclude: ^docs/source/
+      - id: check-license-header
+        name: check license header
+        language: script
+        entry: scripts/check-license-header.sh
+        types_or: [cython, python]
+        exclude: ^docs/source/
+  - repo: 'https://github.com/pre-commit/pre-commit-hooks'
+    rev: v4.3.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+  - repo: 'https://github.com/psf/black'
+    rev: 22.6.0
+    hooks:
+      - id: black
+        types: [python]
+  - repo: 'https://github.com/pycqa/flake8'
+    rev: 5.0.4
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - flake8-force
+          - flake8-pytest-style
+        types_or: [cython, python]
+  - repo: 'https://github.com/PyCQA/isort'
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        types_or: [cython, python]
+  - repo: 'https://github.com/asottile/pyupgrade'
+    rev: v2.37.3
+    hooks:
+      - id: pyupgrade
+        types_or: [cython, python]
+        args:
+          - '--py37-plus'
+          - '--keep-runtime-typing'

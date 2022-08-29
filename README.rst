@@ -4,6 +4,10 @@
 Cryptographic library for Python with Mbed TLS back end
 =======================================================
 
+.. image:: https://results.pre-commit.ci/badge/github/Synss/python-mbedtls/master.svg
+   :target: https://results.pre-commit.ci/latest/github/Synss/python-mbedtls/master
+   :alt: pre-commit.ci status
+
 .. image::
    https://github.com/Synss/python-mbedtls/actions/workflows/main.yml/badge.svg?branch=master
    :target: https://github.com/Synss/python-mbedtls/actions/
