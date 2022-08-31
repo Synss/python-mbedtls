@@ -70,7 +70,7 @@ def mbedtls_version_info(lib):
 def check_mbedtls_support(version, url):
     library = ctypes.util.find_library("mbedtls")
     if not library:
-        sys.stderr.write("  Library not found{sep}".format(sep=os.linesep))
+        sys.stderr.write(f"  Library not found{os.linesep}")
         sys.stderr.write(
             "  The paths are probably not set correctly but let's try anyway{sep}".format(
                 sep=os.linesep
@@ -79,16 +79,16 @@ def check_mbedtls_support(version, url):
         return
     try:
         lib = ctypes.cdll.LoadLibrary(library)
-        sys.stdout.write("  loading: {!r}\n".format(lib._name))
+        sys.stdout.write(f"  loading: {lib._name!r}\n")
         sys.stdout.write(
             "  mbedtls version: {!s}{sep}".format(
                 mbedtls_version(lib), sep=os.linesep
             )
         )
-        sys.stdout.write("  python-mbedtls version: {0}\n".format(VERSION))
+        sys.stdout.write(f"  python-mbedtls version: {VERSION}\n")
     except OSError as exc:
         lib = None
-        sys.stderr.write("  {exc!s}{sep}".format(exc=exc, sep=os.linesep))
+        sys.stderr.write(f"  {exc!s}{os.linesep}")
     if lib and mbedtls_version_info(lib) < version[:2]:
         message = (
             "  python-mbedtls requires at least mbedtls {major}.{minor}".format(

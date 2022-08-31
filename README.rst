@@ -373,7 +373,7 @@ root CA signs:
 >>> ca1_csr = x509.CSR.new(ca1_key, "CN=Intermediate CA", hashlib.sha256())
 >>>
 >>> ca1_crt = ca0_crt.sign(
-...     ca1_csr, ca0_key, now, now + dt.timedelta(days=90), 0x123456, 
+...     ca1_csr, ca0_key, now, now + dt.timedelta(days=90), 0x123456,
 ...     basic_constraints=x509.BasicConstraints(ca=True, max_path_length=3))
 ...
 
