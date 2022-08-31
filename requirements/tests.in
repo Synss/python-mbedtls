@@ -4,8 +4,10 @@ pytest
 
 # Tooling
 coverage
-pylint
 readme_renderer
+
+# QA
+pre-commit
 
 # Plugins
 pytest-cov != 2.9.0
