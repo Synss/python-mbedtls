@@ -4,7 +4,7 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
-    name: Build on ${{ matrix.os }}
+    name: ${{ matrix.pyver }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
@@ -12,6 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, macos-11, windows-2019]
+        pyver: [cp37, cp38, cp39, cp310, cp311]
         version: [2.28.1]
     steps:
       - uses: actions/checkout@v3
@@ -25,9 +26,9 @@ jobs:
           path: dist
           if-no-files-found: error
       - name: Build and test wheels
-        uses: pypa/cibuildwheel@v2.8.1
+        uses: pypa/cibuildwheel@v2.9.0
         env:
-          CIBW_BUILD: cp3{7,8,9,10}-*
+          CIBW_BUILD: ${{ matrix.pyver }}-*
           CIBW_ENVIRONMENT: VERSION=${{ matrix.version }}
           CIBW_ENVIRONMENT_WINDOWS: >
             VERSION=${{ matrix.version }}
