@@ -1,6 +1,7 @@
 [next]
 
 * Add Python 3.11 build.
+* Add musllinux build.
 
 [2.4.0] - 2022-08-07
 
