@@ -1,3 +1,7 @@
+[next]
+
+* Add missing pyi file to wheel.
+
 [2.5.0] - 2022-09-02
 
 * Add Python 3.11 build.

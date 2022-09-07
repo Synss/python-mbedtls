@@ -193,7 +193,7 @@ setup(
     download_url=DOWNLOAD_URL,
     ext_modules=list(extensions(COVERAGE)),
     options=options(COVERAGE),
-    package_data={"mbedtls": ["py.typed", "**.pyi"]},
+    package_data={"mbedtls": ["py.typed", "**.pyi", "cipher/**pyi"]},
     package_dir={"": "src"},
     packages=find_packages("src"),
     setup_requires=setup_requires,
