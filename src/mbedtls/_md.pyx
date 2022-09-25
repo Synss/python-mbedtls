@@ -51,7 +51,7 @@ def _digestmod(sig_md):
     return __MD_NAME[sig_md].decode("ascii").lower()
 
 
-algorithms_guaranteed = ("md5", "sha1", "sha224", "sha256", "sha384", "sha512")
+algorithms_guaranteed = ("md5", "sha1", "sha256")
 algorithms_available = tuple(
     name.decode("ascii").lower() for name in __get_supported_mds()
     if _version.has_feature(name.decode("ascii"))
