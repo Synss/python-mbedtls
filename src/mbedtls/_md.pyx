@@ -39,9 +39,9 @@ def __get_supported_mds():
     md_lookup = {n: v for n, v in enumerate(__MD_NAME)}
     cdef const int* md_types = _md.mbedtls_md_list()
     cdef size_t n = 0
-    mds = set()
+    mds = []
     while md_types[n]:
-        mds.add(md_lookup[md_types[n]])
+        mds.append(md_lookup[md_types[n]])
         n += 1
     return mds
 
@@ -51,9 +51,9 @@ def _digestmod(sig_md):
 
 
 algorithms_guaranteed = ("md5", "sha1", "sha224", "sha256", "sha384", "sha512")
-algorithms_available = {
+algorithms_available = tuple(
     name.decode("ascii").lower() for name in __get_supported_mds()
-}
+)
 
 
 __all__ = algorithms_guaranteed + ("new", "algorithms_guaranteed",
