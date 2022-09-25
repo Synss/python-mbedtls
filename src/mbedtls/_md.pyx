@@ -81,10 +81,10 @@ cdef class MDBase:
         except (AttributeError, ValueError) as exc:
             # Not `str`-like.
             raise TypeError(name) from exc
-        if name not in algorithms_available:
-            raise ValueError("{} not available".format(name))
         cdef char *c_name = name_
         self._info = _md.mbedtls_md_info_from_string(c_name)
+        if self._info == NULL:
+            raise ValueError("{} not available".format(name))
         _exc.check_error(_md.mbedtls_md_setup(&self._ctx, self._info, _hmac))
         self._block_size = block_size
 
