@@ -12,6 +12,7 @@ cimport mbedtls._md as _md
 import binascii
 
 import mbedtls.exceptions as _exc
+import mbedtls.version as _version
 
 __MD_NAME = (
     # Define as bytes to map to `const char*` without conversion.
@@ -53,6 +54,7 @@ def _digestmod(sig_md):
 algorithms_guaranteed = ("md5", "sha1", "sha224", "sha256", "sha384", "sha512")
 algorithms_available = tuple(
     name.decode("ascii").lower() for name in __get_supported_mds()
+    if _version.has_feature(name.decode("ascii"))
 )
 
 

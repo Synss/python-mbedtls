@@ -1,3 +1,8 @@
+[next]
+
+* md: Fixup cases where "algorithms_available" would return actually
+unavailable algorithms.
+
 [2.5.1] - 2022-09-07
 
 * Add missing pyi file to wheel.
