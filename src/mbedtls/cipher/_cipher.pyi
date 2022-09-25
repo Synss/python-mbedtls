@@ -4,9 +4,9 @@
 from __future__ import annotations
 
 import enum
-from typing import FrozenSet, Optional, Tuple
+from typing import Sequence, Optional, Tuple
 
-def get_supported_ciphers() -> FrozenSet[bytes]: ...
+def get_supported_ciphers() -> Sequence[bytes]: ...
 
 class Mode(enum.Enum):
     ECB: int

@@ -2,6 +2,8 @@
 
 * md: Fixup cases where "algorithms_available" would return actually
 unavailable algorithms.
+* cipher: `get_supported_ciphers()` now returns a sequence (consistent
+with the md "available_*" functions).
 
 [2.5.1] - 2022-09-07
 

@@ -41,7 +41,6 @@ from mbedtls.cipher import (
     Mode,
     get_supported_ciphers,
 )
-from mbedtls.cipher._cipher import CIPHER_NAME  # type: ignore
 from mbedtls.exceptions import TLSError
 
 
@@ -180,14 +179,11 @@ def paramids(params: Tuple[M, int, Mode, int]) -> str:
     )
 
 
-def test_cipher_list() -> None:
-    assert len(CIPHER_NAME) == 74
-
-
 def test_get_supported_ciphers() -> None:
-    cl = get_supported_ciphers()
-    assert cl
-    assert set(cl).issubset(set(CIPHER_NAME))
+    # Check a few basic ciphers that really have to be present.
+    assert b"AES-128-ECB" in get_supported_ciphers()
+    assert b"AES-192-ECB" in get_supported_ciphers()
+    assert b"AES-256-ECB" in get_supported_ciphers()
 
 
 class TestCipher:
@@ -234,8 +230,6 @@ class TestCipher:
     ) -> None:
         module, key_size, mode, iv_size = params
         cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
-        assert cipher.name in CIPHER_NAME
-        assert CIPHER_NAME[cipher._type] == cipher.name
         assert str(cipher) == cipher.name.decode("ascii")
 
     def test_encrypt_decrypt(
@@ -338,8 +332,6 @@ class TestAEADCipher:
             iv=randbytes(iv_size),
             ad=randbytes(ad_size),
         )
-        assert cipher.name in CIPHER_NAME
-        assert CIPHER_NAME[cipher._type] == cipher.name
         assert str(cipher) == cipher.name.decode("ascii")
 
     @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])

@@ -14,84 +14,6 @@ from contextlib import suppress
 
 import mbedtls.exceptions as _exc
 
-CIPHER_NAME = (
-    # Define as bytes to map to `const char*` without conversion.
-    b"NONE",
-    b"NULL",
-    b"AES-128-ECB",
-    b"AES-192-ECB",
-    b"AES-256-ECB",
-    b"AES-128-CBC",
-    b"AES-192-CBC",
-    b"AES-256-CBC",
-    b"AES-128-CFB128",
-    b"AES-192-CFB128",
-    b"AES-256-CFB128",
-    b"AES-128-CTR",
-    b"AES-192-CTR",
-    b"AES-256-CTR",
-    b"AES-128-GCM",
-    b"AES-192-GCM",
-    b"AES-256-GCM",
-    b"CAMELLIA-128-ECB",
-    b"CAMELLIA-192-ECB",
-    b"CAMELLIA-256-ECB",
-    b"CAMELLIA-128-CBC",
-    b"CAMELLIA-192-CBC",
-    b"CAMELLIA-256-CBC",
-    b"CAMELLIA-128-CFB128",
-    b"CAMELLIA-192-CFB128",
-    b"CAMELLIA-256-CFB128",
-    b"CAMELLIA-128-CTR",
-    b"CAMELLIA-192-CTR",
-    b"CAMELLIA-256-CTR",
-    b"CAMELLIA-128-GCM",
-    b"CAMELLIA-192-GCM",
-    b"CAMELLIA-256-GCM",
-    b"DES-ECB",
-    b"DES-CBC",
-    b"DES-EDE-ECB",
-    b"DES-EDE-CBC",
-    b"DES-EDE3-ECB",
-    b"DES-EDE3-CBC",
-    b"BLOWFISH-ECB",
-    b"BLOWFISH-CBC",
-    b"BLOWFISH-CFB64",
-    b"BLOWFISH-CTR",
-    b"ARC4-128",
-    b"AES-128-CCM",
-    b"AES-192-CCM",
-    b"AES-256-CCM",
-    b"CAMELLIA-128-CCM",
-    b"CAMELLIA-192-CCM",
-    b"CAMELLIA-256-CCM",
-    b"ARIA-128-ECB",
-    b"ARIA-192-ECB",
-    b"ARIA-256-ECB",
-    b"ARIA-128-CBC",
-    b"ARIA-192-CBC",
-    b"ARIA-256-CBC",
-    b"ARIA-128-CFB128",
-    b"ARIA-192-CFB128",
-    b"ARIA-256-CFB128",
-    b"ARIA-128-CTR",
-    b"ARIA-192-CTR",
-    b"ARIA-256-CTR",
-    b"ARIA-128-GCM",
-    b"ARIA-192-GCM",
-    b"ARIA-256-GCM",
-    b"ARIA-128-CCM",
-    b"ARIA-192-CCM",
-    b"ARIA-256-CCM",
-    b"AES-128-OFB",
-    b"AES-192-OFB",
-    b"AES-256-OFB",
-    b"AES-128-XTS",
-    b"AES-256-XTS",
-    b"CHACHA20",
-    b"CHACHA20-POLY1305",
-)
-
 
 @enum.unique
 class Mode(enum.Enum):
@@ -109,15 +31,18 @@ class Mode(enum.Enum):
 
 cpdef get_supported_ciphers():
     """Return the ciphers supported by the generic cipher module."""
-    cipher_lookup = {n: v for n, v in enumerate(CIPHER_NAME)}
-    cdef const int* cipher_types = _cipher.mbedtls_cipher_list()
+    ciphers = []
+    # TODO: Typing is funky here (3.1.0 backend).  Report and fix upstream.
+    cdef const mbedtls_cipher_type_t* cipher_types = (
+        <const mbedtls_cipher_type_t*> _cipher.mbedtls_cipher_list()
+    )
     cdef size_t n = 0
-    ciphers = set()
     while cipher_types[n]:
-        with suppress(KeyError):
-            ciphers.add(cipher_lookup[cipher_types[n]])
+        info = _cipher.mbedtls_cipher_info_from_type(cipher_types[n])
+        # mbedtls 3: mbedtls_cipher_info_get_name
+        ciphers.append(info.name)
         n += 1
-    return ciphers
+    return tuple(ciphers)
 
 
 cdef class _CipherBase:
