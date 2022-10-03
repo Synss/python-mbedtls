@@ -50,7 +50,7 @@ repos:
       - id: isort
         types_or: [cython, python]
   - repo: 'https://github.com/asottile/pyupgrade'
-    rev: v2.37.3
+    rev: v2.38.2
     hooks:
       - id: pyupgrade
         types_or: [cython, python]
