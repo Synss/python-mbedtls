@@ -4,19 +4,19 @@
 #
 #    pip-compile --no-annotate requirements/build.in
 #
-build==0.8.0
+build==0.9.0
 click==8.1.3
 cython==0.29.32
-delocate==0.10.2 ; sys_platform == "darwin"
-importlib-metadata==4.12.0
+delocate==0.10.3 ; sys_platform == "darwin"
+importlib-metadata==5.0.0
 packaging==21.3
 pep517==0.13.0
-pip-tools==6.8.0
+pip-tools==6.10.0
 pyparsing==3.0.9
 tomli==2.0.1
-typing-extensions==4.3.0
-wheel==0.37.1
-zipp==3.8.1
+typing-extensions==4.4.0
+wheel==0.38.4
+zipp==3.10.0
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

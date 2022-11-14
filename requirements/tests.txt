@@ -7,35 +7,35 @@
 attrs==22.1.0
 bleach==5.0.1
 cfgv==3.3.1
-coverage[toml]==6.4.4
+coverage[toml]==6.5.0
 cython==0.29.32
 distlib==0.3.6
 docutils==0.19
+exceptiongroup==1.0.4
 filelock==3.8.0
-identify==2.5.3
-importlib-metadata==4.12.0
+identify==2.5.9
+importlib-metadata==5.0.0
 iniconfig==1.1.1
 nodeenv==1.7.0
 packaging==21.3
-platformdirs==2.5.2
+platformdirs==2.5.4
 pluggy==1.0.0
 pre-commit==2.20.0
-py==1.11.0
 pygments==2.13.0
 pyparsing==3.0.9
-pytest==7.1.2
-pytest-cov==3.0.0
+pytest==7.2.0
+pytest-cov==4.0.0
 pytest-repeat==0.9.1
 pytest-timeout==2.1.0
 pyyaml==6.0
-readme-renderer==37.0
+readme-renderer==37.3
 six==1.16.0
 toml==0.10.2
 tomli==2.0.1
-typing-extensions==4.3.0
-virtualenv==20.16.4
+typing-extensions==4.4.0
+virtualenv==20.16.7
 webencodings==0.5.1
-zipp==3.8.1
+zipp==3.10.0
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
