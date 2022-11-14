@@ -10,7 +10,6 @@ from libc.stdlib cimport free, malloc
 cimport mbedtls.cipher._cipher as _cipher
 
 import enum
-from contextlib import suppress
 
 import mbedtls.exceptions as _exc
 

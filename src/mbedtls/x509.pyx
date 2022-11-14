@@ -14,7 +14,6 @@ import base64
 import datetime as dt
 import enum
 from collections import namedtuple
-from contextlib import suppress
 from pathlib import Path
 
 import mbedtls._md as _md

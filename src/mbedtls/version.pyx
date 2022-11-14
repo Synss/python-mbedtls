@@ -4,7 +4,6 @@
 """Run-time version information"""
 
 from libc.stdlib cimport free, malloc
-from libc.string cimport strcpy
 
 cimport mbedtls.version as _ver
 
