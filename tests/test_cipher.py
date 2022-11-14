@@ -26,6 +26,7 @@ from typing import (
 
 import pytest
 
+from mbedtls import has_feature
 from mbedtls.cipher import (
     AES,
     ARC4,
@@ -150,6 +151,10 @@ SUPPORTED_AEAD_MODES: Mapping[AEADCipherType, Sequence[Mode]] = {
 SUPPORTED_AEAD_CIPHERS: Sequence[AEADCipherType] = tuple(SUPPORTED_AEAD_MODES)
 
 
+def modname(mod: _CipherModule) -> str:
+    return mod.__name__.rsplit(".", 1)[-1]
+
+
 def gen_cipher_data(
     module: _CipherModule,
     *,
@@ -194,7 +199,10 @@ class TestCipher:
         ids=paramids,
     )
     def params(self, request: Any) -> Tuple[CipherType, int, Mode, int]:
-        module = request.param[0]
+        module: CipherType = request.param[0]
+        name = modname(module)
+        if not has_feature({"DES3": "DES", "DES3dbl": "DES"}.get(name, name)):
+            return pytest.skip(f"{name} unavailable")
         if module is ARIA and sys.platform.startswith("win"):
             return pytest.skip("unsupported")
 
@@ -275,7 +283,10 @@ class TestAEADCipher:
         ids=paramids,
     )
     def params(self, request: Any) -> Tuple[AEADCipherType, int, Mode, int]:
-        module = request.param[0]
+        module: AEADCipherType = request.param[0]
+        name = modname(module)
+        if not has_feature({"DES3": "DES", "DES3dbl": "DES"}.get(name, name)):
+            return pytest.skip(f"{name} unavailable")
         if module is ARIA and sys.platform.startswith("win"):
             return pytest.skip("unsupported")
 
@@ -414,9 +425,13 @@ class TestGenericCipher:
         ]
     )
     def module(self, request: Any) -> CipherType:
-        if request.param is ARIA and sys.platform.startswith("win"):
-            return pytest.skip()
-        return cast(CipherType, request.param)
+        module: CipherType = request.param
+        name = modname(module)
+        if not has_feature({"DES3": "DES", "DES3dbl": "DES"}.get(name, name)):
+            return pytest.skip(f"{name} unavailable")
+        if module is ARIA and sys.platform.startswith("win"):
+            return pytest.skip("unsupported")
+        return module
 
     def test_unsupported_mode(
         self, module: CipherType, randbytes: Callable[[int], bytes]
