@@ -12,18 +12,20 @@ import pytest
 import mbedtls
 
 
-def pytest_report_header(config: object, startdir: object) -> None:
+def pytest_report_header(
+    # pylint: disable=unused-argument
+    config: object,
+    startdir: object,
+) -> None:
     sys.stdout.write(
-        "python-mbedtls {}, {}\n".format(
-            mbedtls.__version__, mbedtls.version.version
-        )
+        f"python-mbedtls {mbedtls.__version__}, {mbedtls.version.version}\n"
     )
 
 
 class _Repr(reprlib.Repr):
     """Repr with support for memoryview."""
 
-    def repr_memoryview(self, obj: memoryview, level: object) -> str:
+    def repr_memoryview(self, obj: memoryview, _level: object) -> str:
         return f"{type(obj).__name__}({self.repr(obj.tobytes())})"
 
 
@@ -32,7 +34,7 @@ _repr = _repr_instance.repr
 
 
 def _compare_memoryviews(
-    _config: object, op: object, left: object, right: object
+    _config: object, _op: object, left: object, right: object
 ) -> Sequence[str]:
     # Adapted from pytest.
     summary = [f"{_repr(left)} != {_repr(right)}"]
@@ -43,9 +45,7 @@ def _compare_memoryviews(
                 left_value = left[i : i + 1]
                 right_value = right[i : i + 1]
                 explanation += [
-                    "At index {} diff: {} != {}".format(
-                        i, _repr(left_value), _repr(right_value)
-                    )
+                    f"At index {i} diff: {_repr(left_value)} != {_repr(right_value)}"
                 ]
                 break
     return summary + explanation

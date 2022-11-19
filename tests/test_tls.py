@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: MIT
 
+# pylint: disable=too-many-lines
+
 from __future__ import annotations
 
 import datetime as dt
@@ -67,6 +69,7 @@ def rootpath() -> Path:
 
 
 def make_root_ca(
+    # pylint: disable=too-many-arguments
     subject: Optional[str] = None,
     not_before: Optional[dt.datetime] = None,
     not_after: Optional[dt.datetime] = None,
@@ -101,6 +104,7 @@ def make_root_ca(
 
 
 def make_crt(
+    # pylint: disable=too-many-arguments
     issuer_crt: CRT,
     issuer_key: _Key,
     subject: Optional[str] = None,
@@ -329,6 +333,7 @@ class TestTrustStore:
 
     def test_iter(self, store: TrustStore) -> None:
         assert store[0] != store[1]
+        n = 0
         for n, crt in enumerate(store, start=1):
             assert crt in store
         assert n == len(store)
@@ -368,7 +373,7 @@ def assert_conf_invariant(
     # converts the MbedTLSConfiguration back into a
     # TLSConfiguration (or DTLSConfiguration).  These conversions
     # are what we actually check here.
-    __tracebackhide__ = True
+    __tracebackhide__ = True  # pylint: disable=unused-variable
     assert len(elem) == 1
 
     key, value = next(iter(elem.items()))
@@ -381,9 +386,7 @@ class TestConfiguration:
     @pytest.fixture(params=[DTLSConfiguration, TLSConfiguration])
     def conf(self, request: Any) -> Union[TLSConfiguration, DTLSConfiguration]:
         conf = request.param()
-        assert isinstance(conf, TLSConfiguration) or isinstance(
-            conf, DTLSConfiguration
-        )
+        assert isinstance(conf, (TLSConfiguration, DTLSConfiguration))
         return conf
 
     @pytest.mark.parametrize("validate", [True, False])
@@ -437,11 +440,9 @@ class TestConfiguration:
         assert trust_store
         assert_conf_invariant(conf, trust_store=trust_store)
 
-    @pytest.mark.parametrize("callback", [None])
     def test_set_sni_callback(
         self,
         conf: Union[TLSConfiguration, DTLSConfiguration],
-        callback: object,
     ) -> None:
         assert conf.sni_callback is None
 
@@ -565,9 +566,7 @@ class TestContext:
     @pytest.fixture(params=[TLSConfiguration, DTLSConfiguration])
     def conf(self, request: Any) -> Union[TLSConfiguration, DTLSConfiguration]:
         conf = request.param()
-        assert isinstance(conf, TLSConfiguration) or isinstance(
-            conf, DTLSConfiguration
-        )
+        assert isinstance(conf, (TLSConfiguration, DTLSConfiguration))
         return conf
 
     @pytest.fixture(params=[ServerContext, ClientContext])
@@ -575,7 +574,7 @@ class TestContext:
         self, conf: Union[TLSConfiguration, DTLSConfiguration], request: Any
     ) -> Union[ServerContext, ClientContext]:
         ctx = request.param(conf)
-        assert isinstance(ctx, ServerContext) or isinstance(ctx, ClientContext)
+        assert isinstance(ctx, (ServerContext, ClientContext))
         return ctx
 
     def test_repr(self, context: Union[ServerContext, ClientContext]) -> None:
@@ -618,7 +617,8 @@ HANDSHAKE_OVER = (
 def do_io(
     *, src: TLSWrappedBuffer, dst: TLSWrappedBuffer, amt: int = 1024
 ) -> None:
-    __tracebackhide__ = True
+    # pylint: disable=protected-access
+    __tracebackhide__ = True  # pylint: disable=unused-variable
     assert src._output_buffer, "nothing to do"
     while src._output_buffer:
         in_transit = src.peek_outgoing(amt)
@@ -637,7 +637,8 @@ def do_send(
 def do_handshake(
     end: TLSWrappedBuffer, states: Sequence[HandshakeStep]
 ) -> None:
-    __tracebackhide__ = True
+    # pylint: disable=protected-access
+    __tracebackhide__ = True  # pylint: disable=unused-variable
     while end._handshake_state is not states[0]:
         # The backend goes through every state for both
         # ends.  This is not relevant.

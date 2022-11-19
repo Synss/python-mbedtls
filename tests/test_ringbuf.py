@@ -263,7 +263,7 @@ class TestRingBuf:
         size = randint(2, 42) * maxlen
         step = randint(1, maxlen)
         written = 0
-        for idx in range(0, size, step):
+        for _ in range(0, size, step):
             data = randbytes(step)
             amt = buffer.write(data)
             written += amt

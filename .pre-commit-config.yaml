@@ -37,7 +37,7 @@ repos:
       - id: black
         types: [python]
   - repo: 'https://github.com/MarcoGorelli/cython-lint'
-    rev: v0.7.2
+    rev: v0.8.1
     hooks:
       - id: cython-lint
   - repo: 'https://github.com/pycqa/flake8'
@@ -53,8 +53,19 @@ repos:
     hooks:
       - id: isort
         types_or: [cython, python]
+  - repo: 'https://github.com/PyCQA/pylint'
+    rev: v2.15.6
+    hooks:
+      - id: pylint
+        additional_dependencies:
+          - pylint-per-file-ignores
+        args:
+          - '-rn'
+          - '--fail-under=9'
+          - '--disable=no-name-in-module'
+          - '--disable=import-error'
   - repo: 'https://github.com/asottile/pyupgrade'
-    rev: v3.2.0
+    rev: v3.2.2
     hooks:
       - id: pyupgrade
         types_or: [cython, python]

@@ -35,7 +35,7 @@ class TestHKDF:
         if not mbedtls.has_feature(
             {"sha224": "sha256", "sha384": "sha512"}.get(feature, feature)
         ):
-            return pytest.skip("requires %s support in mbedtls" % feature)
+            return pytest.skip(f"requires {feature} support in mbedtls")
         return cast(Algorithm, request.param)
 
     @pytest.mark.parametrize("key_length", [0, 128])

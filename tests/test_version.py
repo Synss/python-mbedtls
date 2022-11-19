@@ -13,7 +13,8 @@ def test_version_info() -> None:
 
 
 def test_version() -> None:
-    assert version.version == "mbed TLS %i.%i.%i" % version.version_info
+    major, minor, micro = version.version_info
+    assert version.version == f"mbed TLS {major}.{minor}.{micro}"
 
 
 @pytest.mark.parametrize("feature", ["i do not exist"])

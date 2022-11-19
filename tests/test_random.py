@@ -21,6 +21,7 @@ def sample(start: int, end: int, k: int = 20) -> Sequence[int]:
 
 
 class TestEntropy:
+    # pylint: disable=protected-access, no-member
     def test_pickle(self) -> None:
         entropy = _drbg.Random()._entropy
         with pytest.raises(TypeError) as excinfo:

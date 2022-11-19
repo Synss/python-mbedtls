@@ -4,6 +4,8 @@
 
 """python-mbedtls is a this wrapper to ARM's mbed TLS library."""
 
+# pylint: disable=consider-using-from-import
+
 from __future__ import annotations
 
 import mbedtls.cipher as cipher
@@ -22,7 +24,6 @@ __version__ = "2.5.1"
 __all__ = (
     "cipher",
     "exceptions",
-    "hash",
     "hashlib",
     "hkdf",
     "hmac",

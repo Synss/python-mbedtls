@@ -8,8 +8,10 @@ readme_renderer
 
 # QA
 pre-commit
+pylint
 
 # Plugins
+pylint-per-file-ignores
 pytest-cov != 2.9.0
 pytest-repeat
 pytest-timeout

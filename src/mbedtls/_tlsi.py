@@ -174,6 +174,7 @@ _InnerProtocols = Tuple[Union[NextProtocol, bytes], ...]
 
 @dataclass(frozen=True)
 class TLSConfiguration:
+    # pylint: disable=too-many-instance-attributes, too-many-arguments
     validate_certificates: bool = True
     certificate_chain: Optional[_CertificateChain] = None
     ciphers: Optional[_Ciphers] = None
@@ -271,6 +272,7 @@ class TLSConfiguration:
 
 @dataclass(frozen=True)
 class DTLSConfiguration:
+    # pylint: disable=too-many-instance-attributes, too-many-arguments
     validate_certificates: bool = True
     certificate_chain: Optional[_CertificateChain] = None
     ciphers: Optional[_Ciphers] = None

@@ -4,10 +4,9 @@
 
 from __future__ import annotations
 
-import numbers
 import pickle
 import sys
-from typing import Any, Callable, List, Tuple, Type, TypeVar, Union, cast
+from typing import Any, Callable, List, Tuple, Type, Union, cast
 
 import pytest
 
@@ -30,13 +29,18 @@ from mbedtls.pk import (
     get_supported_curves,
 )
 
+if sys.version_info < (3, 11):
+    from typing_extensions import assert_never
+else:
+    from typing import assert_never
+
 if sys.version_info < (3, 8):
     from typing_extensions import Literal
 else:
     from typing import Literal
 
 
-T = TypeVar("T")
+_CipherType = Union[RSA, ECC]
 
 
 def test_supported_curves() -> None:
@@ -74,12 +78,12 @@ def test_rsa_encryp_decrypt(randbytes: Callable[[int], bytes]) -> None:
     assert rsa.decrypt(rsa.encrypt(msg)) == msg
 
 
-def do_generate(cipher: T) -> bytes:
+def do_generate(cipher: _CipherType) -> bytes:
     if isinstance(cipher, RSA):
         return cipher.generate(1024)
     if isinstance(cipher, ECC):
         return cipher.generate()
-    pytest.fail("unreachable")
+    assert_never(cipher)
 
 
 class TestECPoint:
@@ -142,18 +146,18 @@ class TestCipher:
             ],
         )
     )
-    def cipher(self, request: Any) -> Union[ECC, RSA]:
+    def cipher(self, request: Any) -> _CipherType:
         if request.param is RSA:
             return cast(RSA, request.param())
         return ECC(request.param)
 
-    def test_pickle(self, cipher: Union[ECC, RSA]) -> None:
+    def test_pickle(self, cipher: _CipherType) -> None:
         assert cipher == pickle.loads(pickle.dumps(cipher))
 
-    def test_hash(self, cipher: Union[ECC, RSA]) -> None:
+    def test_hash(self, cipher: _CipherType) -> None:
         assert isinstance(hash(cipher), int)
 
-    def test_export_private_key(self, cipher: Union[ECC, RSA]) -> None:
+    def test_export_private_key(self, cipher: _CipherType) -> None:
         assert cipher.export_key("DER") == b""
         assert cipher.export_key("PEM") == ""
         assert cipher.key_size == 0
@@ -170,7 +174,7 @@ class TestCipher:
         assert type(cipher).from_PEM(cipher.export_key("PEM")) == cipher
         assert cipher.key_size > 0
 
-    def test_import_private_key(self, cipher: Union[ECC, RSA]) -> None:
+    def test_import_private_key(self, cipher: _CipherType) -> None:
         assert not cipher.export_key()
         assert not cipher.export_public_key()
 
@@ -184,7 +188,7 @@ class TestCipher:
         assert check_pair(other, other) is True
         assert cipher == other
 
-    def test_export_public_key(self, cipher: Union[ECC, RSA]) -> None:
+    def test_export_public_key(self, cipher: _CipherType) -> None:
         assert cipher.export_public_key("DER") == b""
         assert cipher.export_public_key("PEM") == ""
 
@@ -198,7 +202,7 @@ class TestCipher:
             cipher.export_public_key("PEM")
         ) == cipher.export_public_key("PEM")
 
-    def test_import_public_key(self, cipher: Union[ECC, RSA]) -> None:
+    def test_import_public_key(self, cipher: _CipherType) -> None:
         assert not cipher.export_key()
         assert not cipher.export_public_key()
 
@@ -220,7 +224,7 @@ class TestCipher:
     )
     def test_sign_verify(
         self,
-        cipher: Union[ECC, RSA],
+        cipher: _CipherType,
         digestmod: str,
         randbytes: Callable[[int], bytes],
     ) -> None:
@@ -257,18 +261,17 @@ class TestECCExportKey:
 
         pub = ecc.export_public_key("POINT")
         assert isinstance(pub, ECPoint)
-        assert isinstance(pub.x, numbers.Integral)
-        assert isinstance(pub.y, numbers.Integral)
-        assert isinstance(pub.z, numbers.Integral)
         assert pub.x not in (0, pub.y, pub.z)
         if curve in (Curve.CURVE25519, Curve.CURVE448):
             assert pub.y == 0
         else:
             assert pub.y not in (0, pub.x, pub.z)
-        assert pub.z == 0 or pub.z == 1
+        assert pub.z in (0, 1)
 
 
 class TestECCtoECDH:
+    # pylint: disable=protected-access
+
     @pytest.mark.parametrize("curve", get_supported_curves())
     def test_exchange(self, curve: Curve) -> None:
         ecp = ECC(curve)
@@ -330,6 +333,8 @@ class TestDH:
 
 
 class TestECDH:
+    # pylint: disable=protected-access
+
     @pytest.fixture(params=get_supported_curves())
     def key(self, request: Any) -> ECC:
         key = ECC(request.param)
@@ -363,10 +368,10 @@ class TestECDH:
 
     def test_client_accessors_with_key(self, key: ECC) -> None:
         der = key.generate()
-        format: Literal["NUM", "DER"] = (
+        fmt: Literal["NUM", "DER"] = (
             "NUM" if key.curve in (Curve.CURVE25519, Curve.CURVE448) else "DER"
         )
-        assert der == key.export_key(format)
+        assert der == key.export_key(fmt)
 
         peer = ECDHClient(key)
 
@@ -380,10 +385,10 @@ class TestECDH:
 
     def test_server_accessors_with_key(self, key: ECC) -> None:
         der = key.generate()
-        format: Literal["NUM", "DER"] = (
+        fmt: Literal["NUM", "DER"] = (
             "NUM" if key.curve in (Curve.CURVE25519, Curve.CURVE448) else "DER"
         )
-        assert der == key.export_key(format)
+        assert der == key.export_key(fmt)
 
         peer = ECDHServer(key)
 
@@ -437,6 +442,8 @@ def do_exchange(alice: ECDHNaive, bob: ECDHNaive) -> None:
 
 
 class TestECDHNaive:
+    # pylint: disable=protected-access
+
     @pytest.fixture(params=[Curve.CURVE448, Curve.CURVE25519])
     def curve(self, request: Any) -> Curve:
         assert isinstance(request.param, Curve)

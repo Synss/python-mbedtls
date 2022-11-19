@@ -2,10 +2,6 @@
 
 """Unit tests for mbedtls.md."""
 
-# Disable checks for violations that are acceptable in tests.
-# pylint: disable=missing-docstring
-# pylint: disable=attribute-defined-outside-init
-# pylint: disable=invalid-name
 from __future__ import annotations
 
 import pickle

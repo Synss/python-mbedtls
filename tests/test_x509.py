@@ -62,6 +62,7 @@ def make_csr(
 
 
 def make_root_ca(
+    # pylint: disable=too-many-arguments
     subject: Optional[str] = None,
     not_before: Optional[dt.datetime] = None,
     not_after: Optional[dt.datetime] = None,
@@ -101,6 +102,7 @@ def make_root_ca(
 
 
 def make_crt(
+    # pylint: disable=too-many-arguments
     issuer_crt: CRT,
     issuer_key: _PKey,
     subject: Optional[str] = None,
@@ -148,11 +150,7 @@ class TestCertificate:
         scope="class", params=(make_csr()[0], make_root_ca()[0], make_crl())
     )
     def cert(self, request: Any) -> Union[CSR, CRT, CRL]:
-        assert (
-            isinstance(request.param, CSR)
-            or isinstance(request.param, CRT)
-            or isinstance(request.param, CRL)
-        )
+        assert isinstance(request.param, (CSR, CRT, CRL))
         return request.param
 
     @pytest.mark.parametrize(
@@ -317,7 +315,7 @@ class TestVerifyCertificateChain:
     def test_verify_chain(self) -> None:
         crt0, key0 = make_root_ca()
         crt1, key1 = make_crt(crt0, key0)
-        crt2, key2 = make_crt(crt1, key1)
+        crt2, _key2 = make_crt(crt1, key1)
 
         assert crt0.verify(crt0) is True
         assert crt1.verify(crt2) is True

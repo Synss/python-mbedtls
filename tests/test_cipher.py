@@ -2,10 +2,6 @@
 
 """Unit tests for mbedtls.cipher."""
 
-# Disable checks for violations that are acceptable in tests.
-# pylint: disable=missing-docstring
-# pylint: disable=attribute-defined-outside-init
-# pylint: disable=invalid-name, redefined-outer-name
 from __future__ import annotations
 
 import pickle
@@ -405,7 +401,7 @@ class TestAEADCipher:
             if cipher.mode is Mode.ECB
             else cipher.block_size * 128
         )
-        msg, tag = cipher.encrypt(data)
+        _msg, tag = cipher.encrypt(data)
         with pytest.raises(TLSError):
             cipher.decrypt(b"", tag)
 
@@ -453,9 +449,7 @@ class TestGenericCipher:
     ) -> None:
         mode = Mode.CBC
         if mode not in SUPPORTED_MODES[module]:
-            return pytest.skip(  # type: ignore[return-value]
-                f"unsupported mode for {module!r}: {mode!s}"
-            )
+            pytest.skip(f"unsupported mode for {module!r}: {mode!s}")
 
         sizes = SUPPORTED_SIZES[module][mode]
         for key_size in sizes.key_size:

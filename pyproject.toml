@@ -60,9 +60,26 @@ strict = true
 
 [tool.pylint.master]
 extension-pkg-whitelist='mbedtls'
+load-plugins=[
+  "pylint_per_file_ignores",
+]
+disable=[
+  "missing-class-docstring",
+  "missing-function-docstring",
+  "missing-module-docstring",
+]
+
+[tool.pylint-per-file-ignores]
+"src/mbedtls/"="""
+C0209,
+R0801,
+import-error,
+useless-import-alias,
+"""
+"tests/"="redefined-outer-name"
 
 [tool.pylint.messages_control]
-disable = "C0103, C0326, C0330"
+disable = "C0103"
 
 [tool.pylint.similarities]
 ignore-comments = "yes"

@@ -17,7 +17,7 @@ import binascii as _binascii
 import sys
 from typing import Callable, Sequence, TypeVar, cast
 
-import mbedtls._random as _rnd
+import mbedtls._random as _rnd  # pylint: disable=no-name-in-module
 
 if sys.version_info < (3, 8):
     from typing_extensions import Final
@@ -43,8 +43,8 @@ __rng = _rnd.default_rng()
 
 randbits: Callable[[int], int] = __rng.getrandbits
 
-T = TypeVar("T", covariant=True)
-choice: Callable[[Sequence[T]], T] = __rng.choice
+T_co = TypeVar("T_co", covariant=True)
+choice: Callable[[Sequence[T_co]], T_co] = __rng.choice
 randbelow: Callable[[int], int] = __rng.randbelow
 
 

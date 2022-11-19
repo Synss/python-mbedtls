@@ -136,8 +136,8 @@ class TLSRecordHeader:
         return 5
 
     def __bytes__(self) -> bytes:
-        maj, min = _tls_from_version(self.version)
-        version = ((maj & 0xFF) << 8) + (min & 0xFF)
+        maj, min_ = _tls_from_version(self.version)
+        version = ((maj & 0xFF) << 8) + (min_ & 0xFF)
         return struct.pack(
             TLSRecordHeader.fmt,
             self.record_type,
@@ -150,10 +150,10 @@ class TLSRecordHeader:
         record_type, maj_min_version, length = struct.unpack(
             TLSRecordHeader.fmt, header[:5]
         )
-        maj, min = (maj_min_version >> 8) & 0xFF, maj_min_version & 0xFF
+        maj, min_ = (maj_min_version >> 8) & 0xFF, maj_min_version & 0xFF
         return cls(
             TLSRecordHeader.RecordType(record_type),
-            _tls_to_version((maj, min)),
+            _tls_to_version((maj, min_)),
             length,
         )
 
@@ -208,6 +208,7 @@ class ServerContext(_BaseContext):
 
 
 class TLSWrappedSocket:
+    # pylint: disable=too-many-instance-attributes
     # _pep543.TLSWrappedSocket
     def __init__(
         self, socket: _pysocket.socket, buffer: TLSWrappedBuffer
@@ -274,6 +275,7 @@ class TLSWrappedSocket:
 
     @property
     def _handshake_state(self) -> HandshakeStep:
+        # pylint: disable=protected-access
         return self._buffer._handshake_state
 
     def accept(self) -> Tuple[TLSWrappedSocket, _Address]:
@@ -295,6 +297,7 @@ class TLSWrappedSocket:
             self.setsockopt(_pysocket.SOL_SOCKET, _pysocket.SO_REUSEADDR, 1)
             self.bind(sockname)
         if isinstance(self.context, ClientContext):
+            # pylint: disable=protected-access
             # Probably not very useful but there is not reason to forbid it.
             return (
                 self.context.wrap_socket(conn, self._buffer._server_hostname),
@@ -371,7 +374,7 @@ class TLSWrappedSocket:
         amt = self._buffer.write(message)
         encrypted = self._buffer.peek_outgoing(amt)
         self._buffer.consume_outgoing(amt)
-        self._socket.sendall(encrypted)
+        self._socket.sendall(encrypted, flags)
 
     def sendto(self, message: bytes, *args: Any) -> int:
         if not 1 <= len(args) <= 2:
@@ -403,6 +406,7 @@ class TLSWrappedSocket:
         ...
 
     def do_handshake(self, *args):  # type: ignore[no-untyped-def]
+        # pylint: disable=too-many-branches
         if args and self.type is not _pysocket.SOCK_DGRAM:
             raise OSError(errno.ENOTCONN, os.strerror(errno.ENOTCONN))
 
@@ -419,7 +423,7 @@ class TLSWrappedSocket:
         while self._handshake_state is not HandshakeStep.HANDSHAKE_OVER:
             try:
                 self._buffer.do_handshake()
-            except WantReadError:
+            except WantReadError as exc:
                 if address is None:
                     data = self._socket.recv(1024, flags)
                 else:
@@ -429,7 +433,7 @@ class TLSWrappedSocket:
                         # bail out in any case.
                         raise OSError(
                             errno.ENOTCONN, os.strerror(errno.ENOTCONN)
-                        )
+                        ) from exc
                 self._buffer.receive_from_network(data)
             except WantWriteError:
                 in_transit = self._buffer.peek_outgoing(1024)
