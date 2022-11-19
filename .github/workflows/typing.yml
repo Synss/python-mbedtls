@@ -20,7 +20,7 @@ jobs:
           ./scripts/download-mbedtls.sh $BACKEND_VERSION $BACKEND_DIR/src
           ./scripts/install-mbedtls.sh $BACKEND_DIR/src $BACKEND_DIR
 
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
