@@ -56,7 +56,9 @@ def constant(value: T) -> Callable[[], T]:
     return lambda: value
 
 
-M = TypeVar("M", bound=Union[CipherType, AEADCipherType])
+_CipherModule = TypeVar(
+    "_CipherModule", bound=Union[CipherType, AEADCipherType]
+)
 
 
 SUPPORTED_SIZES: Mapping[
@@ -149,9 +151,9 @@ SUPPORTED_AEAD_CIPHERS: Sequence[AEADCipherType] = tuple(SUPPORTED_AEAD_MODES)
 
 
 def gen_cipher_data(
-    module: M,
+    module: _CipherModule,
     *,
-    modes: Mapping[M, Sequence[Mode]],
+    modes: Mapping[_CipherModule, Sequence[Mode]],
 ) -> Iterator[Tuple[int, Mode, int]]:
     for mode in modes[module]:
         sizes = SUPPORTED_SIZES[module][mode]
@@ -160,16 +162,16 @@ def gen_cipher_data(
 
 
 def gen_cipher(
-    modules: Sequence[M],
+    modules: Sequence[_CipherModule],
     *,
-    modes: Mapping[M, Sequence[Mode]],
-) -> Iterator[Tuple[M, int, Mode, int]]:
+    modes: Mapping[_CipherModule, Sequence[Mode]],
+) -> Iterator[Tuple[_CipherModule, int, Mode, int]]:
     for module in modules:
         for key_size, mode, iv_size in gen_cipher_data(module, modes=modes):
             yield module, key_size, mode, iv_size
 
 
-def paramids(params: Tuple[M, int, Mode, int]) -> str:
+def paramids(params: Tuple[_CipherModule, int, Mode, int]) -> str:
     module, key_size, mode, iv_size = params
     return (
         f"{module.__name__}, "
