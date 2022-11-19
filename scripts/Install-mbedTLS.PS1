@@ -34,22 +34,16 @@ if (-not(Test-Path $ProjectRoot -PathType Container)) {
   throw "Project solution not found"
 }
 
-foreach ($VSRoot in
-  "${Env:ProgramFiles(x86)}\MSBuild\14.0",
-  "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\*\MSBuild\15.0",
-  "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\*\MSBuild\Current")
-{
-  if (Get-Command -Name $VSRoot\Bin\MSBuild.exe `
-        -CommandType Application `
-        -ErrorAction SilentlyContinue)
-  { break }
-}
+$MSBuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
+  -latest `
+  -requires Microsoft.Component.MSBuild `
+  -find MSBuild\**\Bin\MSBuild.exe | select-object -first 1
 
-if (-not(Test-Path $VSRoot\Bin\MSBuild.exe)) {
+if (-not(Test-Path $MSBuild)) {
   throw "MSBuild not found"
 }
 
-& $VSRoot\Bin\MSBuild.exe `
+& $MSBuild `
   -noLogo `
   -maxCpuCount `
   -p:Platform=$Platform `
