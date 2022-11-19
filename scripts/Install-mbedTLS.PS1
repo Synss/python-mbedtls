@@ -48,17 +48,12 @@ foreach ($VSRoot in
 if (-not(Test-Path $VSRoot\Bin\MSBuild.exe)) {
   throw "MSBuild not found"
 }
-if ($VSRoot.Contains("14.0")) { $VSVersion = "v140"}
-elseif ($VSRoot.Contains("2017")) { $VSVersion = "v141"}
-elseif ($VSRoot.Contains("2019")) { $VSVersion = "v142"}
-else { throw "MSBuild not found" }
-Write-Host "Found MSBuild under $VSRoot ($VSVersion)"
 
 & $VSRoot\Bin\MSBuild.exe `
   -noLogo `
   -maxCpuCount `
   -p:Platform=$Platform `
-  -p:PlatformToolSet=$VSVersion `
+  -p:PlatformToolSet=v143 `
   -p:Configuration=$Configuration `
   -p:ConfigurationType=$ConfigurationType `
   -p:WholeProgramOptimization=False `
