@@ -18,6 +18,7 @@ jobs:
           # delocate fails there
           - os: macos-11
             pyver: cp37
+          - os: windows-2019
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
