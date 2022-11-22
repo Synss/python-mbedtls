@@ -10,6 +10,7 @@ from collections import defaultdict
 from typing import (
     Any,
     Callable,
+    Iterable,
     Iterator,
     Mapping,
     NamedTuple,
@@ -58,9 +59,7 @@ _CipherModule = TypeVar(
 )
 
 
-SUPPORTED_SIZES: Mapping[
-    Union[CipherType, AEADCipherType], Mapping[Mode, Size]
-] = {
+SUPPORTED_SIZES: Mapping[object, Mapping[Mode, Size]] = {
     AES: defaultdict(
         constant(Size(key_size=(16, 24, 32), iv_size=16)),
         {
@@ -112,7 +111,7 @@ SUPPORTED_SIZES: Mapping[
 }
 
 
-SUPPORTED_MODES: Mapping[CipherType, Sequence[Mode]] = {
+SUPPORTED_MODES: Mapping[object, Sequence[Mode]] = {
     AES: (
         Mode.ECB,
         Mode.CBC,
@@ -137,14 +136,14 @@ SUPPORTED_MODES: Mapping[CipherType, Sequence[Mode]] = {
     DES3dbl: (Mode.ECB, Mode.CBC),
 }
 
-SUPPORTED_CIPHERS: Sequence[CipherType] = tuple(SUPPORTED_MODES.keys())
+SUPPORTED_CIPHERS: Sequence[object] = tuple(SUPPORTED_MODES.keys())
 
-SUPPORTED_AEAD_MODES: Mapping[AEADCipherType, Sequence[Mode]] = {
+SUPPORTED_AEAD_MODES: Mapping[object, Sequence[Mode]] = {
     AES: (Mode.GCM, Mode.CCM),
     CHACHA20: (Mode.CHACHAPOLY,),
 }
 
-SUPPORTED_AEAD_CIPHERS: Sequence[AEADCipherType] = tuple(SUPPORTED_AEAD_MODES)
+SUPPORTED_AEAD_CIPHERS: Sequence[object] = tuple(SUPPORTED_AEAD_MODES)
 
 
 def modname(mod: _CipherModule) -> str:
@@ -152,9 +151,9 @@ def modname(mod: _CipherModule) -> str:
 
 
 def gen_cipher_data(
-    module: _CipherModule,
+    module: object,
     *,
-    modes: Mapping[_CipherModule, Sequence[Mode]],
+    modes: Mapping[object, Sequence[Mode]],
 ) -> Iterator[Tuple[int, Mode, int]]:
     for mode in modes[module]:
         sizes = SUPPORTED_SIZES[module][mode]
@@ -163,10 +162,10 @@ def gen_cipher_data(
 
 
 def gen_cipher(
-    modules: Sequence[_CipherModule],
+    modules: Iterable[object],
     *,
-    modes: Mapping[_CipherModule, Sequence[Mode]],
-) -> Iterator[Tuple[_CipherModule, int, Mode, int]]:
+    modes: Mapping[object, Sequence[Mode]],
+) -> Iterator[Tuple[object, int, Mode, int]]:
     for module in modules:
         for key_size, mode, iv_size in gen_cipher_data(module, modes=modes):
             yield module, key_size, mode, iv_size
@@ -199,6 +198,7 @@ class TestCipher:
         name = modname(module)
         if not has_feature({"DES3": "DES", "DES3dbl": "DES"}.get(name, name)):
             return pytest.skip(f"{name} unavailable")
+        assert isinstance(ARIA, CipherType)
         if module is ARIA and sys.platform.startswith("win"):
             return pytest.skip("unsupported")
 
@@ -283,8 +283,6 @@ class TestAEADCipher:
         name = modname(module)
         if not has_feature({"DES3": "DES", "DES3dbl": "DES"}.get(name, name)):
             return pytest.skip(f"{name} unavailable")
-        if module is ARIA and sys.platform.startswith("win"):
-            return pytest.skip("unsupported")
 
         return cast(Tuple[AEADCipherType, int, Mode, int], request.param)
 
@@ -425,6 +423,7 @@ class TestGenericCipher:
         name = modname(module)
         if not has_feature({"DES3": "DES", "DES3dbl": "DES"}.get(name, name)):
             return pytest.skip(f"{name} unavailable")
+        assert isinstance(ARIA, CipherType)
         if module is ARIA and sys.platform.startswith("win"):
             return pytest.skip("unsupported")
         return module
@@ -433,7 +432,7 @@ class TestGenericCipher:
         self, module: CipherType, randbytes: Callable[[int], bytes]
     ) -> None:
         supported_modes = frozenset(SUPPORTED_MODES[module]) | frozenset(
-            SUPPORTED_AEAD_MODES.get(module, ())  # type: ignore[call-overload]
+            SUPPORTED_AEAD_MODES.get(module, ())
         )
         for key_size, mode, iv_size in gen_cipher_data(
             module,

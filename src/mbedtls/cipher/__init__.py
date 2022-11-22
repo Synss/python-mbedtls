@@ -33,9 +33,9 @@ from mbedtls.cipher._cipher import (
 )
 
 if sys.version_info < (3, 8):
-    from typing_extensions import Final, Protocol
+    from typing_extensions import Final, Protocol, runtime_checkable
 else:
-    from typing import Final, Protocol
+    from typing import Final, Protocol, runtime_checkable
 
 
 # Add module-level aliases to comply with PEP 272.
@@ -51,6 +51,7 @@ MODE_XTS: Final = Mode.XTS.value
 MODE_CHACHAPOLY: Final = Mode.CHACHAPOLY.value
 
 
+@runtime_checkable
 class CipherType(Protocol):
     @property
     def __name__(self) -> str:
@@ -68,6 +69,7 @@ class CipherType(Protocol):
         ...
 
 
+@runtime_checkable
 class AEADCipherType(Protocol):
     @property
     def __name__(self) -> str:
