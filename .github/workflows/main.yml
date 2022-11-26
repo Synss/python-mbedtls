@@ -39,8 +39,8 @@ jobs:
             LDFLAGS="-Wl,-headerpad_max_install_names"
           CIBW_ENVIRONMENT_WINDOWS: >
             VERSION=${{ matrix.version }}
-            LIB=$TEMP\\mbedtls\\visualc\\VS2010\\x64\\Release
-            INCLUDE=$TEMP\\mbedtls\\include
+            LIB=$GITHUB_WORKSPACE\\_lib\\mbedtls\\visualc\\VS2010\\x64\\Release
+            INCLUDE=$GITHUB_WORKSPACE\\_lib\\mbedtls\\include
       - name: Inventory
         run: ls wheelhouse
       - name: Upload wheels
