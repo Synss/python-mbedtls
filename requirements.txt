@@ -4,5 +4,5 @@
 #
 #    pip-compile --no-annotate setup.py
 #
-certifi==2022.9.24
+certifi==2022.12.7
 typing-extensions==4.4.0
