@@ -32,12 +32,12 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: 'https://github.com/psf/black'
-    rev: 22.10.0
+    rev: 22.12.0
     hooks:
       - id: black
         types: [python]
   - repo: 'https://github.com/MarcoGorelli/cython-lint'
-    rev: v0.9.1
+    rev: v0.10.1
     hooks:
       - id: cython-lint
   - repo: 'https://github.com/pycqa/flake8'
@@ -49,12 +49,12 @@ repos:
           - flake8-pytest-style
         types_or: [cython, python]
   - repo: 'https://github.com/PyCQA/isort'
-    rev: 5.10.1
+    rev: 5.11.4
     hooks:
       - id: isort
         types_or: [cython, python]
   - repo: 'https://github.com/PyCQA/pylint'
-    rev: v2.15.8
+    rev: v2.15.9
     hooks:
       - id: pylint
         additional_dependencies:
@@ -65,7 +65,7 @@ repos:
           - '--disable=no-name-in-module'
           - '--disable=import-error'
   - repo: 'https://github.com/asottile/pyupgrade'
-    rev: v3.3.0
+    rev: v3.3.1
     hooks:
       - id: pyupgrade
         types_or: [cython, python]
