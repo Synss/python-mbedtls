@@ -85,3 +85,6 @@ disable = "C0103"
 ignore-comments = "yes"
 ignore-docstrings = "yes"
 min-similarity-lines = "8"
+
+[tool.pytest.ini_options]
+markers = "e2e: end-to-end tests"

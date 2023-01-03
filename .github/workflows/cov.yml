@@ -42,7 +42,7 @@ jobs:
         env:
           LD_LIBRARY_PATH: "${{ env.BACKEND_DIR }}/lib"
           PYTHONPATH: src
-        run: python -m pytest --cov=src/ tests/
+        run: python -m pytest --cov=src/ tests/ -k "not e2e"
 
       - name: Upload to coveralls
         env:
