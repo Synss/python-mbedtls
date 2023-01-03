@@ -18,7 +18,8 @@ def _get_version():
     with open(
         os.path.join(
             os.path.dirname(__file__), "src", "mbedtls", "__init__.py"
-        )
+        ),
+        encoding="utf-8",
     ) as f:
         for line in f:
             match = pattern.match(line)
@@ -29,7 +30,7 @@ def _get_version():
 
 VERSION = _get_version()
 MBEDTLS_VERSION = "2.28.1"
-DOWNLOAD_URL = "https://github.com/Synss/python-mbedtls/tarball/%s" % VERSION
+DOWNLOAD_URL = f"https://github.com/Synss/python-mbedtls/tarball/{VERSION}"
 
 
 __mbedtls_version_info__ = tuple(map(int, MBEDTLS_VERSION.split(".")))
@@ -74,36 +75,33 @@ def mbedtls_version_info(lib):
 def check_mbedtls_support(version, url):
     library = ctypes.util.find_library("mbedtls")
     if not library:
-        sys.stderr.write(f"  Library not found{os.linesep}")
-        sys.stderr.write(
-            "  The paths are probably not set correctly but let's try anyway{sep}".format(
-                sep=os.linesep
-            )
+        print("  Library not found", file=sys.stderr)
+        print(
+            "  The paths are probably not set correctly but let's try anyway",
+            file=sys.stderr,
         )
         return
     try:
         lib = ctypes.cdll.LoadLibrary(library)
-        sys.stdout.write(f"  loading: {lib._name!r}\n")
-        sys.stdout.write(
-            "  mbedtls version: {!s}{sep}".format(
-                mbedtls_version(lib), sep=os.linesep
-            )
+        print(
+            # pylint: disable=protected-access
+            f"  loading: {lib._name!r}\n",
+            file=sys.stdout,
         )
-        sys.stdout.write(f"  python-mbedtls version: {VERSION}\n")
+        print(f"  mbedtls version: {mbedtls_version(lib)!s}", file=sys.stdout)
+        print(f"  python-mbedtls version: {VERSION}", file=sys.stdout)
     except OSError as exc:
         lib = None
-        sys.stderr.write(f"  {exc!s}{os.linesep}")
+        print(f"  {exc!s}", file=sys.stderr)
     if lib and mbedtls_version_info(lib) < version[:2]:
-        message = (
-            "  python-mbedtls requires at least mbedtls {major}.{minor}".format(
-                major=version[0], minor=version[1]
-            ),
-            "  The latest version of mbedtls may be obtained from {url}.".format(
-                url=url
-            ),
-            "",
+        print(
+            f"  python-mbedtls requires at least mbedtls {version[0]}.{version[1]}",
+            file=sys.stderr,
         )
-        sys.stderr.writelines(os.linesep.join(message))
+        print(
+            f"  The latest version of mbedtls may be obtained from {url}.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
 
@@ -154,18 +152,17 @@ def options(coverage=False):
     if coverage:
         return {}
 
+    v = sys.version_info
     return {
         "build": {
-            "build_base": os.sep.join(
-                ("build", "%i.%i.%i" % sys.version_info[:3])
-            )
+            "build_base": os.sep.join(("build", f"{v[0]}.{v[1]}.{v[2]}"))
         },
         "build_ext": {"cython_c_in_temp": True},
     }
 
 
 def readme():
-    with open("README.rst") as f:
+    with open("README.rst", encoding="utf-8") as f:
         return f.read().replace(":math:", "")
 
 
