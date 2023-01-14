@@ -24,6 +24,7 @@ cimport mbedtls.mpi as _mpi
 cimport mbedtls.pk as _pk
 
 import enum
+import re
 from collections import namedtuple
 from functools import partial
 from pathlib import Path
@@ -237,7 +238,7 @@ cdef class CipherBase:
 
         """
         bkey = bytes(key)
-        if bkey.startswith(b"-----") and bkey.endswith(b"-----\n"):
+        if re.search(b"^-----BEGIN.+END.+-----\\s+$", bkey, re.DOTALL):
             # PEM must be null-terminated.
             bkey = bkey + b"\0"
         if callable(password):
