@@ -38,6 +38,9 @@ jobs:
           CIBW_BUILD: ${{ matrix.pyver }}-*
           CIBW_SKIP: "cp37-macosx_x86_64"
           CIBW_ENVIRONMENT: VERSION=${{ matrix.version }}
+          CIBW_ENVIRONMENT_MACOS: >
+            VERSION=${{ matrix.version }}
+            LDFLAGS="-Wl,-headerpad_max_install_names"
           CIBW_ENVIRONMENT_WINDOWS: >
             VERSION=${{ matrix.version }}
             LIB=$TEMP\\mbedtls\\visualc\\VS2010\\x64\\Release
