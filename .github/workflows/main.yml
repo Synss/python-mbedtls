@@ -33,7 +33,7 @@ jobs:
           path: dist
           if-no-files-found: error
       - name: Build and test wheels
-        uses: pypa/cibuildwheel@v2.11.2
+        uses: pypa/cibuildwheel@v2.11.4
         env:
           CIBW_BUILD: ${{ matrix.pyver }}-*
           CIBW_SKIP: "cp37-macosx_x86_64"
