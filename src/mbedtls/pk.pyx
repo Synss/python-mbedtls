@@ -236,9 +236,13 @@ cdef class CipherBase:
                 password-protected private keys.
 
         """
+        bkey = bytes(key)
+        if bkey.startswith(b"-----") and bkey.endswith(b"-----\n"):
+            # PEM must be null-terminated.
+            bkey = bkey + b"\0"
         if callable(password):
-            return cls(key=key, password=password())
-        return cls(key=key, password=password)
+            return cls(key=bkey, password=password())
+        return cls(key=bkey, password=password)
 
     @classmethod
     def from_file(cls, path, password=None):
@@ -426,7 +430,7 @@ cdef class CipherBase:
         try:
             _exc.check_error(
                 _pk.mbedtls_pk_write_key_pem(&self._ctx, output, osize))
-            return output[0:osize].decode("ascii")
+            return output[0:osize].rstrip(b"\0").decode("ascii")
         finally:
             free(output)
 
@@ -473,7 +477,7 @@ cdef class CipherBase:
         try:
             _exc.check_error(
                 _pk.mbedtls_pk_write_pubkey_pem(&self._ctx, output, osize))
-            return output[0:osize].decode("ascii")
+            return output[0:osize].rstrip(b"\0").decode("ascii")
         finally:
             free(output)
 
@@ -746,6 +750,10 @@ cdef class ECC(CipherBase):
         """
         if format == "POINT":
             return self._public_to_point()
+        elif self.curve in (Curve.CURVE25519, Curve.CURVE448):
+            raise ValueError(
+                "Curve25519 and Curve448 only support export as NUM"
+            )
         return super().export_public_key(format)
 
 

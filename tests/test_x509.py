@@ -245,7 +245,7 @@ class TestCRT:
         crt, key = make_root_ca()
         pem = crt.subject_public_key.export_public_key(format="PEM")
         assert pem.startswith("-----BEGIN PUBLIC KEY-----\n")
-        assert pem.rstrip("\0").endswith("-----END PUBLIC KEY-----\n")
+        assert pem.endswith("-----END PUBLIC KEY-----\n")
         assert pem == key.export_public_key(format="PEM")
 
     def test_revocation_bad_cast(self) -> None:

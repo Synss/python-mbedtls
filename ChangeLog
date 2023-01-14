@@ -3,6 +3,7 @@
 * ci: Update wheels to mbedtls 2.28.2.
 * md: Fixup cases where "algorithms_available" would return actually
 unavailable algorithms.
+* pk: Remove trailing null bytes from PEM format.  (Issue #75)
 * cipher: `get_supported_ciphers()` now returns a sequence (consistent
 with the md "available_*" functions).
 
