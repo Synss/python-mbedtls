@@ -848,6 +848,22 @@ class TestDTLSHandshake:
         do_send(secret, src=server, dst=client)
 
 
+class TestWrappedSocket_SmokeTests:
+    @pytest.mark.parametrize("conf", [TLSConfiguration(), DTLSConfiguration()])
+    def test_wrap_unwrap_client(
+        self, conf: Union[TLSConfiguration, DTLSConfiguration]
+    ) -> None:
+        with ClientContext(conf).wrap_socket(socket.socket(), None):
+            pass
+
+    @pytest.mark.parametrize("conf", [TLSConfiguration(), DTLSConfiguration()])
+    def test_wrap_unwrap_server(
+        self, conf: Union[TLSConfiguration, DTLSConfiguration]
+    ) -> None:
+        with ServerContext(conf).wrap_socket(socket.socket()):
+            pass
+
+
 @pytest.mark.e2e()
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
 class TestProgramsTLS:
