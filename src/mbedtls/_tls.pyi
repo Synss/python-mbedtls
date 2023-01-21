@@ -7,7 +7,7 @@ import enum
 import os
 import sys
 from collections import abc
-from typing import Any, Optional, Sequence, Tuple, Union, overload
+from typing import Optional, Sequence, Tuple, Union, overload
 
 from mbedtls._tlsi import (
     Certificate,
