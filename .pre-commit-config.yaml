@@ -76,3 +76,7 @@ repos:
         args:
           - '--py37-plus'
           - '--keep-runtime-typing'
+  - repo: 'https://github.com/abravalheri/validate-pyproject'
+    rev: v0.11
+    hooks:
+      - id: validate-pyproject
