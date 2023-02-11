@@ -252,26 +252,6 @@ class TestCipher:
         )
         assert cipher.decrypt(cipher.encrypt(data)) == data
 
-    def test_encrypt_nothing_raises(
-        self,
-        params: Tuple[CipherType, int, Mode, int],
-        randbytes: Callable[[int], bytes],
-    ) -> None:
-        module, key_size, mode, iv_size = params
-        cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
-        with pytest.raises(TLSError):
-            cipher.encrypt(b"")
-
-    def test_decrypt_nothing_raises(
-        self,
-        params: Tuple[CipherType, int, Mode, int],
-        randbytes: Callable[[int], bytes],
-    ) -> None:
-        module, key_size, mode, iv_size = params
-        cipher = module.new(randbytes(key_size), mode, randbytes(iv_size))
-        with pytest.raises(TLSError):
-            cipher.decrypt(b"")
-
 
 class TestAEADCipher:
     @pytest.fixture(
@@ -363,45 +343,31 @@ class TestAEADCipher:
         msg, tag = cipher.encrypt(data)
         assert cipher.decrypt(msg, tag) == data
 
-    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_encrypt_nothing_raises(
-        self,
-        params: Tuple[AEADCipherType, int, Mode, int],
-        ad_size: int,
-        randbytes: Callable[[int], bytes],
-    ) -> None:
-        module, key_size, mode, iv_size = params
-        cipher = module.new(
-            randbytes(key_size),
-            mode,
-            iv=randbytes(iv_size),
-            ad=randbytes(ad_size),
-        )
-        with pytest.raises(TLSError):
-            cipher.encrypt(b"")
 
-    @pytest.mark.parametrize("ad_size", [0, 1, 16, 256])
-    def test_decrypt_nothing_raises(
-        self,
-        params: Tuple[AEADCipherType, int, Mode, int],
-        ad_size: int,
-        randbytes: Callable[[int], bytes],
-    ) -> None:
-        module, key_size, mode, iv_size = params
-        cipher = module.new(
-            randbytes(key_size),
-            mode,
-            iv=randbytes(iv_size),
-            ad=randbytes(ad_size),
-        )
-        data = randbytes(
-            cipher.block_size
-            if cipher.mode is Mode.ECB
-            else cipher.block_size * 128
-        )
-        _msg, tag = cipher.encrypt(data)
-        with pytest.raises(TLSError):
-            cipher.decrypt(b"", tag)
+class TestVector:
+    def test_aes_128_gcm(self) -> None:
+        key = bytes.fromhex(32 * "0")
+        nonce = bytes.fromhex(24 * "0")
+        plaintext = b""
+        ciphertext = b""
+        adata = b""
+        mac = bytes.fromhex("58e2fccefa7e3061367f1d57a4e7455a")
+
+        cipher = AES.new(key, Mode.GCM, nonce, adata)
+        assert cipher.decrypt(*cipher.encrypt(plaintext)) == plaintext
+        assert cipher.encrypt(plaintext) == (ciphertext, mac)
+
+    def test_aes_256_gcm(self) -> None:
+        key = bytes.fromhex(64 * "0")
+        nonce = bytes.fromhex(24 * "0")
+        plaintext = b""
+        ciphertext = b""
+        adata = b""
+        mac = bytes.fromhex("530f8afbc74536b9a963b4f1c4cb738b")
+
+        cipher = AES.new(key, Mode.GCM, nonce, adata)
+        assert cipher.decrypt(*cipher.encrypt(plaintext)) == plaintext
+        assert cipher.encrypt(plaintext) == (ciphertext, mac)
 
 
 class TestGenericCipher:

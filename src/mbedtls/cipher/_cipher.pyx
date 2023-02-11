@@ -163,8 +163,6 @@ cdef class Cipher(_CipherBase):
     cdef _crypt(self,
                 _cipher.mbedtls_cipher_context_t *ctx,
                 const unsigned char[:] input):
-        if input.size == 0:
-            _exc.check_error(-0x6280)  # Raise full block expected error.
         cdef size_t olen
         cdef size_t finish_olen
         cdef size_t sz = input.size + self.block_size
@@ -175,7 +173,8 @@ cdef class Cipher(_CipherBase):
         try:
             _exc.check_error(_cipher.mbedtls_cipher_reset(ctx))
             _exc.check_error(_cipher.mbedtls_cipher_update(
-                ctx, &input[0], input.size, output, &olen))
+                ctx, &input[0] if input.size > 0 else NULL, input.size,
+                output, &olen))
             err = _cipher.mbedtls_cipher_finish(
                 ctx, output + olen, &finish_olen
             )
@@ -210,8 +209,6 @@ cdef class AEADCipher(_CipherBase):
         const unsigned char[:] ad,
         const unsigned char[:] input
     ):
-        if input.size == 0:
-            _exc.check_error(-0x6280)  # Raise full block expected error.
         assert iv.size != 0
         cdef size_t olen
         cdef size_t sz = input.size + self.block_size
@@ -221,11 +218,12 @@ cdef class AEADCipher(_CipherBase):
         if not output:
             raise MemoryError()
         try:
-            pad = <const unsigned char*> (&ad[0] if ad.size else NULL)
             _exc.check_error(_cipher.mbedtls_cipher_auth_encrypt(
                 &self._enc_ctx,
-                &iv[0], iv.size, pad, ad.size,
-                &input[0], input.size, output, &olen,
+                &iv[0], iv.size,
+                &ad[0] if ad.size > 0 else NULL, ad.size,
+                &input[0] if input.size > 0 else NULL, input.size,
+                output, &olen,
                 tag, sizeof(tag)))
             return output[:olen], tag[:16]
         finally:
@@ -238,16 +236,8 @@ cdef class AEADCipher(_CipherBase):
         const unsigned char[:] input,
         const unsigned char[:] tag,
     ):
-        if input.size == 0:
-            _exc.check_error(-0x6280)  # Raise full block expected error.
         assert iv.size != 0
         assert tag.size == 16
-
-        cdef const unsigned char *pad
-        if ad.size == 0:
-            pad = NULL
-        else:
-            pad = &ad[0]
 
         cdef size_t olen
         cdef size_t sz = input.size + self.block_size
@@ -258,8 +248,10 @@ cdef class AEADCipher(_CipherBase):
         try:
             _exc.check_error(_cipher.mbedtls_cipher_auth_decrypt(
                 &self._dec_ctx,
-                &iv[0], iv.size, pad, ad.size,
-                &input[0], input.size, output, &olen,
+                &iv[0], iv.size,
+                &ad[0] if ad.size > 0 else NULL, ad.size,
+                &input[0] if input.size > 0 else NULL, input.size,
+                output, &olen,
                 &tag[0], tag.size))
             return output[:olen]
         finally:

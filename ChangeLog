@@ -1,3 +1,7 @@
+[next]
+
+* cipher: Fix encryption and decryption of 0-length strings.
+
 [2.6.0] - 2023-01-15
 
 * ci: Update wheels to mbedtls 2.28.2.
