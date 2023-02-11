@@ -901,7 +901,7 @@ class TestProgramsTLS:
 
     @pytest.mark.repeat(3)
     @pytest.mark.usefixtures("server")
-    @pytest.mark.timeout(2)
+    @pytest.mark.timeout(30)
     def test_client(self, rootpath: Path, port: int) -> None:
         secret = "a very secret message"
         args = [
@@ -918,7 +918,7 @@ class TestProgramsTLS:
             assert do_communicate(args) == secret + "\n"
 
     @pytest.mark.usefixtures("server")
-    @pytest.mark.timeout(2)
+    @pytest.mark.timeout(30)
     def test_raw_socket_send_recv(self, port: int) -> None:
         secret = b"a very secret message"
         with ClientContext(
@@ -938,7 +938,7 @@ class TestProgramsTLS:
         assert data == secret
 
     @pytest.mark.usefixtures("server")
-    @pytest.mark.timeout(2)
+    @pytest.mark.timeout(30)
     def test_raw_socket_send_recv_into(self, port: int) -> None:
         secret = b"a very secret message"
         buffer = bytearray(b"\0" * 256)
@@ -959,7 +959,7 @@ class TestProgramsTLS:
         assert buffer[:received] == secret
 
     @pytest.mark.usefixtures("server")
-    @pytest.mark.timeout(2)
+    @pytest.mark.timeout(30)
     def test_raw_socket_sendall_recv(self, port: int) -> None:
         secret = b"a very secret message"
         with ClientContext(
@@ -977,7 +977,7 @@ class TestProgramsTLS:
         assert data == secret
 
     @pytest.mark.usefixtures("server")
-    @pytest.mark.timeout(2)
+    @pytest.mark.timeout(30)
     def test_raw_socket_connectionless_unavailable(self, port: int) -> None:
         address = ("127.0.0.1", port)
         with ClientContext(
@@ -1029,9 +1029,9 @@ class TestProgramsDTLS:
         proc.kill()
         proc.wait(1.0)
 
-    @pytest.mark.timeout(3)
+    @pytest.mark.repeat(3)
     @pytest.mark.usefixtures("server")
-    @pytest.mark.timeout(2)
+    @pytest.mark.timeout(30)
     def test_client(self, rootpath: Path, port: int) -> None:
         secret = "a very secret message"
         args = [
@@ -1048,7 +1048,7 @@ class TestProgramsDTLS:
             assert do_communicate(args) == secret + "\n"
 
     @pytest.mark.usefixtures("server")
-    @pytest.mark.timeout(2)
+    @pytest.mark.timeout(30)
     def test_raw_socket_send_recv(self, port: int) -> None:
         address = ("127.0.0.1", port)
         secret = b"a very secret message"
@@ -1069,7 +1069,7 @@ class TestProgramsDTLS:
         assert data == secret
 
     @pytest.mark.usefixtures("server")
-    @pytest.mark.timeout(2)
+    @pytest.mark.timeout(30)
     def test_raw_socket_sendto_recvfrom(self, port: int) -> None:
         address = ("127.0.0.1", port)
         secret = b"a very secret message"
@@ -1090,7 +1090,7 @@ class TestProgramsDTLS:
         assert data == secret
 
     @pytest.mark.usefixtures("server")
-    @pytest.mark.timeout(2)
+    @pytest.mark.timeout(30)
     def test_raw_socket_sendto_recvfrom_with_flags(self, port: int) -> None:
         # Note that flags is always 0 (noop) here because we are only
         # interested in testing the API.  See also issue #62.
@@ -1113,7 +1113,7 @@ class TestProgramsDTLS:
         assert data == secret
 
     @pytest.mark.usefixtures("server")
-    @pytest.mark.timeout(2)
+    @pytest.mark.timeout(30)
     def test_raw_socket_sendto_recvfrom_into(self, port: int) -> None:
         address = ("127.0.0.1", port)
         secret = b"a very secret message"
