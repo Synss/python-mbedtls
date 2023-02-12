@@ -90,3 +90,6 @@ min-similarity-lines = "8"
 
 [tool.pytest.ini_options]
 markers = "e2e: end-to-end tests"
+
+[tool.ruff]
+ignore = ["E701", "E704"]
