@@ -22,6 +22,9 @@ else
 	exit 1
 fi
 
+# Silence error where make expects to be running in a git checkout.
+touch "$srcdir/framework/exported.make"
+
 make -C "$srcdir" clean
-make -C "$srcdir" -j CFLAGS="-O2 -DMBEDTLS_ARIA_C=ON" SHARED=ON lib
+make -C "$srcdir" -j CFLAGS="-O2" SHARED=ON lib
 make -C "$srcdir" -j DESTDIR="$destdir" install
