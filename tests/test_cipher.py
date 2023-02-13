@@ -354,8 +354,8 @@ class TestVector:
         mac = bytes.fromhex("58e2fccefa7e3061367f1d57a4e7455a")
 
         cipher = AES.new(key, Mode.GCM, nonce, adata)
-        assert cipher.decrypt(*cipher.encrypt(plaintext)) == plaintext
         assert cipher.encrypt(plaintext) == (ciphertext, mac)
+        assert cipher.decrypt(*cipher.encrypt(plaintext)) == plaintext
 
     def test_aes_256_gcm(self) -> None:
         key = bytes.fromhex(64 * "0")
@@ -366,8 +366,8 @@ class TestVector:
         mac = bytes.fromhex("530f8afbc74536b9a963b4f1c4cb738b")
 
         cipher = AES.new(key, Mode.GCM, nonce, adata)
-        assert cipher.decrypt(*cipher.encrypt(plaintext)) == plaintext
         assert cipher.encrypt(plaintext) == (ciphertext, mac)
+        assert cipher.decrypt(*cipher.encrypt(plaintext)) == plaintext
 
 
 class TestGenericCipher:

@@ -115,21 +115,21 @@ cdef extern from "mbedtls/cipher.h" nogil:
     #     const unsigned char* input, size_t ilen,
     #     unsigned char* output, size_t* olen)
 
-    int mbedtls_cipher_auth_encrypt(
+    int mbedtls_cipher_auth_encrypt_ext(
         mbedtls_cipher_context_t* ctx,
         const unsigned char* iv, size_t iv_len,
         const unsigned char* ad, size_t ad_len,
         const unsigned char* input, size_t ilen,
-        unsigned char* output, size_t* olen,
-        unsigned char* tag, size_t tag_len)
+        unsigned char* output, size_t output_len,
+        size_t* olen, size_t tag_len)
 
-    int mbedtls_cipher_auth_decrypt(
+    int mbedtls_cipher_auth_decrypt_ext(
         mbedtls_cipher_context_t* ctx,
         const unsigned char* iv, size_t iv_len,
         const unsigned char* ad, size_t ad_len,
         const unsigned char* input, size_t ilen,
-        unsigned char* output, size_t* olen,
-        const unsigned char* tag, size_t tag_len)
+        unsigned char* output, size_t output_len,
+        size_t* olen, size_t tag_len)
 
 
 cdef class _CipherBase:
@@ -160,5 +160,5 @@ cdef class AEADCipher(_CipherBase):
         const unsigned char[:] iv,
         const unsigned char[:] ad,
         const unsigned char[:] input,
-        const unsigned char[:] tag,
+        size_t tag_len,
     )

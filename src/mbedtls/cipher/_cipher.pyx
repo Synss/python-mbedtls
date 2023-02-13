@@ -211,21 +211,21 @@ cdef class AEADCipher(_CipherBase):
     ):
         assert iv.size != 0
         cdef size_t olen
-        cdef size_t sz = input.size + self.block_size
-        cdef unsigned char tag[16]
-        cdef unsigned char* output = <unsigned char*>malloc(
-            sz * sizeof(unsigned char))
+        cdef size_t tag_len = 16
+        cdef size_t output_len = input.size + 15 + tag_len
+        cdef unsigned char* output = <unsigned char*>malloc(output_len)
         if not output:
             raise MemoryError()
         try:
-            _exc.check_error(_cipher.mbedtls_cipher_auth_encrypt(
+            _exc.check_error(_cipher.mbedtls_cipher_auth_encrypt_ext(
                 &self._enc_ctx,
                 &iv[0], iv.size,
                 &ad[0] if ad.size > 0 else NULL, ad.size,
                 &input[0] if input.size > 0 else NULL, input.size,
-                output, &olen,
-                tag, sizeof(tag)))
-            return output[:olen], tag[:16]
+                output, output_len,
+                &olen, tag_len))
+            assert olen <= output_len
+            return output[:olen - tag_len], output[olen - tag_len:olen]
         finally:
             free(output)
 
@@ -234,25 +234,23 @@ cdef class AEADCipher(_CipherBase):
         const unsigned char[:] iv,
         const unsigned char[:] ad,
         const unsigned char[:] input,
-        const unsigned char[:] tag,
+        size_t tag_len,
     ):
         assert iv.size != 0
-        assert tag.size == 16
 
         cdef size_t olen
-        cdef size_t sz = input.size + self.block_size
-        cdef unsigned char* output = <unsigned char*>malloc(
-            sz * sizeof(unsigned char))
+        cdef output_len = input.size - tag_len
+        cdef unsigned char* output = <unsigned char*>malloc(output_len)
         if not output:
             raise MemoryError()
         try:
-            _exc.check_error(_cipher.mbedtls_cipher_auth_decrypt(
+            _exc.check_error(_cipher.mbedtls_cipher_auth_decrypt_ext(
                 &self._dec_ctx,
                 &iv[0], iv.size,
                 &ad[0] if ad.size > 0 else NULL, ad.size,
                 &input[0] if input.size > 0 else NULL, input.size,
-                output, &olen,
-                &tag[0], tag.size))
+                output, output_len,
+                &olen, tag_len))
             return output[:olen]
         finally:
             free(output)
@@ -260,6 +258,6 @@ cdef class AEADCipher(_CipherBase):
     def encrypt(self, const unsigned char[:] message not None):
         return self._aead_encrypt(self._iv, self._ad, message)
 
-    def decrypt(self, const unsigned char[:] message not None,
-                const unsigned char[:] tag not None):
-        return self._aead_decrypt(self._iv, self._ad, message, tag)
+    def decrypt(self, bytes message not None, bytes tag not None):
+        cdef const unsigned char[:] input = message + tag
+        return self._aead_decrypt(self._iv, self._ad, input, len(tag))
