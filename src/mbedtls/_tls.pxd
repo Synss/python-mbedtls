@@ -69,26 +69,6 @@ cdef:
         MBEDTLS_ERR_SSL_BAD_INPUT_DATA = -0x7100
 
 
-cdef extern from "mbedtls/ssl_internal.h" nogil:
-    ctypedef struct mbedtls_ssl_transform:
-        pass
-
-    ctypedef struct mbedtls_ssl_handshake_params:
-        int sig_alg
-        int verify_sig_alg
-        # Diffie-Hellman key exchange:
-        # mbedtls_dhm_context dhm_ctx
-        # _ecdh.mbedtls_ecdh_context ecdh_ctx
-        # EC-J-Pake (not very much used anymore)
-        # mbedtls_ecjpake_context ecjpake_ctx
-        mbedtls_ssl_key_cert *key_cert
-
-    ctypedef struct mbedtls_ssl_key_cert:
-        _x509.mbedtls_x509_crt *cert
-        _pk.mbedtls_pk_context *key
-        mbedtls_ssl_key_cert *next
-
-
 cdef extern from "mbedtls/ssl.h" nogil:
     # Defined here
     # ------------
@@ -98,48 +78,12 @@ cdef extern from "mbedtls/ssl.h" nogil:
         pass
 
     ctypedef struct mbedtls_ssl_config:
-        # set_certificate_chain
-        mbedtls_ssl_key_cert *key_cert
-        # set_ciphers
-        const int *ciphersuite_list[4]
-        # set_inner_protocols
-        const char **alpn_list
-        # set_lowest_supported_version/set_highest_supported_version
-        unsigned char max_major_ver
-        unsigned char max_minor_ver
-        unsigned char min_major_ver
-        unsigned char min_minor_ver
-        # set_anti_replay
-        unsigned int anti_replay
-        # set_handshake_timeout
-        unsigned int hs_timeout_min
-        unsigned int hs_timeout_max
-        # set_read_timeout
-        unsigned int read_timeout
-
-        unsigned int endpoint
-        unsigned int transport
-        # set_validate_certificates
-        unsigned int authmode
-
-        # set_trust_store
-        _x509.mbedtls_x509_crt *ca_chain
-        _x509.mbedtls_x509_crt *ca_crl
-        # set_sni_callback
-        # f_sni / p_sni
-        # for mbedtls_ssl_conf_psk_cb
-        void *p_psk
-        unsigned char *psk
-        size_t psk_len
-        unsigned char *psk_identity
-        size_t psk_identity_len
+        # private fields only
+        pass
 
     ctypedef struct mbedtls_ssl_context:
-        const mbedtls_ssl_config *conf
-        int state
-        char *hostname
-        unsigned char *cli_id
-        size_t cli_id_len
+        # private fields only
+        pass
 
     # Callback types
     # --------------
@@ -413,6 +357,7 @@ cdef class _PSKSToreProxy:
 
 
 cdef class MbedTLSConfiguration:
+    cdef object _transport
     cdef object _configuration
     cdef mbedtls_ssl_config _ctx
     cdef _chain

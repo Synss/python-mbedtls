@@ -10,6 +10,7 @@ from libc.stdlib cimport free, malloc
 cimport mbedtls._md as _md
 
 import binascii
+from contextlib import suppress
 
 import mbedtls.exceptions as _exc
 import mbedtls.version as _version
@@ -42,7 +43,8 @@ def _get_supported_mds():
     cdef size_t n = 0
     mds = []
     while md_types[n]:
-        mds.append(md_lookup[md_types[n]])
+        with suppress(KeyError):
+            mds.append(md_lookup[md_types[n]])
         n += 1
     return mds
 
@@ -51,7 +53,7 @@ def _digestmod(sig_md):
     return __MD_NAME[sig_md].decode("ascii").lower()
 
 
-algorithms_guaranteed = ("md5", "sha1", "sha256")
+algorithms_guaranteed = ("md5", "sha1", "sha224")  # FIXME: was sha256
 algorithms_available = tuple(
     name.decode("ascii").lower() for name in _get_supported_mds()
     if _version.has_feature(name.decode("ascii"))

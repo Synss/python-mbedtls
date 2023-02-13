@@ -26,6 +26,16 @@ cdef extern from "mbedtls/x509.h" nogil:
         int year, mon, day
         int hour, min, sec
 
+    # internal module functions
+    # int mbedtls_x509_get_name(...)
+    # int mbedtls_x509_get_alg_null(...)
+    # int mbedtls_x509_get_alg(...)
+    # int mbedtls_x509_get_sig(...)
+    # int mbedtls_x509_get_sig_alg(...)
+    # int mbedtls_x509_get_time(...)
+    # int mbedtls_x509_get_serial(...)
+    # int mbedtls_x509_get_ext(...)
+
 
 cdef extern from "mbedtls/x509_crt.h" nogil:
     cdef struct mbedtls_x509_crt:
@@ -45,18 +55,10 @@ cdef extern from "mbedtls/x509_crt.h" nogil:
         # mbedtls_x509_buf subject_id
         # mbedtls_x509_buf v3_ext
         mbedtls_x509_sequence subject_alt_names
-        # int ext_types
-        int ca_istrue  # 1 if this certificate belongs to a CA, 0 otherwise
-        int max_pathlen
-        unsigned int key_usage
-        # mbedtls_x509_sequence ext_key_usage
-        # unsigned char ns_cert_type
 
-        mbedtls_x509_buf sig
-        _md.mbedtls_md_type_t sig_md
-        # mbedtls_pk_type_t sig_pk
-        # void *sig_opts
         mbedtls_x509_crt *next
+
+        # end of public data members
 
     ctypedef struct mbedtls_x509_crt_profile:
         pass
@@ -292,6 +294,7 @@ cdef class CRT(Certificate):
 
 cdef class _CRTWriter:
     cdef mbedtls_x509write_cert _ctx
+    cdef object _basic_constraints
 
 
 cdef class CSR(Certificate):

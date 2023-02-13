@@ -38,8 +38,7 @@ cpdef get_supported_ciphers():
     cdef size_t n = 0
     while cipher_types[n]:
         info = _cipher.mbedtls_cipher_info_from_type(cipher_types[n])
-        # mbedtls 3: mbedtls_cipher_info_get_name
-        ciphers.append(info.name)
+        ciphers.append(mbedtls_cipher_info_get_name(info))
         n += 1
     return tuple(ciphers)
 

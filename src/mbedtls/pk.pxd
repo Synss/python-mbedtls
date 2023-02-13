@@ -55,7 +55,7 @@ cdef extern from "mbedtls/pk.h" nogil:
     int mbedtls_pk_sign(
         mbedtls_pk_context *ctx, _md.mbedtls_md_type_t md_alg,
         const unsigned char *hash, size_t hash_len,
-        unsigned char *sig, size_t *sig_len,
+        unsigned char *sig, size_t sig_size, size_t *sig_len,
         int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
 
     int mbedtls_pk_decrypt(
@@ -69,8 +69,10 @@ cdef extern from "mbedtls/pk.h" nogil:
         unsigned char *output, size_t *olen, size_t osize,
         int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
 
-    int mbedtls_pk_check_pair(const mbedtls_pk_context *pub,
-                              const mbedtls_pk_context *prv)
+    int mbedtls_pk_check_pair(
+        const mbedtls_pk_context *pub,
+        const mbedtls_pk_context *prv,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
     # int mbedtls_pk_debug(const mbedtls_pk_context *ctx,
     #                      mbedtls_pk_debug_item *items)
     const char * mbedtls_pk_get_name(const mbedtls_pk_context *ctx)
@@ -79,7 +81,9 @@ cdef extern from "mbedtls/pk.h" nogil:
     int mbedtls_pk_parse_key(
         mbedtls_pk_context *ctx,
         const unsigned char *key, size_t keylen,
-        const unsigned char *pwd, size_t pwdlen)
+        const unsigned char *pwd, size_t pwdlen,
+        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng
+    )
     int mbedtls_pk_parse_public_key(
         mbedtls_pk_context *ctx,
         const unsigned char *key, size_t keylen)

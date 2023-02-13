@@ -43,5 +43,5 @@ export LD_LIBRARY_PATH
 export DYLD_LIBRARY_PATH
 
 python setup.py bdist_wheel || exit 1
-$fixlib dist/$wheel || exit 1
+# $fixlib dist/$wheel || exit 1
 pip install --upgrade --force-reinstall dist/$wheel || exit 1

@@ -100,7 +100,9 @@ del ECP_PUB_DER_MAX_BYTES, ECP_PRV_DER_MAX_BYTES
 
 cpdef check_pair(CipherBase pub, CipherBase pri):
     """Check if a public-private pair of keys matches."""
-    return _pk.mbedtls_pk_check_pair(&pub._ctx, &pri._ctx) == 0
+    return _pk.mbedtls_pk_check_pair(
+        &pub._ctx, &pri._ctx, &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx
+    ) == 0
 
 
 def _type_from_name(name):
@@ -185,11 +187,13 @@ cdef class CipherBase:
         try:
             if password is None or password.size == 0:
                 _exc.check_error(_pk.mbedtls_pk_parse_key(
-                    &self._ctx, &key[0], key.size, NULL, 0
+                    &self._ctx, &key[0], key.size, NULL, 0,
+                    &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx
                 ))
             else:
                 _exc.check_error(_pk.mbedtls_pk_parse_key(
-                    &self._ctx, &key[0], key.size, &password[0], password.size
+                    &self._ctx, &key[0], key.size, &password[0], password.size,
+                    &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx
                 ))
         except _exc.TLSError:
             _exc.check_error(_pk.mbedtls_pk_parse_public_key(
@@ -197,7 +201,9 @@ cdef class CipherBase:
         pub = self._public_to_PEM()
         if "PUBLIC" in pub:
             self.__state |= CipherState.PUBLIC
-        if _pk.mbedtls_pk_check_pair(&self._ctx, &self._ctx) == 0:
+        if _pk.mbedtls_pk_check_pair(
+            &self._ctx, &self._ctx, &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx
+        ) == 0:
             self.__state |= CipherState.PRIVATE
 
     def __cinit__(self):
@@ -339,15 +345,15 @@ cdef class CipherBase:
         md_alg = _get_md_alg(digestmod)(message)
         cdef const unsigned char[:] hash_ = md_alg.digest()
         cdef size_t sig_len = 0
-        cdef unsigned char* output = <unsigned char*>malloc(
-            _mpi.MBEDTLS_MPI_MAX_SIZE * sizeof(unsigned char))
+        cdef size_t olen = _mpi.MBEDTLS_MPI_MAX_SIZE
+        cdef unsigned char* output = <unsigned char*>malloc(olen)
         if not output:
             raise MemoryError()
         try:
             _exc.check_error(_pk.mbedtls_pk_sign(
                 &self._ctx, md_alg._type,
                 &hash_[0], hash_.size,
-                &output[0], &sig_len,
+                &output[0], olen, &sig_len,
                 &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             assert sig_len != 0
             return output[:sig_len]

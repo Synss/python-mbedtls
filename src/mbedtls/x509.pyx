@@ -8,38 +8,21 @@ from libc.stdlib cimport free, malloc
 
 cimport mbedtls.mpi as _mpi
 cimport mbedtls.pk as _pk
+cimport mbedtls._random as _rnd
 cimport mbedtls.x509 as x509
 
 import base64
 import datetime as dt
 import enum
+import mbedtls._random as _rnd
 from collections import namedtuple
 from pathlib import Path
 
-import mbedtls._md as _md
 import mbedtls.exceptions as _exc
 import mbedtls.mpi as _mpi
 import mbedtls.pk as _pk
-from mbedtls.hashlib import new as _new_hash
 
-
-@enum.unique
-class KeyUsage(enum.IntEnum):
-    """Key Usage Extension.
-
-    See Also:
-        RFC 5280 - 4.2.1.3 Key Usage.
-
-    """
-    DIGITAL_SIGNATURE = 0x80
-    NON_REPUDIATION = 0x40
-    KEY_ENCIPHERMENT = 0x20
-    DATA_ENCIPHERMENT = 0x10
-    KEY_AGREEMENT = 0x08
-    KEY_CERT_SIGN = 0x04
-    CRL_SIGN = 0x02
-    ENCIPHER_ONLY = 0x01
-    DECIPHER_ONLY = 0x8000
+cdef _rnd.Random __rng = _rnd.default_rng()
 
 
 def PEM_to_DER(pem):
@@ -116,7 +99,7 @@ class BasicConstraints(
         namedtuple("BasicConstraints", ["ca", "max_path_length"])):
     """The basic constraints for the certificate."""
 
-    def __new__(cls, ca=False, max_path_length=0):
+    def __new__(cls, ca=False, max_path_length=-1):
         return super().__new__(cls, ca, max_path_length)
 
 
@@ -190,8 +173,10 @@ cdef class CRT(Certificate):
             RFC 5280, Section 4.1.1.3 Signature Value
 
         """
-        return bytes(self._ctx.sig.p[:self._ctx.sig.len])
+        # return bytes(self._ctx.sig.p[:self._ctx.sig.len])
+        raise NotImplementedError()
 
+    # RFC 5280, Section 4.1.1.3 Signature Value
     # RFC 5280, Section 4.1.2 TBS Certificate
 
     @property
@@ -216,9 +201,6 @@ cdef class CRT(Certificate):
             self._ctx.serial.p[:self._ctx.serial.len], "big"))
 
     # RFC 4.1.2.3 Signature
-    @property
-    def digestmod(self):
-        return _new_hash(_md._digestmod(self._ctx.sig_md))
 
     @property
     def issuer(self):
@@ -318,17 +300,7 @@ cdef class CRT(Certificate):
     # RFC 5280, Section 4.2.1 Standard Extensions
     # RFC 5280, Section 4.2.1.1 Authority Key Identifier
     # RFC 5280, Section 4.2.1.2 Subject Key Identifier
-
-    @property
-    def key_usage(self):
-        """Key usage extension (bitfield).
-
-        See Also:
-            RFC 5280, Section 4.2.1.3 Key Usage
-
-        """
-        return KeyUsage(self._ctx.key_usage)
-
+    # RFC 5280, Section 4.2.1.3 Key Usage
     # RFC 5280, Section 4.2.1.4 Certificate Policies
     # RFC 5280, Section 4.2.1.5 Policy Mappings
 
@@ -350,23 +322,7 @@ cdef class CRT(Certificate):
 
     # RFC 5280, Section 4.2.1.7 Issuer Alternative Name
     # RFC 5280, Section 4.2.1.8 Subject Directory Attributes
-
-    @property
-    def basic_constraints(self):
-        """ca is true if the certified public key may be used
-        to verify certificate signatures.
-
-        See Also:
-            - RFC 5280, Section 4.2.1.9 Basic Constraints
-            - RFC 5280, `max_path_length`
-
-        """
-        max_path_length = int(self._ctx.max_pathlen)
-        if max_path_length > 0:
-            max_path_length -= 1
-        ca = bool(self._ctx.ca_istrue)
-        return BasicConstraints(ca, max_path_length)
-
+    # RFC 5280, Section 4.2.1.9 Basic Constraints
     # RFC 5280, Section 4.2.1.10 Name Constraints
     # RFC 5280, Section 4.2.1.11 Policy Constraints
     # RFC 5280, Section 4.2.1.12 Extended Key Usage
@@ -509,7 +465,8 @@ cdef class _CRTWriter:
             raise MemoryError()
         try:
             written = _exc.check_error(x509.mbedtls_x509write_crt_der(
-                &self._ctx, &output[0], osize, NULL, NULL))
+                &self._ctx, &output[0], osize,
+                &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             return output[osize - written:osize]
         finally:
             free(output)
@@ -632,8 +589,8 @@ cdef class _CRTWriter:
             basic_constraints (BasicConstraints): The basic constraints.
 
         """
-        if not basic_constraints:
-            return
+        assert basic_constraints
+        self._basic_constraints = basic_constraints
         _exc.check_error(x509.mbedtls_x509write_crt_set_basic_constraints(
             &self._ctx, int(basic_constraints[0]), basic_constraints[1]))
 
@@ -677,14 +634,15 @@ cdef class CSR(Certificate):
             RFC5280, Section 4.1.1.2 Signature Algorithm.
 
         """
-        return _new_hash(_md._digestmod(self._ctx.sig_md))
+        # from sig_oid?
+        raise NotImplementedError()
 
     @property
     def version(self):
         """The version of the encoded certificate.
 
         See Also:
-            RF 5280, Section 4.1.2.1 Version
+            RF5280, Section 4.1.2.1 Version
 
         """
         return int(self._ctx.version)
@@ -842,7 +800,8 @@ cdef class _CSRWriter:
             raise MemoryError()
         try:
             written = _exc.check_error(x509.mbedtls_x509write_csr_der(
-                &self._ctx, &output[0], osize, NULL, NULL))
+                &self._ctx, &output[0], osize,
+                &_rnd.mbedtls_ctr_drbg_random, &__rng._ctx))
             return output[osize - written:osize]
         finally:
             free(output)
@@ -910,17 +869,7 @@ cdef class CRL(Certificate):
         return bytes(self._ctx.tbs.p[:self._ctx.tbs.len])
 
     # RFC 5280, Section 5.1.1.2 Signature Algorithm
-
-    @property
-    def signature_value(self):
-        """Cryptographic algorithm used by the CA to sign this CRL.
-
-        See Also:
-            RFC 5280, Section 5.1.1.3 Signature Algorithm
-
-        """
-        return bytes(self._ctx.sig.p[:self._ctx.sig.len])
-
+    # RFC 5280, Section 5.1.1.3 Signature Algorithm
     # RFC 5280, Section 5.1.2 Certificate List "To Be Signed"
 
     @property

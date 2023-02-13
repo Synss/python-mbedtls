@@ -45,7 +45,6 @@ cdef extern from "mbedtls/cipher.h" nogil:
         mbedtls_cipher_type_t type
         mbedtls_cipher_mode_t mode
         unsigned int key_bitlen
-        const char* name
         unsigned int iv_size
         int flags
         unsigned int block_size
@@ -53,6 +52,8 @@ cdef extern from "mbedtls/cipher.h" nogil:
 
     ctypedef struct mbedtls_cipher_context_t:
         pass
+
+    const char* mbedtls_cipher_info_get_name(const mbedtls_cipher_info_t *info)
 
     const int* mbedtls_cipher_list()
     const mbedtls_cipher_info_t* mbedtls_cipher_info_from_string(

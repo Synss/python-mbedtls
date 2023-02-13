@@ -370,7 +370,8 @@ cdef class _DTLSCookie:
 
     @property
     def timeout(self):
-        return self._ctx.timeout
+        # return self._ctx.timeout
+        raise NotImplementedError()
 
     @timeout.setter
     def timeout(self, unsigned long timeout):
@@ -409,6 +410,7 @@ cdef class MbedTLSConfiguration:
     ):
         assert isinstance(transport, Transport)
         assert isinstance(configuration, (TLSConfiguration, DTLSConfiguration))
+        self._transport = transport
         self._configuration = configuration
         _exc.check_error(_tls.mbedtls_ssl_config_defaults(
             &self._ctx,
@@ -532,7 +534,7 @@ cdef class MbedTLSConfiguration:
 
     @property
     def transport(self):
-        return Transport(self._ctx.transport)
+        return self._transport
 
     cdef _set_validate_certificates(self, validate):
         """Set the certificate verification mode.
@@ -975,9 +977,10 @@ cdef class MbedTLSBuffer:
     @property
     def _server_hostname(self):
         # Client side
-        if self._ctx.hostname is NULL:
-            return None
-        return (<bytes> self._ctx.hostname).decode("utf8")
+        # if self._ctx.hostname is NULL:
+        #     return None
+        # return (<bytes> self._ctx.hostname).decode("utf8")
+        raise NotImplementedError()
 
     def _set_hostname(self, hostname):
         """Set the hostname to check against the received server."""

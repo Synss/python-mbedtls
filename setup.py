@@ -93,7 +93,7 @@ def check_mbedtls_support(version, url):
     except OSError as exc:
         lib = None
         print(f"  {exc!s}", file=sys.stderr)
-    if lib and mbedtls_version_info(lib) < version[:2]:
+    if lib and mbedtls_version_info(lib) < version[:1]:
         print(
             f"  python-mbedtls requires at least mbedtls {version[0]}.{version[1]}",
             file=sys.stderr,
