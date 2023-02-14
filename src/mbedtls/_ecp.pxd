@@ -28,16 +28,18 @@ cdef extern from "mbedtls/ecp.h" nogil:
         MBEDTLS_ECP_TYPE_MONTGOMERY
 
     ctypedef struct mbedtls_ecp_curve_info:
+        # public fields
         mbedtls_ecp_group_id grp_id
         int bit_size
         const char *name
+        # end of public fields
 
     ctypedef struct mbedtls_ecp_point:
-        _mpi.mbedtls_mpi X
-        _mpi.mbedtls_mpi Y
-        _mpi.mbedtls_mpi Z
+        # no public fields
+        pass
 
     ctypedef struct mbedtls_ecp_group:
+        # public fields
         mbedtls_ecp_group_id id
         _mpi.mbedtls_mpi P
         _mpi.mbedtls_mpi A
@@ -46,18 +48,11 @@ cdef extern from "mbedtls/ecp.h" nogil:
         _mpi.mbedtls_mpi N
         size_t pbits
         size_t nbits
-        unsigned int h
-        int (*modp)(_mpi.mbedtls_mpi *)
-        int (*t_pre)(mbedtls_ecp_point *, void *)
-        int (*t_post)(mbedtls_ecp_point *, void *)
-        void *t_data
-        mbedtls_ecp_point *T
-        size_t T_size
+        # end of public fields
 
     ctypedef struct mbedtls_ecp_keypair:
-        mbedtls_ecp_group grp
-        _mpi.mbedtls_mpi d
-        mbedtls_ecp_point Q
+        # no public fields
+        pass
 
     int MBEDTLS_ECP_MAX_BYTES
     int MBEDTLS_ECP_PF_UNCOMPRESSED
@@ -121,8 +116,12 @@ cdef extern from "mbedtls/ecp.h" nogil:
         int (*f_rng)(void *, unsigned char *, size_t),
         void *p_rng)
     # mbedtls_ecp_muladd
-    # mbedtls_ecp_check_pubkey
-    # mbedtls_ecp_check_privkey
+    int mbedtls_ecp_check_pubkey(
+        const mbedtls_ecp_group *grp,
+        const mbedtls_ecp_point *pt)
+    int mbedtls_ecp_check_privkey(
+        const mbedtls_ecp_group *grp,
+        const _mpi.mbedtls_mpi *d)
 
     # mbedtls_ecp_keypair
     # -------------------

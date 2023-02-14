@@ -2,8 +2,6 @@
 # Copyright (c) 2016, Elaborated Networks GmbH
 # Copyright (c) 2018, Mathias Laurin
 
-cimport mbedtls._dhm as _dhm
-cimport mbedtls._ecdh as _ecdh
 cimport mbedtls._ecp as _ecp
 cimport mbedtls._md as _md
 cimport mbedtls._rsa as _rsa
@@ -117,16 +115,3 @@ cdef class RSA(CipherBase):
 
 cdef class ECC(CipherBase):
     cdef _curve
-
-
-cdef class ECPoint:
-    cdef _ecp.mbedtls_ecp_point _ctx
-
-
-cdef class DHBase:
-    cdef _dhm.mbedtls_dhm_context _ctx
-
-
-cdef class ECDHBase:
-    cdef _ecdh.mbedtls_ecdh_context _ctx
-    cdef curve

@@ -5,6 +5,11 @@
 
 [2.9.2] - 2024-02-18
 
+* pk: Remove ECPoint, DHClient, DHServer, ECDHClient,
+ECDHServer, ECDHNaive.
+
+[next]
+
 * ci: Update wheels to mbedtls 2.28.7
 
 [2.9.0] - 2024-01-25

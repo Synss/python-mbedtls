@@ -3,7 +3,6 @@
 
 from libc.stdint cimport uint16_t
 
-cimport mbedtls._ecdh as _ecdh
 cimport mbedtls._ringbuf as _rb
 cimport mbedtls._timing as _timing
 cimport mbedtls.pk as _pk
@@ -79,7 +78,7 @@ cdef extern from "mbedtls/ssl_internal.h" nogil:
         int verify_sig_alg
         # Diffie-Hellman key exchange:
         # mbedtls_dhm_context dhm_ctx
-        _ecdh.mbedtls_ecdh_context ecdh_ctx
+        # _ecdh.mbedtls_ecdh_context ecdh_ctx
         # EC-J-Pake (not very much used anymore)
         # mbedtls_ecjpake_context ecjpake_ctx
         mbedtls_ssl_key_cert *key_cert
