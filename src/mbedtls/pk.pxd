@@ -2,319 +2,12 @@
 # Copyright (c) 2016, Elaborated Networks GmbH
 # Copyright (c) 2018, Mathias Laurin
 
-"""Declarations for `mbedtls/pk.h`."""
-
-
+cimport mbedtls._dhm as _dhm
+cimport mbedtls._ecdh as _ecdh
+cimport mbedtls._ecp as _ecp
 cimport mbedtls._md as _md
+cimport mbedtls._rsa as _rsa
 cimport mbedtls.mpi as _mpi
-
-
-cdef extern from "mbedtls/dhm.h" nogil:
-    ctypedef struct mbedtls_dhm_context:
-        _mpi.mbedtls_mpi P
-        _mpi.mbedtls_mpi G
-        _mpi.mbedtls_mpi X
-        _mpi.mbedtls_mpi GX
-        _mpi.mbedtls_mpi GY
-        _mpi.mbedtls_mpi K
-
-    void mbedtls_dhm_init(mbedtls_dhm_context *ctx)
-    void mbedtls_dhm_free(mbedtls_dhm_context *ctx)
-
-    int mbedtls_dhm_make_params(
-        mbedtls_dhm_context *ctx,
-        int x_size,
-        unsigned char *output, size_t *olen,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
-    int mbedtls_dhm_make_public(
-        mbedtls_dhm_context *ctx,
-        int x_size,
-        unsigned char *output, size_t olen,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
-
-    int mbedtls_dhm_read_params(
-        mbedtls_dhm_context *ctx,
-        unsigned char **p,
-        const unsigned char *end)
-    int mbedtls_dhm_read_public(
-        mbedtls_dhm_context *ctx,
-        const unsigned char *input, size_t ilen)
-
-    int mbedtls_dhm_calc_secret(
-        mbedtls_dhm_context *ctx,
-        unsigned char *output, size_t output_size, size_t *olen,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
-
-    # int mbedtls_dhm_parse_dhm(
-    #     mbedtls_dhm_context *dhm,
-    #     const unsigned char *dhmin, size_t dhminlen)
-    # int mbedtls_dhm_parse_dhmfile(
-    #     mbedtls_dhm_context *dhm,
-    #     const char *path)
-
-
-cdef extern from "mbedtls/ecp.h" nogil:
-    ctypedef enum mbedtls_ecp_group_id:
-        MBEDTLS_ECP_DP_NONE = 0,
-        MBEDTLS_ECP_DP_SECP192R1
-        MBEDTLS_ECP_DP_SECP224R1
-        MBEDTLS_ECP_DP_SECP256R1
-        MBEDTLS_ECP_DP_SECP384R1
-        MBEDTLS_ECP_DP_SECP521R1
-        MBEDTLS_ECP_DP_BP256R1
-        MBEDTLS_ECP_DP_BP384R1
-        MBEDTLS_ECP_DP_BP512R1
-        MBEDTLS_ECP_DP_CURVE25519
-        MBEDTLS_ECP_DP_SECP192K1
-        MBEDTLS_ECP_DP_SECP224K1
-        MBEDTLS_ECP_DP_SECP256K1
-        MBEDTLS_ECP_DP_CURVE448
-
-    ctypedef enum mbedtls_ecp_curve_type:
-        MBEDTLS_ECP_TYPE_NONE = 0
-        MBEDTLS_ECP_TYPE_SHORT_WEIERSTRASS
-        MBEDTLS_ECP_TYPE_MONTGOMERY
-
-    ctypedef struct mbedtls_ecp_curve_info:
-        mbedtls_ecp_group_id grp_id
-        int bit_size
-        const char *name
-
-    ctypedef struct mbedtls_ecp_point:
-        _mpi.mbedtls_mpi X
-        _mpi.mbedtls_mpi Y
-        _mpi.mbedtls_mpi Z
-
-    ctypedef struct mbedtls_ecp_group:
-        mbedtls_ecp_group_id id
-        _mpi.mbedtls_mpi P
-        _mpi.mbedtls_mpi A
-        _mpi.mbedtls_mpi B
-        mbedtls_ecp_point G
-        _mpi.mbedtls_mpi N
-        size_t pbits
-        size_t nbits
-        unsigned int h
-        int (*modp)(_mpi.mbedtls_mpi *)
-        int (*t_pre)(mbedtls_ecp_point *, void *)
-        int (*t_post)(mbedtls_ecp_point *, void *)
-        void *t_data
-        mbedtls_ecp_point *T
-        size_t T_size
-
-    ctypedef struct mbedtls_ecp_keypair:
-        mbedtls_ecp_group grp
-        _mpi.mbedtls_mpi d
-        mbedtls_ecp_point Q
-
-    int MBEDTLS_ECP_MAX_BYTES
-    int MBEDTLS_ECP_PF_UNCOMPRESSED
-
-    # Free functions
-    # --------------
-    const mbedtls_ecp_curve_info* mbedtls_ecp_curve_list()
-    # mbedtls_ecp_grp_id_list
-    # mbedtls_ecp_curve_info_from_grp_id
-    # mbedtls_ecp_curve_info_from_tls_id
-    # mbedtls_ecp_curve_info_from_name
-    mbedtls_ecp_curve_type mbedtls_ecp_get_type(
-        const mbedtls_ecp_group *grp
-    )
-
-    # mbedtls_ecp_point
-    # -----------------
-    void mbedtls_ecp_point_init(mbedtls_ecp_point *pt)
-    void mbedtls_ecp_point_free(mbedtls_ecp_point *pt)
-    int mbedtls_ecp_copy(
-        mbedtls_ecp_point *P,
-        const mbedtls_ecp_point *Q)
-    # mbedtls_ecp_set_zero
-    int mbedtls_ecp_is_zero(mbedtls_ecp_point *pt)
-    int mbedtls_ecp_point_cmp(
-        const mbedtls_ecp_point *P,
-        const mbedtls_ecp_point *Q)
-    # mbedtls_ecp_point_read_string
-
-    # mbedtls_ecp_group
-    # -----------------
-    void mbedtls_ecp_group_init(mbedtls_ecp_group *grp)
-    void mbedtls_ecp_group_free(mbedtls_ecp_group *grp)
-    int mbedtls_ecp_group_copy(
-        mbedtls_ecp_group *dst,
-        const mbedtls_ecp_group *src)
-
-    int mbedtls_ecp_point_write_binary(
-        const mbedtls_ecp_group *grp,
-        const mbedtls_ecp_point *P,
-        int format, size_t *olen, unsigned char *buf, size_t buflen)
-    int mbedtls_ecp_point_read_binary(
-        const mbedtls_ecp_group *grp,
-        mbedtls_ecp_point *P,
-        const unsigned char *buf, size_t ilen)
-
-    # mbedtls_ecp_tls_read_point
-    # mbedtls_ecp_tls_write_point
-
-    int mbedtls_ecp_group_load(
-        mbedtls_ecp_group *grp,
-        mbedtls_ecp_group_id index)
-
-    # mbedtls_ecp_tls_read_group
-    # mbedtls_ecp_tls_write_group
-    int mbedtls_ecp_mul(
-        mbedtls_ecp_group *grp,
-        mbedtls_ecp_point *R,
-        const _mpi.mbedtls_mpi *m,
-        const mbedtls_ecp_point *P,
-        int (*f_rng)(void *, unsigned char *, size_t),
-        void *p_rng)
-    # mbedtls_ecp_muladd
-    # mbedtls_ecp_check_pubkey
-    # mbedtls_ecp_check_privkey
-
-    # mbedtls_ecp_keypair
-    # -------------------
-    void mbedtls_ecp_keypair_init(mbedtls_ecp_keypair *key)
-    void mbedtls_ecp_keypair_free(mbedtls_ecp_keypair *key)
-    # mbedtls_ecp_gen_keypair_base
-    int mbedtls_ecp_gen_keypair(
-        mbedtls_ecp_group *grp,
-        _mpi.mbedtls_mpi *d,
-        mbedtls_ecp_point *Q,
-        int (*f_rng)(void *, unsigned char *, size_t),
-        void *p_rng)
-    # mbedtls_ecp_check_pub_priv
-    int mbedtls_ecp_gen_key(
-        mbedtls_ecp_group_id grp_id,
-        mbedtls_ecp_keypair *key,
-        int (*f_rng)(void *, unsigned char *, size_t),
-        void *p_rng)
-
-
-cdef extern from "mbedtls/ecdh.h" nogil:
-    ctypedef enum mbedtls_ecdh_side:
-        MBEDTLS_ECDH_OURS
-        MBEDTLS_ECDH_THEIRS
-
-    ctypedef struct mbedtls_ecdh_context:
-        mbedtls_ecp_group grp
-        _mpi.mbedtls_mpi d  # private key
-        mbedtls_ecp_point Q  # public key
-        mbedtls_ecp_point Qp  # peer's public key
-        _mpi.mbedtls_mpi z  # shared secret
-
-    # mbedtls_ecp_group
-    # -----------------
-    int mbedtls_ecdh_gen_public(
-        mbedtls_ecp_group *grp,
-        _mpi.mbedtls_mpi *d,
-        mbedtls_ecp_point *Q,
-        int (*f_rng)(void *, unsigned char *, size_t),
-        void *p_rng)
-    int mbedtls_ecdh_compute_shared(
-        mbedtls_ecp_group *grp,
-        _mpi.mbedtls_mpi *z,
-        const mbedtls_ecp_point *Q,
-        const _mpi.mbedtls_mpi *d,
-        int (*f_rng)(void *, unsigned char *, size_t),
-        void *p_rng)
-
-    # mbedtls_ecdh_context
-    # --------------------
-    void mbedtls_ecdh_init(mbedtls_ecdh_context *ctx)
-    void mbedtls_ecdh_free(mbedtls_ecdh_context *ctx)
-
-    int mbedtls_ecdh_get_params(
-        mbedtls_ecdh_context *ctx,
-        const mbedtls_ecp_keypair *key,
-        mbedtls_ecdh_side side)
-
-    int mbedtls_ecdh_make_params(
-        mbedtls_ecdh_context *ctx,
-        size_t *olen, unsigned char *buf, size_t blen,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
-    int mbedtls_ecdh_make_public(
-        mbedtls_ecdh_context *ctx,
-        size_t *olen, unsigned char *buf, size_t blen,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
-
-    int mbedtls_ecdh_read_params(
-        mbedtls_ecdh_context *ctx,
-        const unsigned char **buf, const unsigned char *end)
-    int mbedtls_ecdh_read_public(
-        mbedtls_ecdh_context *ctx,
-        const unsigned char *buf, size_t blen)
-
-    int mbedtls_ecdh_calc_secret(
-        mbedtls_ecdh_context *ctx,
-        size_t *olen, unsigned char *buf, size_t blen,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
-
-
-cdef extern from "mbedtls/ecdsa.h" nogil:
-    ctypedef struct mbedtls_ecdsa_context:
-        mbedtls_ecp_group grp
-        _mpi.mbedtls_mpi d
-        mbedtls_ecp_point Q
-
-    int MBEDTLS_ECDSA_MAX_LEN
-
-    # mbedtls_ecp_group
-    # -----------------
-    # mbedtls_ecdsa_sign
-    # mbedtls_ecdsa_sign_det
-    # mbedtls_ecdsa_verify
-
-    # mbedtls_ecdsa_context
-    # ---------------------
-    void mbedtls_ecdsa_init(mbedtls_ecdsa_context *ctx)
-    void mbedtls_ecdsa_free(mbedtls_ecdsa_context *ctx)
-
-    int mbedtls_ecdsa_from_keypair(
-        mbedtls_ecdsa_context *ctx,
-        const mbedtls_ecp_keypair *key)
-
-    # mbedtls_ecdsa_write_signature
-    # mbedtls_ecdsa_write_signature_det
-    # mbedtls_ecdsa_read_signature
-
-    int mbedtls_ecdsa_genkey(
-        mbedtls_ecdsa_context *ctx, mbedtls_ecp_group_id gid,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
-
-
-cdef extern from "mbedtls/rsa.h" nogil:
-    ctypedef struct mbedtls_rsa_context:
-        pass
-
-    # mbedtls_rsa_context
-    # -------------------
-    # mbedtls_rsa_init
-    # mbedtls_rsa_set_padding
-    int mbedtls_rsa_gen_key(
-        mbedtls_rsa_context *ctx,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
-        unsigned int nbits, int exponent)
-    int mbedtls_rsa_check_pubkey(const mbedtls_rsa_context *ctx)
-    int mbedtls_rsa_check_privkey(const mbedtls_rsa_context *ctx)
-    # mbedtls_rsa_check_pub_priv
-    # mbedtls_rsa_public
-    # mbedtls_rsa_private
-    # mbedtls_rsa_pkcs1_encrypt
-    # mbedtls_rsa_rsaes_pkcs1_v15_encrypt
-    # mbedtls_rsa_rsaes_oaep_encrypt
-    # mbedtls_rsa_pkcs1_decrypt
-    # mbedtls_rsa_rsaes_pkcs1_v15_decrypt
-    # mbedtls_rsa_rsaes_oaep_decrypt
-    # mbedtls_rsa_pkcs1_sign
-    # mbedtls_rsa_rsassa_pkcs1_v15_sign
-    # mbedtls_rsa_rsassa_pss_sign
-    # mbedtls_rsa_pkcs1_verify
-    # mbedtls_rsa_rsassa_pkcs1_v15_verify
-    # mbedtls_rsa_rsassa_pss_verify
-    # mbedtls_rsa_rsassa_pss_verify_ext
-    # mbedtls_rsa_copy
-    # mbedtls_rsa_free
 
 
 cdef extern from "mbedtls/pk.h" nogil:
@@ -336,8 +29,8 @@ cdef extern from "mbedtls/pk.h" nogil:
     ctypedef struct mbedtls_pk_context:
         pass
 
-    mbedtls_rsa_context *mbedtls_pk_rsa(const mbedtls_pk_context pk)
-    mbedtls_ecp_keypair *mbedtls_pk_ec(const mbedtls_pk_context pk)
+    _rsa.mbedtls_rsa_context *mbedtls_pk_rsa(const mbedtls_pk_context pk)
+    _ecp.mbedtls_ecp_keypair *mbedtls_pk_ec(const mbedtls_pk_context pk)
     # RSA-alt function pointer types
     const mbedtls_pk_info_t *mbedtls_pk_info_from_type(
         mbedtls_pk_type_t pk_type)
@@ -426,13 +119,13 @@ cdef class ECC(CipherBase):
 
 
 cdef class ECPoint:
-    cdef mbedtls_ecp_point _ctx
+    cdef _ecp.mbedtls_ecp_point _ctx
 
 
 cdef class DHBase:
-    cdef mbedtls_dhm_context _ctx
+    cdef _dhm.mbedtls_dhm_context _ctx
 
 
 cdef class ECDHBase:
-    cdef mbedtls_ecdh_context _ctx
+    cdef _ecdh.mbedtls_ecdh_context _ctx
     cdef curve

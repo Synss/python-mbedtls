@@ -4,7 +4,9 @@
 cimport libc.stdio as c_stdio
 from libc.stdlib cimport free, malloc
 
+cimport mbedtls._debug as _debug
 cimport mbedtls._random as _rnd
+cimport mbedtls._timing as _timing
 cimport mbedtls._tls as _tls
 cimport mbedtls.pk as _pk
 cimport mbedtls.x509 as _x509
@@ -125,7 +127,7 @@ cdef int _psk_cb(
 
 def _set_debug_level(int level):
     """Set debug level for logging."""
-    _tls.mbedtls_debug_set_threshold(level)
+    _debug.mbedtls_debug_set_threshold(level)
 
 
 def __get_ciphersuite_name(ciphersuite_id):
@@ -1003,8 +1005,8 @@ cdef class MbedTLSBuffer:
         _tls.mbedtls_ssl_set_timer_cb(
             &self._ctx,
             &self._timer,
-            _tls.mbedtls_timing_set_delay,
-            _tls.mbedtls_timing_get_delay)
+            _timing.mbedtls_timing_set_delay,
+            _timing.mbedtls_timing_get_delay)
 
     def __dealloc__(self):
         """Free and clear the internal structures of ctx."""

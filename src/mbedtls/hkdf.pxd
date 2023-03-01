@@ -1,9 +1,6 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2019, Mathias Laurin
 
-"""Declarations from `mbedtls/hkdf.h`."""
-
-
 cimport mbedtls._md as _md
 
 

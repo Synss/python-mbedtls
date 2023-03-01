@@ -2,9 +2,6 @@
 # Copyright (c) 2016, Elaborated Networks GmbH
 # Copyright (c) 2019, Mathias Laurin
 
-"""Declarations for `mbedtls/ctr_drbg.h`."""
-
-
 cdef extern from "mbedtls/entropy.h" nogil:
     ctypedef struct mbedtls_entropy_context:
         pass

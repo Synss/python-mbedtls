@@ -10,30 +10,16 @@
 """
 
 
+cimport mbedtls._asn1 as _asn1
 cimport mbedtls._md as _md
 cimport mbedtls.mpi as _mpi
 cimport mbedtls.pk as _pk
 
 
-cdef extern from "mbedtls/asn1.h" nogil:
-    cdef struct mbedtls_asn1_buf:
-        int tag
-        size_t len
-        unsigned char *p
-    cdef struct mbedtls_asn1_sequence:
-        mbedtls_asn1_buf buf
-        mbedtls_asn1_sequence *next
-    cdef struct mbedtls_asn1_named_data:
-        mbedtls_asn1_buf oid
-        mbedtls_asn1_buf val
-        mbedtls_asn1_named_data *next
-        unsigned char next_merged
-
-
 cdef extern from "mbedtls/x509.h" nogil:
-    ctypedef mbedtls_asn1_buf mbedtls_x509_buf
-    ctypedef mbedtls_asn1_named_data mbedtls_x509_name
-    ctypedef mbedtls_asn1_sequence mbedtls_x509_sequence
+    ctypedef _asn1.mbedtls_asn1_buf mbedtls_x509_buf
+    ctypedef _asn1.mbedtls_asn1_named_data mbedtls_x509_name
+    ctypedef _asn1.mbedtls_asn1_sequence mbedtls_x509_sequence
     int mbedtls_x509_dn_gets(
         char *buf, size_t size, const mbedtls_x509_name *dn)
     cdef struct mbedtls_x509_time:

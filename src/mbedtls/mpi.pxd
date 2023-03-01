@@ -1,9 +1,6 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2018, Mathias Laurin
 
-"""Declaration from `mbedtls/bignum.h`."""
-
-
 cdef extern from "mbedtls/bignum.h" nogil:
     int MBEDTLS_MPI_MAX_SIZE
 

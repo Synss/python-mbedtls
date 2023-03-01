@@ -2,9 +2,6 @@
 # Copyright (c) 2015, Elaborated Networks GmbH
 # Copyright (c) 2018, Mathias Laurin
 
-"""Declarations from `mbedtls/md.h`."""
-
-
 cdef extern from "mbedtls/md.h" nogil:
     ctypedef struct mbedtls_md_info_t:
         pass
