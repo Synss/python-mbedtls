@@ -70,7 +70,7 @@ abc.Mapping.register(_PSKSToreProxy)
 
 @cython.boundscheck(False)
 cdef void _my_debug(void *ctx, int level,
-                    const char *file, int line, const char *str) nogil:
+                    const char *file, int line, const char *str) noexcept nogil:
     c_stdio.fprintf(<c_stdio.FILE *> ctx, "%s:%04d: %s", file, line, str)
     c_stdio.fflush(<c_stdio.FILE *> ctx)
 
@@ -80,7 +80,7 @@ def _enable_debug_output(_BaseContext context):
 
 
 @cython.boundscheck(False)
-cdef int buffer_write(void *ctx, const unsigned char *buf, size_t len) nogil:
+cdef int buffer_write(void *ctx, const unsigned char *buf, size_t len) noexcept nogil:
     """"Write buffer to output buffer."""
     c_buf = <_tls._C_Buffers *> ctx
     if len == 0:
@@ -94,7 +94,7 @@ cdef int buffer_write(void *ctx, const unsigned char *buf, size_t len) nogil:
 
 
 @cython.boundscheck(False)
-cdef int buffer_read(void *ctx, unsigned char *buf, const size_t len) nogil:
+cdef int buffer_read(void *ctx, unsigned char *buf, const size_t len) noexcept nogil:
     """Read from input buffer."""
     c_buf = <_tls._C_Buffers *> ctx
     if _rb.c_len(c_buf.in_ctx) == 0:
@@ -108,7 +108,7 @@ cdef int _psk_cb(
     _tls.mbedtls_ssl_context *ctx,
     const unsigned char *c_identity,
     size_t c_identity_len
-) nogil:
+) noexcept nogil:
     """Wrapper for the PSK callback."""
     # If a valid PSK identity is found, call `mbedtls_ssl_set_hs_psk()` and
     # return 0. Otherwise, return 1.
