@@ -92,4 +92,4 @@ min-similarity-lines = "8"
 markers = "e2e: end-to-end tests"
 
 [tool.ruff]
-ignore = ["E701", "E704"]
+ignore = ["E701"]
