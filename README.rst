@@ -421,3 +421,17 @@ and `tests/test_tls.py`_.
 
 .. _programs/: https://github.com/Synss/python-mbedtls/tree/master/programs
 .. _tests/test_tls.py: https://github.com/Synss/python-mbedtls/blob/master/tests/test_tls.py
+
+
+EC J-PAKE key exchange
+----------------------
+
+The *mbedtls.ecjpake* module provides API support for Password
+Authenticated Key Exchange by Juggling. Note, however, that the
+mbed TLS backend library is by default built with ECJPAKE support
+disabled. For this module API to work the mbed TLS library must be
+configured and built with the ECJPAKE key exchange feature enabled.
+
+See examples in `tests/test_ecjpake.py`_.
+
+.. _tests/test_ecjpake.py: https://github.com/Synss/python-mbedtls/blob/master/tests/test_ecjpake.py

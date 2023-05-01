@@ -19,9 +19,14 @@ import mbedtls.tls as tls
 import mbedtls.version as version
 import mbedtls.x509 as x509
 
+if version.has_feature("MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED"):
+    import mbedtls.ecjpake as ecjpake
+
 __version__ = "2.6.1"
 
-__all__ = (
+from typing import Tuple
+
+__all__: Tuple[str, ...] = (
     "cipher",
     "exceptions",
     "hashlib",
@@ -33,6 +38,9 @@ __all__ = (
     "version",
     "x509",
 )
+
+if version.has_feature("MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED"):
+    __all__ = __all__ + ("ecjpake",)
 
 
 has_feature = version.has_feature
