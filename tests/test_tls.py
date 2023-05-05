@@ -141,6 +141,16 @@ def make_crt(
     return crt, key
 
 
+def make_trust_store(
+    certificate_chain: Tuple[Tuple[CRT, ...], _Key]
+) -> TrustStore:
+    trust_store = TrustStore()
+    crt: CRT
+    for crt in certificate_chain[0][1:]:
+        trust_store.add(crt)
+    return trust_store
+
+
 class TestPickle:
     @pytest.mark.parametrize(
         "obj",
@@ -753,10 +763,6 @@ class TestTLSHandshake:
         hostname: _HostName,
         certificate_chain: Tuple[Tuple[CRT, ...], _Key],
     ) -> None:
-        trust_store = TrustStore()
-        crt: CRT
-        for crt in certificate_chain[0][1:]:
-            trust_store.add(crt)
         server = ServerContext(
             TLSConfiguration(
                 certificate_chain=certificate_chain,
@@ -765,7 +771,7 @@ class TestTLSHandshake:
         ).wrap_buffers()
         # Host name must now be the common name (CN) of the leaf certificate.
         client = ClientContext(
-            TLSConfiguration(trust_store=trust_store)
+            TLSConfiguration(trust_store=make_trust_store(certificate_chain))
         ).wrap_buffers(hostname)
         make_full_handshake(client=client, server=server)
 
@@ -835,10 +841,6 @@ class TestDTLSHandshake:
         hostname: _HostName,
         certificate_chain: Tuple[Tuple[CRT, ...], _Key],
     ) -> None:
-        trust_store = TrustStore()
-        crt: CRT
-        for crt in certificate_chain[0][1:]:
-            trust_store.add(crt)
         server = ServerContext(
             DTLSConfiguration(
                 certificate_chain=certificate_chain,
@@ -847,7 +849,7 @@ class TestDTLSHandshake:
         ).wrap_buffers()
         # Host name must now be the common name (CN) of the leaf certificate.
         client = ClientContext(
-            DTLSConfiguration(trust_store=trust_store)
+            DTLSConfiguration(trust_store=make_trust_store(certificate_chain))
         ).wrap_buffers(hostname)
         make_hello_verify_request(
             client=client, server=server, cookie="🍪🍪🍪".encode()
