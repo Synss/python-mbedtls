@@ -795,6 +795,69 @@ class TestTLSHandshake:
 
 
 class TestDTLSHandshake:
+    @pytest.fixture(scope="class")
+    def hostname(self) -> _HostName:
+        return "www.example.com"
+
+    @pytest.fixture(scope="class")
+    def certificate_chain(
+        self, hostname: _HostName
+    ) -> Tuple[Tuple[CRT, ...], _Key]:
+        root_crt, root_key = make_root_ca()
+        ee_crt, ee_key = make_crt(
+            root_crt, root_key, subject=f"OU=test, CN={hostname}"
+        )
+        return (ee_crt, root_crt), ee_key
+
+    def test_cert_without_validation(
+        self, certificate_chain: Tuple[Tuple[CRT, ...], _Key]
+    ) -> None:
+        server = ServerContext(
+            DTLSConfiguration(
+                certificate_chain=certificate_chain,
+                validate_certificates=False,
+            )
+        ).wrap_buffers()
+        client = ClientContext(
+            DTLSConfiguration(validate_certificates=False)
+        ).wrap_buffers("hostname")
+        make_hello_verify_request(
+            client=client, server=server, cookie="🍪🍪🍪".encode()
+        )
+        make_full_handshake(client=client, server=server)
+
+        secret = b"a very secret message"
+        assert do_send(secret, src=client, dst=server) == secret
+        assert do_send(secret, src=server, dst=client) == secret
+
+    def test_cert_with_validation(
+        self,
+        hostname: _HostName,
+        certificate_chain: Tuple[Tuple[CRT, ...], _Key],
+    ) -> None:
+        trust_store = TrustStore()
+        crt: CRT
+        for crt in certificate_chain[0][1:]:
+            trust_store.add(crt)
+        server = ServerContext(
+            DTLSConfiguration(
+                certificate_chain=certificate_chain,
+                validate_certificates=False,
+            )
+        ).wrap_buffers()
+        # Host name must now be the common name (CN) of the leaf certificate.
+        client = ClientContext(
+            DTLSConfiguration(trust_store=trust_store)
+        ).wrap_buffers(hostname)
+        make_hello_verify_request(
+            client=client, server=server, cookie="🍪🍪🍪".encode()
+        )
+        make_full_handshake(client=client, server=server)
+
+        secret = b"a very secret message"
+        assert do_send(secret, src=client, dst=server) == secret
+        assert do_send(secret, src=server, dst=client) == secret
+
     def test_psk(self) -> None:
         psk = ("cli", b"secret")
         server = ServerContext(
