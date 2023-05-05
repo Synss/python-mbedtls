@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime as dt
 import pickle
 import sys
+from pathlib import Path
 from typing import Any, Callable, Optional, Tuple, Union
 
 import certifi
@@ -172,9 +173,11 @@ class TestCertificate:
     def test_from_buffer(self, cert: Union[CSR, CRT, CRL]) -> None:
         assert type(cert).from_buffer(cert.to_DER()) == cert
 
-    def test_from_file(self, cert: Union[CSR, CRT, CRL], tmpdir: Any) -> None:
-        path = tmpdir.join("key.der")
-        path.write_binary(cert.to_DER())
+    def test_from_file(
+        self, cert: Union[CSR, CRT, CRL], tmp_path: Path
+    ) -> None:
+        path = tmp_path / "key.der"
+        path.write_bytes(cert.to_DER())
         assert type(cert).from_file(path) == cert
 
     def test_from_DER(self, cert: Union[CSR, CRT, CRL]) -> None:
