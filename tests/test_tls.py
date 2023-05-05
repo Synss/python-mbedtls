@@ -1024,10 +1024,10 @@ class TestProgramsDTLS:
             "--psk-store",
             "cli=secret",
         ]
-        proc = subprocess.Popen(args, text=True, encoding="utf8")
-        yield proc
-        proc.kill()
-        proc.wait(1.0)
+        with subprocess.Popen(args, text=True, encoding="utf8") as proc:
+            yield proc
+            proc.kill()
+            proc.wait(1.0)
 
     @pytest.mark.repeat(3)
     @pytest.mark.usefixtures("server")
