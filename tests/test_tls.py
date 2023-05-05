@@ -64,6 +64,16 @@ _HostName = str
 
 
 @pytest.fixture(scope="module")
+def as_path(tmp_path_factory: pytest.TempPathFactory) -> Callable[[str], Path]:
+    def _as_path(mydata: str) -> Path:
+        data = tmp_path_factory.mktemp("dir") / "data"
+        data.write_text(mydata)
+        return data
+
+    return _as_path
+
+
+@pytest.fixture(scope="module")
 def rootpath() -> Path:
     return Path(__file__).parent.parent
 
@@ -931,7 +941,7 @@ class TestWrappedSocket_SmokeTests:
 
 @pytest.mark.e2e()
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
-class TestProgramsTLS:
+class TestProgramsTLS_PSK:
     @pytest.fixture(scope="class")
     def port(self) -> int:
         """Return a free port
@@ -1061,7 +1071,175 @@ class TestProgramsTLS:
 
 @pytest.mark.e2e()
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
-class TestProgramsDTLS:
+class TestProgramsTLS_CERT:
+    @pytest.fixture(scope="class")
+    def certificate(self) -> Tuple[CRT, _Key]:
+        return make_root_ca()
+
+    @pytest.fixture(scope="class")
+    def port(self) -> int:
+        """Return a free port
+
+        Note:
+            Not 100% race condition free.
+
+        """
+        port = 0
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.bind(("localhost", port))
+            port = sock.getsockname()[1]
+        return port
+
+    @pytest.fixture(scope="class")
+    def server(
+        self,
+        rootpath: Path,
+        port: int,
+        certificate: Tuple[CRT, _Key],
+        as_path: Callable[[str], Path],
+    ) -> Iterator[subprocess.Popen[str]]:
+        crt, key = certificate
+        args = [
+            sys.executable,
+            str(rootpath / "programs" / "server.py"),
+            "--port",
+            f"{port}",
+            "--tls",
+            "--cert",
+            as_path(crt.to_PEM()),
+            "--key",
+            as_path(key.export_key("PEM")),
+        ]
+        with subprocess.Popen(args, text=True, encoding="utf8") as proc:
+            yield proc
+            proc.kill()
+            proc.wait(1.0)
+
+    @pytest.mark.repeat(3)
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(30)
+    def test_client(
+        self,
+        rootpath: Path,
+        port: int,
+        certificate: Tuple[CRT, _Key],
+        as_path: Callable[[str], Path],
+    ) -> None:
+        secret = "a very secret message"
+        crt, key = certificate
+        args = [
+            sys.executable,
+            str(rootpath / "programs" / "client.py"),
+            "--port",
+            f"{port}",
+            "--tls",
+            "--trust-store",
+            as_path(crt.to_PEM()),
+            secret,
+        ]
+        for _ in range(3):
+            assert do_communicate(args) == secret + "\n"
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(30)
+    def test_raw_socket_send_recv(
+        self, port: int, certificate: Tuple[CRT, _Key]
+    ) -> None:
+        secret = b"a very secret message"
+        root_crt, root_key = certificate
+        ee_crt, ee_key = make_crt(root_crt, root_key)
+        chain = (ee_crt, root_crt), ee_key
+        with ClientContext(
+            TLSConfiguration(
+                trust_store=make_trust_store(chain),
+                validate_certificates=False,
+            ),
+        ).wrap_socket(
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM), "localhost"
+        ) as client:
+            client.connect(("127.0.0.1", port))
+            client.do_handshake()
+            sent = client.send(secret)
+            assert sent == len(secret)
+
+            data = client.recv(1024)
+        assert data == secret
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(30)
+    def test_raw_socket_send_recv_into(
+        self, port: int, certificate: Tuple[CRT, _Key]
+    ) -> None:
+        secret = b"a very secret message"
+        root_crt, root_key = certificate
+        ee_crt, ee_key = make_crt(root_crt, root_key)
+        chain = (ee_crt, root_crt), ee_key
+        buffer = bytearray(b"\0" * 256)
+        with ClientContext(
+            TLSConfiguration(
+                trust_store=make_trust_store(chain),
+                validate_certificates=False,
+            ),
+        ).wrap_socket(
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM), "localhost"
+        ) as client:
+            client.connect(("127.0.0.1", port))
+            client.do_handshake()
+            sent = client.send(secret)
+            assert sent == len(secret)
+
+            received = client.recv_into(buffer, 1024)
+        assert buffer[:received] == secret
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(30)
+    def test_raw_socket_sendall_recv(
+        self, port: int, certificate: Tuple[CRT, _Key]
+    ) -> None:
+        secret = b"a very secret message"
+        root_crt, root_key = make_root_ca()
+        ee_crt, ee_key = make_crt(root_crt, root_key)
+        chain = (ee_crt, root_crt), ee_key
+        with ClientContext(
+            TLSConfiguration(
+                trust_store=make_trust_store(chain),
+                validate_certificates=False,
+            ),
+        ).wrap_socket(
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM), "localhost"
+        ) as client:
+            client.connect(("127.0.0.1", port))
+            client.do_handshake()
+            client.sendall(secret)
+            data = client.recv(1024)
+        assert data == secret
+
+    @pytest.mark.usefixtures("server")
+    @pytest.mark.timeout(30)
+    def test_raw_socket_connectionless_unavailable(
+        self, port: int, certificate: Tuple[CRT, _Key]
+    ) -> None:
+        address = ("127.0.0.1", port)
+        root_crt, root_key = certificate
+        ee_crt, ee_key = make_crt(root_crt, root_key)
+        chain = (ee_crt, root_crt), ee_key
+        with ClientContext(
+            TLSConfiguration(
+                trust_store=make_trust_store(chain),
+                validate_certificates=True,
+            ),
+        ).wrap_socket(
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM), "localhost"
+        ) as client:
+            with pytest.raises(OSError) as excinfo:
+                client.do_handshake(address)
+
+        assert excinfo.value.errno is errno.ENOTCONN
+
+
+@pytest.mark.e2e()
+@pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
+class TestProgramsDTLS_PSK:
     @pytest.fixture(scope="class")
     def port(self) -> int:
         """Return a free port
