@@ -22,6 +22,7 @@ from mbedtls.tls import (
     DTLSConfiguration,
     TLSConfiguration,
     TLSWrappedSocket,
+    TrustStore,
 )
 
 if sys.version_info < (3, 10):
@@ -162,25 +163,39 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--port", default=4433, type=int)
     parser.add_argument("--debug", type=int)
     parser.add_argument("--server-name", default="localhost")
-    parser.add_argument(
+    pskgroup = parser.add_argument_group("PSK")
+    pskgroup.add_argument(
         "--psk",
         type=lambda x: x.encode("latin1"),
         action=PSKArg,
         metavar="CLI=SECRET",
     )
+    certgroup = parser.add_argument_group("certificate")
+    certgroup.add_argument("--trust-store", type=argparse.FileType("r"))
     parser.add_argument("message", default="hello")
-    return parser.parse_args()
+    args = parser.parse_args()
+    if not (args.psk or args.trust_store):
+        parser.error("One of --psk or --trust-store TRUST_STORE is required")
+    return args
 
 
 def main(args: argparse.Namespace) -> None:
     conf: Union[TLSConfiguration, DTLSConfiguration]
+    trust_store: Optional[TrustStore] = None
+    if args.trust_store:
+        trust_store = TrustStore.from_pem_file(args.trust_store.name)
+        assert trust_store, "empty or invalid trust store"
     if args.proto is socket.SOCK_STREAM:
         conf = TLSConfiguration(
-            pre_shared_key=args.psk, validate_certificates=False
+            pre_shared_key=args.psk,
+            trust_store=trust_store,
+            validate_certificates=False,
         )
     elif args.proto is socket.SOCK_DGRAM:
         conf = DTLSConfiguration(
-            pre_shared_key=args.psk, validate_certificates=False
+            pre_shared_key=args.psk,
+            trust_store=trust_store,
+            validate_certificates=False,
         )
     else:
         raise NotImplementedError(args.proto)

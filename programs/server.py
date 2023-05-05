@@ -17,6 +17,7 @@ from functools import partial
 from typing import Any, Callable, NoReturn, Optional, Tuple, Union
 
 from mbedtls._tls import _enable_debug_output, _set_debug_level  # type: ignore
+from mbedtls.pk import ECC, RSA
 from mbedtls.tls import (
     DTLSConfiguration,
     HelloVerifyRequest,
@@ -24,6 +25,7 @@ from mbedtls.tls import (
     TLSConfiguration,
     TLSWrappedSocket,
 )
+from mbedtls.x509 import CRT
 
 if sys.version_info < (3, 10):
     from typing_extensions import TypeAlias
@@ -173,24 +175,42 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--address", default="0.0.0.0")
     parser.add_argument("--port", default=4433, type=int)
     parser.add_argument("--debug", type=int)
-    parser.add_argument(
+    pskgroup = parser.add_argument_group("PSK")
+    pskgroup.add_argument(
         "--psk-store",
         type=lambda x: x.encode("latin1"),
         action=PSKStoreArg,
         metavar="CLI1=SECRET1,CLI2=SECRET2...",
     )
-    return parser.parse_args()
+    certgroup = parser.add_argument_group("certificate")
+    certgroup.add_argument("--cert", type=argparse.FileType("r"))
+    certgroup.add_argument("--key", type=argparse.FileType("r"))
+    args = parser.parse_args()
+    if not (args.psk_store or (args.cert and args.key)):
+        parser.error(
+            "One of --psk or --cert CERT --key KEY arguments is required"
+        )
+    return args
 
 
 def main(args: argparse.Namespace) -> NoReturn:
     conf: Union[TLSConfiguration, DTLSConfiguration]
+    cert: Optional[CRT] = None
+    key: Union[RSA, ECC, None] = None
+    if args.cert:
+        cert = CRT.from_PEM(args.cert.read())
+        key = RSA.from_PEM(args.key.read())
     if args.proto is socket.SOCK_STREAM:
         conf = TLSConfiguration(
-            pre_shared_key_store=args.psk_store, validate_certificates=False
+            pre_shared_key_store=args.psk_store,
+            certificate_chain=((cert,), key) if cert else None,
+            validate_certificates=False,
         )
     elif args.proto is socket.SOCK_DGRAM:
         conf = DTLSConfiguration(
-            pre_shared_key_store=args.psk_store, validate_certificates=False
+            pre_shared_key_store=args.psk_store,
+            certificate_chain=((cert,), key) if cert else None,
+            validate_certificates=False,
         )
     else:
         raise NotImplementedError(args.proto)
