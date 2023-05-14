@@ -93,3 +93,4 @@ markers = "e2e: end-to-end tests"
 
 [tool.ruff]
 ignore = ["E701"]
+per-file-ignores = {"**/__init__.py" = ["F401"]}

@@ -21,7 +21,9 @@ import mbedtls.x509 as x509
 
 __version__ = "2.6.1"
 
-__all__ = (
+from typing import Tuple
+
+__all__: Tuple[str, ...] = (
     "cipher",
     "exceptions",
     "hashlib",
