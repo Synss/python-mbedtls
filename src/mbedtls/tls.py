@@ -28,6 +28,7 @@ from ._tls import (
 )
 from ._tlsi import DTLSConfiguration as DTLSConfiguration
 from ._tlsi import DTLSVersion as DTLSVersion
+from ._tlsi import MaxFragmentLength as MaxFragmentLength
 from ._tlsi import NextProtocol as NextProtocol
 from ._tlsi import PrivateKey as PrivateKey
 from ._tlsi import ServerNameCallback as ServerNameCallback
@@ -50,6 +51,7 @@ __all__ = (
     "DTLSConfiguration",
     "DTLSVersion",
     "HelloVerifyRequest",
+    "MaxFragmentLength",
     "NextProtocol",
     "PrivateKey",
     "Purpose",

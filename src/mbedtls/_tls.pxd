@@ -283,7 +283,12 @@ cdef extern from "mbedtls/ssl.h" nogil:
     # mbedtls_ssl_conf_encrypt_then_mac
     # mbedtls_ssl_conf_extended_master_secret
     # mbedtls_ssl_conf_arc4_support
-    # mbedtls_ssl_conf_max_frag_len
+
+    int mbedtls_ssl_conf_max_frag_len(
+        mbedtls_ssl_config *conf,
+        unsigned char mgl_code,
+    )
+
     # mbedtls_ssl_conf_truncated_hmac
     # mbedtls_ssl_conf_cbc_record_splitting
     # mbedtls_ssl_conf_session_tickets
@@ -403,6 +408,7 @@ cdef class MbedTLSConfiguration:
     cdef const char **_protos
     cdef _PSKSToreProxy _store
     cdef _DTLSCookie _cookie
+    cdef object _max_fragmentation_length
     # cdef'd because we aim at a non-writable structure.
     cdef _set_validate_certificates(self, validate)
     cdef _set_certificate_chain(self, chain)
@@ -411,6 +417,7 @@ cdef class MbedTLSConfiguration:
     cdef _set_lowest_supported_version(self, version)
     cdef _set_highest_supported_version(self, version)
     cdef _set_trust_store(self, object store)
+    cdef _set_max_fragmentation_length(self, object mfl)
     cdef _set_anti_replay(self, mode)
     cdef _set_handshake_timeout(self, minimum, maximum)
     cdef _set_cookie(self, _DTLSCookie cookie)

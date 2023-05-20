@@ -27,6 +27,7 @@ import mbedtls.pk as _pk
 from mbedtls._tlsi import (
     DTLSConfiguration,
     DTLSVersion,
+    MaxFragmentLength,
     NextProtocol,
     TLSConfiguration,
     TLSVersion,
@@ -393,6 +394,7 @@ cdef class MbedTLSConfiguration:
         lowest_supported_version,
         highest_supported_version,
         trust_store,
+        max_fragmentation_length,
         anti_replay,
         # badmac_limit
         handshake_timeout_min,
@@ -403,6 +405,7 @@ cdef class MbedTLSConfiguration:
         _transport,
     ):
         assert isinstance(_transport, Transport)
+        self._max_fragmentation_length = max_fragmentation_length
         _exc.check_error(_tls.mbedtls_ssl_config_defaults(
             &self._ctx,
             endpoint=0,  # server / client is not known here...
@@ -415,6 +418,7 @@ cdef class MbedTLSConfiguration:
         self._set_lowest_supported_version(lowest_supported_version)
         self._set_highest_supported_version(highest_supported_version)
         self._set_trust_store(trust_store)
+        self._set_max_fragmentation_length(max_fragmentation_length)
         self._set_anti_replay(anti_replay)
         self._set_handshake_timeout(
             handshake_timeout_min, handshake_timeout_max
@@ -471,6 +475,7 @@ cdef class MbedTLSConfiguration:
                 self.lowest_supported_version,
                 self.highest_supported_version,
                 self.trust_store,
+                self.max_fragmentation_length,
                 self.anti_replay,
                 self.handshake_timeout_min,
                 self.handshake_timeout_max,
@@ -714,6 +719,25 @@ cdef class MbedTLSConfiguration:
             c_ctx = c_ctx.next
         return store
 
+    cdef _set_max_fragmentation_length(self, mfl):
+        if mfl is None:
+            return
+
+        if not isinstance(mfl, MaxFragmentLength):
+            raise TypeError(mfl)
+
+        try:
+            _exc.check_error(
+                _tls.mbedtls_ssl_conf_max_frag_len(&self._ctx, mfl.value)
+            )
+        except _exc.TLSError as exc:
+            raise ValueError(mfl) from exc
+
+    @property
+    def max_fragmentation_length(self):
+        # No accessor in backend.
+        return self._max_fragmentation_length
+
     cdef _set_anti_replay(self, anti_replay):
         """Set anti replay."""
         if anti_replay is None:
@@ -888,6 +912,7 @@ cdef class _BaseContext:
                     configuration.highest_supported_version
                 ),
                 trust_store=configuration.trust_store,
+                max_fragmentation_length=configuration.max_fragmentation_length,
                 anti_replay=None,
                 handshake_timeout_min=None,
                 handshake_timeout_max=None,
@@ -909,6 +934,7 @@ cdef class _BaseContext:
                     configuration.highest_supported_version
                 ),
                 trust_store=configuration.trust_store,
+                max_fragmentation_length=configuration.max_fragmentation_length,
                 anti_replay=configuration.anti_replay,
                 handshake_timeout_min=configuration.handshake_timeout_min,
                 handshake_timeout_max=configuration.handshake_timeout_max,
@@ -947,6 +973,7 @@ cdef class _BaseContext:
                 lowest_supported_version=self._conf.lowest_supported_version,
                 highest_supported_version=self._conf.highest_supported_version,
                 trust_store=self._conf.trust_store,
+                max_fragmentation_length=self._conf.max_fragmentation_length,
                 sni_callback=self._conf.sni_callback,
                 pre_shared_key=self._conf.pre_shared_key,
                 pre_shared_key_store=self._conf.pre_shared_key_store,
@@ -960,6 +987,7 @@ cdef class _BaseContext:
             lowest_supported_version=self._conf.lowest_supported_version,
             highest_supported_version=self._conf.highest_supported_version,
             trust_store=self._conf.trust_store,
+            max_fragmentation_length=self._conf.max_fragmentation_length,
             anti_replay=self._conf.anti_replay,
             handshake_timeout_min=self._conf.handshake_timeout_min,
             handshake_timeout_max=self._conf.handshake_timeout_max,

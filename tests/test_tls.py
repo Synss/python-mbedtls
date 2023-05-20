@@ -43,6 +43,7 @@ from mbedtls.tls import (
     DTLSVersion,
     HandshakeStep,
     HelloVerifyRequest,
+    MaxFragmentLength,
     NextProtocol,
     Purpose,
     ServerContext,
@@ -439,6 +440,14 @@ class TestConfiguration:
     ) -> None:
         assert trust_store
         assert_conf_invariant(conf, trust_store=trust_store)
+
+    @pytest.mark.parametrize("mfl", MaxFragmentLength)
+    def test_max_fragmentation_length(
+        self,
+        conf: Union[TLSConfiguration, DTLSConfiguration],
+        mfl: MaxFragmentLength,
+    ) -> None:
+        assert_conf_invariant(conf, max_fragmentation_length=mfl)
 
     def test_set_sni_callback(
         self,

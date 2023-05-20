@@ -38,6 +38,14 @@ class NextProtocol(enum.Enum):
     TURN: bytes = b"stun.turn"
 
 
+class MaxFragmentLength(enum.Enum):
+    NONE = 0
+    MFL_512K = 1
+    MFL_1024K = 2
+    MFL_2048K = 3
+    MFL_4096K = 4
+
+
 class TLSVersion(enum.Enum):
     # PEP 543
     MINIMUM_SUPPORTED = enum.auto()
@@ -182,6 +190,7 @@ class TLSConfiguration:
     lowest_supported_version: TLSVersion = TLSVersion.TLSv1
     highest_supported_version: TLSVersion = TLSVersion.MAXIMUM_SUPPORTED
     trust_store: Optional[TrustStore] = None
+    max_fragmentation_length: Optional[MaxFragmentLength] = None
     sni_callback: Optional[ServerNameCallback] = None
     pre_shared_key: Optional[Tuple[str, bytes]] = None
     pre_shared_key_store: Mapping[str, bytes] = field(default_factory=dict)
@@ -233,6 +242,8 @@ class TLSConfiguration:
                 ),
                 self.trust_store == other.trust_store
                 or (not self.trust_store and not other.trust_store),
+                self.max_fragmentation_length
+                == other.max_fragmentation_length,
                 self.sni_callback == other.sni_callback,
                 self.pre_shared_key == other.pre_shared_key,
                 self.pre_shared_key_store == other.pre_shared_key_store,
@@ -248,6 +259,7 @@ class TLSConfiguration:
         lowest_supported_version: _Wrap[TLSVersion] = _DEFAULT_VALUE,
         highest_supported_version: _Wrap[TLSVersion] = _DEFAULT_VALUE,
         trust_store: _Wrap[TrustStore] = _DEFAULT_VALUE,
+        max_fragmentation_length: _Wrap[MaxFragmentLength] = _DEFAULT_VALUE,
         sni_callback: _Wrap[Optional[ServerNameCallback]] = _DEFAULT_VALUE,
         pre_shared_key: _Wrap[Tuple[str, bytes]] = _DEFAULT_VALUE,
         pre_shared_key_store: _Wrap[Mapping[str, bytes]] = _DEFAULT_VALUE,
@@ -276,6 +288,10 @@ class TLSConfiguration:
                 self.highest_supported_version,
             ),
             trust_store=_unwrap(trust_store, self.trust_store),
+            max_fragmentation_length=_unwrap(
+                max_fragmentation_length,
+                self.max_fragmentation_length,
+            ),
             sni_callback=_unwrap(sni_callback, self.sni_callback),
             pre_shared_key=_unwrap(pre_shared_key, self.pre_shared_key),
             pre_shared_key_store=_unwrap(
@@ -295,6 +311,7 @@ class DTLSConfiguration:
     lowest_supported_version: DTLSVersion = DTLSVersion.DTLSv1_0
     highest_supported_version: DTLSVersion = DTLSVersion.MAXIMUM_SUPPORTED
     trust_store: Optional[TrustStore] = None
+    max_fragmentation_length: Optional[MaxFragmentLength] = None
     anti_replay: bool = True
     handshake_timeout_min: float = 1.0
     handshake_timeout_max: float = 60.0
@@ -350,6 +367,8 @@ class DTLSConfiguration:
                 self.trust_store == other.trust_store
                 or (not self.trust_store and not other.trust_store)
                 or (not self.trust_store and not other.trust_store),
+                self.max_fragmentation_length
+                == other.max_fragmentation_length,
                 self.anti_replay == other.anti_replay,
                 self.handshake_timeout_min == other.handshake_timeout_min,
                 self.handshake_timeout_max == other.handshake_timeout_max,
@@ -368,6 +387,7 @@ class DTLSConfiguration:
         lowest_supported_version: _Wrap[DTLSVersion] = _DEFAULT_VALUE,
         highest_supported_version: _Wrap[DTLSVersion] = _DEFAULT_VALUE,
         trust_store: _Wrap[TrustStore] = _DEFAULT_VALUE,
+        max_fragmentation_length: _Wrap[MaxFragmentLength] = _DEFAULT_VALUE,
         anti_replay: _Wrap[bool] = _DEFAULT_VALUE,
         handshake_timeout_min: _Wrap[float] = _DEFAULT_VALUE,
         handshake_timeout_max: _Wrap[float] = _DEFAULT_VALUE,
@@ -399,6 +419,10 @@ class DTLSConfiguration:
                 self.highest_supported_version,
             ),
             trust_store=_unwrap(trust_store, self.trust_store),
+            max_fragmentation_length=_unwrap(
+                max_fragmentation_length,
+                self.max_fragmentation_length,
+            ),
             anti_replay=_unwrap(anti_replay, self.anti_replay),
             handshake_timeout_min=_unwrap(
                 handshake_timeout_min,
