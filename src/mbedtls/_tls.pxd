@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2018, Mathias Laurin
 
+from libc.stdint cimport uint16_t
+
 cimport mbedtls._ecdh as _ecdh
 cimport mbedtls._ringbuf as _rb
 cimport mbedtls._timing as _timing
@@ -312,6 +314,11 @@ cdef extern from "mbedtls/ssl.h" nogil:
         mbedtls_ssl_send_p f_send,
         mbedtls_ssl_recv_p f_recv,
         mbedtls_ssl_recv_timeout_p f_recv_timeout)
+
+    void mbedtls_ssl_set_mtu(
+        mbedtls_ssl_context *ssl,
+        uint16_t mtu,
+    )
 
     void mbedtls_ssl_set_timer_cb(
         # DTLS

@@ -827,6 +827,33 @@ class TestDTLSHandshake:
         assert do_send(secret, src=client, dst=server) == secret
         assert do_send(secret, src=server, dst=client) == secret
 
+    @pytest.mark.parametrize("mtu_cli", [0, 128, 380, 500, (1 << 16) - 1])
+    @pytest.mark.parametrize("mtu_srv", [0, 128, 380, 500, (1 << 16) - 1])
+    def test_psk_set_mtu(self, mtu_cli: int, mtu_srv: int) -> None:
+        psk = ("cli", b"secret")
+        server = ServerContext(
+            DTLSConfiguration(
+                pre_shared_key_store=dict((psk,)),
+                validate_certificates=False,
+            )
+        ).wrap_buffers()
+        server.setmtu(mtu_srv)
+        client = ClientContext(
+            DTLSConfiguration(
+                pre_shared_key=psk,
+                validate_certificates=False,
+            ),
+        ).wrap_buffers("hostname")
+        client.setmtu(mtu_cli)
+        make_hello_verify_request(
+            client=client, server=server, cookie="🍪🍪🍪".encode()
+        )
+        make_full_handshake(client=client, server=server)
+
+        secret = b"a very secret message"
+        assert do_send(secret, src=client, dst=server) == secret
+        assert do_send(secret, src=server, dst=client) == secret
+
     def test_resume_from_pickle(self) -> None:
         psk = ("cli", b"secret")
         server = ServerContext(

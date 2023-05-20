@@ -280,6 +280,17 @@ class TLSWrappedSocket:
         # pylint: disable=protected-access
         return self._buffer._handshake_state
 
+    def setmtu(self, mtu: int) -> None:
+        """Set Maxiumum Transport Unit (MTU) for DTLS.
+
+        Set to zero to unset.
+
+        Raises:
+            OverflowError: If value cannot be converted to UInt16.
+
+        """
+        self._buffer.setmtu(mtu)
+
     def accept(self) -> Tuple[TLSWrappedSocket, _Address]:
         if self.type == _pysocket.SOCK_STREAM:
             conn, address = self._socket.accept()

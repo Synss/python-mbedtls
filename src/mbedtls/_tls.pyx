@@ -1130,6 +1130,20 @@ cdef class MbedTLSBuffer:
             info.size,
         )
 
+    def setmtu(self, mtu):
+        """Set Maxiumum Transport Unit (MTU) for DTLS.
+
+        Set to zero to unset.
+
+        Raises:
+            OverflowError: If value cannot be converted to UInt16.
+
+        """
+        # DTLS
+        if not isinstance(mtu, int):
+            raise TypeError(mtu)
+        _tls.mbedtls_ssl_set_mtu(&self._ctx, mtu)
+
     def _reset(self):
         _exc.check_error(_tls.mbedtls_ssl_session_reset(&self._ctx))
 
