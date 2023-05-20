@@ -257,16 +257,31 @@ class TLSConfiguration:
         on the original configuration with the new settings.
         """
         return self.__class__(
-            _unwrap(validate_certificates, self.validate_certificates),
-            _unwrap(certificate_chain, self.certificate_chain),
-            _unwrap(ciphers, self.ciphers),
-            _unwrap(inner_protocols, self.inner_protocols),
-            _unwrap(lowest_supported_version, self.lowest_supported_version),
-            _unwrap(highest_supported_version, self.highest_supported_version),
-            _unwrap(trust_store, self.trust_store),
-            _unwrap(sni_callback, self.sni_callback),
-            _unwrap(pre_shared_key, self.pre_shared_key),
-            _unwrap(pre_shared_key_store, self.pre_shared_key_store),
+            validate_certificates=_unwrap(
+                validate_certificates,
+                self.validate_certificates,
+            ),
+            certificate_chain=_unwrap(
+                certificate_chain,
+                self.certificate_chain,
+            ),
+            ciphers=_unwrap(ciphers, self.ciphers),
+            inner_protocols=_unwrap(inner_protocols, self.inner_protocols),
+            lowest_supported_version=_unwrap(
+                lowest_supported_version,
+                self.lowest_supported_version,
+            ),
+            highest_supported_version=_unwrap(
+                highest_supported_version,
+                self.highest_supported_version,
+            ),
+            trust_store=_unwrap(trust_store, self.trust_store),
+            sni_callback=_unwrap(sni_callback, self.sni_callback),
+            pre_shared_key=_unwrap(pre_shared_key, self.pre_shared_key),
+            pre_shared_key_store=_unwrap(
+                pre_shared_key_store,
+                self.pre_shared_key_store,
+            ),
         )
 
 
@@ -365,17 +380,38 @@ class DTLSConfiguration:
         on the original configuration with the new settings.
         """
         return self.__class__(
-            _unwrap(validate_certificates, self.validate_certificates),
-            _unwrap(certificate_chain, self.certificate_chain),
-            _unwrap(ciphers, self.ciphers),
-            _unwrap(inner_protocols, self.inner_protocols),
-            _unwrap(lowest_supported_version, self.lowest_supported_version),
-            _unwrap(highest_supported_version, self.highest_supported_version),
-            _unwrap(trust_store, self.trust_store),
-            _unwrap(anti_replay, self.anti_replay),
-            _unwrap(handshake_timeout_min, self.handshake_timeout_min),
-            _unwrap(handshake_timeout_max, self.handshake_timeout_max),
-            _unwrap(sni_callback, self.sni_callback),
-            _unwrap(pre_shared_key, self.pre_shared_key),
-            _unwrap(pre_shared_key_store, self.pre_shared_key_store),
+            validate_certificates=_unwrap(
+                validate_certificates,
+                self.validate_certificates,
+            ),
+            certificate_chain=_unwrap(
+                certificate_chain,
+                self.certificate_chain,
+            ),
+            ciphers=_unwrap(ciphers, self.ciphers),
+            inner_protocols=_unwrap(inner_protocols, self.inner_protocols),
+            lowest_supported_version=_unwrap(
+                lowest_supported_version,
+                self.lowest_supported_version,
+            ),
+            highest_supported_version=_unwrap(
+                highest_supported_version,
+                self.highest_supported_version,
+            ),
+            trust_store=_unwrap(trust_store, self.trust_store),
+            anti_replay=_unwrap(anti_replay, self.anti_replay),
+            handshake_timeout_min=_unwrap(
+                handshake_timeout_min,
+                self.handshake_timeout_min,
+            ),
+            handshake_timeout_max=_unwrap(
+                handshake_timeout_max,
+                self.handshake_timeout_max,
+            ),
+            sni_callback=_unwrap(sni_callback, self.sni_callback),
+            pre_shared_key=_unwrap(pre_shared_key, self.pre_shared_key),
+            pre_shared_key_store=_unwrap(
+                pre_shared_key_store,
+                self.pre_shared_key_store,
+            ),
         )
