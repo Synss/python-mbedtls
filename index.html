@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cryptographic library for Python with Mbed TLS back end &mdash; python-mbedtls 2.6.1 documentation</title>
+  <title>Cryptographic library for Python with Mbed TLS back end &mdash; python-mbedtls 2.7.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,11 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="#" class="icon icon-home"> python-mbedtls
+
+          
+          
+          <a href="#" class="icon icon-home">
+            python-mbedtls
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -70,7 +74,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="#" class="icon icon-home"></a></li>
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Cryptographic library for Python with Mbed TLS back end</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
@@ -116,7 +120,7 @@ source projects.  The MIT License is compatible with both GPL and Apache
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
-<p>The bindings are tested with mbedTLS 2.28.2 for Python 3.7,
+<p>The bindings are tested with mbedTLS 2.28.3 for Python 3.7,
 3.8, 3.9, 3.10, and 3.11 on Linux, macOS, and Windows.</p>
 <p><a class="reference external" href="https://www.python.org/dev/peps/pep-0513/">manylinux</a> wheels are available for 64-bit Linux systems.  Install
 with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">python-mbedtls</span></code>.</p>
@@ -129,8 +133,8 @@ with <code class="docutils literal notranslate"><span class="pre">pip</span> <sp
 <p>The <em>mbedtls.version</em> module shows the run-time version
 information to mbed TLS.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">version</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">version</span>  <span class="c1"># &quot;mbed TLS 2.28.2&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">version_info</span>  <span class="c1"># (2, 28, 2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">version</span>  <span class="c1"># &quot;mbed TLS 2.28.3&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">version_info</span>  <span class="c1"># (2, 28, 3)</span>
 </pre></div>
 </div>
 </section>
@@ -373,11 +377,11 @@ or create and verify a certificate chain.</p>
 <p>Here, the trusted root is a self-signed CA certificate
 <code class="docutils literal notranslate"><span class="pre">ca0_crt</span></code> signed by <code class="docutils literal notranslate"><span class="pre">ca0_key</span></code>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">hashlib</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">pk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mbedtls</span> <span class="kn">import</span> <span class="n">x509</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">now</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ca0_key</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">RSA</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ca0_key</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
@@ -395,7 +399,7 @@ root CA signs:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ca1_key</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECC</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ca1_key</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ca1_csr</span> <span class="o">=</span> <span class="n">x509</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ca1_key</span><span class="p">,</span> <span class="s2">&quot;CN=Intermediate CA&quot;</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">())</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ca1_crt</span> <span class="o">=</span> <span class="n">ca0_crt</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">ca1_csr</span><span class="p">,</span> <span class="n">ca0_key</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">now</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">90</span><span class="p">),</span> <span class="mh">0x123456</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">basic_constraints</span><span class="o">=</span><span class="n">x509</span><span class="o">.</span><span class="n">BasicConstraints</span><span class="p">(</span><span class="n">ca</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_path_length</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
@@ -407,7 +411,7 @@ End Entity on the basis of a new CSR:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ee0_key</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ECC</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ee0_key</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ee0_csr</span> <span class="o">=</span> <span class="n">x509</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ee0_key</span><span class="p">,</span> <span class="s2">&quot;CN=End Entity&quot;</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">())</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ee0_crt</span> <span class="o">=</span> <span class="n">ca1_crt</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">ee0_csr</span><span class="p">,</span> <span class="n">ca1_key</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">now</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">90</span><span class="p">),</span> <span class="mh">0x987654</span><span class="p">)</span>
 <span class="gp">...</span>
