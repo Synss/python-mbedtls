@@ -4,5 +4,5 @@
 #
 #    pip-compile --no-annotate --resolver=backtracking setup.py
 #
-certifi==2022.12.7
-typing-extensions==4.4.0
+certifi==2023.5.7
+typing-extensions==4.6.2
