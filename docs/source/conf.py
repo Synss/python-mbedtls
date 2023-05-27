@@ -25,7 +25,7 @@ copyright = "2016, Mathias Laurin"
 author = "Mathias Laurin"
 
 # The full version, including alpha/beta/rc tags
-release = "2.6.1"
+release = "2.7.0"
 
 
 # -- General configuration ---------------------------------------------------
