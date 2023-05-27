@@ -1,3 +1,8 @@
+[next]
+
+* tls: Add `setmtu`, for the maximum transport unit, and an
+optional `max_fragmentation_length` configuration.
+
 [2.6.1] - 2023-02-15
 
 * cipher: Fix encryption and decryption of 0-length strings.
