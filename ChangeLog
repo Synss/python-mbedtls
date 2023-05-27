@@ -1,5 +1,6 @@
 [next]
 
+* ci: Update wheels to mbedtls 2.28.3.
 * tls: Add `setmtu`, for the maximum transport unit, and an
 optional `max_fragmentation_length` configuration.
 
