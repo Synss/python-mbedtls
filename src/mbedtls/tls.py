@@ -9,6 +9,7 @@ import os
 import socket as _pysocket
 import struct
 import sys
+from contextlib import suppress
 from typing import Any, NoReturn, Optional, Tuple, Union, cast, overload
 
 from ._tls import HandshakeStep as HandshakeStep
@@ -403,6 +404,12 @@ class TLSWrappedSocket:
 
     def shutdown(self, how: int) -> None:
         self._buffer.shutdown()
+        # Alerts are much smaller but it doesn't matter.
+        close_notify = self._buffer.peek_outgoing(4096)
+        with suppress(OSError):
+            # Do not raise if the socket is already closed.
+            amt = self._socket.send(close_notify)
+            self._buffer.consume_outgoing(amt)
         self._socket.shutdown(how)
 
     # PEP 543 adds the following methods.
