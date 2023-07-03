@@ -1148,12 +1148,13 @@ cdef class MbedTLSBuffer:
         _exc.check_error(_tls.mbedtls_ssl_session_reset(&self._ctx))
 
     def shutdown(self):
-        # No error handling:  The connection may be closed already.
-        _tls.mbedtls_ssl_close_notify(&self._ctx)
-        self._reset()
-
-    def _close(self):
-        self.shutdown()
+        try:
+            _exc.check_error(_tls.mbedtls_ssl_close_notify(&self._ctx))
+        except (WantReadError, WantWriteError):
+            raise
+        except _exc.TLSError:
+            # No error handling:  The connection may be closed already.
+            self._reset()
 
     def read(self, amt):
         # PEP 543
