@@ -32,7 +32,7 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: 'https://github.com/charliermarsh/ruff-pre-commit'
-    rev: v0.0.263
+    rev: v0.0.276
     hooks:
       - id: ruff
   - repo: 'https://github.com/psf/black'
@@ -69,7 +69,7 @@ repos:
           - '--disable=no-name-in-module'
           - '--disable=import-error'
   - repo: 'https://github.com/asottile/pyupgrade'
-    rev: v3.3.2
+    rev: v3.8.0
     hooks:
       - id: pyupgrade
         types_or: [cython, python]
@@ -77,6 +77,6 @@ repos:
           - '--py37-plus'
           - '--keep-runtime-typing'
   - repo: 'https://github.com/abravalheri/validate-pyproject'
-    rev: v0.12.2
+    rev: v0.13
     hooks:
       - id: validate-pyproject
