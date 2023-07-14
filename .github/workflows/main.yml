@@ -28,7 +28,7 @@ jobs:
           path: dist
           if-no-files-found: error
       - name: Build and test wheels
-        uses: pypa/cibuildwheel@v2.12.3
+        uses: pypa/cibuildwheel@v2.14
         env:
           CIBW_BUILD: ${{ matrix.pyver }}-*
           CIBW_ENVIRONMENT: VERSION=${{ matrix.version }}
