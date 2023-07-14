@@ -66,8 +66,8 @@ https://synss.github.io/python-mbedtls/
 Installation
 ============
 
-The bindings are tested with mbedTLS 2.28.3 for Python 3.7,
-3.8, 3.9, 3.10, and 3.11 on Linux, macOS, and Windows.
+The bindings are tested with mbedTLS 2.28.3 for Python 3.8,
+3.9, 3.10, and 3.11 on Linux, macOS, and Windows.
 
 `manylinux`_ wheels are available for 64-bit Linux systems.  Install
 with ``pip install python-mbedtls``.
