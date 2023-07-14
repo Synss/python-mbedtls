@@ -1,3 +1,7 @@
+[next]
+
+* tls: Fix missing close notify alert.
+
 [2.7.0] - 2023-05-27
 
 * ci: Update wheels to mbedtls 2.28.3.
