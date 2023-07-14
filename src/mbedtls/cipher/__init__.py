@@ -11,8 +11,7 @@ Encryption Algorithms"
 
 from __future__ import annotations
 
-import sys
-from typing import Optional
+from typing import Final, Optional, Protocol, runtime_checkable
 
 from mbedtls.cipher import (
     AES,
@@ -31,12 +30,6 @@ from mbedtls.cipher._cipher import Mode as Mode
 from mbedtls.cipher._cipher import (
     get_supported_ciphers as get_supported_ciphers,
 )
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Final, Protocol, runtime_checkable
-else:
-    from typing import Final, Protocol, runtime_checkable
-
 
 # Add module-level aliases to comply with PEP 272.
 MODE_ECB: Final = Mode.ECB.value

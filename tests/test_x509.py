@@ -4,9 +4,8 @@ from __future__ import annotations
 
 import datetime as dt
 import pickle
-import sys
 from pathlib import Path
-from typing import Any, Callable, Optional, Tuple, Union
+from typing import Any, Callable, Final, Optional, Tuple, Union
 
 import certifi
 import pytest
@@ -14,11 +13,6 @@ import pytest
 from mbedtls import hashlib
 from mbedtls.pk import ECC, RSA
 from mbedtls.x509 import CRL, CRT, CSR, BasicConstraints
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Final
-else:
-    from typing import Final
 
 _PEM = str
 _DER = bytes

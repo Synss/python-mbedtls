@@ -35,11 +35,7 @@ if sys.version_info < (3, 11):
 else:
     from typing import assert_never
 
-if sys.version_info < (3, 8):
-    from typing_extensions import Literal
-else:
-    from typing import Literal
-
+from typing import Literal
 
 _CipherType = Union[RSA, ECC]
 

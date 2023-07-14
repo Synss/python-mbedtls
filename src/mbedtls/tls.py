@@ -10,7 +10,7 @@ import socket as _pysocket
 import struct
 import sys
 from contextlib import suppress
-from typing import Any, NoReturn, Optional, Tuple, Union, cast, overload
+from typing import Any, Final, NoReturn, Optional, Tuple, Union, cast, overload
 
 from ._tls import HandshakeStep as HandshakeStep
 from ._tls import HelloVerifyRequest
@@ -35,11 +35,6 @@ from ._tlsi import PrivateKey as PrivateKey
 from ._tlsi import ServerNameCallback as ServerNameCallback
 from ._tlsi import TLSConfiguration as TLSConfiguration
 from ._tlsi import TLSVersion as TLSVersion
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Final
-else:
-    from typing import Final
 
 if sys.version_info < (3, 10):
     from typing_extensions import TypeAlias

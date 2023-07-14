@@ -6,8 +6,7 @@
 
 from __future__ import annotations
 
-import sys
-from typing import Optional
+from typing import Optional, Protocol
 
 # pylint: disable=no-name-in-module
 from mbedtls._md import Hash as Hash
@@ -15,11 +14,6 @@ from mbedtls._md import algorithms_available as algorithms_available
 from mbedtls._md import algorithms_guaranteed as algorithms_guaranteed
 
 # pylint: enable=no-name-in-module
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Protocol
-else:
-    from typing import Protocol
 
 
 # Work around pyflakes' F401: imported but unused

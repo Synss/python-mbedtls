@@ -74,7 +74,7 @@ repos:
       - id: pyupgrade
         types_or: [cython, python]
         args:
-          - '--py37-plus'
+          - '--py38-plus'
           - '--keep-runtime-typing'
   - repo: 'https://github.com/abravalheri/validate-pyproject'
     rev: v0.13

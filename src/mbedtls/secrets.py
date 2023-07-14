@@ -14,16 +14,9 @@ from __future__ import annotations
 
 import base64 as _base64
 import binascii as _binascii
-import sys
-from typing import Callable, Sequence, TypeVar, cast
+from typing import Callable, Final, Sequence, TypeVar, cast
 
 import mbedtls._random as _rnd  # pylint: disable=no-name-in-module
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Final
-else:
-    from typing import Final
-
 
 __all__ = [
     "randbits",

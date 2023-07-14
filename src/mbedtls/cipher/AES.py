@@ -9,17 +9,11 @@ NIST in 2001.
 
 from __future__ import annotations
 
-import sys
-from typing import Optional, Union, overload
+from typing import Final, Literal, Optional, Union, overload
 
 from mbedtls.exceptions import TLSError
 
 from ._cipher import AEADCipher, Cipher, Mode
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Final, Literal
-else:
-    from typing import Final, Literal
 
 __all__ = ["block_size", "key_size", "new"]
 

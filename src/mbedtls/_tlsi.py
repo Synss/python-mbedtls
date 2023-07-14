@@ -9,12 +9,16 @@ import enum
 import os
 import sys
 from dataclasses import dataclass, field
-from typing import Callable, Mapping, Optional, Tuple, TypeVar, Union
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Literal, Protocol
-else:
-    from typing import Literal, Protocol
+from typing import (
+    Callable,
+    Literal,
+    Mapping,
+    Optional,
+    Protocol,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 if sys.version_info < (3, 9):
     _PathLike = os.PathLike

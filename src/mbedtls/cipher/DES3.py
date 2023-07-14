@@ -7,17 +7,11 @@ Triple DES, or DES-EDE3)."""
 
 from __future__ import annotations
 
-import sys
-from typing import Optional, Union
+from typing import Final, Literal, Optional, Union
 
 from mbedtls.exceptions import TLSError
 
 from ._cipher import Cipher, Mode
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Final, Literal
-else:
-    from typing import Final, Literal
 
 __all__ = ["block_size", "key_size", "new"]
 

@@ -30,11 +30,7 @@ if sys.version_info < (3, 10):
 else:
     from typing import TypeAlias
 
-if sys.version_info < (3, 8):
-    from typing_extensions import Final
-else:
-    from typing import Final
-
+from typing import Final
 
 __all__ = ["Server"]
 
