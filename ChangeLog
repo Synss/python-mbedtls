@@ -1,4 +1,4 @@
-[next]
+[2.7.1] - 2023-07-15
 
 * tls: Fix missing close notify alert.
 * ci: Drop Python 3.7.
