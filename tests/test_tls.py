@@ -201,11 +201,7 @@ class TestPSKStoreProxy:
     def proxy(self, psk_store: Mapping[str, bytes]) -> PSKStoreProxy:
         return PSKStoreProxy(psk_store)
 
-    @pytest.mark.parametrize(
-        "repr_",
-        [repr, str],
-        ids=lambda f: f.__name__,  # type: ignore[no-any-return]
-    )
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(
         self, repr_: Callable[[object], str], psk_store: Mapping[str, bytes]
     ) -> None:
@@ -262,11 +258,7 @@ class TestTLSRecordHeader:
     ) -> TLSRecordHeader:
         return TLSRecordHeader(record_type, version, length)
 
-    @pytest.mark.parametrize(
-        "repr_",
-        [repr, str],
-        ids=lambda f: f.__name__,  # type: ignore[no-any-return]
-    )
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(
         self,
         repr_: Callable[[object], str],
@@ -310,11 +302,7 @@ class TestTrustStore:
     def store(self) -> TrustStore:
         return TrustStore.system()
 
-    @pytest.mark.parametrize(
-        "repr_",
-        [repr, str],
-        ids=lambda f: f.__name__,  # type: ignore[no-any-return]
-    )
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(
         self, repr_: Callable[[object], str], store: TrustStore
     ) -> None:

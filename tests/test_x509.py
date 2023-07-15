@@ -148,11 +148,7 @@ class TestCertificate:
         assert isinstance(request.param, (CSR, CRT, CRL))
         return request.param
 
-    @pytest.mark.parametrize(
-        "repr_",
-        [repr, str],
-        ids=lambda f: f.__name__,  # type: ignore[no-any-return]
-    )
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(
         self, repr_: Callable[[object], str], cert: Union[CSR, CRT, CRL]
     ) -> None:

@@ -20,11 +20,7 @@ def test_from_int(value: int) -> None:
     assert value == mpi
 
 
-@pytest.mark.parametrize(
-    "repr_",
-    [repr, str],
-    ids=lambda f: f.__name__,  # type: ignore[no-any-return]
-)
+@pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
 def test_repr(repr_: Callable[[object], str]) -> None:
     assert isinstance(repr_(MPI(69)), str)
 

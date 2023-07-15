@@ -64,11 +64,7 @@ class TestHash:
     def algorithm(self, algorithm_str: str) -> hashlib.Algorithm:
         return cast(hashlib.Algorithm, getattr(hashlib, algorithm_str))
 
-    @pytest.mark.parametrize(
-        "repr_",
-        [repr, str],
-        ids=lambda f: f.__name__,  # type: ignore[no-any-return]
-    )
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(
         self, repr_: Callable[[object], str], algorithm: hashlib.Algorithm
     ) -> None:
@@ -161,11 +157,7 @@ class TestHmac:
     def algorithm(self, algorithm_str: str) -> hmac.Algorithm:
         return cast(hmac.Algorithm, getattr(hmac, algorithm_str))
 
-    @pytest.mark.parametrize(
-        "repr_",
-        [repr, str],
-        ids=lambda f: f.__name__,  # type: ignore[no-any-return]
-    )
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(
         self, repr_: Callable[[object], str], algorithm: hmac.Algorithm
     ) -> None:

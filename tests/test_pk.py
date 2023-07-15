@@ -92,11 +92,7 @@ class TestECPoint:
     def point(self, xyz: Tuple[int, int, int]) -> ECPoint:
         return ECPoint(*xyz)
 
-    @pytest.mark.parametrize(
-        "repr_",
-        [repr, str],
-        ids=lambda f: f.__name__,  # type: ignore[no-any-return]
-    )
+    @pytest.mark.parametrize("repr_", [repr, str], ids=lambda f: f.__name__)
     def test_repr(
         self, repr_: Callable[[object], str], point: ECPoint
     ) -> None:
@@ -264,7 +260,7 @@ class TestCipher:
     @pytest.mark.parametrize(
         "digestmod",
         [_get_md_alg(name) for name in hashlib.algorithms_guaranteed],
-        ids=lambda dm: dm().name,  # type: ignore[no-any-return]
+        ids=lambda dm: dm().name,
     )
     def test_sign_verify(
         self,
