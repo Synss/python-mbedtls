@@ -4,7 +4,9 @@ pytest
 
 # Tooling
 coverage
-readme_renderer
+readme_renderer < 42.0
+# 42.0 requires nh3, which is a rust dependency.  Installing cargo/rust
+#      in a container is too much work for now.
 
 # QA
 pre-commit
@@ -15,3 +17,7 @@ pylint-per-file-ignores
 pytest-cov != 2.9.0
 pytest-repeat
 pytest-timeout
+
+# Broken deps
+# https://github.com/yaml/pyyaml/issues/601
+pyyaml != 6.0.0
