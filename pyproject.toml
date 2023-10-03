@@ -8,28 +8,28 @@ test-requires = "-rrequirements/tests.txt"
 test-command = "pytest {project}/tests"
 
 [tool.cibuildwheel.linux]
-before-all = '''
-./scripts/download-mbedtls.sh $VERSION ~/.local/src \
-&& ./scripts/install-mbedtls.sh ~/.local/src
-'''
+before-all = [
+  "./scripts/download-mbedtls.sh $VERSION ~/.local/src",
+  "./scripts/install-mbedtls.sh ~/.local/src",
+]
 
 [tool.cibuildwheel.macos]
-before-all = '''
-./scripts/download-mbedtls.sh $VERSION ~/.local/src \
-&& ./scripts/install-mbedtls.sh ~/.local/src \
-&& cp /usr/local/lib/libmbed*dylib .
-'''
+before-all = [
+  "./scripts/download-mbedtls.sh $VERSION ~/.local/src",
+  "./scripts/install-mbedtls.sh ~/.local/src",
+  "cp /usr/local/lib/libmbed*dylib .",
+]
 
 [tool.cibuildwheel.windows]
-before-all = """
-powershell -Command Get-Host \
-&& powershell Get-Location \
-&& powershell New-Item -Path . -Name _lib -ItemType directory \
-&& powershell %CD%\\scripts\\download-mbedtls.ps1 %VERSION% _lib\\mbedtls \
-&& powershell %CD%\\scripts\\install-mbedtls.ps1 -ConfigurationType StaticLibrary _lib\\mbedtls \
-&& powershell %CD%\\scripts\\install-mbedtls.ps1 -ConfigurationType DynamicLibrary _lib\\mbedtls \
-&& dir %LIB%
-"""
+before-all = [
+  "powershell -Command Get-Host",
+  "powershell Get-Location",
+  "powershell New-Item -Path . -Name _lib -ItemType directory",
+  "powershell %CD%\\scripts\\download-mbedtls.ps1 %VERSION% _lib\\mbedtls",
+  "powershell %CD%\\scripts\\install-mbedtls.ps1 -ConfigurationType StaticLibrary _lib\\mbedtls",
+  "powershell %CD%\\scripts\\install-mbedtls.ps1 -ConfigurationType DynamicLibrary _lib\\mbedtls",
+  "dir %LIB%",
+]
 
 [tool.coverage.report]
 exclude_lines = [
