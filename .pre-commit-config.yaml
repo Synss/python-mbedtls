@@ -24,7 +24,7 @@ repos:
         types_or: [cython, python]
         exclude: ^docs/source/
   - repo: 'https://github.com/pre-commit/pre-commit-hooks'
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: check-added-large-files
       - id: check-toml
@@ -32,11 +32,11 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: 'https://github.com/charliermarsh/ruff-pre-commit'
-    rev: v0.0.292
+    rev: v0.1.4
     hooks:
       - id: ruff
   - repo: 'https://github.com/psf/black'
-    rev: 23.9.1
+    rev: 23.10.1
     hooks:
       - id: black
         types: [python]
@@ -58,7 +58,7 @@ repos:
       - id: isort
         types_or: [cython, python]
   - repo: 'https://github.com/PyCQA/pylint'
-    rev: v3.0.0
+    rev: v3.0.1
     hooks:
       - id: pylint
         additional_dependencies:
@@ -69,7 +69,7 @@ repos:
           - '--disable=no-name-in-module'
           - '--disable=import-error'
   - repo: 'https://github.com/asottile/pyupgrade'
-    rev: v3.14.0
+    rev: v3.15.0
     hooks:
       - id: pyupgrade
         types_or: [cython, python]
@@ -77,6 +77,6 @@ repos:
           - '--py38-plus'
           - '--keep-runtime-typing'
   - repo: 'https://github.com/abravalheri/validate-pyproject'
-    rev: v0.14
+    rev: v0.15
     hooks:
       - id: validate-pyproject
