@@ -20,14 +20,13 @@ from typing import (
     Union,
 )
 
-if sys.version_info < (3, 9):
-    _PathLike = os.PathLike
-else:
-    _PathLike = os.PathLike[str]
-
 __all__ = ["NextProtocol", "TLSVersion", "DTLSVersion"]
 
-_Path = Union[_PathLike, str]
+
+if sys.version_info < (3, 9):
+    _Path = Union[os.PathLike, str]  # type: ignore [type-arg]
+else:
+    _Path = Union[os.PathLike[str], str]
 
 
 @enum.unique

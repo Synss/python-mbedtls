@@ -25,11 +25,10 @@ else:
     from typing import Final, Literal
 
 if sys.version_info < (3, 9):
-    _PathLike = os.PathLike
+    _Path = Union[os.PathLike, str]  # type: ignore [type-arg]
 else:
-    _PathLike = os.PathLike[str]
+    _Path = Union[os.PathLike[str], str]
 
-_Path = Union[_PathLike, str]
 CIPHER_NAME: Final[Sequence[bytes]] = ...
 _DER = bytes
 _PEM = str
