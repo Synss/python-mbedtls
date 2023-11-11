@@ -1,6 +1,7 @@
 [next]
 
 * ci: Update wheels to mbedtls 2.28.6
+* ci: Add Python 3.12 build.
 
 [2.7.1] - 2023-07-15
 
