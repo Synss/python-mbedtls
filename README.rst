@@ -66,7 +66,7 @@ https://synss.github.io/python-mbedtls/
 Installation
 ============
 
-The bindings are tested with mbedTLS 2.28.3 for Python 3.8,
+The bindings are tested with mbedTLS 2.28.6 for Python 3.8,
 3.9, 3.10, and 3.11 on Linux, macOS, and Windows.
 
 `manylinux`_ wheels are available for 64-bit Linux systems.  Install
@@ -88,8 +88,8 @@ The *mbedtls.version* module shows the run-time version
 information to mbed TLS.
 
 >>> from mbedtls import version
->>> _ = version.version  # "mbed TLS 2.28.3"
->>> _ = version.version_info  # (2, 28, 3)
+>>> _ = version.version  # "Mbed TLS 2.28.6"
+>>> _ = version.version_info  # (2, 28, 6)
 
 
 Message digest
