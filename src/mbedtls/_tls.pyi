@@ -5,9 +5,8 @@ from __future__ import annotations
 
 import enum
 import os
-import sys
 from collections import abc
-from typing import Optional, Sequence, Tuple, Union, overload
+from typing import Literal, Optional, Sequence, Tuple, Union, overload
 
 from mbedtls._tlsi import (
     Certificate,
@@ -16,11 +15,6 @@ from mbedtls._tlsi import (
     TLSConfiguration,
     TLSVersion,
 )
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Literal
-else:
-    from typing import Literal
 
 _VERSION = Tuple[int, int]
 

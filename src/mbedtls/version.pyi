@@ -3,13 +3,7 @@
 
 from __future__ import annotations
 
-import sys
-from typing import NamedTuple
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Final
-else:
-    from typing import Final
+from typing import Final, NamedTuple
 
 class mbedtls_version(NamedTuple):
     major: int

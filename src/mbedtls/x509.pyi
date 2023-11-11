@@ -7,16 +7,10 @@ import abc
 import datetime as dt
 import enum
 import os
-import sys
-from typing import NamedTuple, Sequence, Tuple, Type, TypeVar, Union
+from typing import Literal, NamedTuple, Sequence, Tuple, Type, TypeVar, Union
 
 from mbedtls.hashlib import Hash as _Hash
 from mbedtls.pk import ECC, RSA
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Literal
-else:
-    from typing import Literal
 
 _Path = Union[str, os.PathLike[str]]
 _DER = bytes

@@ -4,13 +4,7 @@
 from __future__ import annotations
 
 import numbers
-import sys
-from typing import Any, NoReturn, Optional, Tuple, Union, overload
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Literal
-else:
-    from typing import Literal
+from typing import Any, Literal, NoReturn, Optional, Tuple, Union, overload
 
 _Integral = Union[numbers.Integral, int]
 

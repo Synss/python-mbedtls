@@ -9,6 +9,8 @@ import os
 import sys
 from typing import (
     Callable,
+    Final,
+    Literal,
     NamedTuple,
     NoReturn,
     Optional,
@@ -18,11 +20,6 @@ from typing import (
     Union,
     overload,
 )
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Final, Literal
-else:
-    from typing import Final, Literal
 
 if sys.version_info < (3, 9):
     _Path = Union[os.PathLike, str]  # type: ignore [type-arg]
