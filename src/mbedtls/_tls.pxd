@@ -115,6 +115,8 @@ cdef extern from "mbedtls/ssl.h" nogil:
         # set_handshake_timeout
         unsigned int hs_timeout_min
         unsigned int hs_timeout_max
+        # set_read_timeout
+        unsigned int read_timeout
 
         unsigned int endpoint
         unsigned int transport
@@ -247,7 +249,10 @@ cdef extern from "mbedtls/ssl.h" nogil:
         void *p_dbg
     )
 
-    # mbedtls_ssl_conf_read_timeout
+    void mbedtls_ssl_conf_read_timeout(
+        mbedtls_ssl_config *conf,
+        unsigned int timeout
+    )
     # mbedtls_ssl_conf_session_tickets_cb
     # mbedtls_ssl_conf_export_keys_cb
 
@@ -427,6 +432,7 @@ cdef class MbedTLSConfiguration:
     cdef _set_max_fragmentation_length(self, object mfl)
     cdef _set_anti_replay(self, mode)
     cdef _set_handshake_timeout(self, minimum, maximum)
+    cdef _set_read_timeout(self, timeout)
     cdef _set_cookie(self, _DTLSCookie cookie)
     cdef _set_sni_callback(self, callback)
     cdef _set_pre_shared_key(self, psk)

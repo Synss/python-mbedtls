@@ -399,6 +399,7 @@ cdef class MbedTLSConfiguration:
         # badmac_limit
         handshake_timeout_min,
         handshake_timeout_max,
+        read_timeout,
         sni_callback,
         pre_shared_key,
         pre_shared_key_store,
@@ -423,6 +424,7 @@ cdef class MbedTLSConfiguration:
         self._set_handshake_timeout(
             handshake_timeout_min, handshake_timeout_max
         )
+        self._set_read_timeout(read_timeout)
         self._set_sni_callback(sni_callback)
         self._set_pre_shared_key(pre_shared_key)
         self._set_pre_shared_key_store(pre_shared_key_store)
@@ -479,6 +481,7 @@ cdef class MbedTLSConfiguration:
                 self.anti_replay,
                 self.handshake_timeout_min,
                 self.handshake_timeout_max,
+                self.read_timeout,
                 self.sni_callback,
                 self.pre_shared_key,
                 self.pre_shared_key_store,
@@ -802,6 +805,34 @@ cdef class MbedTLSConfiguration:
 
         return float(self._ctx.hs_timeout_max) / 1000.0
 
+    cdef _set_read_timeout(self, timeout):
+        """Set TLS/DTLS read timeout.
+        Use 0 for no timeout.
+
+        Args:
+            timeout (float, optional): read timeout in seconds.
+
+        """
+        if timeout is None:
+            return
+        
+        def validate(extremum, *, default: float) -> float:
+            if extremum is None:
+                return default
+            if extremum < 0.0:
+                raise ValueError(extremum)
+            return extremum
+
+        _tls.mbedtls_ssl_conf_read_timeout(
+            &self._ctx,
+            int(1000.0 * validate(timeout, default=0))
+        )
+
+    @property
+    def read_timeout(self):
+        """Read timeout in seconds. Use 0 for no timeout. (default 0)."""
+        return float(self._ctx.read_timeout) / 1000.0
+
     cdef _set_sni_callback(self, callback):
         # PEP 543, optional, server-side only
         if callback is None:
@@ -916,6 +947,7 @@ cdef class _BaseContext:
                 anti_replay=None,
                 handshake_timeout_min=None,
                 handshake_timeout_max=None,
+                read_timeout=None,
                 sni_callback=configuration.sni_callback,
                 pre_shared_key=configuration.pre_shared_key,
                 pre_shared_key_store=configuration.pre_shared_key_store,
@@ -938,6 +970,7 @@ cdef class _BaseContext:
                 anti_replay=configuration.anti_replay,
                 handshake_timeout_min=configuration.handshake_timeout_min,
                 handshake_timeout_max=configuration.handshake_timeout_max,
+                read_timeout=configuration.read_timeout,
                 sni_callback=configuration.sni_callback,
                 pre_shared_key=configuration.pre_shared_key,
                 pre_shared_key_store=configuration.pre_shared_key_store,
@@ -991,6 +1024,7 @@ cdef class _BaseContext:
             anti_replay=self._conf.anti_replay,
             handshake_timeout_min=self._conf.handshake_timeout_min,
             handshake_timeout_max=self._conf.handshake_timeout_max,
+            read_timeout=self._conf.read_timeout,
             sni_callback=self._conf.sni_callback,
             pre_shared_key=self._conf.pre_shared_key,
             pre_shared_key_store=self._conf.pre_shared_key_store,

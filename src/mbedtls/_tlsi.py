@@ -318,6 +318,7 @@ class DTLSConfiguration:
     anti_replay: bool = True
     handshake_timeout_min: float = 1.0
     handshake_timeout_max: float = 60.0
+    read_timeout: float = 0.0
     sni_callback: Optional[ServerNameCallback] = None
     pre_shared_key: Optional[Tuple[str, bytes]] = None
     pre_shared_key_store: Mapping[str, bytes] = field(default_factory=dict)
@@ -375,6 +376,7 @@ class DTLSConfiguration:
                 self.anti_replay == other.anti_replay,
                 self.handshake_timeout_min == other.handshake_timeout_min,
                 self.handshake_timeout_max == other.handshake_timeout_max,
+                self.read_timeout == other.read_timeout,
                 self.sni_callback == other.sni_callback,
                 self.pre_shared_key == other.pre_shared_key,
                 self.pre_shared_key_store == other.pre_shared_key_store,
@@ -394,6 +396,7 @@ class DTLSConfiguration:
         anti_replay: _Wrap[bool] = _DEFAULT_VALUE,
         handshake_timeout_min: _Wrap[float] = _DEFAULT_VALUE,
         handshake_timeout_max: _Wrap[float] = _DEFAULT_VALUE,
+        read_timeout: _Wrap[float] = _DEFAULT_VALUE,
         sni_callback: _Wrap[ServerNameCallback] = _DEFAULT_VALUE,
         pre_shared_key: _Wrap[Tuple[str, bytes]] = _DEFAULT_VALUE,
         pre_shared_key_store: _Wrap[Mapping[str, bytes]] = _DEFAULT_VALUE,
@@ -434,6 +437,10 @@ class DTLSConfiguration:
             handshake_timeout_max=_unwrap(
                 handshake_timeout_max,
                 self.handshake_timeout_max,
+            ),
+            read_timeout=_unwrap(
+                read_timeout,
+                self.read_timeout,
             ),
             sni_callback=_unwrap(sni_callback, self.sni_callback),
             pre_shared_key=_unwrap(pre_shared_key, self.pre_shared_key),
