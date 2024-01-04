@@ -553,9 +553,7 @@ class TestDTLSConfiguration:
         assert_conf_invariant(conf, handshake_timeout_min=hs_min)
         assert_conf_invariant(conf, handshake_timeout_max=hs_max)
 
-    @pytest.mark.parametrize(
-        "timeout", [1 ,10, 5.3, 300]
-    )
+    @pytest.mark.parametrize("timeout", [1, 10, 5.3, 300])
     def test_read_timeout_default(
         self,
         conf: Union[TLSConfiguration, DTLSConfiguration],
@@ -568,6 +566,7 @@ class TestDTLSConfiguration:
         assert conf_.read_timeout == timeout
 
         assert_conf_invariant(conf, read_timeout=timeout)
+
 
 class TestContext:
     @pytest.fixture(params=[Purpose.SERVER_AUTH, Purpose.CLIENT_AUTH])

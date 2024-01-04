@@ -815,7 +815,7 @@ cdef class MbedTLSConfiguration:
         """
         if timeout is None:
             return
-        
+
         def validate(extremum, *, default: float) -> float:
             if extremum is None:
                 return default

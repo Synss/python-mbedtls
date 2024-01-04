@@ -1,6 +1,6 @@
 [next]
 
-* tls: Add `mbedtls_ssl_conf_read_timeout`, for the read timeout 
+* tls: Add `mbedtls_ssl_conf_read_timeout`, for the read timeout
 configuration
 
 [2.8.0] - 2023-11-28
