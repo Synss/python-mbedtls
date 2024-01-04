@@ -194,6 +194,7 @@ class TLSConfiguration:
     highest_supported_version: TLSVersion = TLSVersion.MAXIMUM_SUPPORTED
     trust_store: Optional[TrustStore] = None
     max_fragmentation_length: Optional[MaxFragmentLength] = None
+    read_timeout: float = 0.0
     sni_callback: Optional[ServerNameCallback] = None
     pre_shared_key: Optional[Tuple[str, bytes]] = None
     pre_shared_key_store: Mapping[str, bytes] = field(default_factory=dict)
@@ -250,6 +251,7 @@ class TLSConfiguration:
                 self.sni_callback == other.sni_callback,
                 self.pre_shared_key == other.pre_shared_key,
                 self.pre_shared_key_store == other.pre_shared_key_store,
+                self.read_timeout == other.read_timeout,
             )
         )
 
@@ -263,6 +265,7 @@ class TLSConfiguration:
         highest_supported_version: _Wrap[TLSVersion] = _DEFAULT_VALUE,
         trust_store: _Wrap[TrustStore] = _DEFAULT_VALUE,
         max_fragmentation_length: _Wrap[MaxFragmentLength] = _DEFAULT_VALUE,
+        read_timeout: _Wrap[float] = _DEFAULT_VALUE,
         sni_callback: _Wrap[Optional[ServerNameCallback]] = _DEFAULT_VALUE,
         pre_shared_key: _Wrap[Tuple[str, bytes]] = _DEFAULT_VALUE,
         pre_shared_key_store: _Wrap[Mapping[str, bytes]] = _DEFAULT_VALUE,
@@ -296,6 +299,7 @@ class TLSConfiguration:
                 self.max_fragmentation_length,
             ),
             sni_callback=_unwrap(sni_callback, self.sni_callback),
+            read_timeout=_unwrap(read_timeout, self.read_timeout),
             pre_shared_key=_unwrap(pre_shared_key, self.pre_shared_key),
             pre_shared_key_store=_unwrap(
                 pre_shared_key_store,
