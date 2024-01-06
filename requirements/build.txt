@@ -6,15 +6,15 @@
 #
 build==1.0.3
 click==8.1.7
-cython==3.0.5
-delocate==0.10.4 ; sys_platform == "darwin"
-importlib-metadata==6.8.0
+cython==3.0.7
+delocate==0.10.7 ; sys_platform == "darwin"
+importlib-metadata==7.0.1
 packaging==23.2
 pip-tools==7.3.0
 pyproject-hooks==1.0.0
 tomli==2.0.1
-typing-extensions==4.8.0
-wheel==0.41.3
+typing-extensions==4.9.0
+wheel==0.42.0
 zipp==3.17.0
 
 # The following packages are considered to be unsafe in a requirements file:
