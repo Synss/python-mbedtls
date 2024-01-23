@@ -287,11 +287,15 @@ class TLSWrappedSocket:
         """
         self._buffer.setmtu(mtu)
 
+    CHUNK_SIZE: Final = 1024
+
     def accept(self) -> Tuple[TLSWrappedSocket, _Address]:
         if self.type == _pysocket.SOCK_STREAM:
             conn, address = self._socket.accept()
         else:
-            _, address = self._socket.recvfrom(1024, _pysocket.MSG_PEEK)
+            _, address = self._socket.recvfrom(
+                TLSWrappedSocket.CHUNK_SIZE, _pysocket.MSG_PEEK
+            )
             # Use this socket to communicate with the client and bind
             # another one for the next connection.  This procedure is
             # adapted from `mbedtls_net_accept()`.
@@ -440,9 +444,13 @@ class TLSWrappedSocket:
                 self._buffer.do_handshake()
             except WantReadError as exc:
                 if address is None:
-                    data = self._socket.recv(1024, flags)
+                    data = self._socket.recv(
+                        TLSWrappedSocket.CHUNK_SIZE, flags
+                    )
                 else:
-                    data, addr = self._socket.recvfrom(1024, flags)
+                    data, addr = self._socket.recvfrom(
+                        TLSWrappedSocket.CHUNK_SIZE, flags
+                    )
                     if addr != address:
                         # The error may not be the clearest but we'd better
                         # bail out in any case.
@@ -451,7 +459,9 @@ class TLSWrappedSocket:
                         ) from exc
                 self._buffer.receive_from_network(data)
             except WantWriteError:
-                in_transit = self._buffer.peek_outgoing(1024)
+                in_transit = self._buffer.peek_outgoing(
+                    TLSWrappedSocket.CHUNK_SIZE
+                )
                 if address is None:
                     amt = self._socket.send(in_transit, flags)
                 else:
