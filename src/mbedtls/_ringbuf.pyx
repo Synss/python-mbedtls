@@ -165,6 +165,9 @@ cdef class RingBuffer:
     def __reduce__(self):
         return type(self), (self.maxlen, self.__bytes__())
 
+    def __repr__(self):
+        return "RingBuffer(maxlen=%i, content=...)" % len(self)
+
     @property
     def maxlen(self):
         return c_capacity(&self._ctx)
