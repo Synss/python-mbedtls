@@ -28,13 +28,13 @@ cdef c_init(_rb.ring_buffer_ctx *ctx, size_t maxlen):
     ctx.head = ctx.tail = ctx.buf
 
 
-cdef void c_free(_rb.ring_buffer_ctx *ctx) nogil:
+cdef void c_free(_rb.ring_buffer_ctx *ctx) noexcept nogil:
     # ringbuf_free()
     free(ctx.buf)
     ctx.head = ctx.tail = NULL
 
 
-cdef void c_clear(_rb.ring_buffer_ctx *ctx) nogil:
+cdef void c_clear(_rb.ring_buffer_ctx *ctx) noexcept nogil:
     # ringbuf_reset()
     ctx.head = ctx.tail
 
