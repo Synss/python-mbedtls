@@ -1,5 +1,6 @@
 [next]
 
+* tls: Increase chunk size on socket recv/send from 1024 to 4096.
 * tls: Add `mbedtls_ssl_conf_read_timeout`, for the read timeout
 configuration
 

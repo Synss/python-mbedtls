@@ -287,7 +287,7 @@ class TLSWrappedSocket:
         """
         self._buffer.setmtu(mtu)
 
-    CHUNK_SIZE: Final = 1024
+    CHUNK_SIZE: Final = 4096
 
     def accept(self) -> Tuple[TLSWrappedSocket, _Address]:
         if self.type == _pysocket.SOCK_STREAM:
