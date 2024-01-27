@@ -1,3 +1,7 @@
+[next]
+
+* ci: Update wheels to mbedtls 2.28.7
+
 [2.9.0] - 2024-01-25
 
 * tls: Increase chunk size on socket recv/send from 1024 to 4096.
