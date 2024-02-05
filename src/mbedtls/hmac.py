@@ -22,8 +22,7 @@ assert algorithms_guaranteed
 
 
 class Algorithm(Protocol):
-    def __call__(self, key: bytes, buffer: Optional[bytes] = ...) -> Hmac:
-        ...
+    def __call__(self, key: bytes, buffer: Optional[bytes] = ...) -> Hmac: ...
 
 
 def new(

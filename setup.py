@@ -135,12 +135,14 @@ def extensions(coverage=False):
                 sources=[os.path.join(dirpath, fn)],
                 library_dirs=library_dirs,
                 libraries=libraries,
-                define_macros=[
-                    ("CYTHON_TRACE", "1"),
-                    ("CYTHON_TRACE_NOGIL", "1"),
-                ]
-                if coverage
-                else [],
+                define_macros=(
+                    [
+                        ("CYTHON_TRACE", "1"),
+                        ("CYTHON_TRACE_NOGIL", "1"),
+                    ]
+                    if coverage
+                    else []
+                ),
             )
             extension.cython_directives = {"language_level": "3str"}
             if coverage:

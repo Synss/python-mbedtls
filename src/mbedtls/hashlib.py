@@ -22,8 +22,7 @@ assert algorithms_guaranteed
 
 
 class Algorithm(Protocol):
-    def __call__(self, buffer: Optional[bytes] = ...) -> Hash:
-        ...
+    def __call__(self, buffer: Optional[bytes] = ...) -> Hash: ...
 
 
 def new(name: str, buffer: Optional[bytes] = None) -> Hash:
