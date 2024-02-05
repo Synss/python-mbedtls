@@ -32,11 +32,11 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: 'https://github.com/charliermarsh/ruff-pre-commit'
-    rev: v0.1.9
+    rev: v0.2.0
     hooks:
       - id: ruff
   - repo: 'https://github.com/psf/black'
-    rev: 23.12.1
+    rev: 24.1.1
     hooks:
       - id: black
         types: [python]
@@ -45,7 +45,7 @@ repos:
     hooks:
       - id: cython-lint
   - repo: 'https://github.com/pycqa/flake8'
-    rev: 6.1.0
+    rev: 7.0.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -77,6 +77,6 @@ repos:
           - '--py38-plus'
           - '--keep-runtime-typing'
   - repo: 'https://github.com/abravalheri/validate-pyproject'
-    rev: v0.15
+    rev: v0.16
     hooks:
       - id: validate-pyproject
