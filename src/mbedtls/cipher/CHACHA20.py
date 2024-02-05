@@ -26,8 +26,7 @@ def new(
     key: bytes,
     mode: Literal[Mode.STREAM],
     iv: Optional[bytes] = ...,
-) -> Cipher:
-    ...
+) -> Cipher: ...
 
 
 @overload
@@ -36,8 +35,7 @@ def new(
     mode: Literal[Mode.CHACHAPOLY],
     iv: Optional[bytes] = ...,
     ad: Optional[bytes] = ...,
-) -> AEADCipher:
-    ...
+) -> AEADCipher: ...
 
 
 def new(

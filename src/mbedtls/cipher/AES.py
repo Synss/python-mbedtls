@@ -28,8 +28,7 @@ def new(
     mode: Literal[Mode.CCM, Mode.GCM],
     iv: Optional[bytes] = ...,
     ad: Optional[bytes] = ...,
-) -> AEADCipher:
-    ...
+) -> AEADCipher: ...
 
 
 @overload
@@ -37,8 +36,7 @@ def new(
     key: bytes,
     mode: Literal[Mode.CBC, Mode.CFB, Mode.CTR, Mode.ECB, Mode.OFB, Mode.XTS],
     iv: Optional[bytes] = ...,
-) -> Cipher:
-    ...
+) -> Cipher: ...
 
 
 def new(

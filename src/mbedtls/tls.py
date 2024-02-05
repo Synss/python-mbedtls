@@ -413,16 +413,13 @@ class TLSWrappedSocket:
 
     # PEP 543 adds the following methods.
     @overload
-    def do_handshake(self) -> None:
-        ...
+    def do_handshake(self) -> None: ...
 
     @overload
-    def do_handshake(self, address: _Address) -> None:
-        ...
+    def do_handshake(self, address: _Address) -> None: ...
 
     @overload
-    def do_handshake(self, flags: int, address: _Address) -> None:
-        ...
+    def do_handshake(self, flags: int, address: _Address) -> None: ...
 
     def do_handshake(self, *args):  # type: ignore[no-untyped-def]
         # pylint: disable=too-many-branches
