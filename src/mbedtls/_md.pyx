@@ -29,12 +29,12 @@ __MD_NAME = (
 )
 
 
-def __get_supported_mds():
+def _get_supported_mds():
     """Return the set of digests supported by the generic
     message digest module.
 
     See Also:
-        mbedtls.tls.__get_supported_ciphersuites()
+        mbedtls.tls._get_supported_ciphersuites()
 
     """
     md_lookup = {n: v for n, v in enumerate(__MD_NAME)}
@@ -53,7 +53,7 @@ def _digestmod(sig_md):
 
 algorithms_guaranteed = ("md5", "sha1", "sha256")
 algorithms_available = tuple(
-    name.decode("ascii").lower() for name in __get_supported_mds()
+    name.decode("ascii").lower() for name in _get_supported_mds()
     if _version.has_feature(name.decode("ascii"))
 )
 

@@ -131,7 +131,7 @@ def _set_debug_level(int level):
     _debug.mbedtls_debug_set_threshold(level)
 
 
-def __get_ciphersuite_name(ciphersuite_id):
+def _get_ciphersuite_name(ciphersuite_id):
     """Return a string containing the ciphersuite name.
 
     Args:
@@ -142,7 +142,7 @@ def __get_ciphersuite_name(ciphersuite_id):
         ciphersuite_id).decode("ascii")
 
 
-def __get_ciphersuite_id(name):
+def _get_ciphersuite_id(name):
     """Return the ciphersuite name from ID.
 
     Args:
@@ -172,7 +172,7 @@ def ciphers_available():
     cdef size_t n = 0
     ciphersuites = []
     while ids[n]:
-        ciphersuites.append(__get_ciphersuite_name(ids[n]))
+        ciphersuites.append(_get_ciphersuite_name(ids[n]))
         n += 1
     return tuple(ciphersuites)
 
@@ -566,7 +566,7 @@ cdef class MbedTLSConfiguration:
         self._ciphers[idx] = 0
         for idx, cipher in enumerate(ciphers):
             if not isinstance(cipher, int):
-                cipher = __get_ciphersuite_id(cipher)
+                cipher = _get_ciphersuite_id(cipher)
             self._ciphers[idx] = cipher
         self._ciphers[idx + 1] = 0
         _tls.mbedtls_ssl_conf_ciphersuites(&self._ctx, self._ciphers)
@@ -580,7 +580,7 @@ cdef class MbedTLSConfiguration:
             cipher_id = self._ciphers[idx]
             if cipher_id == 0:
                 break
-            ciphers.append(__get_ciphersuite_name(cipher_id))
+            ciphers.append(_get_ciphersuite_name(cipher_id))
         return tuple(ciphers)
 
     cdef _set_inner_protocols(self, protocols):
