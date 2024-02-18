@@ -39,17 +39,17 @@ cdef void c_clear(_rb.ring_buffer_ctx *ctx) noexcept nogil:
     ctx.head = ctx.tail
 
 
-cdef size_t c_capacity(_rb.ring_buffer_ctx *ctx) nogil:
+cdef size_t c_capacity(_rb.ring_buffer_ctx *ctx) noexcept nogil:
     # ringbuf_capacity()
     return ctx._size - 1
 
 
-cdef unsigned char * c_end(ring_buffer_ctx * ctx) nogil:
+cdef unsigned char * c_end(ring_buffer_ctx * ctx) noexcept nogil:
     # ringbuf_end()
     return &ctx.buf[ctx._size]
 
 
-cdef size_t c_len(ring_buffer_ctx *ctx) nogil:
+cdef size_t c_len(ring_buffer_ctx *ctx) noexcept nogil:
     # ringbuf_bytes_used()
     if ctx.head >= ctx.tail:
         return ctx.head - ctx.tail
@@ -71,7 +71,7 @@ cdef c_peek(ring_buffer_ctx *ctx, size_t amt):
 
 @cython.boundscheck(False)
 cdef size_t c_peekinto(
-        ring_buffer_ctx *ctx, unsigned char *dst, size_t amt) nogil:
+        ring_buffer_ctx *ctx, unsigned char *dst, size_t amt) noexcept nogil:
     cdef size_t size = min(amt, c_len(ctx))
     cdef size_t nread = 0
     cdef unsigned char * index = ctx.tail
@@ -101,7 +101,7 @@ cdef c_read(ring_buffer_ctx *ctx, size_t amt):
 
 @cython.boundscheck(False)
 cdef size_t c_readinto(
-        ring_buffer_ctx *ctx, unsigned char *dst, size_t amt) nogil:
+        ring_buffer_ctx *ctx, unsigned char *dst, size_t amt) noexcept nogil:
     # ringbuf_memcpy_from()
     cdef size_t size = min(amt, c_len(ctx))
     cdef size_t nread = 0
@@ -117,7 +117,7 @@ cdef size_t c_readinto(
     return nread
 
 
-cdef size_t c_consume(ring_buffer_ctx *ctx, size_t amt) nogil:
+cdef size_t c_consume(ring_buffer_ctx *ctx, size_t amt) noexcept nogil:
     cdef size_t size = min(amt, c_len(ctx))
     cdef size_t nconsumed = 0
     while nconsumed != size:
@@ -133,7 +133,7 @@ cdef size_t c_consume(ring_buffer_ctx *ctx, size_t amt) nogil:
 
 @cython.boundscheck(False)
 cdef size_t c_write(
-        ring_buffer_ctx *ctx, const unsigned char *src, size_t amt) nogil:
+        ring_buffer_ctx *ctx, const unsigned char *src, size_t amt) noexcept nogil:
     # ringbuf_memcpy_into()
     cdef size_t size = amt
     # if size > c_capacity(ctx) - c_len(ctx):
