@@ -19,7 +19,7 @@ import mbedtls.tls as tls
 import mbedtls.version as version
 import mbedtls.x509 as x509
 
-__version__ = "2.9.0"
+__version__ = "2.9.2"
 
 __all__ = (
     "cipher",
