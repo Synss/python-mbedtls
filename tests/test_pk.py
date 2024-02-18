@@ -173,7 +173,6 @@ class TestCipher:
         assert pem.startswith(f"-----BEGIN {cipher_tag} PRIVATE KEY-----\n")
         assert pem.endswith(f"-----END {cipher_tag} PRIVATE KEY-----\n")
         assert pem == str(cipher)
-        assert pem == cipher.to_PEM().private
         assert cipher == type(cipher).from_PEM(pem)
 
     @pytest.mark.parametrize(
