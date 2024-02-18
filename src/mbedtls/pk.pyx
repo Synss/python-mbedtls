@@ -225,6 +225,16 @@ cdef class CipherBase:
         elif not (self._has_private() and other._has_private()):
             return other.export_public_key() == self.export_public_key()
 
+    def __str__(self):
+        return self.export_key(format="PEM")
+
+    def __bytes__(self):
+        return self.to_bytes()
+
+    def to_bytes(self):
+        """Return the private key in DER format."""
+        return self.export_key(format="DER")
+
     @classmethod
     def from_buffer(
         cls,
@@ -500,46 +510,6 @@ cdef class CipherBase:
         if format == "PEM":
             return self._public_to_PEM()
         raise ValueError(format)
-
-    def to_PEM(self):
-        """Return the RSA in PEM format.
-
-        Warning:
-            This function is obsolete.
-
-        Return:
-            tuple(str, str): The private key and the public key.
-
-        See Also:
-            export_key(), export_public_key()
-
-        """
-        return KeyPair(self.export_key("PEM"), self.export_public_key("PEM"))
-
-    def __str__(self):
-        return self.export_key(format="PEM")
-
-    def to_DER(self):
-        """Return the RSA in DER format.
-
-        Warning:
-            This function is obsolete.
-
-        Return:
-            tuple(bytes, bytes): The private key and the public key.
-
-        See Also:
-            export_key(), export_public_key()
-
-        """
-        return KeyPair(self.export_key("DER"), self.export_public_key("DER"))
-
-    def to_bytes(self):
-        """Return the private key in DER format."""
-        return self.export_key(format="DER")
-
-    def __bytes__(self):
-        return self.to_bytes()
 
 
 cdef class RSA(CipherBase):
