@@ -108,6 +108,7 @@ cdef extern from "mbedtls/pk.h" nogil:
 
 cdef class CipherBase:
     cdef mbedtls_pk_context _ctx
+    cdef object __state
 
 
 cdef class RSA(CipherBase):
