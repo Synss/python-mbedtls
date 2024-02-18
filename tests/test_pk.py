@@ -193,6 +193,8 @@ class TestCipher:
 
         other = copy(cipher)
         other = type(cipher).from_buffer(key)
+        assert bytes(other) == key
+
         assert other == cipher
         assert other.export_key() == cipher.export_key() == key
         assert other.export_public_key() == cipher.export_public_key()
