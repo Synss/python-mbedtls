@@ -1238,7 +1238,7 @@ cdef class MbedTLSBuffer:
             else:
                 self._reset()
                 _exc.check_error(ret)
-        assert written == len(buffer)
+        assert written == buffer.size
         return len(self._output_buffer)
 
     def receive_from_network(self, data):
