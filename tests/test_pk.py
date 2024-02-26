@@ -237,39 +237,27 @@ class TestECCExportKey:
         ecc = ECC(curve)
         ecc.generate()
 
-        if curve in (Curve.CURVE25519, Curve.CURVE448):
-            with pytest.raises(ValueError):
-                ecc.export_key("DER")
-        else:
-            der = ecc.export_key("DER")
-            assert der
-            assert ECC(curve).from_DER(der) == der
+        der = ecc.export_key("DER")
+        assert der
+        assert ECC(curve).from_DER(der) == der
 
-        if curve in (Curve.CURVE25519, Curve.CURVE448):
-            with pytest.raises(ValueError):
-                ecc.export_key("PEM")
-        else:
-            pem = ecc.export_key("PEM")
-            assert pem
-            assert pem.startswith("-----BEGIN EC PRIVATE KEY-----\n")
-            assert pem.endswith("-----END EC PRIVATE KEY-----\n")
+        pem = ecc.export_key("PEM")
+        assert pem
+        assert pem.startswith(
+            "-----BEGIN EC PRIVATE KEY-----\n"
+        ) or pem.startswith("-----BEGIN PRIVATE KEY-----\n")
+        assert pem.endswith("-----END EC PRIVATE KEY-----\n") or pem.endswith(
+            "-----END PRIVATE KEY-----\n"
+        )
 
     def test_export_public(self, curve: Curve) -> None:
         ecc = ECC(curve)
         ecc.generate()
 
-        if curve in (Curve.CURVE25519, Curve.CURVE448):
-            with pytest.raises(ValueError):
-                ecc.export_public_key("DER")
-        else:
-            der = ecc.export_public_key("DER")
-            assert der
+        der = ecc.export_public_key("DER")
+        assert der
 
-        if curve in (Curve.CURVE25519, Curve.CURVE448):
-            with pytest.raises(ValueError):
-                ecc.export_public_key("PEM")
-        else:
-            pem = ecc.export_public_key("PEM")
-            assert pem
-            assert pem.startswith("-----BEGIN PUBLIC KEY-----\n")
-            assert pem.endswith("-----END PUBLIC KEY-----\n")
+        pem = ecc.export_public_key("PEM")
+        assert pem
+        assert pem.startswith("-----BEGIN PUBLIC KEY-----\n")
+        assert pem.endswith("-----END PUBLIC KEY-----\n")

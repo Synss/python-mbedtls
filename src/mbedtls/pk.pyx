@@ -611,7 +611,7 @@ cdef class ECC(CipherBase):
     def export_key(self, format=None):
         """Return the private key.
 
-        If not key is present, return a falsy value.
+        If no key is present, return a falsy value.
 
         Args:
             format (str): One of "DER", "PEM".
@@ -619,23 +619,4 @@ cdef class ECC(CipherBase):
         """
         if format is None:
             format = "DER"
-        if self.curve in (Curve.CURVE25519, Curve.CURVE448):
-            raise ValueError(
-                "Curve25519 and Curve448 cannot be exported"
-            )
         return super().export_key(format)
-
-    def export_public_key(self, format="DER"):
-        """Return the public key.
-
-        If no key is present, return a falsy value.
-
-        Args:
-            format (str): One of "DER", "PEM".
-
-        """
-        if self.curve in (Curve.CURVE25519, Curve.CURVE448):
-            raise ValueError(
-                "Curve25519 and Curve448 cannot be exported"
-            )
-        return super().export_public_key(format)
