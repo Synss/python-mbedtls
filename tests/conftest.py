@@ -61,7 +61,7 @@ def pytest_assertrepr_compare(
     return None
 
 
-@pytest.fixture()
+@pytest.fixture
 def randbytes() -> Callable[[int], bytes]:
     def function(length: int) -> bytes:
         return bytes(

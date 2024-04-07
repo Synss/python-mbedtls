@@ -88,7 +88,7 @@ class TestECPoint:
     def xyz(self, request: Any) -> Tuple[int, int, int]:
         return request.param  # type: ignore[no-any-return]
 
-    @pytest.fixture()
+    @pytest.fixture
     def point(self, xyz: Tuple[int, int, int]) -> ECPoint:
         return ECPoint(*xyz)
 

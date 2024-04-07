@@ -11,7 +11,7 @@ import pytest
 from mbedtls._ringbuf import RingBuffer  # type: ignore
 
 
-@pytest.fixture()
+@pytest.fixture
 def randomize_start(
     randbytes: Callable[[int], bytes]
 ) -> Callable[[bytes], None]:

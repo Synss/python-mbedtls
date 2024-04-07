@@ -193,11 +193,11 @@ class TestPickle:
 
 
 class TestPSKStoreProxy:
-    @pytest.fixture()
+    @pytest.fixture
     def psk_store(self) -> Mapping[str, bytes]:
         return {"client": b"the secret key"}
 
-    @pytest.fixture()
+    @pytest.fixture
     def proxy(self, psk_store: Mapping[str, bytes]) -> PSKStoreProxy:
         return PSKStoreProxy(psk_store)
 
@@ -245,11 +245,11 @@ class TestTLSRecordHeader:
         assert isinstance(request.param, TLSVersion)
         return request.param
 
-    @pytest.fixture()
+    @pytest.fixture
     def length(self) -> int:
         return 42
 
-    @pytest.fixture()
+    @pytest.fixture
     def header(
         self,
         record_type: TLSRecordHeader.RecordType,
@@ -289,7 +289,7 @@ class TestTLSRecordHeader:
 
 
 class TestTLSSession:
-    @pytest.fixture()
+    @pytest.fixture
     def session(self) -> TLSSession:
         return TLSSession()
 
@@ -298,7 +298,7 @@ class TestTLSSession:
 
 
 class TestTrustStore:
-    @pytest.fixture()
+    @pytest.fixture
     def store(self) -> TrustStore:
         return TrustStore.system()
 
@@ -340,7 +340,7 @@ class TestTrustStore:
 
 
 class TestDTLSCookie:
-    @pytest.fixture()
+    @pytest.fixture
     def cookie(self) -> DTLSCookie:
         return DTLSCookie()
 
@@ -463,7 +463,7 @@ class TestConfiguration:
 
 
 class TestTLSConfiguration:
-    @pytest.fixture()
+    @pytest.fixture
     def conf(self) -> TLSConfiguration:
         return TLSConfiguration()
 
@@ -485,7 +485,7 @@ class TestTLSConfiguration:
 
 
 class TestDTLSConfiguration:
-    @pytest.fixture()
+    @pytest.fixture
     def conf(self) -> DTLSConfiguration:
         return DTLSConfiguration()
 

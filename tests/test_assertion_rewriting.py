@@ -7,7 +7,7 @@ import pytest
 
 @pytest.mark.xfail(reason="Test assertion rewriting")
 class TestMemoryviewAssertion:
-    @pytest.fixture()
+    @pytest.fixture
     def value(self) -> bytes:
         return bytes(_ % 256 for _ in range(10000))
 

@@ -60,7 +60,7 @@ class TestHash:
         assert isinstance(request.param, str)
         return request.param
 
-    @pytest.fixture()
+    @pytest.fixture
     def algorithm(self, algorithm_str: str) -> hashlib.Algorithm:
         return cast(hashlib.Algorithm, getattr(hashlib, algorithm_str))
 
@@ -153,7 +153,7 @@ class TestHmac:
         assert isinstance(request.param, str)
         return request.param
 
-    @pytest.fixture()
+    @pytest.fixture
     def algorithm(self, algorithm_str: str) -> hmac.Algorithm:
         return cast(hmac.Algorithm, getattr(hmac, algorithm_str))
 
