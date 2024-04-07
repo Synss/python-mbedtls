@@ -12,6 +12,7 @@ cimport mbedtls.pk as _pk
 cimport mbedtls.x509 as _x509
 
 import enum
+import pickle
 from collections import abc
 from functools import partial
 from itertools import tee
@@ -403,14 +404,16 @@ cdef class MbedTLSConfiguration:
         sni_callback,
         pre_shared_key,
         pre_shared_key_store,
-        _transport,
+        transport,
+        configuration,
     ):
-        assert isinstance(_transport, Transport)
-        self._max_fragmentation_length = max_fragmentation_length
+        assert isinstance(transport, Transport)
+        assert isinstance(configuration, (TLSConfiguration, DTLSConfiguration))
+        self._configuration = configuration
         _exc.check_error(_tls.mbedtls_ssl_config_defaults(
             &self._ctx,
             endpoint=0,  # server / client is not known here...
-            transport=_transport.value,
+            transport=transport.value,
             preset=_tls.MBEDTLS_SSL_PRESET_DEFAULT))
         self._set_validate_certificates(validate_certificates)
         self._set_certificate_chain(certificate_chain)
@@ -466,31 +469,69 @@ cdef class MbedTLSConfiguration:
         free(self._ciphers)
         free(self._protos)
 
-    def __reduce__(self):
-        return (
-            type(self),
-            (
-                self.validate_certificates,
-                self.certificate_chain,
-                self.ciphers,
-                self.inner_protocols,
-                self.lowest_supported_version,
-                self.highest_supported_version,
-                self.trust_store,
-                self.max_fragmentation_length,
-                self.anti_replay,
-                self.handshake_timeout_min,
-                self.handshake_timeout_max,
-                self.read_timeout,
-                self.sni_callback,
-                self.pre_shared_key,
-                self.pre_shared_key_store,
-                self._transport,
+    @classmethod
+    def from_tls_configuration(cls, configuration):
+        assert isinstance(configuration, TLSConfiguration)
+        return cls(
+            validate_certificates=configuration.validate_certificates,
+            certificate_chain=configuration.certificate_chain,
+            ciphers=configuration.ciphers,
+            inner_protocols=configuration.inner_protocols,
+            lowest_supported_version=(
+                configuration.lowest_supported_version
             ),
+            highest_supported_version=(
+                configuration.highest_supported_version
+            ),
+            trust_store=configuration.trust_store,
+            max_fragmentation_length=configuration.max_fragmentation_length,
+            anti_replay=None,
+            handshake_timeout_min=None,
+            handshake_timeout_max=None,
+            read_timeout=None,
+            sni_callback=configuration.sni_callback,
+            pre_shared_key=configuration.pre_shared_key,
+            pre_shared_key_store=configuration.pre_shared_key_store,
+            transport=Transport.STREAM,
+            configuration=configuration,
         )
 
+    @classmethod
+    def from_dtls_configuration(cls, configuration):
+        assert isinstance(configuration, DTLSConfiguration)
+        return MbedTLSConfiguration(
+            validate_certificates=configuration.validate_certificates,
+            certificate_chain=configuration.certificate_chain,
+            ciphers=configuration.ciphers,
+            inner_protocols=configuration.inner_protocols,
+            lowest_supported_version=(
+                configuration.lowest_supported_version
+            ),
+            highest_supported_version=(
+                configuration.highest_supported_version
+            ),
+            trust_store=configuration.trust_store,
+            max_fragmentation_length=configuration.max_fragmentation_length,
+            anti_replay=configuration.anti_replay,
+            handshake_timeout_min=configuration.handshake_timeout_min,
+            handshake_timeout_max=configuration.handshake_timeout_max,
+            read_timeout=configuration.read_timeout,
+            sni_callback=configuration.sni_callback,
+            pre_shared_key=configuration.pre_shared_key,
+            pre_shared_key_store=configuration.pre_shared_key_store,
+            transport=Transport.DATAGRAM,
+            configuration=configuration,
+        )
+
+    def __getstate__(self):
+        raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
+
     @property
-    def _transport(self):
+    def configuration(self):
+        return self._configuration
+
+    @property
+    def transport(self):
         return Transport(self._ctx.transport)
 
     cdef _set_validate_certificates(self, validate):
@@ -503,10 +544,6 @@ cdef class MbedTLSConfiguration:
             &self._ctx,
             _tls.MBEDTLS_SSL_VERIFY_OPTIONAL if validate is False else
             _tls.MBEDTLS_SSL_VERIFY_REQUIRED)
-
-    @property
-    def validate_certificates(self):
-        return self._ctx.authmode == _tls.MBEDTLS_SSL_VERIFY_REQUIRED
 
     cdef _set_certificate_chain(self, chain):
         """The certificate, intermediate certificate, and
@@ -532,24 +569,6 @@ cdef class MbedTLSConfiguration:
         _exc.check_error(_tls.mbedtls_ssl_conf_own_cert(
             &self._ctx, &c_crt._ctx, &c_pk_key._ctx))
 
-    @property
-    def certificate_chain(self):
-        key_cert = self._ctx.key_cert
-        if key_cert is NULL:
-            return None
-        chain = []
-        cdef _x509.mbedtls_x509_crt *c_ctx = key_cert.cert
-        while c_ctx is not NULL:
-            chain.append(_x509.CRT.from_DER(c_ctx.raw.p[0:c_ctx.raw.len]))
-            c_ctx = c_ctx.next
-        cdef unsigned char[:] buf = bytearray(_pk.PRV_DER_MAX_BYTES)
-        olen = _exc.check_error(
-            _pk.mbedtls_pk_write_key_der(key_cert.key, &buf[0], buf.size))
-        der = buf[buf.size - olen:buf.size]
-        if _pk.mbedtls_pk_can_do(key_cert.key, _pk.MBEDTLS_PK_RSA) == 0:
-            return tuple(chain), _pk.ECC.from_DER(der)
-        return tuple(chain), _pk.RSA.from_DER(der)
-
     cdef _set_ciphers(self, ciphers):
         """The available ciphers for the TLS connections.
 
@@ -570,18 +589,6 @@ cdef class MbedTLSConfiguration:
             self._ciphers[idx] = cipher
         self._ciphers[idx + 1] = 0
         _tls.mbedtls_ssl_conf_ciphersuites(&self._ctx, self._ciphers)
-
-    @property
-    def ciphers(self):
-        ciphers = []
-        cdef int cipher_id
-        cdef Py_ssize_t idx
-        for idx in range(len(ciphers_available())):
-            cipher_id = self._ciphers[idx]
-            if cipher_id == 0:
-                break
-            ciphers.append(_get_ciphersuite_name(cipher_id))
-        return tuple(ciphers)
 
     cdef _set_inner_protocols(self, protocols):
         """
@@ -610,17 +617,6 @@ cdef class MbedTLSConfiguration:
         _exc.check_error(_tls.mbedtls_ssl_conf_alpn_protocols(
             &self._ctx, self._protos))
 
-    @property
-    def inner_protocols(self):
-        protos = []
-        cdef const char* proto
-        for idx in range(len(NextProtocol)):
-            proto = self._protos[idx]
-            if proto is NULL:
-                break
-            protos.append(NextProtocol(proto))
-        return tuple(protos)
-
     cdef _set_lowest_supported_version(self, version):
         """The minimum version of TLS that should be allowed.
 
@@ -628,13 +624,13 @@ cdef class MbedTLSConfiguration:
             version (TLSVersion, or DTLSVersion): The minimum version.
 
         """  # PEP 543
-        if self._transport is Transport.STREAM:
+        if self.transport is Transport.STREAM:
             version = _check_tls_version(
                 version
                 if version is not None
                 else TLSVersion.MINIMUM_SUPPORTED
             )
-        if self._transport is Transport.DATAGRAM:
+        if self.transport is Transport.DATAGRAM:
             version = _check_dtls_version(
                 version
                 if version is not None
@@ -650,15 +646,6 @@ cdef class MbedTLSConfiguration:
 
         _tls.mbedtls_ssl_conf_min_version(&self._ctx, major, minor)
 
-    @property
-    def lowest_supported_version(self):
-        maj_min_version = self._ctx.min_major_ver, self._ctx.min_minor_ver
-        if self._transport is Transport.STREAM:
-            return _tls_to_version(maj_min_version)
-        if self._transport is Transport.DATAGRAM:
-            return _dtls_to_version(maj_min_version)
-        assert 0, "unreachable"
-
     cdef _set_highest_supported_version(self, version):
         """The maximum version of TLS that should be allowed.
 
@@ -666,13 +653,13 @@ cdef class MbedTLSConfiguration:
             version (TLSVersion, or DTLSVersion): The maximum version.
 
         """  # PEP 543
-        if self._transport is Transport.STREAM:
+        if self.transport is Transport.STREAM:
             version = _check_tls_version(
                 version
                 if version is not None
                 else TLSVersion.MAXIMUM_SUPPORTED
             )
-        if self._transport is Transport.DATAGRAM:
+        if self.transport is Transport.DATAGRAM:
             version = _check_dtls_version(
                 version
                 if version is not None
@@ -688,15 +675,6 @@ cdef class MbedTLSConfiguration:
 
         _tls.mbedtls_ssl_conf_max_version(&self._ctx, major, minor)
 
-    @property
-    def highest_supported_version(self):
-        maj_min_version = self._ctx.max_major_ver, self._ctx.max_minor_ver
-        if self._transport is Transport.STREAM:
-            return _tls_to_version(maj_min_version)
-        if self._transport is Transport.DATAGRAM:
-            return _dtls_to_version(maj_min_version)
-        assert 0, "unreachable"
-
     cdef _set_trust_store(self, store):
         """The trust store that connections will use.
 
@@ -709,18 +687,6 @@ cdef class MbedTLSConfiguration:
             return
         cdef _x509.CRT crt = TrustStore(store)[0]
         mbedtls_ssl_conf_ca_chain(&self._ctx, &crt._ctx, NULL)
-
-    @property
-    def trust_store(self):
-        store = TrustStore()
-        if self._ctx.ca_chain is NULL:
-            return store
-
-        cdef _x509.mbedtls_x509_crt *c_ctx = self._ctx.ca_chain
-        while c_ctx is not NULL:
-            store.add(_x509.CRT.from_DER(c_ctx.raw.p[0:c_ctx.raw.len]))
-            c_ctx = c_ctx.next
-        return store
 
     cdef _set_max_fragmentation_length(self, mfl):
         if mfl is None:
@@ -736,16 +702,11 @@ cdef class MbedTLSConfiguration:
         except _exc.TLSError as exc:
             raise ValueError(mfl) from exc
 
-    @property
-    def max_fragmentation_length(self):
-        # No accessor in backend.
-        return self._max_fragmentation_length
-
     cdef _set_anti_replay(self, anti_replay):
         """Set anti replay."""
         if anti_replay is None:
             return
-        if self._transport is Transport.STREAM:
+        if self.transport is Transport.STREAM:
             # not available with TLS
             raise ValueError(anti_replay)
         _tls.mbedtls_ssl_conf_dtls_anti_replay(
@@ -753,14 +714,6 @@ cdef class MbedTLSConfiguration:
             _tls.MBEDTLS_SSL_ANTI_REPLAY_ENABLED
             if anti_replay else
             _tls.MBEDTLS_SSL_ANTI_REPLAY_DISABLED)
-
-    @property
-    def anti_replay(self):
-        if self._transport is Transport.STREAM:
-            return None
-
-        cdef unsigned int enabled = _tls.MBEDTLS_SSL_ANTI_REPLAY_ENABLED
-        return True if self._ctx.anti_replay == enabled else False
 
     cdef _set_handshake_timeout(self, minimum, maximum):
         """Set DTLS handshake timeout.
@@ -772,7 +725,7 @@ cdef class MbedTLSConfiguration:
         """
         if minimum is None and maximum is None:
             return
-        if self._transport is Transport.STREAM:
+        if self.transport is Transport.STREAM:
             # not available with TLS
             raise ValueError((minimum, maximum))
 
@@ -788,22 +741,6 @@ cdef class MbedTLSConfiguration:
             int(1000.0 * validate(minimum, default=1.0)),
             int(1000.0 * validate(maximum, default=60.0)),
         )
-
-    @property
-    def handshake_timeout_min(self):
-        """Min handshake timeout in seconds (default 1.0)."""
-        if self._transport is Transport.STREAM:
-            return None
-
-        return float(self._ctx.hs_timeout_min) / 1000.0
-
-    @property
-    def handshake_timeout_max(self):
-        """Max handshake timeout in seconds (default 60.0)."""
-        if self._transport is Transport.STREAM:
-            return None
-
-        return float(self._ctx.hs_timeout_max) / 1000.0
 
     cdef _set_read_timeout(self, timeout):
         """Set TLS/DTLS read timeout.
@@ -828,21 +765,12 @@ cdef class MbedTLSConfiguration:
             int(1000.0 * validate(timeout, default=0))
         )
 
-    @property
-    def read_timeout(self):
-        """Read timeout in seconds. Use 0 for no timeout. (default 0)."""
-        return float(self._ctx.read_timeout) / 1000.0
-
     cdef _set_sni_callback(self, callback):
         # PEP 543, optional, server-side only
         if callback is None:
             return
         # mbedtls_ssl_conf_sni
         raise NotImplementedError
-
-    @property
-    def sni_callback(self):
-        return None
 
     cdef _set_pre_shared_key(self, psk):
         """Set a pre shared key (PSK) for the client.
@@ -864,28 +792,12 @@ cdef class MbedTLSConfiguration:
             key, len(key),
             c_identity, len(c_identity)))
 
-    @property
-    def pre_shared_key(self):
-        if self._ctx.psk == NULL or self._ctx.psk_identity == NULL:
-            return None
-        key = self._ctx.psk[:self._ctx.psk_len]
-        c_identity = self._ctx.psk_identity[:self._ctx.psk_identity_len]
-        identity = c_identity.decode("utf8")
-        return (identity, key)
-
     cdef _set_pre_shared_key_store(self, psk_store):
         # server-side
         if psk_store is None:
             return
         self._store = _PSKSToreProxy(psk_store)  # ownership
         _tls.mbedtls_ssl_conf_psk_cb(&self._ctx, _psk_cb, <void *> self._store)
-
-    @property
-    def pre_shared_key_store(self):
-        if self._ctx.p_psk == NULL:
-            return None
-        psk_store = <_tls._PSKSToreProxy> self._ctx.p_psk
-        return psk_store.unwrap()
 
     cdef _set_cookie(self, _tls._DTLSCookie cookie):
         """Register callbacks for DTLS cookies (server only)."""
@@ -931,51 +843,9 @@ cdef class _BaseContext:
 
     def __init__(self, configuration not None):
         if isinstance(configuration, TLSConfiguration):
-            self._conf = MbedTLSConfiguration(
-                validate_certificates=configuration.validate_certificates,
-                certificate_chain=configuration.certificate_chain,
-                ciphers=configuration.ciphers,
-                inner_protocols=configuration.inner_protocols,
-                lowest_supported_version=(
-                    configuration.lowest_supported_version
-                ),
-                highest_supported_version=(
-                    configuration.highest_supported_version
-                ),
-                trust_store=configuration.trust_store,
-                max_fragmentation_length=configuration.max_fragmentation_length,
-                anti_replay=None,
-                handshake_timeout_min=None,
-                handshake_timeout_max=None,
-                read_timeout=None,
-                sni_callback=configuration.sni_callback,
-                pre_shared_key=configuration.pre_shared_key,
-                pre_shared_key_store=configuration.pre_shared_key_store,
-                _transport=Transport.STREAM,
-            )
+            self._conf = MbedTLSConfiguration.from_tls_configuration(configuration)
         elif isinstance(configuration, DTLSConfiguration):
-            self._conf = MbedTLSConfiguration(
-                validate_certificates=configuration.validate_certificates,
-                certificate_chain=configuration.certificate_chain,
-                ciphers=configuration.ciphers,
-                inner_protocols=configuration.inner_protocols,
-                lowest_supported_version=(
-                    configuration.lowest_supported_version
-                ),
-                highest_supported_version=(
-                    configuration.highest_supported_version
-                ),
-                trust_store=configuration.trust_store,
-                max_fragmentation_length=configuration.max_fragmentation_length,
-                anti_replay=configuration.anti_replay,
-                handshake_timeout_min=configuration.handshake_timeout_min,
-                handshake_timeout_max=configuration.handshake_timeout_max,
-                read_timeout=configuration.read_timeout,
-                sni_callback=configuration.sni_callback,
-                pre_shared_key=configuration.pre_shared_key,
-                pre_shared_key_store=configuration.pre_shared_key_store,
-                _transport=Transport.DATAGRAM,
-            )
+            self._conf = MbedTLSConfiguration.from_dtls_configuration(configuration)
         else:
             # Setting `_conf` is required for delocate on macOS.
             self._conf = None
@@ -995,40 +865,15 @@ cdef class _BaseContext:
             return False
         return self.configuration == other.configuration
 
+    def __getstate__(self):
+        return pickle.dumps(self.configuration)
+
+    def __setstate__(self, state):
+        self.__init__(pickle.loads(state))
+
     @property
     def configuration(self):
-        if self._conf._transport is Transport.STREAM:
-            return TLSConfiguration(
-                validate_certificates=self._conf.validate_certificates,
-                certificate_chain=self._conf.certificate_chain,
-                ciphers=self._conf.ciphers,
-                inner_protocols=self._conf.inner_protocols,
-                lowest_supported_version=self._conf.lowest_supported_version,
-                highest_supported_version=self._conf.highest_supported_version,
-                trust_store=self._conf.trust_store,
-                max_fragmentation_length=self._conf.max_fragmentation_length,
-                sni_callback=self._conf.sni_callback,
-                pre_shared_key=self._conf.pre_shared_key,
-                pre_shared_key_store=self._conf.pre_shared_key_store,
-            )
-        assert self._conf._transport is Transport.DATAGRAM
-        return DTLSConfiguration(
-            validate_certificates=self._conf.validate_certificates,
-            certificate_chain=self._conf.certificate_chain,
-            ciphers=self._conf.ciphers,
-            inner_protocols=self._conf.inner_protocols,
-            lowest_supported_version=self._conf.lowest_supported_version,
-            highest_supported_version=self._conf.highest_supported_version,
-            trust_store=self._conf.trust_store,
-            max_fragmentation_length=self._conf.max_fragmentation_length,
-            anti_replay=self._conf.anti_replay,
-            handshake_timeout_min=self._conf.handshake_timeout_min,
-            handshake_timeout_max=self._conf.handshake_timeout_max,
-            read_timeout=self._conf.read_timeout,
-            sni_callback=self._conf.sni_callback,
-            pre_shared_key=self._conf.pre_shared_key,
-            pre_shared_key_store=self._conf.pre_shared_key_store,
-        )
+        return self._conf.configuration
 
     @property
     def _purpose(self) -> Purpose:

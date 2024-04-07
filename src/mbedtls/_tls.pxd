@@ -414,13 +414,13 @@ cdef class _PSKSToreProxy:
 
 
 cdef class MbedTLSConfiguration:
+    cdef object _configuration
     cdef mbedtls_ssl_config _ctx
     cdef _chain
     cdef int *_ciphers
     cdef const char **_protos
     cdef _PSKSToreProxy _store
     cdef _DTLSCookie _cookie
-    cdef object _max_fragmentation_length
     # cdef'd because we aim at a non-writable structure.
     cdef _set_validate_certificates(self, validate)
     cdef _set_certificate_chain(self, chain)
