@@ -902,7 +902,7 @@ class TestWrappedSocket_SmokeTests:
             pass
 
 
-@pytest.mark.e2e()
+@pytest.mark.e2e
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
 class TestProgramsTLS:
     @pytest.fixture(scope="class")
@@ -1032,7 +1032,7 @@ class TestProgramsTLS:
         assert excinfo.value.errno is errno.ENOTCONN
 
 
-@pytest.mark.e2e()
+@pytest.mark.e2e
 @pytest.mark.skipif(sys.platform == "win32", reason="Flaky under Windows")
 class TestProgramsDTLS:
     @pytest.fixture(scope="class")
