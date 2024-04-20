@@ -1,6 +1,7 @@
 [next]
 
 * pk: Remove obsoleted to_PEM and to_DER functions.
+* ci: Update wheels to mbedtls 2.28.8
 
 [2.9.2] - 2024-02-18
 
