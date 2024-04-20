@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-import datetime as dt
 import errno
 import pickle
 import socket
@@ -13,20 +12,10 @@ import sys
 import time
 from contextlib import suppress
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Iterator,
-    Mapping,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-)
+from typing import Any, Callable, Iterator, Mapping, Sequence, Tuple, Union
 
 import pytest
 
-from mbedtls import hashlib
 from mbedtls._tls import (
     _SUPPORTED_DTLS_VERSION,
     _SUPPORTED_TLS_VERSION,
@@ -54,7 +43,7 @@ from mbedtls.tls import (
     WantReadError,
     WantWriteError,
 )
-from mbedtls.x509 import CRT, CSR, BasicConstraints
+from mbedtls.x509 import CRT
 
 _Key = Union[RSA, ECC]
 _HostName = str
@@ -65,77 +54,36 @@ def rootpath() -> Path:
     return Path(__file__).parent.parent
 
 
-def make_root_ca(
-    # pylint: disable=too-many-arguments
-    subject: Optional[str] = None,
-    not_before: Optional[dt.datetime] = None,
-    not_after: Optional[dt.datetime] = None,
-    serial_number: Optional[int] = None,
-    basic_constraints: Optional[BasicConstraints] = None,
-    digestmod: Optional[hashlib.Algorithm] = None,
-) -> Tuple[CRT, _Key]:
-    if subject is None:
-        subject = "OU=test, CN=Trusted CA"
-    if not_before is None:
-        not_before = dt.datetime.utcnow()
-    if not_after is None:
-        not_after = not_before + dt.timedelta(days=90)
-    if serial_number is None:
-        serial_number = 0x123456
-    if basic_constraints is None:
-        basic_constraints = BasicConstraints(True, -1)
-    if digestmod is None:
-        digestmod = hashlib.sha256
-
-    key = RSA()
-    key.generate()
-    crt = CRT.selfsign(
-        csr=CSR.new(key, subject, digestmod()),
-        issuer_key=key,
-        not_before=not_before,
-        not_after=not_after,
-        serial_number=serial_number,
-        basic_constraints=basic_constraints,
-    )
-    return crt, key
+@pytest.fixture(scope="module")
+def assets(rootpath: Path) -> Path:
+    return rootpath / "tests" / "data"
 
 
-def make_crt(
-    # pylint: disable=too-many-arguments
-    issuer_crt: CRT,
-    issuer_key: _Key,
-    subject: Optional[str] = None,
-    not_before: Optional[dt.datetime] = None,
-    not_after: Optional[dt.datetime] = None,
-    serial_number: Optional[int] = None,
-    basic_constraints: Optional[BasicConstraints] = None,
-    digestmod: Optional[hashlib.Algorithm] = None,
-) -> Tuple[CRT, _Key]:
-    if subject is None:
-        subject = "OU=test, CN=hostname"
-    if not_before is None:
-        not_before = issuer_crt.not_before
-    if not_after is None:
-        not_after = issuer_crt.not_after
-    if serial_number is None:
-        serial_number = 0x123456
-    if basic_constraints is None:
-        basic_constraints = BasicConstraints()
-    if digestmod is None:
-        # TODO: issuer_crt.digestmod should work but doesn't.
-        digestmod = hashlib.sha256
+@pytest.fixture(scope="module")
+def ca_crt(assets: Path) -> CRT:
+    return CRT.from_file(assets / "ca.crt.pem")
 
-    key = RSA()
-    key.generate()
-    crt = issuer_crt.sign(
-        csr=CSR.new(key, subject, digestmod()),
-        issuer_key=issuer_key,
-        not_before=not_before,
-        not_after=not_after,
-        serial_number=serial_number,
-        basic_constraints=basic_constraints,
-    )
-    return crt, key
+
+@pytest.fixture(scope="module")
+def ca_key(assets: Path) -> _Key:
+    return RSA.from_file(assets / "ca.key.prv.pem")
+
+
+@pytest.fixture(scope="module")
+def ee_crt(assets: Path) -> CRT:
+    return CRT.from_file(assets / "ee.crt.pem")
+
+
+@pytest.fixture(scope="module")
+def ee_key(assets: Path) -> _Key:
+    return RSA.from_file(assets / "ee.key.prv.pem")
+
+
+@pytest.fixture(scope="module")
+def certificate_chain(
+    ca_crt: CRT, ee_crt: CRT, ee_key: _Key
+) -> Tuple[Tuple[CRT, ...], _Key]:
+    return (ee_crt, ca_crt), ee_key
 
 
 class TestPickle:
@@ -328,10 +276,9 @@ class TestTrustStore:
         store.add(store[0])
         assert len(store) == length
 
-    def test_add_new_certificate(self, store: TrustStore) -> None:
-        root_ca = make_root_ca()[0]
+    def test_add_new_certificate(self, store: TrustStore, ca_crt: CRT) -> None:
         length = len(store)
-        store.add(root_ca)
+        store.add(ca_crt)
         assert len(store) == length + 1
 
 
@@ -480,16 +427,6 @@ class TestTLSHandshake:
     @pytest.fixture(scope="class")
     def hostname(self) -> _HostName:
         return "www.example.com"
-
-    @pytest.fixture(scope="class")
-    def certificate_chain(
-        self, hostname: _HostName
-    ) -> Tuple[Tuple[CRT, ...], _Key]:
-        root_crt, root_key = make_root_ca()
-        ee_crt, ee_key = make_crt(
-            root_crt, root_key, subject=f"OU=test, CN={hostname}"
-        )
-        return (ee_crt, root_crt), ee_key
 
     def test_cert_without_validation(
         self, certificate_chain: Tuple[Tuple[CRT, ...], _Key]
