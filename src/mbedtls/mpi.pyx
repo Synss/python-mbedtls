@@ -279,6 +279,7 @@ cdef class MPI:
     def real(self):
         return self
 
+    @property
     def imag(self):
         return 0
 
