@@ -1,4 +1,8 @@
-[2.10.0] - 2024-40-27
+[2.10.1] - 2024-04-27
+
+* ci: Fix error in CI workflow.
+
+[2.10.0] - unpublished
 
 * pk: Remove obsoleted to_PEM and to_DER functions.
 * mpi: Fixup `imag` as property instead of method.
