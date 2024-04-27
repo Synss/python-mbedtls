@@ -4,7 +4,7 @@
 #
 #    pip-compile --no-annotate requirements/typing.in
 #
-mypy==1.8.0
+mypy==1.10.0
 mypy-extensions==1.0.0
 tomli==2.0.1
-typing-extensions==4.9.0
+typing-extensions==4.11.0

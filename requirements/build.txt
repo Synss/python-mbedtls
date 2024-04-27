@@ -4,18 +4,18 @@
 #
 #    pip-compile --no-annotate requirements/build.in
 #
-auditwheel==5.4.0 ; sys_platform == "linux"
-build==1.0.3
+auditwheel==6.0.0 ; sys_platform == "linux"
+build==1.2.1
 click==8.1.7
-cython==3.0.8
-importlib-metadata==7.0.1
-packaging==23.2
-pip-tools==7.3.0
-pyelftools==0.30
+cython==3.0.10
+importlib-metadata==7.1.0
+packaging==24.0
+pip-tools==7.4.1
+pyelftools==0.31
 pyproject-hooks==1.0.0
 tomli==2.0.1
-wheel==0.42.0
-zipp==3.17.0
+wheel==0.43.0
+zipp==3.18.1
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
