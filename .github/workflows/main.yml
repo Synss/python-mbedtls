@@ -69,12 +69,12 @@ jobs:
       - name: Download source packages
         uses: actions/download-artifact@v4
         with:
-          pattern: dist-${{ matrix.version }}-*
+          pattern: dist-*
           path: dist
       - name: Download wheels
         uses: actions/download-artifact@v4
         with:
-          pattern: wheels-${{ matrix.version }}-*
+          pattern: wheels-*
           path: dist
           merge-multiple: true
       - name: List dir content
