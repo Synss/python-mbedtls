@@ -1,4 +1,4 @@
-[next]
+[2.10.0] - 2024-40-27
 
 * pk: Remove obsoleted to_PEM and to_DER functions.
 * mpi: Fixup `imag` as property instead of method.
