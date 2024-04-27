@@ -3,7 +3,26 @@ name: main
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  build:
+  sdist:
+    name: Make source dist
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Create source dist
+        run: python setup.py sdist
+      - name: Upload source dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist
+          if-no-files-found: error
+
+  wheels:
     name: ${{ matrix.pyver }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     permissions:
@@ -21,15 +40,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - name: Create source dist
-        run: python setup.py sdist
-      - name: Upload source dist
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-${{ matrix.version }}-${{ matrix.pyver }}-${{ matrix.os }}
-          path: dist
-          if-no-files-found: error
-      - name: Build and test wheels
+      - name: Build and test wheel
         uses: pypa/cibuildwheel@v2.17
         env:
           CIBW_BUILD: ${{ matrix.pyver }}-*
@@ -48,10 +59,10 @@ jobs:
           CIBW_TEST_SKIP: "cp38-macosx_arm64"
       - name: Inventory
         run: ls wheelhouse
-      - name: Upload wheels
+      - name: Upload wheel
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ matrix.version }}-${{ matrix.pyver }}-${{ matrix.os }}
+          name: wheel-${{ matrix.version }}-${{ matrix.pyver }}-${{ matrix.os }}
           path: wheelhouse/
           if-no-files-found: error
 
@@ -60,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    needs: build
+    needs: [sdist, wheels]
     if: >
       github.event_name == 'push'
       && startsWith(github.ref, 'refs/tags')
@@ -69,12 +80,12 @@ jobs:
       - name: Download source packages
         uses: actions/download-artifact@v4
         with:
-          pattern: dist-*
+          name: sdist
           path: dist
       - name: Download wheels
         uses: actions/download-artifact@v4
         with:
-          pattern: wheels-*
+          pattern: wheel-*
           path: dist
           merge-multiple: true
       - name: List dir content
