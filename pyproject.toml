@@ -9,15 +9,15 @@ test-command = "pytest {project}/tests"
 
 [tool.cibuildwheel.linux]
 before-all = [
-  "./scripts/download-mbedtls.sh $VERSION ~/.local/src",
-  "./scripts/install-mbedtls.sh ~/.local/src",
+  "./scripts/download-mbedtls.sh $VERSION .local/src",
+  "./scripts/install-mbedtls.sh .local/src",
 ]
 
 [tool.cibuildwheel.macos]
+environment.UPSTREAM_DEST="$PWD"
 before-all = [
-  "./scripts/download-mbedtls.sh $VERSION ~/.local/src",
-  "./scripts/install-mbedtls.sh ~/.local/src",
-  "cp /usr/local/lib/libmbed*dylib .",
+  "./scripts/download-mbedtls.sh $VERSION .local/src",
+  "./scripts/install-mbedtls.sh .local/src $UPSTREAM_DEST",
 ]
 
 [tool.cibuildwheel.windows]

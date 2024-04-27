@@ -15,36 +15,41 @@ jobs:
         pyver: [cp38, cp39, cp310, cp311, cp312]
         version: [2.28.8]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: Create source dist
         run: python setup.py sdist
       - name: Upload source dist
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-${{ matrix.version }}-${{ matrix.pyver }}-${{ matrix.os }}
           path: dist
           if-no-files-found: error
       - name: Build and test wheels
-        uses: pypa/cibuildwheel@v2.16
+        uses: pypa/cibuildwheel@v2.17
         env:
           CIBW_BUILD: ${{ matrix.pyver }}-*
           CIBW_ENVIRONMENT: VERSION=${{ matrix.version }}
           CIBW_ENVIRONMENT_MACOS: >
             VERSION=${{ matrix.version }}
             LDFLAGS="-Wl,-headerpad_max_install_names"
+            UPSTREAM_DEST="$GITHUB_WORKSPACE/.local/upstream"
+            C_INCLUDE_PATH="$UPSTREAM_DEST/include"
+            LIBRARY_PATH="$UPSTREAM_DEST/lib"
+            DYLD_LIBRARY_PATH="$UPSTREAM_DEST/lib"
           CIBW_ENVIRONMENT_WINDOWS: >
             VERSION=${{ matrix.version }}
             LIB=$GITHUB_WORKSPACE\\_lib\\mbedtls\\visualc\\VS2010\\x64\\Release
             INCLUDE=$GITHUB_WORKSPACE\\_lib\\mbedtls\\include
+          CIBW_TEST_SKIP: "cp38-macosx_arm64"
       - name: Inventory
         run: ls wheelhouse
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-${{ matrix.version }}-${{ matrix.pyver }}-${{ matrix.os }}
           path: wheelhouse/
           if-no-files-found: error
 
@@ -60,15 +65,16 @@ jobs:
       && github.repository == 'Synss/python-mbedtls'
     steps:
       - name: Download source packages
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: dist
+          pattern: dist-${{ matrix.version }}-*
           path: dist
       - name: Download wheels
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: wheels
+          pattern: wheels-${{ matrix.version }}-*
           path: dist
+          merge-multiple: true
       - name: List dir content
         run: ls dist
       - name: Publish to pypi

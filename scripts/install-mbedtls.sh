@@ -22,6 +22,8 @@ else
 	exit 1
 fi
 
-make -C "$srcdir" clean
+C_INCLUDE_PATH=
+LIBRARY_PATH=
+
 make -C "$srcdir" -j CFLAGS="-O2 -DMBEDTLS_ARIA_C=ON" SHARED=ON lib
 make -C "$srcdir" -j DESTDIR="$destdir" install
