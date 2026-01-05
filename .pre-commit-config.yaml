@@ -24,7 +24,7 @@ repos:
         types_or: [cython, python]
         exclude: ^docs/source/
   - repo: 'https://github.com/pre-commit/pre-commit-hooks'
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-toml
@@ -32,20 +32,20 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: 'https://github.com/charliermarsh/ruff-pre-commit'
-    rev: v0.7.2
+    rev: v0.14.10
     hooks:
       - id: ruff
   - repo: 'https://github.com/psf/black'
-    rev: 24.10.0
+    rev: 25.12.0
     hooks:
       - id: black
         types: [python]
   - repo: 'https://github.com/MarcoGorelli/cython-lint'
-    rev: v0.16.2
+    rev: v0.18.1
     hooks:
       - id: cython-lint
   - repo: 'https://github.com/pycqa/flake8'
-    rev: 7.1.1
+    rev: 7.3.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -53,12 +53,12 @@ repos:
           - flake8-pytest-style
         types_or: [cython, python]
   - repo: 'https://github.com/PyCQA/isort'
-    rev: 5.13.2
+    rev: 7.0.0
     hooks:
       - id: isort
         types_or: [cython, python]
   - repo: 'https://github.com/PyCQA/pylint'
-    rev: v3.3.1
+    rev: v4.0.4
     hooks:
       - id: pylint
         additional_dependencies:
@@ -69,7 +69,7 @@ repos:
           - '--disable=no-name-in-module'
           - '--disable=import-error'
   - repo: 'https://github.com/asottile/pyupgrade'
-    rev: v3.19.0
+    rev: v3.21.2
     hooks:
       - id: pyupgrade
         types_or: [cython, python]
@@ -77,6 +77,6 @@ repos:
           - '--py38-plus'
           - '--keep-runtime-typing'
   - repo: 'https://github.com/abravalheri/validate-pyproject'
-    rev: v0.22
+    rev: v0.24.1
     hooks:
       - id: validate-pyproject
