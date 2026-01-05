@@ -13,7 +13,7 @@ from mbedtls._ringbuf import RingBuffer  # type: ignore
 
 @pytest.fixture
 def randomize_start(
-    randbytes: Callable[[int], bytes]
+    randbytes: Callable[[int], bytes],
 ) -> Callable[[bytes], None]:
     def impl(buffer: RingBuffer) -> None:
         # Randomize start of the buffer.

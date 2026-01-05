@@ -90,7 +90,7 @@ class TLSRecordHeader:
         length: int,
     ) -> None:
         def parse_version(
-            v: Union[int, Tuple[int, int], TLSVersion]
+            v: Union[int, Tuple[int, int], TLSVersion],
         ) -> TLSVersion:
             if isinstance(v, TLSVersion):
                 return v
