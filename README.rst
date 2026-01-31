@@ -16,6 +16,23 @@ Cryptographic library for Python with Mbed TLS back end
    https://coveralls.io/repos/github/Synss/python-mbedtls/badge.svg?branch=master
    :target: https://coveralls.io/github/Synss/python-mbedtls?branch=master
 
+|
+|
+|
+
+.. class:: center
+
+   **[ARCHIVED]** Due to time constraints, active development on
+   this project has ceased and this repository is now read-only.
+   I am open to **transferring ownership** to a new maintainer;
+   if you are interested in taking over, please contact me
+   via the email listed on my GitHub profile. In the meantime,
+   users are encouraged to fork the repository for their
+   own continued use.
+
+|
+|
+|
 
 `python-mbedtls`_ is a free cryptographic library for Python that uses
 `mbed TLS`_ for back end.
